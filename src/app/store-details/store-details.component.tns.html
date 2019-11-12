@@ -1,0 +1,88 @@
+<ScrollView>
+   <GridLayout  rows='auto, auto,auto '>
+
+
+ 
+    <GridLayout row="0"  columns=auto,* >
+    <Label text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
+  		<Label col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+    
+    </GridLayout>
+    
+    <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+    
+	<GridLayout   margin="15,10,15,10" row="2" columns="auto,*" rows="auto,auto,auto,auto,auto,auto,auto,auto">
+
+	<Label text="{{storetitle}}" class=" border "row='0' col="0"></Label>
+
+   <AbsoluteLayout  class=" border " row="0" col="1" >
+      	           <StackLayout left="-80" top="-20" android:cursorVisible="false"  >
+      	           
+                 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="store.ratingsum/store.ratingcount" ></StarRating>
+                </StackLayout>
+                 <Label fontSize="10" left ="80" top="0"  text="({{store.ratingcount}} votes)"></Label>
+                
+        </AbsoluteLayout>
+	
+	
+	<Label class=" border " row="1" text="Suspendu" col="0"></Label>
+	<Label class=" border " row="1" col="1" *ngIf='store.suspend' text ="Oui"></Label>
+  	<Label class=" border " row="1"  col="1" *ngIf='!store.suspend' text="Non"></Label>
+
+	
+	<Label class=" border "  row="2" text="Création" col="0"></Label>
+	<Label class=" border "  row="2" col="1"  text ="{{store.created}}"></Label>
+ 
+
+	
+	<Label class="border "  row="3"  text="Description" col="0"></Label>
+	
+	<TextView row="3"  col="1" class="border "  text="{{store.description}}" editable ="false"></TextView>
+	
+	
+	<Label class=" border "  row="4" text="Catégories" col="0"></Label>
+	<RadListView class=" border "  row="4" [items]="store.selectedCat" col='1'>
+			<ng-template  let-c="item" >
+			<Label text='{{c}}'></Label>
+			</ng-template>
+	</RadListView>
+	
+	<Label class=" border "  row="5" text="Couverture Géo" col="0" editable="false"></Label >
+	<RadListView class=" border "  row="5" [items]="store.geo" col="1" >
+			<ng-template  let-g="item">
+			<Label text='{{g.name}}'></Label>
+			</ng-template>
+	</RadListView>
+	
+	
+	  <Label  class="border "  row="6" text="Propriétaire" col="0"></Label>
+	  <GridLayout   columns ="auto,*" rows="auto,auto" class="border "  row="6" col="1"  orientation="horizontal">
+      <Image col="0" row="0"  class="profilePic " [src]=avatars[store.userid] stretch="aspectFill"></Image>
+     <StackLayout col="1" row="0">
+      <Label  class='fas' text="&#xf0e0;" (tap)= 'sendMessage(store.userid, owner.fullname, avatars[store.userid])' ></Label>
+	  <Label   class="fas" text ="&#xf007;" (tap)='profile(store.userid)' ></Label>
+      
+     </StackLayout>
+      <Label  row="1" col='0'  text="{{owner.fullname}} "></Label>
+      </GridLayout>
+ 
+
+	  <Label *ngIf="store.hasOwnProperty(administrators) " class=" border "  row="7" text="Administrateurs" col="0"></Label>
+	  	<RadListView class=" border "  row="7"  [items]="store.administrators" col="1" >
+			<ng-template  let-a="item">
+			 <GridLayout rows='auto,auto' columns='auto,*'>
+      			<Image col="0" row="0" class="profilePic " [src]=avatars[a.userid] stretch="aspectFill"></Image>
+     			 <Label col="0" row="1" text="{{a.fullname}} "></Label>
+     			 <StackLayout col="1" row="0">
+     			 <Label  class='fas' text="&#xf0e0;" (tap)= 'sendMessage(a.userid, a.fullname, avatars[a.userid])' ></Label>
+				  <Label  class="fas" text ="&#xf007;" (tap)='profile(a.userid)' ></Label>
+    		  </StackLayout>
+    		  </GridLayout>
+			
+			
+			</ng-template>
+	</RadListView>
+	 
+	</GridLayout>
+</GridLayout>
+</ScrollView>

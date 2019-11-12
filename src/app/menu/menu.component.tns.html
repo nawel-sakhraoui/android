@@ -1,0 +1,70 @@
+
+ 
+<ActionBar margin='-5,0,0,0' title="SIMSIM" >
+    <GridLayout columns="80,*" >
+    <GridLayout rows='auto,auto' col='0'>
+        <Label row="0" margin="10,0,0,0"  text="SIMSIM"  [nsRouterLink]="['/home',myhome]" 
+            class="icon-menu fas"></Label>
+
+       <GridLayout columns='auto' row="1">
+        <!-- Label margin="0,2,0,5" text='&#xf13a;' col="0" class="fas"></Label-->
+       <DropDown margin='-5,-10,0,0' #dd   col="0"  
+         		textAlignment="left"
+                  [items]="cities "
+                  class="item-drop-down"
+                  [(ngModel)]="selectedIndex"
+                  (selectedIndexChanged)="onchange($event)"
+					colSpan="2"
+					itemsPadding="8"
+         >
+        </DropDown> 
+</GridLayout>
+  	  <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
+        
+        
+   
+		 <!-- StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout-->
+		</GridLayout>
+    
+        <SearchBar id="searchbarid"  col="1" hint="Rechercher"  (submit)="getQuery($event)" (loaded)="sBLoaded($event)"  
+            color="#333333" (clear)="onClear($event)"  textFieldBackgroundColor="transparent" textFieldHintColor="#d9534f"></SearchBar>
+
+       
+       <!-- Button col="2" class="fas search " text='&#xf002;'></Button-->
+    </GridLayout>
+</ActionBar>
+    <GridLayout rows="43,86,auto" columns="*,*,*,*,*,*" row="1" col="0" class="footer">
+
+			
+        <Button id="profile" row="0" col="0" text="&#xf007;" nsRouterLinkActive="icon-footer-active" 
+           [nsRouterLink]="['/home',myhome,'profile',myhome]" class="fass icon-footer Btn "    ></Button>
+        
+         <Button id="list-messages" row="0" col="1" text="&#xf0e0;" nsRouterLinkActive="icon-footer-active"
+            [nsRouterLink]="['/home',myhome,'messages']"  class="fass icon-footer Btn "></Button>   
+        <Label id="globeItemNavigation1" row="0" col="1" text="{{messagesnotif}}" class="globe1">
+        </Label> 
+        
+       
+        <Button id="transaction" row="0" col="2" text="&#xf362;" nsRouterLinkActive="icon-footer-active" 
+          [nsRouterLink]="['/home',myhome,'ongoing']" class="fass icon-footer Btn "></Button>
+		
+		
+        <Button id="stores" row="0" col="3" text="&#xf54f;&#xf0d7;" nsRouterLinkActive="icon-footer-active" 
+           [nsRouterLink]="['/stores']" class="fass icon-footer Btn "></Button>
+
+
+        <Button id="cart" row="0" col="4" text="&#xf07a;" nsRouterLinkActive="icon-footer-active" 
+            [nsRouterLink]="['/home',myhome,'cart']"   class="fass icon-footer Btn"></Button>
+    
+    	     
+       <Button id="notifications" row="0"  col="5" text="&#xf0f3; &#xf0d7;"  nsRouterLinkActive="bellActive"   [nsRouterLink]="['/home',myhome,'not']"
+            class="bell fas Btn"></Button> 
+        <Label id="globeItemNavigation" row="0" col="5" text="{{notifications.notificationcount}}" class="globe">
+        </Label> 
+ 
+     
+    </GridLayout>
+ 
+    
+    <!-- ListPicker [items]="listPickerCountries" [(ngModel)]="selectedListPickerIndex"></ListPicker>
+     -->

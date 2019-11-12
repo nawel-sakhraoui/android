@@ -1,0 +1,90 @@
+<ScrollView orientation="vertical">	   
+<StackLayout>
+
+<StackLayout margin ='5,5,5,5' colSpan="2" backgroundColor="#00BFFF" height="2"></StackLayout>
+ 
+<RadListView class="list-group" [items]="notifications.notification" style="height:auto" >
+    <ng-template let-n="item" let-odd="odd" let-even="even" >
+
+       	   <GridLayout margin='10,5,0,5'  rows="*,*,*,*,*,*,*,*,auto">
+       	   <GridLayout row="0" columns='*,auto'   [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]"  fragment="message"    [visibility]="n.value=='message' ?'visible':'collapse'" >
+       		<Label   col="0" >
+       		<FormattedString>
+       		  	<Span text='&#xf0e0; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.storetitle}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+       		
+       		<Label class="fass" col="1"    text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>  
+       		
+       		<textView editable="false" margin="-10,0,5,10" editable="false" row="1" [visibility]="n.value=='message' ?'visible':'collapse'"   class=" Label"   text=' Vous avez un nouveau message '>  
+       		</textView>
+       		
+             <GridLayout row="2" columns='*,auto'  [visibility]="n.value=='send' ?'visible':'collapse'"  [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]"  >
+       		<Label    col="0" >
+       		<FormattedString>
+       		  	<Span text='&#xf0d1; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.storetitle}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+           
+      		 <Label class="fass" col="1"   text="&#xf017; {{n.time}}">
+       		</Label>
+ 
+ 			</GridLayout> 
+ 			
+       		<textView editable="false" margin="-10,0,5,10" editable="false" row="3"  [visibility]="n.value=='send' ?'visible':'collapse'"  class=" Label"     text='Votre commande a été Envoyée'>  
+       		 </textView>
+       		
+       		<GridLayout row="4" columns='*,auto'  [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]"  [visibility]="n.value=='prepare' ?'visible':'collapse'"  >
+       		
+       		<Label   col="0"   >
+       		<FormattedString>
+       		  	<Span text='&#xf14a; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.storetitle}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+      
+       		 <Label class="fass" col="1"  text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>
+       		
+       		 <textView editable="false" margin="-10,0,5,10" row="5" [visibility]="n.value=='prepare' ?'visible':'collapse'"  class=" Label"    text='Votre commande est prête, en attente de livraison'>  
+       		 </textView>
+       		
+       		<GridLayout row='6' columns='*,auto'  [visibility]="n.value=='rating' ?'visible':'collapse'"   [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]" fragment="rating" >
+       		       		
+       		<Label   col="0"   >
+       		<FormattedString>
+       		  	<Span text='&#xf005; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.storetitle}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+       		
+       		<Label class="fass" col="1"  text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>
+       		  <textView editable="false" margin="-10,0,5,10"  row="7"  [visibility]="n.value=='rating' ?'visible':'collapse'"  class=" Label"   text='Vous pouvez noter les articles '>  
+       		 </textView>
+       		
+       		 <StackLayout  row="8" colSpan="2" backgroundColor="#00BFFF" height="2"></StackLayout>
+       		 
+       		 
+      </GridLayout>
+
+    </ng-template>
+    
+</RadListView>
+</StackLayout>
+</ScrollView>
+
+

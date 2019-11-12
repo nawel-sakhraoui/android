@@ -1,0 +1,134 @@
+/* Add mobile styles for the component here.  */
+.msg{
+	border:2px  #D3D3D3 solid; margin-top:50px; 
+	
+}
+.site-template-image {
+ 
+    border-radius: 100;
+    margin: 8 16;
+    width: 60;
+    height: 60;
+    border-color: #4db8ff;
+    border-width: 1;
+}
+
+.site-template-title {
+    margin: 0 0 6 0;
+    font-size: 18;
+}
+
+.site-template-description {
+    font-size: 12;
+
+}
+.image-with-background {
+    background-image: url("~/assets/img_back.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: contain;
+    margin-top: -25;
+}
+
+.thumb-with-background {
+    background-image: url("~/assets/img_back.png") top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: bottom;
+}
+
+.action-item-right {
+    color: white;
+    padding: 12;
+    margin: 0 16;
+    font-size: 18;
+    vertical-align: center;
+}
+
+.action-item-left {
+    color: white;
+    margin: 0 12;
+    padding: 12;
+    font-size: 18;
+    vertical-align: center;
+}
+
+.site-main-content {
+    margin: 12 24;
+}
+
+.tilted-line {
+    height: 10;
+    width: 15;
+    rotate: 120;
+    margin: 0 2;
+    background-color: #ffffff;
+}
+
+.line {
+    height: 1px;
+    background-color: #666666;
+    margin-top: 8;
+    margin-bottom: 8;
+}
+
+.inventory-icon {
+    margin: 10 10 10 0;
+}
+
+.inventory-layout .ok {
+    opacity: 1;
+    font-size: 12;
+    vertical-align: center;
+}
+
+.inventory-layout .not-present {
+    opacity: 0.5;
+    font-size: 12;
+    vertical-align: center;
+}
+
+.inventory-presence {
+    margin: 10 0;
+}
+
+.globe {
+    background-color: #FFA500;
+    width: 20;
+    height: 20;
+    border-radius:12; 
+    text-align: center;
+    color: #ffffff;
+    font-size: 12;
+    margin-bottom:20;
+    margin-right: 30;
+    padding-top: 2;
+}
+
+GridLayout:hover {
+  background: #868e96 none repeat scroll 0 0;
+  /*color: #ffffff;*/
+  cursor:pointer;
+}
+.profilePic {
+    width: 50;
+    height: 50;
+    margin:0,3,0,0;
+    border-radius: 35;
+    border-color: #4db8ff;
+    border-width: 1;
+}
+
+#globeItemNavigation {
+    z-index: 1;
+}
+.alert {
+	padding :5 ; 
+	background-color: #FFA1A1; 
+	color :#444444; 
+	 border-width: 1 ;
+	 border-radius :2; 
+   border-color:#F27171;
+   font-size:12;  
+}  
+ 

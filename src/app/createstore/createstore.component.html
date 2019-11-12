@@ -1,0 +1,76 @@
+<div class="scroll2">
+
+<div i18n-class  class="text-left container col-md-6 col-md-offset-3 card">
+    <h3 i18n='@@nouveaumag'>Nouveau Magasin</h3>
+    <form style='margin-top:50px ; ' name="form" (ngSubmit)='f.form.valid  &&  newstore()' #f="ngForm" novalidate>
+        
+       <div class="form-group text-info " >
+            <label i18n='@@magtitle' for="title"> Titre </label>
+            <input type="text" class="form-control" name="title" [(ngModel)]="model.title" #title="ngModel"
+             required  minlength=5  maxlength=30 (input)='existStore() '  />
+            <div i18n='@@alertrequired' *ngIf="f.submitted && title.hasError('required')" class=" alert alert-danger help-block">Le titre du magasin est obligatoire</div>
+            <div i18n='@@alertlength' *ngIf=" title.hasError('minlength')" class="help-block alert alert-danger ">Le titre doit contenir au moins 5 caractères</div>
+       	    <div i18n='@@alertlength2' *ngIf="  title.hasError('maxlength')" class="help-block alert alert-danger ">Le titre est trop long</div>
+       	    <div i18n='@@alerttitlexist' *ngIf=" exist" class="help-block alert alert-danger ">Ce titre est déjà pris </div>
+       	    
+       	    <!-- div *ngIf="  title.hasError('pattern')" class="help-block alert alert-danger "> pattern issue </div>
+      	     -->
+      </div> 
+        
+        
+           
+      <div class="form-group text-info" style='margin-top:50px; ' >
+    	 <label i18n="@@catname" for="categories">Categories</label>
+  		
+         <ngx-select-dropdown   [config]="config" [options]="Categories" 
+            [(value)]="model.selectedCat" [multiple]="true" ></ngx-select-dropdown>     
+         <div i18n='@@alertcat2' *ngIf="f.submitted && model.selectedCat.length==0" class="help-block alert alert-danger">Choisissez au moins une catégorie</div>
+         
+       
+  
+  
+  	  </div>
+  	  
+         
+      <div class=" text-info form-group" style='margin-top:50px; '  >
+    	 <label i18n='@@geo' for="geo">Couverture géographique (par willaya)</label>
+  		
+         <ngx-select-dropdown   [config]="config2" [options]="cities" 
+            [(value)]="model.geo" [multiple]="true" ></ngx-select-dropdown>     
+         <div i18n='@@alertcities' *ngIf="f.submitted && model.geo.length ==0 " class="help-block alert alert-danger">Choisissez au moins une région</div>
+         
+       
+  
+  
+  	  </div>
+   
+   
+                  
+        
+        
+      <div class="text-info form-group" style='margin-top:50px; '  >
+            <label i18n='@@desc' for="desc"> Déscription </label>
+            <textarea rows="5" class="form-control" name="desc" required [(ngModel)]="model.description" maxlength="300" #desc="ngModel"  ></textarea>
+            <div i18n='@@alertdesc' *ngIf="f.submitted && desc.hasError('required')" class="help-block alert alert-danger"> Ajoutez une description à votre magasin</div>
+       	    <div  i18n='@@descalert' *ngIf="f.submitted &&  desc.hasError('maxlength')" class="help-block alert alert-danger"> Description trop longue</div>
+
+      	  
+      	    
+     </div>
+     	 
+     	
+        
+        <div class="form-group" style="float:right; ">
+              <button i18n='@@envoyer' [disabled]="loading  " class="btn btn-info" >Envoyer</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+			       
+			           
+              <a i18n='@@annuler' [routerLink]="['/myhome']" class="btn btn-link">Annuler</a>
+         
+        </div>
+           
+    </form>
+  
+  
+</div>
+</div>

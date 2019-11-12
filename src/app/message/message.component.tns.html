@@ -1,0 +1,55 @@
+<ScrollView #scroll>
+<GridLayout  rows="auto,auto,*" margin="5,5,5,5" (tap)='hide()'>
+      		    	<StackLayout  class ='head' row="0" orientation='horizontal'>
+  					<Image backgroundColor="#D3D3D3" class="profilePic"   stretch="aspectFill" [src]="avatarTo ? avatarTo : null"></Image>
+                     <Label text='{{model.fullname}}'></Label>
+                 	
+      		    	 </StackLayout>
+      		    	 
+      		    	<RadListView  #top row="2" [items]="messages "  		selectionBehavior="LongPress" (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" 
+				loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"    >
+						<ng-template let-message="item"  >
+						<StackLayout>
+						
+						<GridLayout margin='0,0,5,0'  columns="auto,*" [visibility]="message._source.fromMe? 'visible' : 'collapsed'" >
+						
+						<Image  backgroundColor="#D3D3D3" col="0" [src]='avatarFromMe' class="profilePic"  stretch="aspectFill"  ></Image>
+					    <GridLayout col="1" rows="auto,auto"  >
+					   		 <StackLayout row="0" orientation=horizontal>
+					   		 	<Label width="75%" text="Moi" class="fname"></Label>
+					   		 	<Label class='fas' fontSize='10' text="&#xf017; {{message._source.date}}"></Label>
+					   		  </StackLayout>
+					  		 <TextView row="1" text='{{message._source.text}}' editable="false" class="msgs1">
+					  		 
+					  		 
+					  		 </TextView>
+						 </GridLayout> 
+						</GridLayout>
+						
+						<GridLayout  margin='0,0,5,0' columns="*,auto" [visibility]="!message._source.fromMe? 'visible' : 'collapsed'" >
+								<Image backgroundColor="#D3D3D3" col="1" [src]='avatarTo' class="profilePic"  stretch="aspectFill"  ></Image>
+					       <GridLayout col="0" rows='auto,auto'  >
+					   		 <StackLayout row='0' orientation=horizontal horizontalAlignment="right"  >
+					   		     <Label class='fas' fontSize='10' width="55%"  text="&#xf017; {{message._source.date}}"></Label>
+					   		  
+					   		 	 <Label    text="{{this.model.fullname}}" class="fname"></Label>
+					   		  </StackLayout>
+					  		 <TextView row="1" text=' {{message._source.text}}' class="msgs2" editable="false"></TextView>
+						 </GridLayout>
+						
+						</GridLayout>
+						</StackLayout>
+						</ng-template>
+						
+						
+						
+      		       </RadListView>
+      		    	<GridLayout margin="0,0,10,0" row="1" rows="auto,auto">
+      		    	 <StackLayout row='0' orientation="horizontal">
+      		    	 <TextView #View   width='75%' class="msg"  returnKeyType="done"   [(ngModel)]='model.message'></TextView>
+      		    	 <Label  text='Envoyer' class="send" returnKeyType="done" (tap)=" sendMessage()"></Label>
+      		    	 </StackLayout>
+      		    	 <TextView row="1" editable ='false' class="alert" *ngIf='msgAlert' text='taper votre message ! '></TextView>
+      		    	 </GridLayout>
+      		    	</GridLayout>
+      </ScrollView>		    	 

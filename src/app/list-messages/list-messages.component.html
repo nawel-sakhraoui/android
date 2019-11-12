@@ -1,0 +1,48 @@
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+
+<div i18n-class class=" text-left scroll2">
+ 
+<div [hidden] ='loading' class="container">
+
+
+<div i18n="@@nomsg" *ngIf='!listmessage' class="alert alert-warning ">
+Vous n'avez aucun message privé
+</div>
+
+<div  *ngIf='listmessage'>
+
+<ul class="list-group  " *ngFor="let m of model |paginate: { id: 'server', itemsPerPage: sizemsg, currentPage: page, totalItems: countmsg } ; let i = index  "[attr.data-index]="i" >
+<li class="list-group-item" style= "border:2px  #D3D3D3 solid; margin-top:50px;   ">
+<a (click) = "goToMessage(me,  m._source.last.userid, m._source.last.userfullname, m._source.last.avatar, m._source.unread)">
+
+                     <span i18n-class class="chat-img pull-left">
+                     <div class="profile-picture">
+                     <img [src]="m._source.last.avatar"  alt="User Avatar" class="resize">
+                     </div>
+                     </span>
+                     <div class="chat-body clearfix">
+                        <div class="header_sec">
+                           <strong class="primary-font">{{m._source.last.userfullname}}</strong> 
+                       	<span i18n-class class="badge pull-right">{{m._source.unread}}</span>
+                        </div>
+                        <div class="contact_sec">
+                           <h5>{{m._source.last.lastfrom}}</h5>
+                           <p>{{m._source.last.text}}</p>
+                           <strong i18n-class class="pull-right"><span class="fa fa-clock-o "></span>
+                           {{m._source.last.date}}</strong>
+                            
+                        </div>
+                     </div>
+                  
+                  
+  </a> 
+  </li>
+</ul>
+<div class="has-text-centered" i18n-style style='float:right; margin-top :10px ; '>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+    <pagination-controls (pageChange)="getPage($event)" id="server"  i18n-previousLabel previousLabel="précédent"  i18n-nextLabel nextLabel='suivant' ></pagination-controls>
+</div>
+</div>
+
+</div>
+</div>

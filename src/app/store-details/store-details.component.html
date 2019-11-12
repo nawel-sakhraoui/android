@@ -1,0 +1,97 @@
+
+<div i18n-class class='text-left scroll2' >
+  <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+
+
+<div class= ' container' *ngIf ='show'> 
+<div i18n="@@nostore" *ngIf='nostore' >
+ Pas de magasin dans ce lien. 
+</div>
+
+
+
+<div *ngIf='!nostore && !open'>
+<div i18n="@@noopen" class=" alert alert-warning  strong "> Ce magasin est fermé </div>
+</div>
+
+
+
+<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']">
+
+<div *ngIf='!nostore' class='list-group-item '>
+
+<!--
+<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false, wrapperClass:resize}"   ></div>
+
+-->
+
+  
+  <table class="table table-sm" >
+   <thead>
+  <tr class="table-active" >
+  <th><strong>{{storetitle}}</strong></th>
+  <th>   <span class="form-inline " ><star-rating [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> <span class="small" i18n="@@votes">( {{store.ratingcount}} votes)</span></span>
+     </th> 
+   
+   </tr>
+  </thead>
+  <tbody>
+  
+   <tr>
+  	<th i18n="@@create">Suspendu</th>
+  	<th *ngIf='store.suspend'>Oui</th>
+  	<th *ngIf='!store.suspend'>Non</th>
+  	
+  </tr>
+  <tr>
+  	<th i18n="@@create">Création</th>
+  	<th>{{store.created}}</th>
+  </tr>
+  <tr>
+   <th i18n='@@description'>Déscription</th>
+  <td> {{store.description}}</td>
+  </tr>
+  <tr>
+  	<th i18n='@@categories'>Catégories</th>
+  	<th class="list-group-item"  *ngFor='let c of store.selectedCat'> {{c}}  </th>
+  </tr>
+   <tr>
+  	<th  i18n='@@geo'>Couverture Géographique</th>
+  	<th class="list-group-item"  *ngFor='let c of store.geo'> {{c.name}}  </th>
+  </tr>
+  
+ <tr>
+  <th i18n='@@owner' scope="row">Propriétaire</th>
+      <td>
+      <div class="profile-picture">  <img class=" resize" alt=" Avatar" id="avatar2" [src]=avatars[store.userid] /></div> 
+      <b> {{owner.fullname}} </b> 
+      <a class="btn  btn-info    fa fa-envelope" 
+      			(click)= 'sendMessage(store.userid, owner.fullname, avatars[store.userid])' i18n="@@contacter">  Contacter </a>
+	  <a class="fa fa-user  btn   btn-link  "  (click)='profile(store.userid)' i18n="@@profil"> Profil</a>
+      </td>
+  </tr>
+    <tr *ngFor="let a of store.admins" >
+      <th i18n="@@admin" scope="row">Administrateur</th>
+       <td>
+       <div class="profile-picture"><img class=" resize" alt=" Avatar" id="avatar2" [src]=avatars[a.userid] /></div>
+         <b> {{a.fullname}} </b>
+     	 <a class="btn  btn-info    fa fa-envelope" 
+      			(click)= 'sendMessage(a.userid, a.fullname, avatars[a.userid])' i18n="@@contacter">  Contacter </a>
+        <a class="fa fa-user  btn  btn-link"  
+      	         (click)='profile(a.userid)' i18n="@@profil"> Profil</a>
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+  
+
+
+
+  <a i18n="@@back"  i18n-class class='btn btn-link fa fa-chevron-left' (click)= 'backToStore();'> Retour </a>
+  
+  
+  </div>
+</ng-template>
+</div> 
+</div>

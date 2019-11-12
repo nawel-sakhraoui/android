@@ -41,3 +41,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+
+App_Resources
+platforms
+node_modules
+

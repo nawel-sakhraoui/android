@@ -1,0 +1,321 @@
+
+ <div i18n-class class="text-left" *ngIf ="addresses.length != 0 ">
+
+ <div   *ngFor="let model of addresses"  >
+ <label class="labl"  >
+           
+       	        <input type="radio" name="radiogroup"  
+                [value]="model" (change)="onSelectionChange(model)" id ='radio' />
+                       	
+
+ <div class =" card   " [attr.id]="'accordion_'+model._id"  >
+<div  class =" btn card-heading" style='width:100% '>
+<span style ="float:left; "> <b>{{model._source.title}}  </b> </span>
+<span style='float:right; '><a   *ngIf='!editAddress[model._id]' scrollTo scrollableElementSelector="#model._id"    data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span class="fa fa-chevron-down  "></span>  </a>  
+
+<a  style='margin-left:10px ; '   scrollTo scrollableElementSelector="#model._id"   data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span  (click)='editingAddress(model)'  class="fa fa-pencil"> </span></a>
+
+
+ <a class="btn btn-link  fa fa-remove" *ngIf='!editAddress[model._id]'  style='display:inline-block; ' (click)='removeAddress(model)'></a>
+</span>
+					
+</div>
+<div  class = " card-body collapse " [attr.id]="'collapse_'+model._id" > 
+
+<div class='row' *ngIf='!editAddress[model._id]'  >
+ <table class="table table-responsive table-sm" id='table' >     
+    
+   <tbody>
+	 <tr>
+  		<td i18n='@@mmme'>à M.Mme.</td>
+  		<td>
+  		 
+     		 {{model._source.to}}
+
+     		   
+  		</td>
+  	</tr>
+  	<tr>
+  	    <td i18n='@@telephone'>Téléphone</td>
+  		<td>
+     		 {{model._source.phone}}
+     	
+     		     
+  		</td>
+  		
+  	 </tr>
+  	<tr> 
+  	    <td i18n='@@ville'>Ville </td>
+  		<td>
+
+     		 {{model._source.city }}
+   
+  		</td> 
+  		
+  	</tr>
+  	<tr> 
+  	    <td i18n="@@commune">Commune </td>
+  		<td>
+     		 {{model._source.commune }}
+     	
+  		</td> 
+  		
+  	</tr> 
+  	<tr> 
+  	   <td i18n='@@codepostal'>Codepostal  </td>
+  		<td>
+  		    
+           
+     		 {{model._source.zipcode}}
+     		 
+  		</td> 
+  	</tr>
+  	<tr> 
+  		<td i18n="@@addresse">Addresse </td>
+  		<td>
+  
+     		<p> {{model._source.address}}</p>
+     	
+  		</td> 
+    </tr>
+    <tr>
+    <td></td>
+    <td>
+<a  scrollTo scrollableElementSelector="#'collapse_'+model._id"    data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span class="fa fa-chevron-up  "></span></a>
+</td>
+   </tr>
+  </tbody>
+
+</table>
+</div>
+
+
+<div class='row' *ngIf='editAddress[model._id]'  >
+<form name="form" (ngSubmit)="f.form.valid  && updateAddress(model) " #f="ngForm" novalidate>
+
+ <table class="table  table-sm table-responsive "  >     
+ 	<tbody >
+    	
+  	 <tr>
+  		<td i18n="@@titre">Titre Addresse</td>
+  		<td>
+  		  
+            <input type="text" class="form-control" name="title" [(ngModel)]="model._source.title" #title="ngModel" required pattern="^([a-zA-Z]{2,}?)" >
+              <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
+              <div i18n="@@titrealert" *ngIf="f.submitted && title.hasError('required')" class="help-block">Le titre est obligatoire</div>
+             </div>
+     		    
+  		</td>
+  	</tr> 
+  	 <tr>
+  		<td i18n="@@mmme">à M.Mme.</td>
+  		<td>
+  		  
+            <input type="text" class="form-control" name="to" [(ngModel)]="model._source.to" #to="ngModel" required pattern="^([a-zA-Z]{2,}\s[a-zA-z]{1,}?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)">
+              <div  *ngIf="to.invalid && (to.dirty || to.touched)" class="alert alert-danger">
+              <div i18n='@@namealert' *ngIf="f.submitted && to.hasError('required')" class="help-block"> Taper le nom du destinataire </div>
+                           <div i18n="@@namealert2" *ngIf=" to.hasError('pattern')" class="help-block"> Nom prénom </div>
+             
+             </div>
+     		    
+  		</td>
+  	</tr>
+  	<tr>
+  	    <td i18n='@@telephone'>Téléphone</td>
+  		<td>
+  		    
+            <input type="text" class="form-control" name="phone" [(ngModel)]="model._source.phone" #phone="ngModel" required [textMask]="{mask: phonemask}"  >
+              <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
+              <div i18n='@@telephonealert2' *ngIf="f.submitted && phone.hasError('required')" class="help-block">ajouter un numero de téléphone</div>
+             </div>
+     		    
+  		</td>
+  		
+  	 </tr>
+  	<tr>
+  	   	
+		 
+  	    <td>Ville </td>
+  		<td>
+           
+            <ngx-select-dropdown (change)="chooseCity($event, model)" [multiple]="false" [(value)]="choosecity" [config]="cityconfig" [options]="cities" required ></ngx-select-dropdown>
+              <div *ngIf="choosecity.invalid && (choosecity.dirty || choosecity.touched)" class="alert alert-danger">
+              <div *ngIf="f.submitted && choosecity.hasError('required')" class="help-block"> required</div>
+             </div>
+     		  
+  		</td> 
+  		
+  	</tr>
+  	
+  		<tr> 
+  	    <td>Commune</td>
+  		<td>
+           
+            <ngx-select-dropdown  (change)="chooseCommune($event, model)" [multiple]="false" [(value)]="choosecom" [config]="comconfig" [options]="communes" required ></ngx-select-dropdown>
+              <div *ngIf="choosecom.invalid && (choosecom.dirty || choosecom.touched)" class="alert alert-danger">
+              <div *ngIf="f.submitted && choosecom.hasError('required')" class="help-block"> required</div>
+             </div>
+     		  
+  		</td> 
+  		
+  	</tr>
+  	<tr> 
+  	   <td>Codepostal  </td>
+  		<td>
+  		     
+            <input type="text" [readonly]="true" class="form-control" name="zipcode" [(ngModel)]="model._source.zipcode" #zipcode="ngModel" required >
+              <div *ngIf="zipcode.invalid && (zipcode.dirty || zipcode.touched)" class="alert alert-danger">
+              <div *ngIf="f.submitted && zipcode.hasError('required')" class="help-block"> required</div>
+             </div>
+     		     
+  		</td> 
+  	</tr>
+  	<tr> 
+  		   <td> Addresse </td>
+  		<td>
+  		    
+            <textarea rows="3" type="text" class="form-control" name="address" [(ngModel)]="model._source.address" #address="ngModel" required >
+             </textarea>
+              <div *ngIf="address.invalid && (address.dirty || address.touched)" class="alert alert-danger">
+              <div *ngIf="f.submitted && address.hasError('required')" class="help-block"> required</div>
+             </div>
+     		   
+  		</td> 
+    </tr>
+    <tr>
+    <th></th>
+    	 <th>      
+  	     		  	 <button class="btn btn-info "  style='display:inline-block ;margin-right:5px; '> save <span *ngIf='loading' class='fa fa-spinner'></span>  </button>
+					<a  scrollTo scrollableElementSelector="#'collapse_'+model._id"    data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span class="fa fa-chevron-up  "  (click)='undo(model)'> cancel</span></a>
+					
+			
+
+					
+         </th>
+     </tr>
+     
+
+</tbody>
+</table>
+        </form>
+ 
+</div> 
+
+</div>
+</div>
+
+	</label> 
+</div>
+  </div>
+
+   <div i18n-class class =" card text-left "   >
+<div  class =" btn card-heading" style='width:100%; '>
+ <a i18n='@@nouvelleaddresse' (click)='show=!show ; ' scrollTo scrollableElementSelector="#collapse"   class="btn btn-link  fa fa-plus"  href="#collapse"  aria-controls="collapse"	>
+  	Nouvelle addresse   </a>
+</div>
+  	       
+ <div  class =" card-body collapse " id="collapse" [ngClass]="{'collapse.show':show,'collapse': !show}" >
+<form name="form" (ngSubmit)="f.form.valid  && addAddress(model._source) " #f="ngForm" novalidate>
+ 
+ <table class="table table-responsive table-sm" id='table' >     
+    
+  	<tbody >
+  	 <tr>
+  		<td i18n='@@titre'> Titre Addresse</td>
+  		<td>
+  		  
+            <input type="text" class="form-control" name="title" [(ngModel)]="model._source.title" #title="ngModel" maxlength="100" >
+              <div  *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
+              <div i18n='@@titrealert' *ngIf="f.submitted && title.hasError('required')" class="help-block">Ajoutez un titre a l'addresse</div>
+             </div>
+     		    
+  		</td>
+  	</tr> 
+  	 <tr>
+  		<td i18n='@@mmme'> à M.Mme. </td>
+  		<td>
+  		  
+            <input type="text" class="form-control" name="to" [(ngModel)]="model._source.to" #to="ngModel" required pattern="^([a-zA-Z]{2,}\s[a-zA-z]{1,}?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)">
+              <div *ngIf="to.invalid && (to.dirty || to.touched)" class="alert alert-danger">
+              <div i18n="@@namealert" *ngIf="f.submitted && to.hasError('required')" class="help-block">Ajoutez un Nom</div>
+              <div i18n='@@namealert2'*ngIf=" to.hasError('pattern')" class="help-block">Nom Prénom</div>
+             
+             </div>
+     		    
+  		</td>
+  	</tr>
+  	<tr>
+  	    <td i18n='@@telephone'>Téléphone </td>
+  		<td>
+  		    
+            <input dir='ltr'type="text" class="form-control" name="phone" [(ngModel)]="model._source.phone" #phone="ngModel" required [textMask]="{mask: phonemask}"  >
+              <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
+              <div i18n='@@telephonealert' *ngIf="f.submitted && phone.hasError('required')" class="help-block">Ajouter un téléphone</div>
+             </div>
+     		    
+  		</td>
+  		
+  	 </tr>
+  	<tr>
+  	   	
+		 
+  	    <td i18n='@@ville'> Ville </td>
+  		<td>
+           
+            <ngx-select-dropdown (change)="chooseCity($event, model)" [multiple]="false" [(value)]="choosecity" [config]="cityconfig" [options]="cities" required ></ngx-select-dropdown>
+              <div i18n='@@villealert' *ngIf="f.submitted && choosecity.length==0" class="help-block alert alert-warning">Ajoutez une ville</div>
+              
+     		  
+  		</td> 
+  		
+  	</tr>
+  	
+  		<tr> 
+  	    <td i18n="@@commune"> Commune</td>
+  		<td>
+           
+            <ngx-select-dropdown  (change)="chooseCommune($event, model)" [multiple]="false" [(value)]="choosecom" [config]="comconfig" [options]="communes" required ></ngx-select-dropdown>
+              <div i18n="@@communealert" *ngIf="f.submitted && choosecom.length==0" class="help-block alert alert-warning">Choisissez une commune</div>
+             
+     		  
+  		</td> 
+  		
+  	</tr>
+  	<tr> 
+  	   <td i18n='@@codepostal'>Codepostal  </td>
+  		<td>
+  		     
+            <input type="text" [readonly]="true" class="form-control" name="zipcode" [(ngModel)]="model._source.zipcode" #zipcode="ngModel" required >
+              <div  *ngIf="zipcode.invalid && (zipcode.dirty || zipcode.touched)" class="alert alert-danger">
+              <div i18n='@@codepostalalert' *ngIf="f.submitted && zipcode.hasError('required')" class="help-block">Code postal obligatoire</div>
+             </div>
+     		     
+  		</td> 
+  	</tr>
+  	<tr> 
+  		   <td i18n='@@addresse'> Addresse </td>
+  		<td>
+  		    
+            <textarea rows ='2' maxlength="150" type="text" class="form-control" name="address" [(ngModel)]="model._source.address" #address="ngModel" required >
+             </textarea>
+              <div *ngIf="address.invalid && (address.dirty || address.touched)" class="alert alert-danger">
+              <div i18n="@@addressealert" *ngIf="f.submitted && address.hasError('required')" class="help-block">Ajoutez une addresse</div>
+             </div>
+     		   
+  		</td> 
+    </tr>
+    <tr>
+    <th></th>
+    	 <th>      
+  	     		  	 <button class="btn btn-info "  style='display:inline-block ;margin-right:5px; ' i18n='@@save'>Enregistrer<span *ngIf='loading' class='fa fa-spinner'></span>  </button>
+		
+           <a class="btn fa fa-remove"  style='display:inline-block;'(click)="cancel();"  i18n='@@annuler'>Annuler</a>     	 
+         </th>
+     </tr>
+</tbody>
+ 
+  
+</table>
+</form>
+</div> 
+</div>

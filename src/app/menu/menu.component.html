@@ -1,0 +1,145 @@
+ 
+
+ <nav    class="navbar navbar-expand-md  navbar-light  "  role="navigation" id="navbar"  > 
+  <!-- Brand -->
+   <!-- Toggler/collapsibe Button -->
+   
+   <span class='navbar-brand' style='padding:O; margin:0; '>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"  aria-expanded="false" aria-label="Toggle navigation">
+        <span class="fa fa-bars"></span>
+  </button>
+  
+  <a  style ="display:inline-block; font-size:large;" i18n='@@brand' class='text-light   '   routerLink="/home" routerLinkActive="active" > <i>SiMSiM</i></a>
+  <span class="dropdown" style="vertical-align:super; display:inline-block;  font-size:small;" >
+  
+      <a style='font-size:small;padding:2px; margin:0px; 'class=" text-dark  btn-link  btn dropdown-toggle " href="#" id="navbardrop" data-toggle="dropdown"  aria-expanded="false" aria-labelledby="navbarDropdown">  {{langue}}
+      </a>
+        <ul style='width:5px; 'i18n-class class=" dropdown-menu-left dropdown-menu  scroll " aria-labelledby="navbarDropdown">
+        <li style='width:5px; '  data-toggle="collapse" data-target=".navbar-collapse.show" >
+         <a class=" dropdown-item " (click)=" changeLang(langue2)"  >
+            {{langue2}}
+            </a>
+        </li>
+      </ul>
+  </span>
+  
+  </span>
+<span  style='display:inline-block; padding:O; margin:0; 'class="dropdown nav-item" >
+      <a   i18n='@@city123' class="btn btn-link text-dark  dropdown-toggle " href="#" id="navbardrop" data-toggle="dropdown"  aria-expanded="false" aria-labelledby="navbarDropdown">
+       {{city}} 
+      </a>
+      <ul  i18n-class class=" dropdown-menu dropdown-menu-right scroll"  aria-labelledby="navbarDropdown">
+        <li  data-toggle="collapse" data-target=".navbar-collapse.show" *ngFor='let c of cities'>
+         <a i18n='@@cities123' class="btn btn-outline-warning  dropdown-item " (click)="selectCity(c.name,  c.nameAr)"  >
+            {{c.name}}
+            </a>
+        </li>
+      </ul> 
+
+</span>
+
+
+
+
+
+ 
+  <!-- Navbar links -->
+    <div  class=" collapse  navbar-collapse  " id="collapsibleNavbar" >
+    <app-search></app-search> 
+      
+      
+        <ul i18n-dir dir="ltr" i18n-class class="navbar-nav ml-auto text-left ">
+   
+ 
+     <li class="nav-item dropdown">
+      <a  class="nav-link dropdown-toggle  " href="#" id="navbardrop" data-toggle="dropdown"  aria-expanded="false" aria-labelledby="navbarDropdown">
+        {{name}}
+      </a>
+      <div i18n-class class=" dropdown-menu dropdown-menu-right scroll text-left" aria-labelledby="navbarDropdown">
+        <li   data-toggle="collapse" data-target=".navbar-collapse.show" ><a class="fa fa-user bigger-120 dropdown-item  "  routerLink="/home/{{myhome}}/profile/{{myhome}}" routerLinkActive="active"  i18n='@@profil' >
+        Profil</a>
+        </li>
+        <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    class="fa fa-envelope  dropdown-item" routerLinkActive="active"   routerLink="/home/{{myhome}}/messages" routerLinkActive="active"  i18n='@@msg' >Messsages
+        	<span class="badge">{{messagesnotif}}</span>
+        </a>
+        </li>
+      <div class="dropdown-divider"></div>
+        <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    class="fa fa-sign-out  dropdown-item  btn  " (click)= logout()  i18n='@@deco' >Déconnecter</a>
+      </li>
+   	                  <div class="dropdown-divider"></div>
+   	
+      <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    class="fa fa-sign-out  dropdown-item  btn btn-outline-danger  " (click)= logoutAll()  i18n='@@decoall' >Déconnecter tous les appareils</a>
+      </li>
+
+      </div>
+    </li>  
+    
+     
+    
+      <li class="nav-item dropdown ">
+     	 <a class=" bg-light text-info nav-link dropdown-toggle " href="#" id="navbardrop" data-toggle="dropdown" aria-expanded="false"  >
+     	   <span class=" fa fa-bell badge" >{{notifications.notificationcount}}</span>
+     	 </a>
+     	 <div  i18n-class class="dropdown-menu-right dropdown-menu scroll text-left" aria-labelledby="navbarDropdown">
+     	     <li  data-toggle="collapse" data-target=".navbar-collapse.show" *ngFor="let n of notifications.notification ; let i = index  " [attr.data-index]="i" >
+         
+       		 <a    *ngIf="n.value=='message'"  routerLink="/home/{{myhome}}/purchase/{{n.commandid}}" fragment="message"  i18n='@@menu0message'   class="fa fa-envelope dropdown-item"  >{{n.storetitle}}: Message  <i class='fa fa-clock-o'>{{n.time}}</i>
+       		 </a>
+       		 <a   *ngIf="n.value=='send' " routerLink="/home/{{myhome}}/purchase/{{n.commandid}}"  i18n='@@send'   class="dropdown-item    	fa fa-truck  "  >{{n.storetitle}}: Commande envoyée   <i class='fa fa-clock-o'>{{n.time}}</i>
+       		
+        	 </a>
+        	 <a     *ngIf="n.value=='prepare' " routerLink="/home/{{myhome}}/purchase/{{n.commandid}}"   i18n='@@prepare'  class="dropdown-item  fa fa-check-square-o"  >{{n.storetitle}}: Commande preparée <i class='fa fa-clock-o'>{{n.time}}</i>
+       		
+        	 </a>
+        	  <a   *ngIf="n.value=='rating'"  routerLink="/home/{{myhome}}/purchase/{{n.commandid}}"  i18n='@@rating' fragment="rating"      class="fa fa-star dropdown-item"  >{{n.storetitle}}: Evaluer vos achats  <i class='fa fa-clock-o'>{{n.time}}</i> 
+       		 </a>
+    		</li>
+      	</div>
+  	   </li>
+  	 
+      
+      
+       <li   class="nav-item dropdown">
+     	 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+     	  <span class="fa fa-exchange"></span>
+     	 </a>
+     	 <div i18n-class class="dropdown-menu-right dropdown-menu scroll text-left" aria-labelledby="navbarDropdown">
+      		<li data-toggle="collapse" data-target=".navbar-collapse.show" ><a   routerLink="/home/{{myhome}}/ongoing" routerLinkActive="active"  class="dropdown-item" i18n='@@ongoing' ><i class='fa fa- fa-circle-o-notch'></i> Commandes en cours</a>
+      		 </li>
+      		 <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    routerLink="/home/{{myhome}}/done" routerLinkActive="active" class="dropdown-item"  i18n='@@historic' ><i class="fa fa-history"></i> Historique des commandes</a>      
+     	 	</li>
+     	 </div>
+  	   </li>
+      
+      
+    <li class="nav-item dropdown">
+      <a  class=" nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+        <span class="fa fa-archive"></span>
+      </a>
+      
+      <div i18n-class class="dropdown-menu-right dropdown-menu scroll text-left" aria-labelledby="navbarDropdown">
+
+	 <li  data-toggle="collapse" data-target=".navbar-collapse.show" >
+      <a [hidden]='checkStores'  *ngFor = 'let store of  stores'   class=" dropdown-item"  routerLink="/stores/{{store}}"  routerLinkActive="active" >{{store}}
+       		<span class=""></span>
+       </a>
+       </li>
+        <div class="dropdown-divider"></div> 
+       <li  data-toggle="collapse" data-target=".navbar-collapse.show"  >
+       <a   class=" dropdown-item"  routerLinkActive="active" activated  routerLink='/home/{{myhome}}/createstore' i18n='@@create' >Créer un magasin</a> 
+  		</li>
+       </div>
+    </li>
+    
+    <li data-toggle="collapse" data-target=".navbar-collapse.show"  class="nav-item">
+        <a   routerLink="/home/{{myhome}}/cart" routerLinkActive="active"  class="nav-link" > <span class="fa fa-shopping-cart"></span></a>
+      </li>
+      
+    
+     
+   </ul>
+  </div>
+
+
+
+</nav>

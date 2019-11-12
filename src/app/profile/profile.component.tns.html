@@ -1,0 +1,147 @@
+<ScrollView orientation="vertical">
+    <StackLayout>
+        
+      
+        <GridLayout rows="auto,auto, auto, auto, auto, auto,auto,auto" columns="*">
+           
+            <Image backgroundColor='rgba(0,0,0, 0.3)' (touch) = 'displayavatar = true'  row="0" col="0" [src]="avatar" stretch="aspectFill"
+                class="profilePic"></Image>
+   
+           	<ng-template ngxPermissionsOnly="ADMINProfile">
+          
+                <GridLayout     [visibility]="displayavatar ?'visible':'collapse'"  class="profilePic"   row="0" columns="*,auto" rows='*,auto'>
+    <StackLayout   margin="0,35,0,0"  row="0" col="1" orientation="horizontal">
+   <Label *ngIf="isValid"     class="fas up"  text="&#xf03e;" (tap)='onSelectTap() '></Label>
+   </StackLayout>
+   <StackLayout   margin="0,35,0,0"  row="0" col="1" orientation="horizontal">
+   <Label *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="avatarsave()" ></Label>
+   <Label *ngIf="!isValid" class="fas up " text="&#xf00d;" (tap)="avatarremove()"></Label>
+   </StackLayout>   
+                </GridLayout>
+				<textView editable ="false" row="1" text="Le format de l'image est invalide" *ngIf='alertimg' class="alert"></textView>
+          </ng-template>
+                
+                <GridLayout horizontalAlignment="center"  row="2" columns="auto,auto">
+            <Label margin="7,0,0,0"  col="0" text="{{model.fullname}}" class="title-profile"
+                textAlignment="center"></Label>
+           <ng-template ngxPermissionsOnly="ADMINProfile">
+                
+             <Button col="1" backgroundColor='transparent' (tap)="logout()" class="fass btn btn-active " text="&#xf2f5;" color="#00BFFF" fontSize='16' width="40" textAlign="center" ></Button>
+         </ng-template>
+                </GridLayout>
+                   <StackLayout  row="3"   >
+      	        <AbsoluteLayout  height="35" width="90"  android:cursorVisible="false" >   
+                 <StarRating left="-75" top="-10"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".4" android:scaleY=".4"  [value]="model.ratingsum/model.ratingcount" ></StarRating>
+                </AbsoluteLayout>
+                 <Label fontSize="10" color='#333333'   text="({{model.ratingcount}} votes)" textAlignment="center" ></Label>
+           </StackLayout>
+                
+             <Button row="4" width="50%" text="&#xf0e0; Message" color="white" backgroundColor= '#00BFFF'
+                textAlignment="center" class="fass btn  btn-active " (tap)='sendMessage();'></Button>
+
+            <GridLayout row="5" col="0" rows="auto, *, auto" columns="auto, auto,auto"
+                class="additional-info">
+                <Label margin="13,0,0,0" row="0" col="0" text="&#xf3cd;" class="fass font icon-aditional-info"></Label>
+  				 <MaskedTextField editable="false"  row="0" col="1"  
+                       
+                       [(ngModel)]="model.phone"
+                       mask="00 00 00 00 00" class="noborder"></MaskedTextField>
+
+                <Label row="1" col="0" text="&#xf3c5;" class="fass font icon-aditional-info"></Label>
+                <Label *ngIf='!editLocation'  row="1" col="1" text="{{model.location}}" class=" description-aditional-info"></Label>   
+            <ng-template ngxPermissionsOnly="ADMINProfile">
+            	
+            	<StackLayout  row="1" col="2" orientation="horizontal" >
+            	      <Label margin='5,0,0,0' text='&#xf044;' class='fas' *ngIf="!editLocation" (tap)='editingLocation()'></Label>
+            	      <Label margin='5,2,0,0' text='&#xf0c7;' class="fas" *ngIf="editLocation" (tap)='saveLocation()'></Label>
+            	      <Label margin='5,0,0,0' text='&#xf00d;' class="fas" *ngIf="editLocation" (tap)='removeLocation()'></Label>
+            	 </StackLayout>
+            	 
+            	<stackLayout [visibility]="editLocation ?'visible':'collapse'" row="1" col="1">
+             
+              	
+            	
+            	<GridLayout columns='auto,auto' row="1">
+      			  <!-- Label margin="5,0,0,0" text='&#xf13a;' col="0" class="fas"></Label-->
+       			<DropDown  margin="0,0,0,5"   #dd   col="1"  
+         		textAlignment="left"
+                  [items]="cities "
+                  class="item-drop-down"
+                  [(ngModel)]="selectedIndex"
+                  (selectedIndexChanged)="onchange($event)"
+					colSpan="2"
+					itemsPadding="8"
+					
+      			   >
+       			 </DropDown> 
+				</GridLayout>
+            	
+            	<!-- GridLayout rows="auto, auto, *, auto" class="page">
+    <GridLayout row="0" columns="*, *, *, *" >
+        <Button text="Enable Location" col="0" textWrap="true" (tap)="enableLocationTap()"></Button>
+        <Button text="Get Current Location" col="1" textWrap="true" (tap)="buttonGetLocationTap()"></Button>
+        <Button text="Start Monitoring" col="2" textWrap="true" (tap)="buttonStartTap()"></Button>
+        <Button text="Stop Monitoring" col="3" textWrap="true" (tap)="buttonStopTap()"></Button>
+    </GridLayout>
+    <ListView row="2" [items]="loca">
+        <ng-template let-item="item">
+            <Label text="{{ item.latitude + ', ' + item.longitude + ', ' + item.altitude }}" ></Label>
+        </ng-template>
+    </ListView>
+    <Button text="Clear" row="3" (tap)="getCity()"></Button>
+</GridLayout-->
+            	</stackLayout>
+       </ng-template>
+            </GridLayout>
+
+			<GridLayout rows="*,*" row="6" col="0"  class="additional-info">
+					<Label row="0" text="Magasins: "class=" description-aditional-info" ></Label>
+                
+       				   
+					<RadListView  row="1" [items]="stores" style="height:auto">
+   					 <ng-template let-s="item">
+          
+    			        <textField fontSize="14" editable="false" margin="-10,0,0,20" class="btn btn-active" color='#333333' [text]="s._id"  nsRouterLink='../../../../stores/{{s._id}}/store' ></textField>
+   					 </ng-template>
+					</RadListView>
+                  
+            </GridLayout>
+            <!-- 
+            <GridLayout row="3" col="0" rows="auto,auto" columns="*,*,*"
+                class="content-followers">
+                <Label row="0" col="0" text="6" class="followersTxtValue"></Label>
+                <Label row="1" col="0" text="Posts" class="followersTxt"></Label>
+
+                <Label row="0" col="1" text="2300" class="followersTxtValue"></Label>
+                <Label row="1" col="1" text="Followers" class="followersTxt"></Label>
+
+                <Label row="0" col="2" text="400" class="followersTxtValue"></Label>
+                <Label row="1" col="2" text="Following" class="followersTxt"></Label>
+            </GridLayout>
+
+            <WrapLayout row="4" col="0" alignItems="left" class="content-photos">
+                <Image src="~/images/New-York.jpg" stretch="aspectFill" class="listImage"
+                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
+                <Image src="~/images/ny2.jpg" stretch="aspectFill" class="listImage"
+                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
+                <Image src="~/images/food.jpg" stretch="aspectFill" class="listImage"
+                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
+                <Image src="~/images/wedding.jpg" stretch="aspectFill" class="listImage"
+                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
+                <Image src="~/images/Selfie.jpg" stretch="aspectFill" class="listImage"
+                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
+                <Image src="~/images/nature.jpg" stretch="aspectFill" class="listImage"
+                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
+            </WrapLayout> -->
+           <ng-template ngxPermissionsOnly="ADMINProfile">
+            
+           <GridLayout row="7"  rows="*,*"  class="additional-info">
+			<Label  row="0" text="Mes Addresses: "class=" description-aditional-info" ></Label>
+			<StackLayout row="1" >
+            <app-adress ></app-adress>
+            </StackLayout>
+           </GridLayout>
+           </ng-template>
+        </GridLayout>
+       </StackLayout>
+</ScrollView>

@@ -1,0 +1,41 @@
+/* Add mobile styles for the component here.  */
+.pic {
+	width: 80;
+    height: 80;
+	margin-left:0;
+
+	
+}
+.add{
+	border-bottom-width: 1;
+    border-bottom-color:  #FFFFFF;
+	
+}
+.color{
+	
+	width:25;
+   height: 20;
+   border-width: 1 ;
+   border-color:#000;
+	
+}
+
+.size {
+  text-align: center;
+   width:25;
+   height: 25;
+   border-width: 1 ;
+   border-color:#000;
+   background-color:#D3D3D3;
+}
+/*.btn{
+	padding:8 ; 
+	color :#fff ; 
+	background-color : #00BFFF;
+	border-radius :3 ; 
+	}*/
+.btn2{
+
+	color :#000 ; 
+	
+}

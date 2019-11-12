@@ -1,0 +1,377 @@
+<ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+<div *ngIf='historic'  i18n-class class="scroll2 text-left ">
+<div *ngIf=' !open'>
+<div i18n='@@closestore' class="alert alert-warning strong ">Ce magasin est fermé </div>
+</div>
+
+   <nav   class="navbar navbar-default  navnav sticky-top"  >
+
+   
+    <div class="form-inline">
+     
+      <div class='navbar-brand'>
+	   <i  placement="bottom" tooltip="Menu" class =" btn btn-link fa fa-bars" (click)= '_toggleSidebar();  menuhide =!menuhide ; '  > </i>
+	    
+		<a   class="navbar-brand " routerLinkActive="active"  [routerLink]="['../']" >
+           {{storetitle}}  </a>
+
+	</div>  
+     <star-rating size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: x-small ;" i18n='@@votess2'>( {{store.ratingcount}} votes)</span>
+		   </div> 
+     <ng-template ngxPermissionsOnly="ADMINStore">
+	 		<span  placement="bottom"  tooltip="Notifications du magasin" i18n-class class ="nav-item ml-auto ">	 <app-stores-menu [storetitle]="storetitle"></app-stores-menu> </span>
+	</ng-template> 
+
+  
+
+     </nav>
+
+	
+<ng-sidebar-container showBackdrop="true" sidebarClass ="container" style="    background-color: #F5F5F7 ;   height: 92vh; z-index:2 ; ">
+ 
+       <!-- A sidebar -->
+<ng-sidebar  i18n-position="@@sidebarpos"  position='left'  #sidebar [class]="ng-sidebar" [opened]="!opened"  [mode]="'slide'" autoCollapseWidth="100" keyClose='true' closeOnClickOutside ='true'  (onCloseStart)= 'onclose(event)' (onOpenStart)='onopen(event)'>
+ 
+    <form class="form-inline">
+
+    
+     	<div class="input-group" style='margin-top:15px ; '> 
+  	
+      <input   class="form-control  " aria-describedby="sizing-addon2" type="search" i18n-placeholder placeholder="Rechercher commande id" aria-label="Search " name='query' [(ngModel)]="query" (keyup)='enterQuery2($event)'>
+      <span class="input-group-btn">
+      <button  class="btn btn-outline-info  search-button " type="submit"   (click)='getQuery2(event)' > <i class="fa fa-search"></i></button>
+      </span>
+    
+    </div>
+      </form>
+ 
+      	<ng-template ngxPermissionsOnly="ADMINStore">	 
+      	 <a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../newarticle']"><i class='fa fa-plus'></i><i i18n='@@nouveauarticle'> Nouveau Article</i> </a>
+   	   </ng-template>
+   	   
+   		 <a routerLinkActive="active"  class="nav-link  btn-outline-info " [routerLink]="['../details']" i18n='@@details'>Détails</a>
+ 		<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../soldout']" i18n='@@articlesepuises'>Articles épuisés</a>
+ 		
+ 		<ng-template ngxPermissionsOnly="ADMINStore">	
+    		<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../update']" i18n='@@parametres'>Paramètres</a>
+  		 	<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../sales']" i18n='@@ventesencours'>Ventes en cours</a>
+  		 	<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../historic']" i18n='@@historiquedesventes'>Historique des ventes</a>
+  		<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../monthincome']"> <i i18n="@@revenusmensuels">Recettes mensuels</i></a>
+  			
+  		 </ng-template>
+  		  	
+  
+   	
+ </ng-sidebar>
+ 
+      <!-- Page content -->
+<div ng-sidebar-content class ="container"  id ="top">
+
+
+<!--
+
+<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false}"   ></div>
+-->
+<div i18n='@@nohistoric' class ="alet alert-warning container "*ngIf="!ongoing" >Aucune transaction dans l'historique
+</div> 
+
+
+<div id ="top " *ngIf='ongoing' >
+
+<ul class="list-group">
+<li class="list-group-item" >  {{totalcommand}} <i  i18n="@@commandesterminees" >commandes completées</i></li> 
+
+ <li  style="border-bottom:14px  #F5F5F7  solid ; " class="list-group-item" *ngFor="let m of model |paginate: { id: 'server', itemsPerPage: 5, currentPage: page, totalItems: totalcommand } ; let i = index  " [attr.data-index]="i" >
+  <div class='col-sm-12 col-md-12 col-12' > 
+  <span  style='margin-left:5px'  ><i i18n="@@commandefermee"> Fermé le:</i>  <span dir="ltr"><b>{{m._source.steps.close}}</b></span></span> </div>
+ <div class='row' id="{{m._id}}">
+<div class=" col-md-12 col-sm-12 col-12">
+ <span i18n-style style='display:inline-block; float:left'  > <i i18n="@@commandeid">Commande id: </i> <b >{{ m._id }}</b></span>
+ <span i18n-style style="float:right; display:inline-block;" > <i i18n="@@montanttotal">Montant total: </i><b >{{ m._source.totalprice}} <i i18n="@@da2">DA</i></b></span>
+ </div>
+ </div>
+ <div class="row">
+ <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+ 
+ <ul *ngIf ="ongoing " class="list-group col-md-6 col-sm-12 col-12">
+  <li class="list-group-item" *ngFor = "let a of m._source.articles " >
+  	  	<div class='row'>
+  	  	<div class="col-md-5 col-sm-5 col-5"> <a class="btn" (click)="gotoArticle(a.articleid)"> <img [src]="a.pic" class="resize"  alt="Image"></a></div>
+  	 	<div class='col-md-4 col-sm-4 col-4'>	
+  	 		<a class="btn" (click)="gotoArticle(a.articleid)"><b>{{a.title}}</b></a> <br>
+  <span *ngIf='a.color'>
+ 	   <i i18n="@@couleur"> Couleur </i>
+       <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
+  		</span>
+  		<br>
+  		<span *ngIf="a.size">
+  	    <i i18n="@@taille" > Taille </i>
+  	  	<span class='text-info' style ='width:25px; height:25px;  background-color:#D0D0D0;  display:inline-block; text-align: center;  ' > {{a.size}}	</span>
+       </span>        
+       		     
+   			 
+   			 <br>
+      		 <span><i i18n='@@quantite'>Quantité</i>   {{a.quantity}} </span>
+   			
+   		</div>
+   		</div> 
+   		<div class="row" i18n-style style='float:right;  margin-right :5px'> <span >{{a.price}}<i i18n="@@da2"> DA</i> </span></div>
+ 		  
+ </li>
+ <li class='list-group-item'>
+ <span ><i i18n="@@livraison2">Livraison:</i><span class='text-info'> {{m._source.delivery.title }}</span></span>  
+ <span i18n-style style='float:right;'> {{m._source.delivery.price }} <i i18n="@@da2">DA</i></span>
+ </li>
+ 
+  <li class='list-group-item'>
+  <span i18n="@@addresse">Addresse: </span>
+       	<table class="table table-sm table-responsive  add" i18n-style style='float:right;' >     
+    <thead>
+  </thead>
+   <tbody>
+	 <tr >
+  		<td scope="col" i18n="@@mmme" >à M. Mme. </td>
+  		<td>
+  		     
+    
+     		 {{m._source.choosenAddress.to}}
+     		
+     		   
+  		</td>
+  	</tr>
+  	<tr scope="col" >
+  	    <td i18n="@@telephone">Téléphone </td>
+  		<td>
+
+     		 {{m._source.choosenAddress.phone}}
+     	
+     		     
+  		</td>
+  		
+  	 </tr>
+  	<tr > 
+  	    <td scope="col" i18n="@@ville">Ville </td>
+  		<td>
+     		 {{m._source.choosenAddress.city }}
+     		 
+     		   
+  		</td> 
+  		
+  	</tr>
+  	<tr> 
+  	    <td  scope="col" i18n="@@commune">Commune </td>
+  		<td>
+  		   
+
+     		 {{m._source.choosenAddress.commune }}
+     		
+     		   
+  		</td> 
+  		
+  	</tr> 
+  	<tr> 
+  	   <td  scope="col" i18n='@@codepostal'>codepostal  </td>
+  		<td>
+  		    
+           
+         
+     		 {{m._source.choosenAddress.zipcode}}
+     	
+  		</td> 
+  	</tr>
+  	<tr  > 
+  		<td scope="col" i18n="@@addresse">Addresse </td>
+  		<td>
+  		    
+            
+     		 {{m._source.choosenAddress.address}}
+     		
+  		</td> 
+    </tr>
+   
+  </tbody>
+
+</table>
+</li> 
+ </ul>
+ 
+  <ul class="list-group col-md-6 col-sm-12 col-12">
+   <li class='list-group-item ' > 
+   <div class ="col-sm-6 col-4 ">
+	<i i18n='@@de'>De: </i><a class=" btn btn-link text-info" (click)="gotoUser(m._source.userid)">  {{fullnamelist[m._source.userid]}}  <img [src]="avatarlist[m._source.userid]" class="resize"></a>
+  </div>
+  <div  class ="col-md-6 col-sm-6 col-4 "  *ngIf="m._source.userrating!=0" class='form-group'>
+ 	             <star-rating id= "m._source.userid" [starType]="'svg'"  [rating]="m._source.userrating"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating><br>
+ 	     
+ 	</div>
+ 	<div style="display:inline-block; " class ="col-md-6 col-sm-6 col-4 "  *ngIf="m._source.userrating==0 && m._source.steps.stop==0" class='form-group'>
+ 	
+ 	    <span><i i18n='@@evaluation'>Evaluation</i>
+        <star-rating id= "m._source.userid" [starType]="'svg'"   [showHalfStars]="true"  (starClickChange)="onClick($event,i, m._id)" ></star-rating>
+        </span>
+         <div i18n='@@evalalert' *ngIf="alert[m._id]" class="alert alert-danger" role="alert">S'il vous plait évaluer ce client </div> 
+         <textarea rows="5" class="message" name="message" [(ngModel)]="m._source.userfeedback" #message="ngModel"  required  ></textarea>
+ 	   	 <div i18n='@@evalalert2' *ngIf="alert2[m._id]" class="alert alert-danger" role="alert">Ajouter un commentaire </div> 
+ 	   	
+ 	     <button i18n-style style="float:right; " class="btn btn-warning " (click)=" sendRating(m) " ><i i18n="@@envoyer">Envoyer</i></button>
+     
+     </div>
+  
+  </li>
+  <li class ='list-group-item' >
+	  <i i18n="@@salefaitele" >Faite le:</i>  <span dir="ltr"> {{m._source.startdate}}</span> 
+	 
+  </li>
+ <li class='list-group-item'>
+  <form-wizard>
+ 	   <wizard-step [title]="'1.5'" [isActive]='true'  [hidden]="m._source.steps.stop==0"  [isValid]="m._source.steps.stop!=0" [showNext]="false"[showPrev]='false' >
+ 	    <ul class="ongoingul" >
+ 	  	 <li class="ongoingli" *ngIf='m._source.steps.stop!=0' ><i i18n="@@saleannulee" >Commande annulée le:</i>  <span dir="ltr">{{m._source.steps.stop}}</span></li>
+ 	  
+    	</ul>
+     </wizard-step>
+	  <wizard-step [title]="'1'"  [hidden]="m._source.steps.stop!=0"   [isValid]="m._source.steps.prepare!=0" [showNext]='false' [showPrev]='false' >
+ 	    <ul class="ongoingul">
+ 	    						
+   		<li class="ongoingli"  *ngIf="m._source.steps.prepare==0 "><i i18n="@@saleprete">Commande prête: </i><button [disabled]="m._source.steps.prepareloading" class='btn btn-warning fa fa-check'  (click)= 'prepareDone(m._id, i, m._source.userid); '>
+   																							  <i *ngIf="m._source.steps.prepareloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>						
+   																					</button>
+   		</li>
+     	<li class="ongoingli" *ngIf='m._source.steps.prepare!=0 '><i i18n="@@salepreparee">Commande préparée le:</i> <span dir="ltr">{{m._source.steps.prepare}}</span>  </li>
+     	</ul>
+     </wizard-step>
+ 	 
+ 	 <wizard-step  [title]="'2'"  [hidden]="m._source.steps.stop!=0" [isActive]="m._source.steps.prepare!=0" [isValid]="m._source.steps.send!=0" [showNext]='false' [showPrev]='false'>
+	  <ul class="ongoingul">
+	   	<li class="ongoingli" *ngIf='m._source.steps.send==0'><i i18n='@@saleenvoie'>Envoie de la commande:</i> <button [disabled]="m._source.steps.sendloading" class='btn btn-warning fa fa-check' (click)= 'sendDone(m._id, i, m._source.userid); '>   
+	   																     							<i *ngIf="m._source.steps.sendloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>						
+	   																			 </button> 
+	   	</li>
+    	<li class="ongoingli" *ngIf='m._source.steps.send!=0'><i i18n="@@saleenvoyee">Commande envoyée:</i> <span dir="ltr">{{m._source.steps.send}}</span></li>
+    	</ul>
+	   
+ 	 </wizard-step>
+	 <wizard-step [title]="'3'"  [hidden]="m._source.steps.stop!=0"  [isActive]="m._source.steps.send!=0" [isValid]="m._source.steps.receive!=0" [showNext]='false' [showPrev]='false'>
+	   <ul class="ongoingul">
+	   	<li class="ongoingli" *ngIf='m._source.steps.receive==0' i18n="@@saleattentereception">Attente de la récéption</li>
+    	<li class="ongoingli" *ngIf='m._source.steps.receive!=0'><i i18n="@@salecommanderecu">Commande reçu le </i> <span dir="ltr">{{m._source.steps.receive}}</span></li>
+    	</ul>
+	 </wizard-step>
+	 
+	   <wizard-step [title]="'4.5'" [hidden]="m._source.steps.litige==0 || m._source.steps.stop!=0" [isActive]='m._source.steps.litige!=0' [isValid]= 'm._source.steps.litigesolved!=0'  [showNext]='false' [showPrev]='false' >
+        <ul class="ongoingul">
+        <li class="ongoingli"  *ngIf="m._source.steps.litige!=0"><i i18n="@@salelitige">
+              Début du litige:</i> {{m._source.steps.litige}} 
+        </li>
+        
+        <li class="ongoingli"  *ngIf="m._source.steps.solvedlitige==0">
+        	
+           <p class="lead" i18n="@@salecontacterclient">Contacter le client pour trouver une solution ! </p>
+        </li>
+        
+       
+         <li class="ongoingli"  *ngIf="m._source.steps.solvedlitige !=0" ><i i18n="@@salelitigeresolu"> 
+          Litige résolu le:</i> <span dir="ltr">{{m._source.steps.solvedlitige}} </span>
+         </li>
+         <br>
+        
+        </ul>
+	  </wizard-step>
+	 
+	  <wizard-step [title]="'4'" [hidden]="(m._source.steps.litige!=0 && m._source.steps.solvedlitige==0 ) || m._source.steps.stop!=0" [isActive]='m._source.steps.receive!=0' [isValid]="m._source.steps.close!=0"  [showNext]='false' [showPrev]='false' >
+  		<ul class="ongoingul">
+        <li class="ongoingli" *ngIf="(m._source.steps.close==0 &&  m._source.steps.litige ==0)|| (m._source.steps.close==0 &&  m._source.steps.solvedlitige !=0)  "><i i18n="@@saleattentefermeture">Attente de la fermeture de la commande</i></li>
+	    <li class="ongoingli" *ngIf="(m._source.steps.close!=0 && m._source.steps.litige ==0) || (m._source.steps.close!=0 &&  m._source.steps.solvedlitige !=0)  "><i i18n="@@salecommandeferme">Commande fermé le</i> <span dir="ltr">{{m._source.steps.close}}</span></li>
+ 		</ul>
+     </wizard-step>
+     
+   
+	 
+</form-wizard>
+  </li>
+ </ul>
+ </div>
+ 
+ 
+   <div class="card row " style="margin-top:8px; ">
+        <div class="card-header" [attr.id]="'accordion_' + i" >
+                    <span class="fa fa-comment"></span> <i i18n='@@messages'>Messages</i> 
+                    <div i18n-class  class="btn-group pull-right">
+                        <a type="button" class="btn btn-default btn-xs" data-toggle="collapse" [attr.data-parent]="'#accordion_' + i" [attr.href]="'#collapseOne_' + i">
+                            <span class="fa fa-chevron-down"></span>
+                        </a>
+                    </div>
+          </div>
+
+<div  [attr.id]="'collapseOne_' + i"  class="collapse card-body"> 
+
+     
+      <div *ngFor="let message of m._source.messages  "  >
+	
+		 <ul class="chat">
+                     <li *ngIf='message.fromMe' i18n-class class="left clearfix"><span  i18n-class class="chat-img pull-left">
+                      	
+                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' 
+                      alt="User Avatar" /></span>
+                        </span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font">{{fullnamelist[message.from]}}</strong> <small i18n-class class="pull-right text-muted">
+                                        <span class="fa fa-clock-o"></span>{{message.date}}</small>
+                                </div>
+                                <p>
+                                   {{message.text}}
+                                </p>
+                            </div>
+                        </li>
+                         <li *ngIf='!message.fromMe' i18n-class class="right clearfix"><span i18n-class class="chat-img pull-right">
+                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarlist[message.from]'
+                            alt="User Avatar"/> </span>
+                        </span>
+                        <div class="chat-body clearfix">
+                                <div class="header">
+                                    <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message.date}}</small>
+                                    <strong i18n-class class="pull-right primary-font">{{fullnamelist[message.from]}}</strong>
+                                </div>
+                                <p>
+                                  {{message.text}}
+                                </p>
+                            </div>
+                        </li>
+          </ul>
+	
+		 <!--  span class=" profile-picture ">
+		 <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' />
+		 </span>
+		
+		 <span class='date'> </span> <br>
+		 <textarea class='form-control' rows="3"  readonly  maxlength=200  >
+		 
+		 </textarea-->
+		
+		
+  			
+  		
+	 </div> 
+	 
+ 
+   </div>
+     
+  </div>
+
+
+</li>
+</ul>
+
+
+<div class="has-text-centered" i18n-style  style='float:right; ' >
+  <a scrollTo href="#top" > 
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+    <pagination-controls (pageChange)="getPage($event)" id="server"  i18n-previousLabel  previousLabel="précédent" i18n-nextLabel nextLabel='suivant' ></pagination-controls>
+    </a>
+</div>
+
+</div>
+</div>
+</ng-sidebar-container>
+</div> 

@@ -1,0 +1,320 @@
+
+<ScrollView>
+<RadSideDrawer tkExampleTitle tkToggleNavButton>
+    <GridLayout tkDrawerContent rows="auto,40,auto,auto, auto, auto,auto,auto,auto,auto*"  class=" sideStackLayout">
+        <StackLayout row='0' class="sideTitleStackLayout">
+            <Label text="Historique des ventes &#xf104;" class='fas storetitle' (tap)="onCloseDrawerTap()"></Label>
+        </StackLayout>
+       <GridLayout row="1" columns="*,auto" orientation="horizontal">
+   		<textField col='0' hint="Recherche Commande Id" class='search' [(ngModel)]="query" ></textField>
+           <Button col="1" text="&#xf002;" class="fas searchbutton "  (tap)="getQuery2($event)"></Button>
+        </GridLayout>
+        <Label   nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='2' text='Ajouter Nouveau Article' [nsRouterLink]="['../newarticle']"  ></Label>
+         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='3' text='Détails'  [nsRouterLink]="['../details']"  ></Label>
+     	 <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='4'text='Articles épuisés'  [nsRouterLink]="['../soldout']" ></Label>
+         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='5' text='Paramètres'  [nsRouterLink]="['../update']"></Label>
+         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='6' text='Ventes en cours' [nsRouterLink]="['../sales']" ></Label>
+         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='7' text='Historique des ventes'  [nsRouterLink]="['../historic']"  ></Label>
+         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
+         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
+    
+    </GridLayout>
+    
+ <StackLayout tkMainContent>
+  
+        
+    <GridLayout  rows='auto, auto,* '>
+
+
+ 
+    <GridLayout row="0" columns="40,*,50" >
+        <Button col='0' class="btn btn-active fas bars" text='&#xf0c9;' (tap)="openDrawer()"></Button>
+  		<Label col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+    
+       <!-- Button id="notifications"  col="2" text="&#xf0f3; &#xf0d7;" 
+            class="bell fas"></Button> 
+        <Label id="globeItemNavigation" row="0" col="2" text="3" class="globe"></Label--> 
+    </GridLayout>
+    <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+
+  
+<GridLayout row="2" rows='auto,auto,*'>
+<GridLayout row="0" columns='*'>
+<Label col="0" margin='10,0,0,5'  >
+        <FormattedString>
+            <Span text="{{totalcommand}} " color="#FFA500" class="fas"  ></Span>
+            <Span text="commandes completées"  ></Span>
+        </FormattedString>
+
+
+ </Label>
+ 
+ </GridLayout>
+ 
+<StackLayout row="1"  margin="5,0,0,0"  colSpan="2" backgroundColor="#D3D3D3" height="3"></StackLayout>
+
+
+<RadListView  row="2" [items]="model" selectionBehavior="LongPress"  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
+         (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)">
+          <ng-template let-m="item" let-i="index"  >
+            <StackLayout orientation='vertical'>
+				 <GridLayout  margin="0,15,0,15" rows="auto,auto,auto,auto,auto,*,*,auto,*,auto,*,auto,*,*">
+				      <Label row='0'  [nsRouterLink]="['../commands',m._id]"  >
+				      		  <FormattedString>
+            					<Span text="Commande id:  "  ></Span>
+         					    <Span text="{{m._id}}" class="fas" color='#FFA500'  (tap)="gotoPurchase(m._id)"  ></Span>
+       						</FormattedString>
+				      	
+				      </Label>
+					   <StackLayout row="1" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+					  
+					  <GridLayout    row='2'  columns='*,auto'>
+					  		<Label col='0'  text="Montant total:  "  ></Label>
+         					<Label col="1"  text="{{ m._source.totalprice}} DA" class="fas" color='#000'  (tap)="gotoPurchase(m._id)"  ></Label>
+       					
+					  
+					  </GridLayout> 
+					  
+					  <StackLayout row="3" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+					 <GridLayout row="4" rows="auto,auto,auto">
+					 <StackLayout  row='0' orientation="horizontal">
+					  
+            					<Label margin="20,10,0,0" text="De: "  ></Label>
+            					 <Image [src]="avatarlist[m._source.userid]" class="resize" stretch="aspectFill" ></Image>
+            					
+         					    <Label margin="20,0,0,10" verticalAlign='center'  text="{{fullnamelist[m._source.userid]}} " class="fas" color='#FFA500' (tap) ='gotoUser(m._source.userid)'  ></Label>
+		  						
+		  
+		  
+					  </StackLayout>
+					          	
+							 	<StackLayout  margin="0,10,0,25"  row="1"  [visibility]="m._source.userrating!=0 ? 'visible' : 'collapsed'"  >
+  									 <AbsoluteLayout  height="35" width="85"  class=" border "  backgroundColor="rgba(0,0,0,0.4)">
+      	          							 <StackLayout  left="-80" top="-10" android:cursorVisible="false"  >
+      	           
+                								 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="m._source.userrating"  ></StarRating>
+               								 </StackLayout>
+                 
+       							    </AbsoluteLayout>
+ 	    						 </StackLayout>
+ 	    						 <stackLayout row="1"  [visibility]="m._source.userrating==0 && m._source.steps.stop==0 ? 'visible' : 'collapsed'"  >
+ 	    						  <Label margin='0,10,0,10' text="Evaluation:" ></Label>
+        							<StackLayout  margin="0,10,0,25">	
+ 			 						 <AbsoluteLayout height="35" width="85"     class=" border "  backgroundColor="rgba(0,0,0,0.4)">
+      	          					 <StackLayout left="-80" top="-10"   >
+      	           
+                								 <StarRating filledColor="#FFA500" isindicator="false" (valueChange)="setScore($event,i, m._id)"   android:scaleX=".3" android:scaleY=".3"  value="0"  ></StarRating>
+               								 </StackLayout>
+                 
+       							    </AbsoluteLayout>
+       							    
+       							      <Label editable="false"  *ngIf="alert[m._id]" class="alert" text="S'il vous plait évaluer ce client"></Label> 
+       							    	<TextView  [visibility]="m._source.userrating==0 && m._source.steps.stop==0? 'visible' : 'collapsed'"   fontSize="12"  hint="laisser un commentaire" class="input" [(ngModel)]="m._source.userfeedback"    returnKeyType="done" 
+                							 returnPress="onReturnPress" maxLength="300"></TextView>
+       								
+							 			 <GridLayout columns='*,auto'>  <Label padding="5" col="1" borderRadius="3"  class="btn btn-active" color="#fff"  backgroundColor="#FFA500" (tap)='sendRating(m)  ' text="Envoyer"></Label>
+										</GridLayout>
+ 			 						</StackLayout>
+							 			
+       								
+       					</stackLayout>
+ 	    						 
+ 	    						 
+					  </GridLayout>
+					  <StackLayout row="5" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+					  
+					  <RadListView  row="6" [items]="m._source.articles" >
+						<ng-template let-a="item"  >
+						<StackLayout  orientation="vertical">
+							 <GridLayout columns='*,*,auto'>
+							    <Image [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
+
+							    <GridLayout col="1" rows="auto,*" >
+							    
+							    	
+							    	<TextView editable="false" row="0"  class="titlea" text="{{a.title}}"  (tap)="gotoArticle(a.articleid, m._source.storetitle)">
+ 					    			</TextView>
+							    	<GridLayout row="1" rows="*,*,*,*" columns='*,auto'>
+							    	<Label row='0' col="0"  text="Couleur: "></Label>
+							    	<Label row="0" col="1" width="20" height="20" [backgroundColor]='a.color'></Label>
+							        <Label row="1" col="0" text='Taille: '></Label>
+							        <Label row='1' col="1" class='size' text='{{a.taille}}' > </Label>
+							        <Label row='2' col="0" text="Quantité: "></Label>
+							        <Label row='2' col="1" color="#000" text='{{a.quantity}} UNIT'></Label>
+							        <Label row='3' col="0" text="Prix: "></Label>
+							        <Label row='3' col="1" color="#000"  text='{{a.price}} DA'></Label>
+							        </GridLayout>
+							    </GridLayout>
+							 </GridLayout>
+							<StackLayout row="2" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+							 
+						</StackLayout>
+						</ng-template>	
+					</RadListView> 
+					<GridLayout row="7" columns='*,auto'>
+					 <Label col="0" >
+					 		 <FormattedString>
+            					<Span text="Livraison:  "  ></Span>
+         					    <Span text="{{m._source.delivery.title }} " class="fas" color='#FFA500'   ></Span>
+       						</FormattedString>
+					 </Label>
+					 <Label col="1" text=" {{m._source.delivery.price }} DA" class="fas" color="#000"></Label>
+					</GridLayout>
+					<StackLayout row="8" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+						<Label row="9"   text="Addresse: "></Label>
+					<GridLayout padding="2"  row="10" backgroundColor="#D3D3D3"  rows="*,*,*,*,*,*" columns="*,*" >
+					
+						<Label class='add' row="0" col="0" text="à M.Mme" ></Label> 
+  						<Label class='add'row="0" col="1" text="{{m._source.choosenAddress.to}}"></Label>
+  		     			<Label class='add'row="1" col="0" text="Téléphone" ></Label> 
+  						<Label class='add' row="1" col="1" text="{{m._source.choosenAddress.phone}}"></Label>
+  		     			<Label class='add'row="2" col="0" text="Ville" ></Label> 
+  						<Label class='add'row="2" col="1" text="{{m._source.choosenAddress.city}}"></Label>
+  		   			    <Label class='add'row="3" col="0" text="Commune" ></Label> 
+  						<Label class='add'row="3" col="1" text="{{m._source.choosenAddress.commune}}"></Label>
+  		   			    <Label class='add'row="4" col="0" text="Codepostal" ></Label> 
+  						<Label class='add'row="4" col="1" text="{{m._source.choosenAddress.zipcode}}"></Label>
+  		     			<Label class='add'row="5" col="0" text="Addresse" ></Label> 
+  						<Label class='add'row="5" col="1" text="{{m._source.choosenAddress.address}}"></Label>
+  		     			
+					</GridLayout>
+      		    	<StackLayout row="11" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+      		    	
+      		    	<GridLayout row="12" rows='auto,*'>
+      		    	   <GridLayout margin='0,0,10,0' row="0" columns="*,auto,auto,auto,auto,auto">
+      		    	
+      		    	    <Image   col="0" src="res://trolley" class='wizardimg' stretch="aspectFill"></Image>
+      		    	    <Label    col='0'  class='wizardActive'></Label>
+      		    	   
+      		    	
+      		  		  	<Image  [visibility]="m._source.steps.stop!=0 ? 'visible' : 'collapsed'"  col="1" src="res://close" class='wizardimg' stretch="aspectFill"></Image>
+      		    	    <Label  [visibility]="m._source.steps.stop!=0 ? 'visible' : 'collapsed'"  col='1'  class='wizardActive'></Label>
+      		    	   
+      		    	
+      		  		  	<Image  [visibility]="m._source.steps.stop==0  ? 'visible' : 'collapsed'"   col="2" src="res://delivery" class='wizardimg' stretch="aspectFill"></Image>
+      		  		  	<Label  [visibility]="m._source.steps.stop==0  && m._source.steps.send==0  ? 'visible' : 'collapsed'"  col='2'  class='wizard'></Label>
+      		    	    <Label  [visibility]="m._source.steps.stop==0  && m._source.steps.send!=0  ? 'visible' : 'collapsed'"  col='2'  class='wizardActive'></Label>
+      		    	   
+      		  		  	
+      		  		  	
+      		    	
+      		 		   	<Image  [visibility]="m._source.steps.stop==0  ? 'visible' : 'collapsed'" col="3" src="res://closebox" class='wizardimg' stretch="aspectFill"></Image>
+        			    <Label  [visibility]="m._source.steps.stop==0  && m._source.steps.receive==0  ? 'visible' : 'collapsed'"  col='3'  class='wizard'></Label>
+      		    	    <Label  [visibility]="m._source.steps.stop==0  && m._source.steps.receive!=0  ? 'visible' : 'collapsed'"  col='3'  class='wizardActive'></Label>
+      		    	   
+      		  		  	
+      		    	
+      		  		  	<Image  [visibility]="m._source.steps.stop==0 &&  m._source.steps.litige !=0 ? 'visible' : 'collapsed'" col="4" src="res://litige" class='wizardimg' stretch="aspectFill"></Image>
+       		 		  	<Label  [visibility]="m._source.steps.stop==0  && m._source.steps.litige !=0 ? 'visible' : 'collapsed'" col='4'  class='wizardActive'></Label>
+       		 		  	
+ 
+      		 	        <Image  [visibility]="m._source.steps.stop==0  ? 'visible' : 'collapsed'" col="5" src="res://checked" class='wizardimg' stretch="aspectFill"></Image>
+       		 	        <Label  [visibility]="m._source.steps.close==0 ? 'visible' : 'collapsed'" col='5'  class='wizard'></Label>
+       		 		  	<Label  [visibility]="m._source.steps.close!=0 ? 'visible' : 'collapsed'" col='5'  class='wizardActive'></Label>
+      		    	
+      		    		</GridLayout>
+      		    		<StackLayout row="1">
+      		    			 <Label class="ongoingli"   text="Commande faite le: {{m._source.startdate}} "></Label>
+      		    			
+      		    			<Label  class="ongoingli"  *ngIf='m._source.steps.stop!=0' text='Commande annulée le: {{m._source.steps.stop}}'></Label>
+      		    			
+      		    			    <StackLayout orientation="horizontal">
+      		    			   		 <Label class="ongoingli"  *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0" text='Commande prête'></Label>
+      		    			   		  <Button *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0"  height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas"  (tap)= 'prepareDone(m._id, i, m._source.userid); '>
+   									 </Button>
+      		    				</StackLayout>
+ 	  	 					<Label class="ongoingli"  *ngIf=' m._source.steps.prepare!=0 && m._source.steps.stop==0'  text='Commande préparée le: {{m._source.steps.prepare}}'></Label>
+ 	  	 				   
+ 	  	 				   
+ 	  					   <StackLayout orientation="horizontal">
+ 	  	 				    <Label class="ongoingli"    *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' text='Commande envoyée'></Label>
+ 	  	  				    <Button *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' (tap)="sendDone(m._id, i, m._source.userid);" height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas">  </Button>
+ 	  	 					</StackLayout>
+ 	  			
+ 	  				 
+	     					<Label  class="ongoingli"  *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 " text='Commande envoyée le: {{m._source.steps.send}}'> </Label>
+					 	    
+					 	     
+					 	     <Label  class="ongoingli" *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 && m._source.steps.receive!=0" text="Commande reçu le: {{m._source.steps.receive}} "></Label>
+					 	     
+					 	    
+					
+					 	    
+					 	    <Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 "  text="Litige ouvert le: {{m._source.steps.litige}}"></Label> 
+					 	    
+	 						<Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige==0 " text="Veuillez contacter le client pour trouver une solution à votre litige" ></Label>
+	 			
+  
+  						 	<Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0 " text='Litige résolu le: {{m._source.steps.solvedlitige}}'></Label>
+  						 
+  						    <Label  class="ongoingli"   *ngIf="m._source.steps.close==0 && m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 && ((m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0) ||m._source.steps.litige==0)  " text="Attente de la fermeture de la commande"></Label>
+  						    <Label  class="ongoingli" *ngIf="m._source.steps.close!=0 "  text='Commande fermée le {{m._source.steps.close}}'></Label>
+     				
+       
+      		    
+      		    		</StackLayout>
+      		    		
+      	
+      		    		
+      		    		
+      		   		</GridLayout>
+      		    	<StackLayout row="13">
+      		    	<GridLayout  rows="auto,*" margin="5,0,5,0">
+      		    	<StackLayout row="0" orientation='horizontal'>
+      		    	 <Label  text="&#xf075; Messages " class='msgtitle fas ' width="90%"></Label>
+      		    	 <Label text ='&#xf107;' class="msgtitle fas"  (tap)="isopen['message'+m._id]= !isopen['message'+m._id]" ></Label>
+      		    	 </StackLayout>
+      		    	<RadListView  row="1" [items]="m._source.messages "    [visibility]="isopen['message'+m._id] ? 'visible' : 'collapsed'" >
+						<ng-template let-message="item"  >
+						<StackLayout>
+						
+						<GridLayout columns="auto,*" [visibility]="message.fromMe? 'visible' : 'collapsed'" >
+						
+						<Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					    <GridLayout col="1" rows='auto,auto'  >
+					   		 <StackLayout  row="0" orientation=horizontal>
+					   		 	<Label width="60%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	<Label class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
+					   		  </StackLayout>
+					  		 <textView row="1" text='{{message.text}}' editable="false" class="msgs1"></textView>
+						 </GridLayout> 
+						</GridLayout>
+						
+						<GridLayout  columns="*,auto" [visibility]="!message.fromMe? 'visible' : 'collapsed'" >
+								<Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					       <GridLayout col="0" rows="auto,auto" >
+					   		 <StackLayout row="0" orientation=horizontal horizontalAlignment="right"  >
+					   		     <Label width="60%" class="fas" fontSize="10"  text="&#xf017; {{message.date}}"></Label>
+					   		  
+					   		 	 <Label width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		  </StackLayout>
+					  		 <TextView  row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
+						 </GridLayout>
+						
+						</GridLayout>
+						</StackLayout>
+						</ng-template>
+						
+						
+						
+      		       </RadListView>
+      		    	
+      		    
+      		    	
+      		    </GridLayout>
+      		  
+      		     <StackLayout  margin="10,0,10,0"  colSpan="0" backgroundColor="#D0D0D0" height="6"></StackLayout>
+      		    </StackLayout>
+      		    </GridLayout></StackLayout>
+     	  </ng-template>	
+     	  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
+
+</RadListView>  
+
+</GridLayout>
+</GridLayout>
+
+</StackLayout>
+</RadSideDrawer>
+
+</ScrollView>

@@ -1,0 +1,112 @@
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+<div i18n-class class=" text-left scroll2">
+
+
+<div [hidden]="loading" class="container">
+<div *ngIf= "display1">
+
+  <div class="card card.text-white.bg-info"  >
+        <div class="card-hearder left clearfix"  >
+                 
+                  <span i18n-class class="chat-img pull-left"> <div class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarTo' 
+                      alt="Avatar" /></div></span>
+                     
+                   <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font">{{this.model.fullname}}</strong> 
+                                 </div>
+                   </div>  
+           
+                   
+          </div>
+          
+      <div class="card-footer">
+        
+      <form  name='f' (ngSubmit)="f.form.valid && sendMessage(f)" #f="ngForm" novalidate>
+
+ 	 <textarea rows="3" class="input-group" name="message" [(ngModel)]="model.message" #message="ngModel"  required maxlength=200></textarea>
+	       <div *ngIf="message.invalid && (message.dirty || message.touched)" class="alert alert-danger">
+            <div i18n="@@msgalert" *ngIf="f.submitted && message.hasError('required')" class="help-block">ecrivez votre msg </div>
+       	    <div i18n="@@msg2alert"*ngIf="  message.hasError('maxlength')" class="help-block"> message trop long </div>
+      	    </div> 
+           <span class="input-group-btn" >
+	             <button  i18n-style style="float:right" class="btn btn-warning btn-sm" id="btn-chat" i18n="@@envoyer">Envoyer</button>
+          	</span>   
+     </form>
+              
+                    
+      </div>
+	   <div    class=" card-body" id="scroll" > 
+		 
+    
+      <div *ngFor="let message of messages  |paginate: { id: 'server', itemsPerPage: size, currentPage: page, totalItems: count}  "  >
+	
+		 <ul class="chat">
+                     <li *ngIf='message._source.fromMe' i18n-class class="left clearfix">
+                     <span i18n-class class="chat-img pull-left">
+                      	
+                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarFromMe' 
+                      alt="User Avatar" /></span>
+                        </span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font" i18n="@@moi">Moi</strong> 
+                                    <small i18n-class class="pull-right text-muted">
+                                        <span class="fa fa-clock-o "></span>{{message._source.date}}</small>
+                                </div>
+                                <p>
+                                   {{message._source.text}}
+                                </p>
+                            </div>
+                        </li>
+                         <li *ngIf='!message._source.fromMe' class="right clearfix"><span class="chat-img pull-right">
+                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarTo'
+                            alt="User Avatar"/> </span>
+                        </span>
+                        <div class="chat-body clearfix">
+                                <div class="header">
+                                    <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message._source.date}}</small>
+                                    <strong class="pull-right primary-font">{{this.model.fullname}}</strong>
+                                </div>
+                                <p>
+                                  {{message._source.text}}
+                                </p>
+                            </div>
+                        </li>
+          </ul>
+		
+		 <!--  span class=" profile-picture ">
+		 <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' />
+		 </span>
+		
+		 <span class='date'> </span> <br>
+		 <textarea class='form-control' rows="3"  readonly  maxlength=200  >
+		 
+		 </textarea -->
+		 </div>
+		
+		
+  		
+	 </div> 
+	 
+ 		<div i18n-style style='float:right; ' >
+		<div class="has-text-centered" >
+   		 <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+   		 <pagination-controls (pageChange)="getPage($event)" id="server"  i18n-previousLabel previousLabel="précédent" i18n-nextLabel nextLabel='suivant'></pagination-controls>
+		</div>
+		</div>
+   
+  </div>
+ 
+
+ </div>
+
+ <div *ngIf="display2"class ="alert alert-info" i18n="@@lienvide">
+     lien vide 
+ </div>
+ <a  i18n-class class='btn btn-link fa fa-chevron-left' (click)="back();" i18n="@@retour"> Retour </a>
+ </div> 
+ <div style =' background-color: #F5F5F7  ;  height: 100%; '>
+ </div><p>
+  message works!
+</p>

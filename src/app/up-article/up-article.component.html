@@ -1,0 +1,439 @@
+<ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+
+
+<div *ngIf='display' i18n-class  class="text-left scroll2"> 
+<nav class="navbar navbar-default  navnav sticky-top" >
+  
+    
+      
+    <span class="form-inline ">
+     
+	  
+	    
+		<a   class="navbar-brand  btn btn-link " routerLinkActive="active"  [routerLink]="['../../../store']" >
+           {{storetitle}}  </a>
+
+     <star-rating size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: xx-small ; " i18n="@@votes">( {{store.ratingcount}} votes)</span>
+
+    
+   </span> 
+  
+      	
+
+   
+</nav>
+
+<div *ngIf='model.suspend' class="container alert alert-info  col-12 col-md-6 col-md-offset-3 list-group-item ">
+		L'article est suspendu 
+</div> 
+
+<div  *ngIf='!model.suspend'  class="container col-12 col-md-6 col-md-offset-3 list-group-item"  >
+
+   <table class="table table-sm table-striped ">     
+     <tbody>
+		 <tr>
+  	      <th scope="col"><label for="title" i18n="@@titre"> Titre </label></th>
+  	       
+  	      <th>      
+  	      			 <a class="btn fa fa-pencil"  *ngIf='!editTitle' style='display:inline-block;' (click)='editingTitle()'> </a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editTitle' style='display:inline-block ;margin-right:5px; ' (click)='saveTitle()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editTitle' style='display:inline-block; ' (click)='removeTitle()'></a>
+								    
+          </th>
+  	    </tr>
+  		  
+  		
+  	 <tr>
+  		<td></td>
+  		<td>
+  		     <div *ngIf="editTitle" class="form-group" >
+            
+           
+            <input type="text" class="form-control" name="title" [(ngModel)]="model.title" #title="ngModel" required >
+              <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
+              <div *ngIf="title.hasError('required')" class="help-block" i18n="@@addtitre"> ajouter un titre</div>
+               <div *ngIf=" title.hasError('maxlength')" class="help-block" i18n="@@titrelong">Le titre est trop long</div>
+              <div *ngIf=" title.hasError('minlength')" class="help-block" i18n="@@titrecourt">le titre est trop court</div>
+             
+             </div>
+     		 </div>
+     		 <div *ngIf="!editTitle" class="form-group" >
+     		 <b>{{model.title}}</b>
+     		 </div>    
+  		</td>
+    </tr>
+  	 
+  	 
+  	 <tr>
+  	      <th scope="col">  <label   i18n="@@gallerie" for="gallery">Gallerie</label></th>
+  	      
+  	      <th>
+  	      			 <a class="btn fa fa-pencil"  *ngIf='!editGallery' style='display:inline-block;' (click)='editingGallery()'> </a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editGallery' style='display:inline-block ;margin-right:5px; ' (click)='saveGallery()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editGallery' style='display:inline-block; ' (click)='removingGallery()'></a>
+				
+  	      </th>
+  	    </tr>
+  		  
+  		
+  	 <tr>
+  		<td></td>
+  		<td>
+  		    <div *ngIf="editGallery"class="form-group" >
+  		    <th scope="col">  <label class ='img-selector btn btn-link'  for="files"><i class='fa fa-plus'></i><i i18n="@@gallerieimages">Gallerie d'images</i> </label></th>
+     		 <input type='file' id="files" name="files" (change)="onSelectFiles($event)" multiple style="display: none;" >
+			 <div class=" card">
+   			   <ul >
+   			   
+       			<li  *ngFor = 'let url of model.gallery; let i=index; ' style="list-style: none; display:inline-block;"> 
+       			<label class="labl"  >
+           
+       	        <input type="radio" name="radiogroup"  [checked]="i===0" 
+                [value]="i" (change)="onSelectionChange(i)" id ='radio' />
+                  <div><img [src]="url" height="50" > </div>
+				</label>
+				<button type="button" (click)="removeObject(url)" class='btn-info' > <i class="fa fa-close"></i></button>
+			 </li>
+             </ul>
+      
+             <div *ngIf= "model.gallery[mainpic]" >
+              <label i18n="@@chooosemainpic" > Choisissez l'image principale parmis les images en haut </label>
+             <br/>
+                  <img [src]="model.gallery[mainpic]" height="100"  > 
+                  </div>
+               <br/>
+       
+               </div>	
+                      <div *ngIf="model.gallery.length==0 " class="alert alert-warning help-block">Ajouter au moins une image ! </div>
+               
+               
+                </div>
+               <div  *ngIf="!editGallery" class="form-group" >
+                 <label i18n="@@gallerie" >Gallerie: </label>
+               <ul>
+                	<li  *ngFor = 'let url of model.gallery;' style="list-style: none; display:inline-block;"> 
+       			
+           
+                  <div><img [src]="url" height="50" > </div>
+				
+
+			 </li>
+             </ul>
+      
+            
+              <label  i18n="@@mainpic" >L'image principale: </label>
+             <br/>
+                  <img [src]="model.gallery[mainpic]" height="100"  > 
+                  </div>
+               <br/>
+       
+               
+              
+               
+               	  
+  		</td>
+    </tr>
+  	 
+        
+       <tr>
+  	      <th scope="col"><label for="title" i18n="@@prix"> Prix </label></th>
+  	      
+  	      <th>
+  	       			<a class="btn fa fa-pencil"  *ngIf='!editPrice' style='display:inline-block;' (click)='editingPrice()'> </a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editPrice' style='display:inline-block ;margin-right:5px; ' (click)='savePrice()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editPrice' style='display:inline-block; ' (click)='removePrice()'></a>
+				
+  	      </th>
+  	    </tr>
+  		  
+  		
+  	 <tr>
+  		<td>
+  					
+  		</td>
+  		<td>
+     
+        <div *ngIf="editPrice" class="form-group" >
+      		 
+            <div class="input-group" style="float:left;">
+  				<input type="number" step="0.01"  name="price" [(ngModel)]="model.price" #price="ngModel" required/>
+  		
+  				<span class="input-group-addon" style="display:inline;" i18n="@@da22">D.A</span>
+				<div *ngIf="price.invalid && (price.dirty || price.touched)" class="alert alert-danger">
+				
+				
+           		 <div *ngIf="price.hasError('required')" class="help-block" i18n="@@prixalert"> Ajouter le prix</div>
+            	
+               </div>
+			
+			</div>
+	    </div> 
+	    <div *ngIf="!editPrice" class="form-group" >
+     		 {{model.price}} <span class="input-group-addon" style="display:inline;" i18n="@@da22">D.A</span>
+     	 </div>
+	    
+	   </td>
+	   </tr>
+	   
+	   
+	     
+       <tr>
+  	      <th scope="col"><label for="title" i18n="@@quantite">Quantité</label></th>
+  	      
+  	      <th>
+  	      			 <a class="btn fa fa-pencil"  *ngIf='!editQt' style='display:inline-block;' (click)='editingQt()'> </a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editQt' style='display:inline-block ;margin-right:5px; ' (click)='saveQt()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editQt' style='display:inline-block; ' (click)='removeQt()'></a>
+				
+  	      </th>
+  	    </tr>
+  		  
+  		
+  	 <tr>
+  		<td></td>
+  		<td>
+	   
+	    <div *ngIf="editQt" class="form-group" >
+      		 
+            <div class="input-group" style="float:left;">
+  				<input type="number" [(ngModel)]="model.numbers" name="numbers"  #numbers="ngModel" min="1" step="any"/>
+  				<span class="input-group-addon" style="display:inline;" i18n="@@unit">UNIT</span>
+			</div>
+	    </div> 
+	     <div *ngIf="!editQt" class="form-group" >
+     		 {{model.numbers}}	<span class="input-group-addon" style="display:inline;">UNIT</span>
+     		 </div>
+	    </td></tr>
+	    
+	    <tr>
+  	      <th scope="col"><label for="title" i18n="@@couleurs">  Coleurs, autres </label></th>
+  	      
+  	      <th>
+  	      			 <a class="btn fa fa-pencil"  *ngIf='!editColor' style='display:inline-block;' (click)='editingColor()'> </a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editColor' style='display:inline-block ;margin-right:5px; ' (click)='saveColor()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editColor' style='display:inline-block; ' (click)='removingColor()'></a>
+				
+  	      </th>
+  	    </tr>
+  		  
+  		
+  	 <tr>
+  		<td></td>
+  		<td>
+	   
+	    
+	      <div *ngIf="editColor" class="form-group" >
+	       
+	       
+	      <input type="color" (change)= "addColor($event)" id='color' class='btn btn-default' >
+	      
+	      
+     		 <div class="card">
+	      		<br>
+	       		<ul >
+      		 		<li  *ngFor = 'let c of model.color; let  i=index ' style="list-style: none; display:inline-block;"> 
+       	
+		          	<span  style =' display: block;  width:50px; height:20px; border:1px  solid ; display: inline-block;' [style.background]='c' > </span>
+		          	
+		          			<button type="button" (click)="removeColor(c)" class='btn btn-info'> <i class="fa fa-close"></i></button>  
+       	
+					<div class="form-group text-info " *ngIf='boolsize'>
+					 
+	      	       <label class='btn btn-link' for="sizing"> <i class="fa fa-plus"></i> <i >Tailles </i></label>
+	      
+	      
+	      			<div class="col-sm-12 col-12 col-md-12">
+	       			 <span *ngFor="let s of sizinglist" style='padding:2px; 'class=" form-check form-check-inline">
+	       				   <input  class="form-check-input" type="checkbox" [checked]='model.sizing[c].includes(s)' id="{{s}}" value="{{s}}" (change)="addSizing($event, c, s)">
+   					 <label class="form-check-label" for="{{s}}">{{s}} </label>
+	      
+	       
+	         
+	       </span>
+	      </div> 
+	      </div>
+
+
+     		 </li>
+     		 </ul>
+          </div>
+	      </div>
+	      <div *ngIf="!editColor" class="form-group">
+	    	  
+	    	  
+	    	    <li  *ngFor= 'let c of model.color; let  i=index ' style="list-style: none; display:inline-block;"> 
+    
+       		       <label  class='labl' >
+       		      	
+                       	<div  style ='width:25px; height:20px; padding:2px; border:1px  solid ; margin:2px;'  [style.background]='c' >   	</div>
+       		        </label>  	
+		          			<!--  button type="button" (click)="removeColor(c)" class='btn-info'> X</button-->  
+				 </li>
+		
+	       
+	       		<div *ngIf='boolsize'>
+	       		<i i18n="@@tailles">Tailles</i>
+      		     <li *ngFor= 'let s of size ; let  i=index '  style="list-style: none; display:inline-block;"> 
+    
+       		      	
+       
+                       	<div   style ='width:25px; height:25px;  background-color:#D0D0D0;padding:2px;  border:1px  solid ; margin:2px;     text-align: center; vertical-align: middle; ' > {{s}}	</div>
+       		        
+       		        
+       		        	
+		          			<!--  button type="button" (click)="removeColor(c)" class='btn-info'> X</button-->  
+				 </li> 
+				 </div>
+			
+				 
+				  
+				 
+	    	</div>
+	    </td></tr>
+	    
+	    
+	    
+	    
+	    <tr>
+      <th scope="col">  <label for="status" i18n="@@categories"> Categories </label> </th>
+  	      
+  	      <th>  
+  	        <a class="btn fa fa-pencil"  *ngIf='!editCat' style='display:inline-block;' (click)='editingCat()'> </a>
+  	     	<a class="btn fa fa-check"  *ngIf='editCat' style='display:inline-block ;margin-right:5px; ' (click)='saveCat()'></a>
+			 <a class="btn fa fa-remove" *ngIf='editCat' style='display:inline-block; ' (click)='removeCat()'></a>
+								    
+                 
+  	      </th>
+         </tr>
+        
+     			
+  		<tr>
+  		<td></td>
+  		 <td>
+	
+	
+		  <div *ngIf='!editCat' class=" card ">
+		   			<ul  class="list-group" >
+      		 			 <li  *ngFor = 'let d of model.selectedCat; let  i=index '  class="list-group-item " style="width:100%; "> 
+		          			<span   style =' display: inline-block;' > {{d}}</span>
+		          			<!-- span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeCategory(d)" class='btn-info'> X</button>  </span-->
+	 					 </li>
+     		 		</ul>
+          	</div>
+			
+		
+			 <ngx-select-dropdown   *ngIf='editCat'  [config]="config" [options]="Categories" 
+            [(value)]="model.selectedCat" [multiple]="true" ></ngx-select-dropdown>    
+           <div i18n="@@categoriesalert" *ngIf=" model.selectedCat.length==0" class="help-block alert alert-danger">Choisissez au moins une catégorie</div>
+             
+     
+			
+         
+  			</td></tr>
+	    
+	    
+	       <tr>
+  	      <th scope="col">    <label for="title" i18n="@@description" >  Déscription </label></th>
+  	      
+  	      <th> 
+  	       		 <a class="btn fa fa-pencil"  *ngIf='!editDesc' style='display:inline-block;' (click)='editingDesc()'> </a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editDesc' style='display:inline-block ;margin-right:5px; ' (click)='saveDesc()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editDesc' style='display:inline-block; ' (click)='removeDesc()'></a>
+				
+  	      </th>
+  	    </tr>
+  		  
+  		
+  	 <tr>
+  		<td></td>
+  		<td>
+	    
+      <div *ngIf="editDesc" class="form-group" >
+       <textarea rows="3" class="form-control" name="title" [(ngModel)]="model.description" #description="ngModel"  ></textarea>
+		
+      	    
+      </div> 
+  
+    	 <div *ngIf="!editDesc"class="form-group" >
+       <textarea rows="3" class="form-control" readonly  name="title" [(ngModel)]="model.description" #description="ngModel"  ></textarea>
+		
+      	    
+      </div> 
+     </td></tr>
+       
+	       <tr>
+  	      <th scope="col"> <label for="sel1" i18n="@@livraison">Livraison </label></th>
+  	      
+  	      <th>
+  	      			 <a class="btn fa fa-pencil"  *ngIf='!editDelivery' style='display:inline-block;' (click)='editingDelivery()'> </a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editDelivery' style='display:inline-block ;margin-right:5px; ' (click)='saveDelivery()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editDelivery' style='display:inline-block; ' (click)='removingDelivery()'></a>
+				
+  	      </th>
+  	    </tr>
+  		  
+  		
+  	 <tr>
+  		<td></td>
+  		<td>
+	   
+	    <div *ngIf="editDelivery" class="form-group">
+	    
+         
+		 <div class="form-group" >
+          <label i18n="@@livraison" for="sel1">Livraison:</label>
+            <ngx-select-dropdown   [multiple]="true" [(value)]="model.delivery" [config]="deliveryconfig" [options]="delivery" required ></ngx-select-dropdown>
+		 <div i18n="@@livraisonalert" *ngIf="model.delivery.length==0" class="help-block alert alert-danger">Choisissez une méthode de livraison</div>
+			
+		</div>   	
+		   
+	    
+	         
+          </div> 
+          <div *ngIf="!editDelivery" class=" card ">
+		   			<ul  class="list-group" >
+      		 			 <li  *ngFor = 'let d of model.delivery; let  i=index '  class="list-group-item " style="width:100%; height:100%;"> 
+		          			<span   style =' display: inline-block;'> {{d.title}}</span>
+
+	 					 </li>
+     		 		</ul>
+          	</div>
+		
+	    
+	    </td></tr> 	 	
+        	 	
+        	 	
+        	 	
+  		  <tr>
+  	      <th scope="col">     <label for="status" i18n="@@dispo">Disponible </label> </th>
+  	      
+  	     <th>
+  	     	 <a class="btn fa fa-pencil"  *ngIf='!editAvailable' style='display:inline-block;' (click)='editingAvailable()'> </a>
+         	 <a class="btn fa fa-check"  *ngIf='editAvailable' style='display:inline-block ;margin-right:5px; ' (click)='saveAvailable()'></a>
+			 <a class="btn fa fa-remove"  *ngIf='editAvailable' style='display:inline-block; ' (click)='removeAvailable()'></a>
+		  
+  	     </th> 
+  	     </tr>
+  	     
+  	      <tr>
+  		 <td></td>
+  		 <td>
+  		      <div *ngIf='!editAvailable' ><span i18n="@@non" *ngIf= "!model.available">Non</span> 
+            						  <span i18n="@@oui" *ngIf= "model.available">Oui</span>
+            						  </div>
+         
+		    <label *ngIf='editAvailable' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="model.available" [value]="true" checked>Disponible</label>
+			<label *ngIf='editAvailable' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="model.available" [value]="false" >Indisponible</label>
+
+		    
+  		 </td>
+  		 </tr>
+   
+           
+
+  </tbody>
+  </table>
+       <a i18n-class class="fa fa-chevron-left btn btn-link" [routerLink]="['../']" i18n="@@backarticle" > Retour à  l'article</a>
+     
+</div>
+</div>

@@ -1,0 +1,24 @@
+<ScrollView >
+
+
+<GridLayout rows="auto, auto, auto,auto" >	
+<StackLayout row="0" margin ='5,10,0,10' colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+
+	   
+<RadListView margin="0,10,0,10" row ="1" [items]="stores" >
+    <ng-template let-k="item" >
+        <GridLayout  rows="*" columns='40, *'   class="border ">
+            <Label col="0" row="0" text='&#xf54f;' class="fass icon "></Label>
+            <Label col="1" row="0" class="store" text=" {{k}}" [nsRouterLink] ="['/stores',k, 'store']" ></Label>                     
+        </GridLayout>       
+    </ng-template>
+</RadListView>
+ <GridLayout  margin='0,10,0,10' row="2" columns='40, *'   class="border ">
+            <Label col="0"  text='&#xf0fe;' class="fass icon "></Label>
+            <Label  col="1"   class=" store " text='Créer un magasin' [nsRouterLink] ="['/home',myhome, 'createstore']"   ></Label>
+   </GridLayout> 
+
+
+
+</GridLayout>
+</ScrollView>      

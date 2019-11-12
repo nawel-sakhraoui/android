@@ -1,0 +1,330 @@
+/* Add mobile styles for the component here.  */
+.menu{
+     
+    font-size: 16;
+    margin-left: 10;
+    color :  #00BFFF ; 
+    
+    
+}
+
+
+
+.far {
+    font-family: "Font Awesome 5 Free", "fa-regular-400";
+       font-weight: 400; 
+}
+
+.fab {
+    font-family: Font Awesome 5 Brands, fa-brands-400;
+    font-weight: 400; 
+}
+
+.fas {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 900; 
+}
+.sideStackLayout {
+    background-color: #fff;
+        color: #00BFFF ;
+    
+}
+.sideStackLayoutActive {
+    background-color: #0000;
+        color: #00BFFF ;
+    
+}
+.sideTitleStackLayout {
+	margin:15,0,0,0; 
+    text-align: center;
+    vertical-align: center;
+        color: #00BFFF ;
+}  
+.storetitle{
+	font-size:16;
+	 color: #000 ; 
+	  margin-left:8;
+	 margin-top:13;
+}
+.soldout{
+	font-size:14;
+	 margin-top:15;
+}
+
+.pic {
+    
+    height: 160;
+   background-color:#D0D0D0; 
+   /* border-color: #4db8ff;
+    border-width: 1;*/
+}
+
+.search{
+	border-bottom-width: 1; 
+    border-bottom-color: #D0D0D0;
+	font-size:14; 
+	
+	
+}
+.searchbutton{
+
+	  text-align: center;
+    vertical-align: center;
+    	
+   border-radius:25;  
+   width:40; 
+   height:40;
+}
+.item {
+	border-bottom-width: 1; 
+    border-bottom-color: #00BFFF ;  
+    padding-bottom:10 ; 
+    padding-top:10; 
+    margin :0,10,0,10 ; 
+	
+}
+#globeItemNavigation {
+    z-index: 1;
+}
+
+#notifications {
+    z-index: 0;
+}
+#menu{
+	z-index:2; 
+}
+#main{
+	z-index:3; 
+}
+.bell {
+color:#000;
+font-size:14 ; 
+
+}
+.bars{
+
+	font-size :16; 
+ margin-top:5; 
+ margin-left: 8;	
+ 	color: #d9534f; 
+    background-color: transparent;
+   border-radius:25;  
+   width:40; 
+   height:40;
+}
+.globe {
+    background-color: red;
+    width: 20;
+    height: 20;
+    border-radius:12; 
+    text-align: center;
+    color: #ffffff;
+    font-size: 12;
+    margin-bottom:20;
+    margin-right: 30;
+    padding-top: 2;
+}
+
+Button {
+    background-color: transparent;
+  
+}
+.menu{
+     
+    font-size: 16;
+    margin-left: 10;
+    color :  #00BFFF ; 
+    
+    
+}
+
+
+
+.far {
+    font-family: "Font Awesome 5 Free", "fa-regular-400";
+       font-weight: 400; 
+}
+
+.fab {
+    font-family: Font Awesome 5 Brands, fa-brands-400;
+    font-weight: 400; 
+}
+
+.fas {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 900; 
+}
+.sideStackLayout {
+    background-color: #fff;
+        color: #00BFFF ;
+    
+}
+.sideStackLayoutActive {
+    background-color: #fff;
+        color: #FFA500 ;
+    
+}
+.sideTitleStackLayout {
+	margin:15,0,0,0; 
+    text-align: center;
+    vertical-align: center;
+        color: #00BFFF ;
+}  
+.storetitle{
+	font-size:16;
+	 color: #00BFFF ;
+	  margin-left:8;
+	 margin-top:13;
+}
+.pic {
+    
+    height: 160;
+    width:100%;
+   background-color:#D0D0D0; 
+   /* border-color: #4db8ff;
+    border-width: 1;*/
+}
+
+.search{
+	border-bottom-width: 1; 
+    border-bottom-color: #D0D0D0;
+	font-size:14; 
+	
+	
+}
+.searchbutton{
+
+	  text-align: center;
+    vertical-align: center;
+    	
+   border-radius:25;  
+   width:40; 
+   height:40;
+}
+.item {
+	border-bottom-width: 1; 
+    border-bottom-color: #00BFFF ;  
+    padding-bottom:10 ; 
+    padding-top:10; 
+    margin :0,10,0,10 ; 
+	
+}
+#globeItemNavigation {
+    z-index: 1;
+}
+
+#notifications {
+    z-index: 0;
+}
+#menu{
+	z-index:2; 
+}
+#main{
+	z-index:3; 
+}
+.bell {
+color:#FFA500;
+font-size:14 ; 
+
+}
+.bars{
+
+	font-size :16; 
+ margin-top:5; 
+ margin-left: 8;	
+ 	color: #00BFFF; 
+    background-color: transparent;
+   border-radius:25;  
+   width:40; 
+   height:40;
+}
+.globe {
+    background-color: red;
+    width: 20;
+    height: 20;
+    border-radius:12; 
+    text-align: center;
+    color: #ffffff;
+    font-size: 12;
+    margin-bottom:20;
+    margin-right: 30;
+    padding-top: 2;
+}
+
+Button {
+    background-color: transparent;
+  
+}
+.articlepic{
+	width:auto; 
+	height:auto ; 
+	
+}
+.up {
+	padding :2; 
+	color : #FFA500 ; 
+	font-size: 24 ; 
+	border-radius: 5;
+	
+}
+.itemStackLayout {
+    text-align: left;
+    vertical-align: center;
+    font-size: 16;
+    color:#404040;
+}
+.title {
+    text-align: center;
+    font-size : 14; 
+    color:#fff;	
+    height:auto;
+    width:100%;
+   	background-color:rgba(0,0,0, 0.6); 
+    padding-bottom:5; 
+}
+.angle{
+	font-size:20 ; 
+	color: #00BFFF  ; 
+	    text-align:right;
+	
+}
+.price{
+      font-size : 14; 
+      text-align: center;     
+          font-weight: 900; 
+         
+    
+
+      	 
+}
+.panier{
+	background-color: #FFA500;
+     horizontal-align: center;
+    border-radius:4; 
+    text-align: center;
+    color: #fff;
+    font-size: 16;
+  padding: 5 ; 
+  height:auto;
+   width:auto; 
+}
+.titlea{
+	
+	background-color: transparent;
+border-color: transparent;
+}
+Label:hover {
+ /* background: #868e96 none repeat scroll 0 0;*/
+  color:#FFA500; 
+  cursor:pointer;
+} 
+
+.alert {
+	padding :5 ; 
+	background-color: #FFA1A1; 
+	color :#444444; 
+	 border-width: 1 ;
+	 border-radius :2; 
+   border-color:#F27171;
+   font-size:12;  
+}

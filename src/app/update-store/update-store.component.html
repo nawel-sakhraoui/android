@@ -1,0 +1,234 @@
+  <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+
+<div i18n-class class="text-left scroll2" *ngIf="show">
+ 
+<nav class="navbar navbar-default  navnav sticky-top" >
+  
+    
+      
+    <span class="form-inline ">
+     
+	  
+	    
+		<a   class="navbar-brand  btn btn-link " routerLinkActive="active"  [routerLink]="['../store']" >
+           {{storetitle}}  </a>
+
+     <star-rating size ='small'  [starType]="'svg'" [rating]="model.ratingsum/model.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: xx-small ; " i18n="@@votess">( {{model.ratingcount}} votes)</span>
+
+    
+   </span> 
+  
+      	
+
+   
+</nav>
+
+
+ 
+
+
+<!--
+<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false}"   ></div>
+-->
+<div class="container list-group-item  ">
+    
+     <table class="table table-sm 	 table-striped "style='margin-top:50px;'>     
+       
+       <tbody>
+         <tr>
+  	      <th scope="col">  <label for="status" i18n="@@categories"> Categories </label> </th>
+  	      
+  	      <th>  
+  	        <a class="btn fa fa-pencil"  *ngIf='!editCat' style='display:inline-block;' (click)='editingCat()'> </a>
+  	     	<a class="btn fa fa-check"  *ngIf='editCat' style='display:inline-block ;margin-right:5px; ' (click)='saveCat()'></a>
+			 <a class="btn fa fa-remove" *ngIf='editCat' style='display:inline-block; ' (click)='removeCat()'></a>
+								    
+                 
+  	      </th>
+         </tr>
+        
+     			
+  		<tr>
+  		<td></td>
+  		 <td>
+	
+	
+		  <div *ngIf='!editCat' class="card">
+		   			<ul  class="list-group" >
+      		 			 <li  *ngFor = 'let d of model.selectedCat; let  i=index '  class="list-group-item " style="width:100%; "> 
+		          			<span   style =' display: inline-block;' > {{d}}</span>
+		          			<!-- span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeCategory(d)" class='btn-info'> X</button>  </span-->
+	 					 </li>
+     		 		</ul>
+          	</div>
+			
+		
+			 <ngx-select-dropdown   *ngIf='editCat'  [config]="config" [options]="Categories" 
+            [(value)]="model.selectedCat" [multiple]="true" ></ngx-select-dropdown>     
+     		 <div *ngIf=" model.selectedCat.length==0" class="help-block alert alert-danger" i18n="@@categoriesalert">Choisissez au moins une catégorie</div>
+     		
+			
+         
+  			</td></tr>
+  			
+  	
+  		<tr>
+  	      <th scope="col">  <label for="status" i18n="@@geo"> Couverture Géographique </label> </th>
+  	      
+  	      <th>  
+  	        <a class="btn fa fa-pencil"  *ngIf='!editGeo' style='display:inline-block;' (click)='editingGeo()'> </a>
+  	     	<a class="btn fa fa-check"  *ngIf='editGeo' style='display:inline-block ;margin-right:5px; ' (click)='saveGeo()'></a>
+			 <a class="btn fa fa-remove" *ngIf='editGeo' style='display:inline-block; ' (click)='removeGeo()'></a>
+								    
+                 
+  	      </th>
+         </tr>
+        
+     			
+  		<tr>
+  		<td></td>
+  		 <td>
+	
+	
+		  <div *ngIf='!editGeo' class="card">
+		   			<ul  class="list-group" >
+      		 			 <li  *ngFor = 'let d of model.geo; let  i=index '  class="list-group-item " style="width:100%; "> 
+		          			<span   style =' display: inline-block;' > {{d.name}}</span>
+		          			<!-- span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeCategory(d)" class='btn-info'> X</button>  </span-->
+	 					 </li>
+     		 		</ul>
+          	</div>
+			
+		
+			 <ngx-select-dropdown   *ngIf='editGeo'  [config]="config2" [options]="cities" 
+            [(value)]="model.geo" [multiple]="true" ></ngx-select-dropdown>     
+     		 <div *ngIf=" model.geo.length==0" class="help-block alert alert-danger" i18n="alertgeo">Choisissez au moins une région</div>
+     		
+			
+         
+  			</td></tr>	
+  			
+  			
+  			
+  		<tr>
+  	      <th scope="col"> <label for="status" i18n="@@admins">Administrateurs </label> </th>
+  	      
+  	     <th>  
+  	     	<a class="btn fa fa-pencil"  *ngIf='!editAdmin' style='display:inline-block;' (click)='editingAdmin()'> </a>
+  	     	<a class="btn fa fa-check"  *ngIf='editAdmin' style='display:inline-block ;margin-right:5px; ' (click)='saveAdmin()'></a>
+			<a class="btn fa fa-remove" *ngIf='editAdmin' style='display:inline-block; ' (click)='removeAdmin()'></a>
+			
+  	     </th>
+  	     </tr>
+  	     <tr>
+  		 <td></td>
+  		 <td>
+  		      		
+		  <div *ngIf='!editAdmin' class="card">
+		   			<ul  class="list-group" >
+      		 			 <li  *ngFor = 'let d of model.admins; let  i=index '  class="list-group-item " style="width:100%; height:100%;"> 
+						 <span   style =' display: inline-block;' > {{d.fullname}} {{d.phone}}</span>
+							
+				          			<!-- span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeCategory(d)" class='btn-info'> X</button>  </span-->
+	 					 </li>
+     		 		</ul>
+          	</div>
+	<div *ngIf="editAdmin">
+    <div class="search-container">
+    <form >
+		<div class="input-group">
+        <input  type="text"
+                id="adminquery"
+                name='adminquery'
+                class="form-control" 
+                i18n-placeholder placeholder="rechercher par téléphone..." 
+                aria-describedby="sizing-addon2"
+                [(ngModel)]="adminquery"
+        />
+        <span class="input-group-btn">
+        <button 
+                type="submit" 
+                class="btn btn-default search-button" 
+                (click)="getAdminQuery($event)">
+                <i class="btn fa fa-search"></i></button>
+        </span>
+		</div>
+    </form>
+   </div>
+   	<ul  class="list-group" >
+   	<li  *ngFor = 'let d of search; let  i=index '  class="list-group-item " style="width:100%; height:100%;">
+   	{{d._source.fullname}} <span  style='float:right;display: inline-block; ' ><button  type="button" (click)="addAdmin(d)" class='btn-info btn fa fa-plus' i18n="@@ajouter"> Ajouter</button>  </span>
+   	
+   	</li>
+   	</ul>
+   	<ul class="list-group" i18n="@@admins">Administrateurs
+      		 			 <li  *ngFor = 'let d of model.admins; let  i=index '  class="list-group-item " style="width:100%; height:100%;"> 
+		          			<span   style =' display: inline-block;' > {{d.fullname}} {{d.phone}}</span>
+		          			<span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeAd(d)" class='btn-info btn fa fa-close'> </button>  </span>
+	 					 </li>
+     </ul>
+   </div>
+  			
+  		 </td>
+  		 </tr>
+  			
+  			
+  		  <tr>
+  	      <th scope="col">     <label for="description" i18n="@@description">Description </label> </th>
+  	      
+  	     <th> 
+  	     	<a class="btn fa fa-pencil"  *ngIf='!editDesc' style='display:inline-block;' (click)='editingDesc()'> </a>
+            <a class="btn fa fa-check"  *ngIf table-striped='editDesc' style='display:inline-block ;margin-right:5px; ' (click)='saveDesc()'></a>
+		    <a class="btn fa fa-remove" *ngIf='editDesc' style='display:inline-block; ' (click)='removeDesc()'></a>
+		 	
+  	     
+  	     </th>
+  	     </tr>	
+  	     
+  	      <tr>
+  		 <td></td>
+  		 <td>
+  		     <textarea  *ngIf='!editDesc' rows="5" class="form-control" name="title" [(ngModel)]="model.description" #description="ngModel" readonly ></textarea>
+
+      	    <textarea  *ngIf='editDesc' rows="5" class="form-control" name="title" [(ngModel)]="model.description" #description="ngModel"  ></textarea>
+		    
+  		 </td>
+  		 </tr>
+  		 
+  		 
+  		 	
+  		  <tr>
+  	      <th scope="col">     <label for="status" i18n="@@etat">Etat</label> </th>
+  	      
+  	     <th>
+  	     	 <a class="btn fa fa-pencil"  *ngIf='!editStatus' style='display:inline-block;' (click)='editingStatus()'> </a>
+         	 <a class="btn fa fa-check"  *ngIf='editStatus' style='display:inline-block ;margin-right:5px; ' (click)='saveStatus()'></a>
+			 <a class="btn fa fa-remove"  *ngIf='editStatus' style='display:inline-block; ' (click)='removeStatus()'></a>
+		  
+  	     </th> 
+  	     </tr>
+  	     
+  	      <tr>
+  		 <td></td>
+  		 <td>
+  		      <div *ngIf='!editStatus' ><span *ngIf= "model.open"i18n="@@ouvert">Ouvert</span> 
+            						  <span *ngIf= "!model.open" i18n="@@ferme">Fermé</span>
+            						  </div>
+         
+		    <label *ngIf='editStatus' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="model.open" [value]="true" i18n="@@ouvert" checked>Ouvert</label>
+			<label *ngIf='editStatus' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="model.open" [value]="false"  i18n="@@ferme" >Fermé</label>
+
+		    
+  		 </td>
+  		 </tr>
+   
+   			
+   </tbody>
+     </table>
+       <a  i18n-class class='btn btn-link fa fa-chevron-left' [routerLink]="['../store']" i18n="@@back">Retour </a>
+     
+    
+</div >
+
+                  </div>
+ 	

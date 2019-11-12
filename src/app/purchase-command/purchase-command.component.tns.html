@@ -1,0 +1,299 @@
+<ScrollView #scrollView>
+<StackLayout>
+<StackLayout #top [visibility]="nosale? 'visible' : 'collapsed'" >
+<Label class="alert" text='Commande introuvable' *ngIf="nosale"></Label>
+<Label class="fas" fontSize="16" text='{{model.storetitle}}&#xf053;' [nsRouterLink]="['../']"  ></Label>
+
+</StackLayout>
+<ActivityIndicator *ngIf="!ongoing && !nosale" color='#FFA500' rowSpan="5" [busy]="!ongoing"></ActivityIndicator>
+
+ <StackLayout  margin='5,0,0,0' [visibility]=" !nosale && ongoing ? 'visible' : 'collapsed'"  >
+      		
+      		  <Label [nsRouterLink]="['../../']"    >
+				      		  <FormattedString>
+            					
+         					    <Span fontSize="16" text="&#xf053; " class="fas" color='#000'  ></Span>
+         					    <Span text="Retour Commande en cours"></Span>
+       						</FormattedString>
+			 </Label>
+     
+     
+     		<StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+      		   
+
+      		    
+
+ <GridLayout   rows="auto,auto,auto,auto,*,*,auto,auto,*,auto,*,auto,*,*,*">
+				        <StackLayout row="0">
+				      <Label   >
+				      		  <FormattedString>
+            					<Span text="Commande id:  "  ></Span>
+         					    <Span text="{{commandid}}" class="fas" color='#00BFFF'       ></Span>
+       						</FormattedString>
+				      	
+				      </Label>
+				        <StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+				       
+				      </StackLayout>
+				      
+				      <StackLayout row="1">
+				      <Label   >
+				      		  <FormattedString>
+            					<Span text="Faite le:  "  ></Span>
+         					    <Span text="{{model.startdate}}" class="fas" color='#00BFFF'       ></Span>
+       						</FormattedString>
+				      	      		  
+				      </Label>
+				        <StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+				       
+				      </StackLayout>
+					  <GridLayout    row='2'  columns='*,auto'>
+					  		<Label col='0'  text="Montant total:  "  ></Label>
+         					<Label col="1"  text="{{ model.totalprice}} DA" class="fas" color='#000' ></Label>
+       					
+					  
+					  </GridLayout> 
+					  
+					  <StackLayout row="3" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+					  <Label row='4'   >
+							 <FormattedString>
+            					<Span text="Magasin:  "  ></Span>
+         					    <Span text="{{model.storetitle }}" class="fas" color='#00BFFF' (tap) ='gotoStore(model.storetitle)'  ></Span>
+       						</FormattedString>
+					  </Label>
+					  
+					  <RadListView  row="5" [items]="model.articles" >
+						<ng-template let-a="item"  >
+						<StackLayout >
+							 <GridLayout columns='*,*,auto'>
+							    <Image col="0" [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
+
+							    <GridLayout col="1" rows="auto,*" >
+							    
+							    	
+							    	<TextView editable="false" row="0"  class="titlea" text="{{a.title}}"  (tap)="gotoArticle(a.articleid, model.storetitle)">
+ 					    			</TextView>
+							    	<GridLayout row="1" rows="*,*,*,*,*" columns='*,auto'>
+							    	<Label row='0' col="0"  text="Couleur: "></Label>
+							    	<Label row="0" col="1" width="20" height="20" [backgroundColor]='a.color'></Label>
+							        <Label row="1" col="0" text='Taille: '></Label>
+							        <Label row='1' col="1" class='size' text='{{a.taille}}' > </Label>
+							        <Label row='2' col="0" text="Quantité: "></Label>
+							        <Label row='2' col="1" color="#000" text='{{a.quantity}} UNIT'></Label>
+							        <Label row='3' col="0" text="Prix: "></Label>
+							        <Label row='3' col="1" color="#000"  text='{{a.price}} DA'></Label>
+							              	
+							 	<StackLayout  row="4"  [visibility]=" marticlesrating.hasOwnProperty(a.articleid )? 'visible' : 'collapsed'"  >
+  									 <AbsoluteLayout height="35" width="85"    class=" border "  >
+      	          							 <StackLayout left="-80" top="-10" android:cursorVisible="false"  >
+      	           
+                								 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="marticlesrating[a.articleid]"  ></StarRating>
+               								 </StackLayout>
+                 
+       							    </AbsoluteLayout>
+ 	    						 </StackLayout>
+ 	    						 
+							     </GridLayout>
+							    </GridLayout>
+							 </GridLayout>
+							<StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+							<StackLayout #rating  [visibility]="(!(marticlesrating.hasOwnProperty(a.articleid )) && steps.stop==0  && steps.close!=0)? 'visible' : 'collapsed'">
+										 <Label margin='0,10,0,10'   text="Noter l'article:" ></Label>
+        							<StackLayout  margin="0,10,0,25">	
+ 			 						<AbsoluteLayout height="35" width="85" class=" border "  >
+      	          							 <StackLayout left="-80" top="-10" android:cursorVisible="false"  >
+      	           
+                								 <StarRating filledColor="#FFA500" isindicator="false" (valueChange)="setScore($event, a.articleid)"   android:scaleX=".3" android:scaleY=".3"  value="articlesrating[a.articleid]"  ></StarRating>
+               								 </StackLayout>
+                 
+       							    </AbsoluteLayout>
+       							    
+       							             <Label editable="false"  *ngIf="alertA[a.articleid]" class="alert" text=" s'il vous plait notez cet article avant d'envoyer"></Label> 
+       							    
+ 			 						</StackLayout>
+							 		<TextView margin='0,10,0,25'  fontSize="12"  hint="votre évaluation" class="input" [(ngModel)]="feedbackA[a.articleid]"    returnKeyType="done" 
+                							 returnPress="onReturnPress" maxLength="300">
+       								</TextView>
+   								  
+							<StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+							 	
+						
+							 
+							 
+						</StackLayout>
+						</StackLayout>
+						</ng-template>	
+					</RadListView> 
+					
+				    <GridLayout row="6" columns='*,auto' rows="*,auto"  [visibility]="isEmpty(marticlesrating)  && steps.stop==0 && steps.close!=0 ? 'visible' : 'collapsed'" > 
+							    <Label padding='5' row="0" fontSize="12"  borderRadius="5" class="btn btn-active" color="#fff"  backgroundColor="#FFA500" col="1" (tap)='sendRatingA() ' text="Envoyer"></Label>
+								<StackLayout row="1"   margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+							
+					</GridLayout>
+					
+					<GridLayout row="7" columns='*,auto'>
+					 <Label col="0" >
+					 		 <FormattedString>
+            					<Span text="Livraison:  "  ></Span>
+         					    <Span text="{{delivery.title }} " class="fas" color='#00BFFF'   ></Span>
+       						</FormattedString>
+					 </Label>
+					 <Label col="1" text=" {{delivery.price }} DA" class="fas" color="#000"></Label>
+					</GridLayout>
+					<StackLayout row="8" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+						<Label row="9"   text="Addresse: "></Label>
+					<GridLayout padding="2"  row="10" backgroundColor="#D3D3D3"  rows="*,*,*,*,*,*" columns="*,*" >
+					
+						<Label class='add' row="0" col="0" text="à M.Mme" ></Label> 
+  						<Label class='add'row="0" col="1" text="{{choosenAddress.to}}"></Label>
+  		     			<Label class='add'row="1" col="0" text="Téléphone" ></Label> 
+  						<Label class='add' row="1" col="1" text="{{choosenAddress.phone}}"></Label>
+  		     			<Label class='add'row="2" col="0" text="Ville" ></Label> 
+  						<Label class='add'row="2" col="1" text="{{choosenAddress.city}}"></Label>
+  		   			    <Label class='add'row="3" col="0" text="Commune" ></Label> 
+  						<Label class='add'row="3" col="1" text="{{choosenAddress.commune}}"></Label>
+  		   			    <Label class='add'row="4" col="0" text="Codepostal" ></Label> 
+  						<Label class='add'row="4" col="1" text="{{choosenAddress.zipcode}}"></Label>
+  		     			<Label class='add'row="5" col="0" text="Addresse" ></Label> 
+  						<Label class='add'row="5" col="1" text="{{choosenAddress.address}}"></Label>
+  		     			
+					</GridLayout>
+      		    	<StackLayout row="11" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+      		    	
+      		    	<GridLayout row="12" rows='auto,*'>
+      		    	   <GridLayout margin='0,0,10,0' row="0" columns="*,auto,auto,auto,auto,auto">
+      		    	
+      		    	    <Image   col="0" src="res://trolley" class='wizardimg' stretch="aspectFill"></Image>
+      		    	    <Label    col='0'  class='wizardActive'></Label>
+      		    	   
+      		    	
+      		  		  	<Image  [visibility]="steps.stop!=0 ? 'visible' : 'collapsed'"  col="1" src="res://close" class='wizardimg' stretch="aspectFill"></Image>
+      		    	    <Label  [visibility]="steps.stop!=0 ? 'visible' : 'collapsed'"  col='1'  class='wizardActive'></Label>
+      		    	   
+      		    	
+      		  		  	<Image  [visibility]="steps.stop==0  ? 'visible' : 'collapsed'"   col="2" src="res://delivery" class='wizardimg' stretch="aspectFill"></Image>
+      		  		  	<Label  [visibility]="steps.stop==0  && steps.send==0  ? 'visible' : 'collapsed'"  col='2'  class='wizard'></Label>
+      		    	    <Label  [visibility]="steps.stop==0  && steps.send!=0  ? 'visible' : 'collapsed'"  col='2'  class='wizardActive'></Label>
+      		    	   
+      		  		  	
+      		  		  	
+      		    	
+      		 		   	<Image  [visibility]="steps.stop==0  ? 'visible' : 'collapsed'" col="3" src="res://closebox" class='wizardimg' stretch="aspectFill"></Image>
+        			    <Label  [visibility]="steps.stop==0  && steps.receive==0  ? 'visible' : 'collapsed'"  col='3'  class='wizard'></Label>
+      		    	    <Label  [visibility]="steps.stop==0  && steps.receive!=0  ? 'visible' : 'collapsed'"  col='3'  class='wizardActive'></Label>
+      		    	   
+      		  		  	
+      		    	
+      		  		  	<Image  [visibility]="steps.stop==0 &&  steps.litige !=0 ? 'visible' : 'collapsed'" col="4" src="res://litige" class='wizardimg' stretch="aspectFill"></Image>
+       		 		  	<Label  [visibility]="steps.stop==0  && steps.litige !=0 ? 'visible' : 'collapsed'" col='4'  class='wizardActive'></Label>
+       		 		  	
+ 
+      		 	        <Image  [visibility]="steps.stop==0  ? 'visible' : 'collapsed'" col="5" src="res://checked" class='wizardimg' stretch="aspectFill"></Image>
+       		 	        <Label  [visibility]="steps.close==0 ? 'visible' : 'collapsed'" col='5'  class='wizard'></Label>
+       		 		  	<Label  [visibility]="steps.close!=0 ? 'visible' : 'collapsed'" col='5'  class='wizardActive'></Label>
+      		    	
+      		    		</GridLayout>
+      		    		<StackLayout row="1">
+      		    			
+ 	  	 					<Label class="ongoingli"  *ngIf='steps.stop==0 && steps.prepare==0 '  text='En cours de préparation'></Label>
+ 	  	 				    
+ 	  	 				    <StackLayout orientation="horizontal">
+ 	  	 				    <Label class="ongoingli"    *ngIf='( steps.prepare==0 && steps.stop ==0)' text='Annuler la commande'></Label>
+ 	  	  				    <Button  *ngIf='( steps.prepare==0 && steps.stop ==0)' (tap)="showModal(commandid, model.storetitle ); " height="35" backgroundColor='#d9534f' color="#FFF" text="&#xf00d;" class="fas">  </Button>
+ 	  	 					</StackLayout>
+ 	  	 					
+ 	  	 					<Label class="ongoingli"   *ngIf='steps.prepare!=0' text='Commande préparée le: {{steps.prepare}}'></Label>
+ 	  	
+ 	  			
+ 	  	 			     	<Label  class="ongoingli"  *ngIf='steps.stop!=0' text='Commande annulée le: {{steps.stop}}'></Label>
+ 	  					
+ 	  						<Label  class="ongoingli"  *ngIf="steps.send==0 && steps.prepare!=0 && steps.stop==0 "  text="Attente de l'envoie" ></Label>
+	   
+	     					<Label  class="ongoingli"  *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 " text='Commande envoyée le{{steps.send}}'> </Label>
+					 	    
+					 	     <StackLayout orientation="horizontal">   
+					 	     <Label  class="ongoingli" *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 && steps.receive==0" text="Commande reçu"></Label>
+					 	     <Button   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0  && steps.receive==0"  (tap)=" receiveDone(commandid, i,model.storetitle)"  height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+					 	     </StackLayout>
+					 	    
+					 	    <Label  class="ongoingli" *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0" text="Commande reçu le: {{steps.receive}}"></Label>
+					 	    <StackLayout orientation='horizontal'>
+					 	    <Label  class="ongoingli" *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige==0 && steps.close==0" text="Ouvrir un litige"></Label>
+					 	    <Button  *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige==0 && steps.close==0" text="" (tap)="litigeDone(commandid, i, model.storetitle )"   height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+					 	    
+					 	    </StackLayout>
+					 	    <Label  class="ongoingli"   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 "  text="Litige ouvert le: {{steps.litige}}"></Label> 
+					 	    
+	 						<Label  class="ongoingli"   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 && steps.solvedlitige==0 " text="Veuillez contacter le magasin pour trouver une solution à votre litige" ></Label>
+	 						<StackLayout orientation='horizontal'>
+	 						<Label  class="ongoingli"   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 && steps.solvedlitige==0 " text="Litige résolu" ></Label>
+	 						 <Button *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 && steps.solvedlitige==0 "  (tap)=" solvedlitigeDone(commandid, i, model.storetitle )"   height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+	 					    </StackLayout>
+  
+  						 	<Label  class="ongoingli"   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 && steps.solvedlitige!=0 " text='Litige résolu le: {{steps.solvedlitige}}'></Label>
+  						 
+          					<StackLayout orientation='horizontal'>
+          			  	   <Label  class="ongoingli"   *ngIf="steps.close==0 && steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 && ((steps.litige!=0 && steps.solvedlitige!=0) ||steps.litige==0)  " text="Fermer la commande"></Label>
+        					<Button *ngIf="steps.close==0 && steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 && ((steps.litige!=0 && steps.solvedlitige!=0) ||steps.litige==0) "  (tap)="closeDone(commandid, i, model.storetitle); "     height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+        					</StackLayout>
+     
+     					    <Label  class="ongoingli" *ngIf="steps.close!=0 "  text='Commande fermée le {{steps.close}}'></Label>
+     				
+       
+      		    
+      		    </StackLayout>
+      		   		</GridLayout>
+      		    	
+      		    	<GridLayout row='13' #message rows="auto,*,auto,auto" margin="5,0,5,0">
+      		    	<StackLayout row="0" orientation='horizontal'>
+      		    	 <Label  text="&#xf075; Messages " class='msgtitle fas ' width="90%"></Label>
+      		    	 <Label text ='&#xf107;' class="msgtitle fas"  (tap)= "openMsgs()" ></Label>
+      		    	 </StackLayout>
+      		    	
+      		    	<RadListView  #msgs row="1" [items]="model.messages " height="200"   [visibility]="isopen? 'visible' : 'collapsed'" >
+						<ng-template let-message="item"  >
+					<StackLayout>
+						
+						<GridLayout columns="auto,*" [visibility]="message.fromMe? 'visible' : 'collapsed'" >
+						
+						<Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					    <GridLayout col="1" rows='auto,auto'  >
+					   		 <StackLayout  row="0" orientation=horizontal>
+					   		 	<Label width="75%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	<Label class="fas" fontSize="10"text=" &#xf017; {{message.date}}"></Label>
+					   		  </StackLayout>
+					  		 <textView row="1" text='{{message.text}}' editable="false" class="msgs1"></textView>
+						 </GridLayout> 
+						</GridLayout>
+						
+						<GridLayout  columns="*,auto" [visibility]="!message.fromMe? 'visible' : 'collapsed'" >
+								<Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					       <GridLayout col="0" rows="auto,auto" >
+					   		 <StackLayout row="0" orientation=horizontal horizontalAlignment="right"  >
+					   		     <Label width="60%" class="fas" fontSize="10"  text="&#xf017;{{message.date}}"></Label>
+					   		  
+					   		 	 <Label width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		  </StackLayout>
+					  		 <TextView  row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
+						 </GridLayout>
+						
+						</GridLayout>
+						</StackLayout>
+						</ng-template>
+						
+						
+						
+      		       </RadListView>
+ 
+      		    	 <StackLayout  [visibility]="steps.close==0? 'visible' : 'collapsed'"  row="2" orientation="horizontal">
+      		    	 <textView  width='80%' class="msg"  returnKeyType="done" [(ngModel)]="model.message" ></textView>
+      		    	 <Label  text='Envoyer' class="send" returnKeyType="done" (tap)=" sendMessage(commandid, model.storetitle)"></Label>
+      		    	 </StackLayout>
+      		    	<textView row='3' class="alert" text='taper votre message !' *ngIf='alertM'></textView>
+      		    	 
+      		    	</GridLayout>
+      		
+</GridLayout>
+</StackLayout>
+</StackLayout>
+</ScrollView>

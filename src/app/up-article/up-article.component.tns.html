@@ -1,0 +1,366 @@
+<ScrollView>
+<StackLayout>
+  <Label [nsRouterLink]="['../']"   padding="5"  >
+				      		  <FormattedString>
+            					
+         					    <Span fontSize="16" text="&#xf053; " class="fas" color='#000'  ></Span>
+         					    <Span text="Retour a l'Article"></Span>
+       						</FormattedString>
+			 </Label>
+
+<GridLayout rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
+<Label class='head' col="0" row="0" text="Titre"></Label>
+<StackLayout class='head' col="1" row="0" orientation ="horizontal">
+<Label [visibility]="!editTitle ?'visible':'collapse'"   (tap)='editingTitle()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editTitle  ?'visible':'collapse'"    (tap)='saveTitle()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editTitle  ?'visible':'collapse'"     (tap)='removeTitle()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout [visibility]="!editTitle ?'visible':'collapse'"  col="1" row="1" >
+<textView  class="border" editable ="false" text="{{model.title}}" >
+</textView>
+
+</GridLayout>
+<GridLayout [visibility]="editTitle ?'visible':'collapse'"  col="1" row="1" >
+<textView   class="border" editable ="true" text="{{model.title}}" >
+</textView>
+</GridLayout>
+
+<Label class='head' col="0" row="2" text="Gallerie"></Label>
+<StackLayout class='head' col="1" row="2" orientation ="horizontal">
+<Label [visibility]="!editGallery ?'visible':'collapse'"   (tap)='editingGallery()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editGallery  ?'visible':'collapse'"    (tap)='saveGallery()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editGallery  ?'visible':'collapse'"     (tap)='removingGallery()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout rows="*,auto,auto" [visibility]="!editGallery ?'visible':'collapse'"  col="1" row="3" >
+
+		  <RadListView row="0" [items]="model.gallery" >
+   			     <ng-template let-image="item" let-i="index">
+        		    <GridLayout >
+             		   
+              		   <Image    width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+              		  
+            		</GridLayout>
+        		</ng-template>
+        		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewStaggeredLayout>
+        	
+          </RadListView>
+    		
+    	     		<StackLayout  row="1" >
+
+    			<Label text="l'image principale: "></Label>
+    			  <Image horizontalAllignment="left"    width="80"  height="80"[src]="model.pic" stretch="aspectFill"></Image>
+    			
+    		</StackLayout>
+    		    	    <StackLayout row="2" margin="15,0,0,0" backgroundColor="darkgray" colSpan="2"  height="1"></StackLayout>
+    		
+
+</GridLayout>
+<GridLayout rows="auto,*, auto,auto,auto" [visibility]="editGallery ?'visible':'collapse'"  col="1" row="3" >
+		
+			<Label margin-bottom="5" row="0" text="+ Gallerie d'image" (tap)="onSelectMultipleTap()" class='label'></Label>
+ 
+  			  <RadListView row="1" [items]="model.gallery" >
+   			     <ng-template let-image="item" let-i="index">
+        		    <GridLayout columns="auto, auto">
+             		   
+             		   <Image borderWidth="2" borderColor="red" *ngIf="mainpic ==i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+              		   <Image  *ngIf="mainpic !=i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+              		  
+              		  <Label  color="red"   col="1" class="fas" text="&#xf00d;" (tap)="removeObject(image)"></Label>
+            		</GridLayout>
+        		</ng-template>
+        		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewStaggeredLayout>
+        	
+    		  </RadListView>
+    		
+    		<StackLayout   row="2" >
+    			<Label text="l'image principale: "></Label>
+    			  <Image horizontalAllignment="left"    width="80"  height="80"[src]="model.pic" stretch="aspectFill"></Image>
+    			
+    		</StackLayout>
+    		
+    	    <StackLayout row="3" margin="15,0,0,0" backgroundColor="darkgray" colSpan="2"  height="1"></StackLayout>
+    		<!-- StackLayout row="3">
+    		    		 <TextView  editable="false"  text ="Ajouter au moins une image de l'article" *ngIf="send && gallery.length==0" class="alert"></TextView>            
+    		   			 <TextView  editable="false" text ="le format de l'image sélectionné est invalide" *ngIf="alertimg " class="alert"></TextView>            
+   			</StackLayout-->
+
+
+</GridLayout>
+
+
+<Label class='head' col="0" row="4" text="Prix"></Label>
+<StackLayout class='head' col="1" row="4" orientati1on ="horizontal">
+<Label [visibility]="!editPrice ?'visible':'collapse'"   (tap)='editingPrice()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editPrice  ?'visible':'collapse'"    (tap)='savePrice()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editPrice  ?'visible':'collapse'"     (tap)='removePrice()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout  columns='*,auto' [visibility]="!editPrice ?'visible':'collapse'"  col="1" row="5" >
+   	<Label fontSize="14" color="#000" margin='12,0,0,25' col="0"  text='{{model.price}}'></Label>
+    <Label color="#000" fontSize="14" col="1" text="D.A" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
+  
+</GridLayout>
+<GridLayout columns="*,auto" [visibility]="editPrice ?'visible':'collapse'"  col="1" row="5" >
+	
+   	<textField col="0" returnKeyType="done" hint="0.00" keyboardType="number" maxLength="20"   [(ngModel)] ="model.price" text='{{model.price}}'></textField>
+    <Label color="#000" fontSize="14" col="1" text="D.A" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
+  
+</GridLayout>
+
+<Label class='head' col="0" row="6" text="Quantité"></Label>
+<StackLayout class='head' col="1" row="6" orientation ="horizontal">
+<Label [visibility]="!editQt ?'visible':'collapse'"   (tap)='editingQt()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editQt  ?'visible':'collapse'"    (tap)='saveQt()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editQt  ?'visible':'collapse'"     (tap)='removeQt()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout  columns='*,auto' [visibility]="!editQt ?'visible':'collapse'"  col="1" row="7" >
+		<Label color="#000"  margin="12,0,0,25" fontSize="14" col="0" text='{{model.quantity}}'></Label>
+    		<Label color="#000" fontSize="14" col="1" text="UNIT" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
+    	
+
+</GridLayout>
+<GridLayout columns="*,auto" [visibility]="editQt ?'visible':'collapse'"  col="1" row="7" >
+
+	
+    		<textField col="0" returnKeyType="done" hint="0" keyboardType="number" maxLength="5"   [(ngModel)] ="model.quantity" text='{{model.quantity}}'></textField>
+    		<Label color="#000" fontSize="14" col="1" text="UNIT" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
+    	
+</GridLayout>
+
+<Label class='head' col="0" row="8" text="Couleurs et autres"></Label>
+<StackLayout class='head' col="1" row="8" orientation ="horizontal">
+<Label [visibility]="!editColor ?'visible':'collapse'"   (tap)='editingColor()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editColor  ?'visible':'collapse'"    (tap)='saveColor()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editColor  ?'visible':'collapse'"     (tap)='removingColor()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout [visibility]="!editColor ?'visible':'collapse'"  col="1" row="9" >
+			   				 
+				<RadListView  row='1'  [items]="model.color" >
+  		  		<ng-template let-c="item" let-i="index" >
+  		  		<GridLayout rows="*,*">
+  		  		
+                    <Label horizontalAlligmnt="left" row="0" textAlign="left" borderWidth="1" borderColor="#000"  col="0" [backgroundColor]='c' height="25" width="40"></Label>
+                 
+   		  			<RadListView row="1" [items]="model.sizing[c]" [visibility]="boolsize?'visible':'collapse'">
+   		  			 <ng-template let-s='item'> 
+   		  			 <GridLayout>
+   		  			
+   		  			          	<Label   textAlign="center"   color="#000" fontSize="12"  text="{{s}}" height="20" width="50" margin="2,2,0,2" backgroundColor="#D0D0D0"></Label>
+   		  			  </GridLayout>     
+   		  			</ng-template>
+   		  			  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewStaggeredLayout>
+   		  			</RadListView>
+   		  		</GridLayout>
+   		 		 </ng-template>
+      		   </RadListView>
+   	    	 
+
+
+</GridLayout>
+<GridLayout rows='auto,*,auto' [visibility]="editColor ?'visible':'collapse'"  col="1" row="9" >
+
+<Label class="label" row='à' text="+ Couleurs et autres " (tap)="showARGBPicker()" ></Label>
+    		
+    		   				 
+				<RadListView  row='1'  [items]="model.color" >
+  		  		<ng-template let-c="item" let-i="index" >
+  		  		<GridLayout rows="*,*">
+  		  			<GridLayout columns ='auto,auto' row="0">
+                    <Label borderWidth="1" borderColor="#000"  col="0" [backgroundColor]='c' height="25" width="40"></Label>
+                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeColor(c) '></Label>   
+   		  			</GridLayout>
+   		  			<RadListView row="1" [items]="sizinglist" [visibility]="boolsize?'visible':'collapse'">
+   		  			 <ng-template let-s='item'> 
+   		  			 <GridLayout>
+   		  			    		<Label *ngIf="model.sizing[c].includes(s)" (tap)='addSize($event, c, s)'  borderWidth="2" borderColor="red"   color="#000" fontSize="10"  text="{{s}}" height="20" width="50" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
+   		  			
+   		  			          	<Label *ngIf="!model.sizing[c].includes(s)"  (tap)='addSizing($event, c, s)'     color="#000" fontSize="10"  text="{{s}}" height="20" width="50" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
+   		  			  </GridLayout>     
+   		  			</ng-template>
+   		  			  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="6"></ListViewStaggeredLayout>
+   		  			</RadListView>
+   		  		</GridLayout>
+   		 		 </ng-template>
+      		   </RadListView>
+   	    	
+
+</GridLayout>
+<Label class='head' col="0" row="10" text="Catégories"></Label>
+<StackLayout class='head' col="1" row="10" orientation ="horizontal">
+<Label [visibility]="!editCat ?'visible':'collapse'"   (tap)='editingCat()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editCat ?'visible':'collapse'"    (tap)='saveCat()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editCat  ?'visible':'collapse'"     (tap)='removeCat()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout [visibility]="!editCat ?'visible':'collapse'"  col="1" row="11" >
+
+		    		<RadListView   [items]="model.selectedCat" >
+  		  		<ng-template let-c="item" let-i="index" >
+  		  		
+                    <Label class="border" text='{{c}}' color="#000"></Label>
+   		 		 </ng-template>
+      		</RadListView>
+
+</GridLayout>
+<GridLayout [visibility]="editCat ?'visible':'collapse'"  col="1" row="11" rows="auto,auto, *,auto" >
+
+        	    <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+        	
+        		<DropDown  #dd
+                  itemsTextAlignment="left"
+              	 [items]="Categories"
+                  [(ngModel)]="selectedIndex1"
+                  (selectedIndexChanged)="onchange($event)"  
+                  row="0">
+        		</DropDown>
+        		<StackLayout row="1"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
+    	
+    	
+       		<RadListView  row='2'  [items]="model.selectedCat" >
+  		  		<ng-template let-c="item" let-i="index" >
+  		  		<GridLayout columns ='auto,auto'>
+                    <Label col="0" text='{{c}}' color="#000"></Label>
+                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeC(i) '></Label>   
+   		  		</GridLayout>
+   		 		 </ng-template>
+      		</RadListView>
+      	 	<!-- TextView  editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="send && selectcat.length==0 " class="alert"></TextView>            
+      		-->
+      		
+      		 <StackLayout margin='10,0,0,0' row="3"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
+      		
+
+
+</GridLayout> 
+
+
+
+<Label  class="head" col="0" row="12" text="Description"></Label>
+<StackLayout  class="head" orientation ="horizontal"  col="1" row="12">
+<Label [visibility]="!editDesc ?'visible':'collapse'"   (tap)="editingDesc()" text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editDesc  ?'visible':'collapse'"  (tap)='saveDesc()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editDesc ?'visible':'collapse'"    text='&#xf00d;' (tap)='removeDesc()' class="fas"></Label>
+</StackLayout>
+<GridLayout [visibility]="!editDesc ?'visible':'collapse'"  col="1" row="13" >
+	<TextView class="border "  text="{{model.description}}" editable ="false"></TextView>
+
+</GridLayout>
+<GridLayout [visibility]="editDesc ?'visible':'collapse'"  col="1" row="13" >
+	<TextView class="border "  text="{{model.description}}" editable ="true"></TextView>
+
+
+</GridLayout>
+
+
+<Label class='head' col="0" row="14" text="Livraisons"></Label>
+<StackLayout class='head' col="1" row="14" orientation ="horizontal">
+<Label [visibility]="!editDelivery ?'visible':'collapse'"   (tap)='editingDelivery()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editDelivery ?'visible':'collapse'"    (tap)='saveDelivery()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editDelivery  ?'visible':'collapse'"     (tap)='removeDelivery()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout [visibility]="!editDelivery ?'visible':'collapse'"  col="1" row="15" >
+	<RadListView  [items]="model.delivery" >
+	
+	 <ng-template let-del='item'  >
+   		  			 <StackLayout class="border" margin="0,0,10,0" >
+   		  			 
+   		  				 <Label color="#000" col="0" text="{{del.title}}"></Label>
+   		  				
+   		  			  <GridLayout  margin="0,20,0,25" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Poid max"></Label>
+   		  			  	<Label col="1" text="{{del.weight}} kg"></Label>
+   		  			  </GridLayout>
+   		  			  <GridLayout margin="0,20,0,25" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Téléphone"></Label>
+   		  			  	<Label col="1" text="{{del.phone}}"></Label>
+   		  			  </GridLayout>
+   		  	
+   		  			  <GridLayout margin="0,20,0,25" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Prix"></Label>
+   		  			  	<Label col="1" text="{{del.price}} D.A"></Label>
+   		  			  </GridLayout>
+   		  			   
+   		  			  
+   		  			 </StackLayout>
+   		  			 </ng-template>
+</RadListView>
+</GridLayout>
+<GridLayout [visibility]="editDelivery ?'visible':'collapse'"  col="1" row="15" >
+	<RadListView  [items]="delivery" >
+	
+	 <ng-template let-del='item' let-i='index'  >
+   		  			 <StackLayout (tap)=" selectDelivery(del)">
+   		  			 <GridLayout columns="*,auto">
+   		  				 <Label color="#000" col="0" text="{{del.title}}"></Label>
+   		  				<Label fontSize="24" color="#00BFFF" *ngIf="del.checked"    class="fas" col="1" text='&#xf0c8;' ></Label>
+   		  	    		<Label fontSize="24" color="#FFA500" *ngIf="!del.checked"  class="fas" col="1" text='&#xf14a;' ></Label>
+   		  			 </GridLayout>
+   		  			  <GridLayout  margin="0,0,0,10" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Poid max"></Label>
+   		  			  	<Label col="1" text="{{del.weight}} kg"></Label>
+   		  			  </GridLayout>
+   		  			  <GridLayout margin="0,0,0,10" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Téléphone"></Label>
+   		  			  	<Label col="1" text="{{del.phone}}"></Label>
+   		  			  </GridLayout>
+   		  	
+   		  			  <GridLayout margin="0,0,0,10" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Prix"></Label>
+   		  			  	<Label col="1" text="{{del._source.price}} D.A"></Label>
+   		  			  </GridLayout>
+   		  			   
+   		  			  
+   		  			 </StackLayout>
+   		  			 </ng-template>
+</RadListView>
+</GridLayout>
+
+
+<Label  class="head" col="0" row="16" text="Disponible"></Label>
+<StackLayout  class="head" orientation ="horizontal" col="1" row="16">
+<Label [visibility]="!editAvailable ?'visible':'collapse'"  (tap)='editingAvailable()'  text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editAvailable  ?'visible':'collapse'"  (tap)="saveAvailable()"  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editAvailable ?'visible':'collapse'"   (tap)="removeAvailable()"text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+<GridLayout margin='0,0,15,0' [visibility]="!editAvailable ?'visible':'collapse'"  col="1" row="17" >
+  <Label class="border" *ngIf= "model.available" text='Oui'></Label> 
+  <Label class="border" *ngIf= "!model.available" text="Non"></Label>
+
+</GridLayout>
+<GridLayout   margin='0,0,15,0' rows ='*,*'[visibility]="editAvailable ?'visible':'collapse'"  col="1" row="17" > 
+ 	<stackLayout row="0" orientation="horizontal">
+ 	<Label (tap)=" model.available= true "  class="select" text='Disponible'></Label> 
+ 	<Label  (tap)=" model.available= true " fontSize="24" color="#00BFFF" *ngIf="!model.available" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
+   	<Label  (tap)=" model.available= true " fontSize="24" color="#FFA500" *ngIf="model.available" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
+   </stackLayout>
+   <stackLayout row="1" orientation="horizontal">
+ 	<Label (tap)=" model.available= false "  class="select" text='Indisponible'></Label> 
+ 	<Label  (tap)=" model.available= false " fontSize="24" color="#00BFFF" *ngIf="model.available" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
+   	<Label  (tap)=" model.available= false " fontSize="24" color="#FFA500" *ngIf="!model.available" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
+   </stackLayout> 
+ </GridLayout>
+
+<!-- Label class='head' col="0" row="0" text="Catégories"></Label>
+<StackLayout class='head' col="1" row="0" orientation ="horizontal">
+<Label [visibility]="!editCat ?'visible':'collapse'"   (tap)='editingCat()' text='&#xf14b;' class="fas"></Label>
+<Label margin="0,5,0,0" [visibility]="editCat  ?'visible':'collapse'"    (tap)='saveCat()'  text='&#xf0c7;' class="fas"></Label>
+<Label [visibility]="editCat  ?'visible':'collapse'"     (tap)='removeCat()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+
+<GridLayout [visibility]="!editCat ?'visible':'collapse'"  col="1" row="1" >
+<RadListView    [items]="model.selectedCat" >
+			<ng-template  let-c="item" >
+			<Label class="border" text='{{c}}'></Label>
+			</ng-template>
+	</RadListView>
+
+</GridLayout--> 
+</GridLayout>
+</StackLayout>
+</ScrollView>

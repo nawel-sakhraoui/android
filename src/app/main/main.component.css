@@ -1,0 +1,149 @@
+
+.card0 {
+	  width:18rem ;
+	
+}
+.card:hover {
+
+	 box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.5);
+  
+}
+
+.carousel:hover {
+
+	 box-shadow: 10px 10px 20px 0px rgba(0,0,0,0.5);
+  
+}
+
+.navnav {
+	
+	z-index :1; 
+	    box-shadow: 0 2px 2px -2px rgba(0,0,0,0.5); 
+}
+
+.crop {
+  background-color: #C0C0C0  ;
+  /*  object-fit:cover ; */
+     
+    height: 300px;
+    overflow: hidden;
+    position: relative ; 
+ 
+/*clip: rect(0px,50px,100px,50px);*/
+}
+
+.img {
+ /*margin-bottom: 0;*/
+ width: 100%;
+ object-fit:cover ; 
+  min-width:100%;
+  height: 300px; 
+  min-height:300px ; 
+  object-position: 100% 0;
+}
+
+img.resize {
+ /*margin-bottom: 0;*/
+
+ object-fit:cover ;
+ object-position: 100% 0; 
+  width:350px; 
+  height: 190px; 
+}
+
+
+a.custom-card,
+a.custom-card:hover {
+  color: inherit;
+  display:block ; 
+}
+
+    .swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      background: #fff;
+      /* Center slide text vertically */
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
+    
+    
+
+input[type="checkbox"],
+input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+.label {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+  padding-left: 30px;
+  padding-right: 10px;
+  line-height: 36px;
+  cursor: pointer;
+}
+.label::before {
+  content: " ";
+  position: absolute;
+  top: 8px;
+  left: 0;
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ffae42 ;
+  border-radius: 4px;
+  z-index: -1;
+}
+input[type="radio"] + .label::before {
+  border-radius: 18px;
+}
+/* Checked */
+input[type="checkbox"]:checked + .label,
+input[type="radio"]:checked + .label {
+  padding-left: 10px;
+  color: #fff;
+}
+input[type="checkbox"]:checked + .label::before,
+input[type="radio"]:checked + .label::before {
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffae42;
+}
+/* Transition */
+.label,
+.label::before {
+  -webkit-transition: .25s all ease;
+  -o-transition: .25s all ease;
+  transition: .25s all ease;
+}
+.tag {
+	  border-radius: 18px; 
+	    background: #ffae42;
+	  padding-left: 10px;
+      color: #fff;
+  padding-right: 10px;
+  line-height: 36px; 
+}
+span:hover{
+	color:#ADD8E6 ; 
+	
+}
+.next {
+	font-size:190px;color:#D0D0D0; float:right; cursor: pointer; position:relative ; 
+	display:inline-block ; 
+}
+#navbar2 {z-index:999;}
+ 

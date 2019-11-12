@@ -1,0 +1,321 @@
+
+<nav class="navbar navbar-default" >
+ <div class="container-fluid">
+
+    <a routerLinkActive="active"  class="nav-link navbar-brand" [routerLink]="['../../store']" >{{storetitle}}</a>
+ 
+   </div>
+
+</nav>
+<div   i18n-class class=' text-left scroll2'>
+<div style= "background-color:#F5F5F7 ; ">
+<div class= 'container ' >
+
+
+<div *ngIf='nosale'>
+<div class="alert alert-warning  strong " i18n='@@commandeintrouvable'> Commande id introuvable  </div>
+  <a  class='btn btn-link' (click)= 'backToStore();'><span i18n-class class="fa fa-chevron-left"> </span> <i i18n='@@retour'>Retour</i></a>
+
+</div>
+
+
+<!--
+<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false}"   ></div>
+-->
+<div id ='top' >
+
+
+<div *ngIf='ongoing'>
+<div class ='row'>
+ <div class='col-md-12 col-sm-12 col-12'>
+ <span  i18n-style style='display:inline-block; float:left'><i i18n="@@commandeid" >Commande id:</i>  <b >{{ commandid }}</b></span>
+ <span i18n-style style="float:right; display:inline-block;" ><i i18n='@@montanttotal'>Montant total:</i> <b >{{model.totalprice}} <i  i18n='@@da2'> DA</i></b></span>
+ </div>
+ </div>
+ <div class="row">
+ <ul class="list-group col-md-6 col-sm-6 col-12">
+  <li class="list-group-item" *ngFor = "let a of model.articles " >
+  	  	<div class='row'>
+  	  	<div class="col-sm-5 col-5"><a class="btn" (click)="gotoArticle(a.articleid)">  <img [src]="a.pic" class="resize"  alt="Image"></a></div>
+  	 	<div class='col-sm-4 col-4'>	
+  	 		<a class="btn" (click)="gotoArticle(a.articleid)"><b>{{a.title}}</b></a> <br>
+  	 		
+ 	          <i  i18n='@@couleur'>Couleur</i>
+      		 <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
+   			 <br>
+      		 <span><i i18n='@@quantite'>Quantité</i>   {{a.quantity}} </span>
+   			
+   		</div>
+   		</div> 
+   		<div class="row" i18n-style style='float:right;  margin-right :5px'> <span >{{a.price}} <i i18n='@@da2'>DA </i></span></div>
+ 		  
+ </li>
+ <li class='list-group-item'>
+ <span ><i i18n='@@livraison2'>Livraison:</i> <span class='text-info'> {{model.delivery.title }}</span></span>
+ <span i18n-style style='float:right;'> {{model.delivery.price }} <i i18n='@@da2'> DA </i></span>
+ </li>
+ 
+  <li class='list-group-item'>
+  <span i18n='@@addresse'>Addresse: </span>
+       	<table class="table table-sm table-responsive  add" i18n-style  style='float:right;' >     
+    <thead>
+  </thead>
+   <tbody>
+	 <tr >
+  		<td scope="col"  i18n='@@mmme'>à M. Mme.  </td>
+  		<td>
+  		     
+    
+     		 {{model.choosenAddress.to}}
+     		
+     		   
+  		</td>
+  	</tr>
+  	<tr scope="col" >
+  	    <td i18n='@@telephone'>Téléphone </td>
+  		<td>
+
+     		 {{model.choosenAddress.phone}}
+     	
+     		     
+  		</td>
+  		
+  	 </tr>
+  	<tr > 
+  	    <td scope="col" i18n='@@ville'>Ville </td>
+  		<td>
+     		 {{model.choosenAddress.city }}
+     		 
+     		   
+  		</td> 
+  		
+  	</tr>
+  	<tr> 
+  	    <td  scope="col" i18n='@@commune'>Commune </td>
+  		<td>
+  		   
+
+     		 {{model.choosenAddress.commune }}
+     		
+     		   
+  		</td> 
+  		
+  	</tr> 
+  	<tr> 
+  	   <td  scope="col" i18n='@@codepostal'>codepostal  </td>
+  		<td>
+  		    
+           
+         
+     		 {{model.choosenAddress.zipcode}}
+     	
+  		</td> 
+  	</tr>
+  	<tr  > 
+  		<td scope="col" i18n='@@addresse'>Addresse </td>
+  		<td>
+  		    
+            
+     		 {{model.choosenAddress.address}}
+     		
+  		</td> 
+    </tr>
+   
+  </tbody>
+
+</table>
+</li> 
+ </ul>
+ 
+  <ul class="list-group col-sm-6 col-12 col-md-6">
+  <li class='list-group-item  '> 
+	
+   <div class ="col-sm-6 col-6 ">
+	<i i18n='@@de'> De  </i> <a class ="btn btn-link text-info " (click)="gotoUser(model.userid)">  {{fullnamelist[model.userid]}}  <img [src]="avatarlist[model.userid]" class="resize"></a>
+   </div>
+ 	<div    *ngIf="model.userrating!=0 && model.steps.close!=0  && model.steps.stop==0" class=' form-group col-sm-6 col-6'>
+ 	            
+ 	      <span><star-rating id= "model.userid" [starType]="'svg'"  [rating]="model.userrating"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating>
+ 	     </span> 
+ 	</div >
+ 	<div    *ngIf="model.userrating==0 && model.steps.close!=0   && model.steps.stop==0 " class='form-group'>
+ 	
+ 	    <span><i i18n='@@evaluation'>Evaluation</i>
+        <star-rating id= "model.userid" [starType]="'svg'"   [showHalfStars]="true"  (starClickChange)="onClick($event)" ></star-rating>
+        </span>
+         <div  i18n='@@evalalert' *ngIf="alert" class="alert alert-danger" role="alert">s'il vous plait evaluer ce client</div> 
+         <textarea rows="5" class="message" name="message" [(ngModel)]="model.userfeedback" #message="ngModel"  required  ></textarea>
+ 	   	 <div *ngIf="alert2" class="alert alert-danger" role="alert">Ajouter un commentaire </div> 
+ 	   	
+ 	     <button  i18n-style style="float:right; " class="btn btn-warning " (click)=" sendRating(m) " ><i i18n='@@envoyer'>Envoyer</i></button>
+     
+     </div>
+ 	
+  </li>
+  
+  
+  <li class ='list-group-item ' ><i i18n='@@faitele'>
+	   		Faite le: </i> <span> <span dir="ltr">{{model.startdate}}</span></span> 
+	 
+  </li>
+  <li class='list-group-item '>
+ <form-wizard>
+ 	   <wizard-step [title]="'1.5'" [isActive]='true'  [hidden]="model.steps.stop==0"  [isValid]="model.steps.stop!=0" [showNext]="false"[showPrev]='false' >
+ 	    <ul class="ongoingul" >
+ 	  	 <li class="ongoingli" *ngIf='model.steps.stop!=0' ><i i18n="@@saleannulee" >Commande annulée le:</i> <span dir="ltr"> {{model.steps.stop}}</span></li>
+ 	  
+    	</ul>
+     </wizard-step>
+	  <wizard-step [title]="'1'"  [hidden]="model.steps.stop!=0"   [isValid]="model.steps.prepare!=0" [showNext]='false' [showPrev]='false' >
+ 	    <ul class="ongoingul">
+ 	    						
+   		<li class="ongoingli"  *ngIf="model.steps.prepare==0 "><i i18n="@@saleprete">Commande prête: </i><button [disabled]="model.steps.prepareloading" class='btn btn-warning fa fa-check'  (click)= 'prepareDone(commandid,  model.userid); '>
+   																							  <i *ngIf="model.steps.prepareloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>						
+   																					</button>
+   		</li>
+     	<li class="ongoingli" *ngIf='model.steps.prepare!=0 '><i i18n="@@salepreparee">Commande préparée le:</i> <span dir="ltr">{{model.steps.prepare}}</span>  </li>
+     	</ul>
+     </wizard-step>
+ 	 
+ 	 <wizard-step  [title]="'2'"  [hidden]="model.steps.stop!=0" [isActive]="model.steps.prepare!=0" [isValid]="model.steps.send!=0" [showNext]='false' [showPrev]='false'>
+	  <ul class="ongoingul">
+	   	<li class="ongoingli" *ngIf='model.steps.send==0'><i i18n='@@saleenvoie'>Envoie de la commande:</i> <button [disabled]="model.steps.sendloading" class='btn btn-warning fa fa-check' (click)= 'sendDone(commandid,  model.userid); '>   
+	   																     							<i *ngIf="model.steps.sendloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>						
+	   																			 </button> 
+	   	</li>
+    	<li class="ongoingli" *ngIf='model.steps.send!=0'><i i18n="@@saleenvoyee">Commande envoyée:</i><span dir="ltr"> {{model.steps.send}} </span></li>
+    	</ul>
+	   
+ 	 </wizard-step>
+	 <wizard-step [title]="'3'"  [hidden]="model.steps.stop!=0"  [isActive]="model.steps.send!=0" [isValid]="model.steps.receive!=0" [showNext]='false' [showPrev]='false'>
+	   <ul class="ongoingul">
+	   	<li class="ongoingli" *ngIf='model.steps.receive==0' i18n="@@saleattentereception">Attente de la récéption</li>
+    	<li class="ongoingli" *ngIf='model.steps.receive!=0'><i i18n="@@salecommanderecu">Commande reçu le </i><span dir="ltr">{{model.steps.receive}}</span></li>
+    	</ul>
+	 </wizard-step>
+	 
+	   <wizard-step [title]="'4.5'" [hidden]="model.steps.litige==0 || model.steps.stop!=0" [isActive]='model.steps.litige!=0' [isValid]= 'model.steps.litigesolved!=0'  [showNext]='false' [showPrev]='false' >
+        <ul class="ongoingul">
+        <li class="ongoingli"  *ngIf="model.steps.litige!=0"><i i18n="@@salelitige">
+              Début du litige:</i><span dir="ltr"> {{model.steps.litige}}</span> 
+        </li>
+        
+        <li class="ongoingli"  *ngIf="model.steps.solvedlitige==0">
+        	
+           <p class="lead" i18n="@@salecontacterclient">Contacter le client pour trouver une solution ! </p>
+        </li>
+        
+       
+         <li class="ongoingli"  *ngIf="model.steps.solvedlitige !=0" ><i i18n="@@salelitigeresolu"> 
+          Litige résolu le:</i> <span dir="ltr">{{model.steps.solvedlitige}}</span> 
+         </li>
+         <br>
+        
+        </ul>
+	  </wizard-step>
+	 
+	  <wizard-step [title]="'4'" [hidden]="(model.steps.litige!=0 && model.steps.solvedlitige==0 ) || model.steps.stop!=0" [isActive]='model.steps.receive!=0' [isValid]="model.steps.close!=0"  [showNext]='false' [showPrev]='false' >
+  		<ul class="ongoingul">
+        <li class="ongoingli" *ngIf="(model.steps.close==0 &&  model.steps.litige ==0)|| (model.steps.close==0 &&  model.steps.solvedlitige !=0)  "><i i18n="@@saleattentefermeture">Attente de la fermeture de la commande</i></li>
+	    <li class="ongoingli" *ngIf="(model.steps.close!=0 && model.steps.litige ==0) || (model.steps.close!=0 &&  model.steps.solvedlitige !=0)  "><i i18n="@@salecommandeferme">Commande fermé le</i> <span dir="ltr">{{model.steps.close}}</span></li>
+ 		</ul>
+     </wizard-step>
+     
+   
+	 
+</form-wizard>
+  </li>
+ </ul>
+</div>
+
+  <div  class="card row" style="margin-top:8px; " >
+        <div class="card-header"  >
+                    <span class="fa fa-comment"></span><i i18n='@@messages' >Messages</i> 
+                    <div i18n-class class="btn-group pull-right">
+                        <a type="button" class="btn btn-default btn-xs" data-toggle="collapse" aria-expanded="true"   [attr.href]="'#collapseOne_' + 0" >
+                            <span class="fa fa-chevron-down"></span>
+                        </a>
+                    </div>
+
+          </div>
+     <div  id='message'>
+<div #scrollMe [scrollTop]="scrollMe.scrollHeight"  [attr.id]="'collapseOne_' + 0"  class=" card-body" [ngClass]="{'collapse.show': isopen , 'collapse':!isopen }"> 
+
+      <div *ngFor="let message of model.messages  "  >
+	
+		 <ul class="chat">
+                     <li *ngIf='message.fromMe' i18n-class class="left clearfix"><span i18n-class class="chat-img pull-left">
+                      	
+                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' 
+                      alt="User Avatar" /></span>
+                        </span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font">{{fullnamelist[message.from]}}</strong> <small i18n-class class="pull-right text-muted">
+                                        <span class="fa fa-clock-o"></span>{{message.date}}</small>
+                                </div>
+                                <p>
+                                   {{message.text}}
+                                </p>
+                            </div>
+                        </li>
+                         <li *ngIf='!message.fromMe' i18n-class class="right clearfix"><span i18n-class class="chat-img pull-right">
+                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarlist[message.from]'
+                            alt="User Avatar"/> </span>
+                        </span>
+                        <div class="chat-body clearfix">
+                                <div class="header">
+                                    <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message.date}}</small>
+                                    <strong i18n-class class="pull-right primary-font">{{fullnamelist[message.from]}}</strong>
+                                </div>
+                                <p>
+                                  {{message.text}}
+                                </p>
+                            </div>
+                        </li>
+          </ul>
+	
+		 <!--  span class=" profile-picture ">
+		 <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' />
+		 </span>
+		
+		 <span class='date'> </span> <br>
+		 <textarea class='form-control' rows="3"  readonly  maxlength=200  >
+		 
+		 </textarea-->
+		
+		
+  			
+  		
+	 </div> 
+	 
+ 	</div>
+   </div>
+      <div *ngIf="model.steps.close==0" class="card-footer">
+        
+      <form  name='f' (ngSubmit)="f.form.valid  && sendMessage( commandid,model.userid, f)" #f="ngForm" novalidate>
+
+ 	 <textarea rows="3" class="input-group" name="message" [(ngModel)]="model.message" #message="ngModel"  required maxlength=200></textarea>
+	       <div *ngIf="message.invalid && (message.dirty || message.touched)" class="alert alert-danger">
+            <div i18n='@@messagealert' *ngIf="f.submitted && message.hasError('required')" class="help-block">Ajouter un message</div>
+       	    <div i18n='@@messagealert2'*ngIf="  message.hasError('maxlength')" class="help-block">le message est trop long</div>
+      	    </div> 
+           <span class="input-group-btn" i18n-style style='float:right;'>
+	             <button  class="btn btn-warning btn-sm" id="btn-chat" ><i i18n='@@envoyer'>Envoyer</i></button>
+          	</span>   
+     </form>
+              
+                    
+      </div>
+  </div>
+
+   <a  i18n-class class='btn btn-link fa fa-chevron-left ' (click)= 'backToStore();'i18n='@@retour'>Retour</a>
+ 
+
+
+</div>
+  
+  </div>
+  </div>
+  </div>
+  </div>

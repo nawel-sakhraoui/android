@@ -1,5 +1,114 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<ActionBar [title]="title"></ActionBar>
-<StackLayout  class="p-20">
-    <Label text="Welcome to {{ title }}!" class="h1 text-center" textWrap="true"></Label>
-</StackLayout>
+<FlexboxLayout>
+ 
+     
+    <StackLayout *ngIf="login" class="form">
+        <!-- Image class="logo" src=""></Image> -->
+        <Label class="header" text="SIM SIM"></Label>
+
+			<StackLayout *ngIf="suspended">
+			 
+			  <TextView  class="warning" text ="Utilisateur suspendu contacter le support technique pour plus d'info ">
+			  </TextView>
+			 
+			 
+			</StackLayout> 
+			<StackLayout *ngIf="justlog">
+			 <TextView class="warning" text="Ce téléphone est déjà enregistré, veuiller vous connecter ">
+			 </TextView>
+			 
+			</StackLayout>
+			
+        <PreviousNextView>
+          
+                <StackLayout row="1" class="input-field">
+                   
+                    <MaskedTextField class="input" hint="Téléphone"[isEnabled]="login"
+                        keyboardType="phone" autocorrect="false"
+                        autocapitalizationType="none" [(ngModel)]="model.phone"
+                        returnKeyType="done"
+                        mask="00 00 00 00 00"
+                        (returnPress)='logins()'></MaskedTextField>
+                        <TextView *ngIf='alertLength' class="warning" text="Le numero que vous avez entrez est incomplet."> </TextView>
+                    <StackLayout class="hr-light"></StackLayout>
+                </StackLayout>
+
+   
+                <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading"></ActivityIndicator>
+        
+
+        	
+    
+          <Button text="Connexion"
+            (tap)="logins()" class="btn btn-primary m-t-20"  returnKeyType="done" ></Button>
+            
+            
+        
+        </PreviousNextView>
+       <Label class="login-label sign-up-label" (tap)="login=!login">
+        <FormattedString>
+            <Span text="Pas de compte? "></Span>
+            <Span color="#FFA500" text="S'enregistrer" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+    </StackLayout>
+    
+    <StackLayout *ngIf='!login' class="form">
+    
+    
+        <!-- Image class="logo" src=""></Image> -->
+        <Label class="header" text="SIM SIM"></Label>
+
+ 
+			<StackLayout *ngIf="pleaseRegister">
+			 <TextView class="warning" text=" Ce téléphone n'est pas enregister, enregistrer le "></TextView>
+			 </StackLayout>
+
+        <PreviousNextView>
+           
+           
+            <GridLayout rows="auto, auto ">
+                
+                <StackLayout  row="0" class="input-field">
+        
+                  <TextField  class="input" hint="Nom complet"
+                         autocorrect="false" autocapitalizationType="none" [(ngModel)]="model.fullname"
+                       ></TextField>
+                    <StackLayout class="hr-light"></StackLayout>
+                </StackLayout>
+               
+                
+                <StackLayout row="1" class="input-field">
+                          
+               		
+                
+                    <MaskedTextField  class="input" hint="Téléphone" [isEnabled]="login"
+                        keyboardType="phone" autocorrect="false"
+                        autocapitalizationType="none" [(ngModel)]="model.phone"
+                        returnKeyType="done"
+                        mask="00 00 00 00 00"></MaskedTextField>
+                    <StackLayout class="hr-light"></StackLayout>
+               
+                </StackLayout>
+
+           
+
+                <ActivityIndicator rowSpan="3" [busy]="loading"></ActivityIndicator>
+            </GridLayout>
+       
+
+     
+         </PreviousNextView>   
+            	
+        <Button text="S'enregister"
+            (tap)="register()" class="btn btn-primary m-t-20"   returnKeyType="done"></Button>
+        <Label class="login-label sign-up-label" (tap)="login=!login">
+        <FormattedString>
+            <Span text="Déjà enregistré? "></Span>
+            <Span text="Connexion"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+            
+    </StackLayout>
+
+    
+</FlexboxLayout>

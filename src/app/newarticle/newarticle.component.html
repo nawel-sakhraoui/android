@@ -1,0 +1,263 @@
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+<div *ngIf ='show'i18n-class class='text-left'>
+<div *ngIf='nostore' i18n="@@nostore">
+Ce magasin n'existe pas 
+</div>
+
+<div *ngIf='suspend' >
+
+
+<div i18n-class class=' container alert alert-info text-left ' >
+   Ce magasin est suspendu
+</div>
+
+</div> 
+
+<div *ngIf='!nostore && !open'>
+<div i18n="@@noopen" class="list-group-item  strong "> Ce Magasin est fermé</div>
+</div>
+
+<div *ngIf='!nostore'>
+<div class='scroll2'>
+<nav class="navbar navbar-default  navnav sticky-top" >
+  
+    
+      
+    <span class="form-inline ">
+     
+	  
+	    
+		<a   class="navbar-brand  btn btn-link " routerLinkActive="active"  [routerLink]="['../store']" >
+           {{storetitle}}  </a>
+
+     <star-rating size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: xx-small ; " i18n="@@votess2">( {{store.ratingcount}} votes)</span>
+
+    
+   </span> 
+  
+      	
+
+   
+</nav>
+
+
+
+
+<div class="container col-md-6 col-md-offset-3 card"  >
+    <h2 i18n="@@nouveauarticle" >  Nouveau Article </h2>
+   
+   
+    <form name="form" (ngSubmit)="f.form.valid    && newarticle() " #f="ngForm" novalidate>
+  	        
+       <div class="form-group text-info" >
+            <label i18n="@@titre" for="title" > Titre </label>
+            <input  type="text" class="form-control" name="title" [(ngModel)]="model.title" #title="ngModel" required  maxlength='150'  minlength='4'>
+              <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
+              <div i18n="@@alerttitle"*ngIf="f.submitted && title.hasError('required')" class="help-block">Ajouter un titre</div>
+              <div i18n="@@alert2title"*ngIf=" title.hasError('maxlength')" class="help-block">Le titre est trop long</div>
+              <div i18n="@@alert3title"*ngIf=" title.hasError('minlength')" class="help-block">le titre est trop court</div>
+             
+      	    </div>
+      </div>
+        		
+     <div class="form-group text-info" >
+         
+      <label class ='btn btn-link'  for="files"><i class="fa fa-plus"></i><i i18n='@@gallerieimages'>Gallerie d'images</i></label>
+
+      <input type='file' id="files" name="files" (change)="onSelectFiles($event)" multiple style="display: none;" required>
+       
+      <div class=" card">
+      
+      
+      <ul >
+       <li  *ngFor = 'let url of gallery; let  i=index ' style="list-style: none; display:inline;"> 
+       <label class="labl"  >
+           
+       	        <input type="radio" name="radiogroup"  [checked]="i===0" 
+                [value]="i" (change)="onSelectionChange(i)" id ='radio' />
+                       	
+		          	<div><img [src]="url" height="50" > </div>
+		</label>
+		<button type="button" (click)="removeObject(url)" class='btn btn-info' > <i class="fa fa-close"></i></button>
+		   
+		
+
+      </li>
+      </ul>
+      
+      <div *ngIf= "gallery[mainpic]" >
+      <label i18n="@@mainpic" >Choisissez l'image principale:</label>
+      <br/>
+      <img [src]="gallery[mainpic]" height="100"  > 
+      </div>
+       <br/>
+       
+     </div>	
+       <div i18n='@@picalert' *ngIf="f.submitted && gallery.length==0 " class="alert alert-warning help-block">Ajouter au moins une image du produit</div>
+     	           
+     </div>	
+    
+      <div class="form-group text-info" >
+      		 <label i18n="@@prix" for="price"> Prix</label>
+            <div class="input-group" style="float:left;">
+  				<input type="number" step="0.1"  name="price" [(ngModel)]="model.price" #price="ngModel" required/>
+  		
+  				<span class="input-group-addon" style="display:inline;" i18n="@@da22" >D.A</span>
+				<div *ngIf="price.invalid && (price.dirty || price.touched)" class="alert alert-danger">
+				
+				<div  i18n="@@prixalert" *ngIf="f.submitted && price.hasError('required')" class="help-block">Ajouter un prix</div>
+             
+            	
+            </div>
+			
+			</div>
+	    </div> 
+	     <br/> <br/>
+	    <div class="form-group text-info" >
+      		 <label i18n="@@nombre" for="number"> Nombre </label>
+            <div class="input-group" style="float:left;">
+  				<input type="number" [(ngModel)]="model.numbers" name="numbers"  #numbers="ngModel" min="1" step="any"/>
+  				<span class="input-group-addon" style="display:inline;" i18n='@@unit'>UNIT</span>
+				<div *ngIf="numbers.invalid && (numbers.dirty || numbers.touched)" class="alert alert-danger">
+				
+				<div i18n="@@nombrealert"*ngIf="f.submitted && numbers.hasError('required')" class="help-block">Ajouter le nombre d'articles </div>
+				
+            	
+            </div>
+			</div>
+	    </div> 
+	    <br>
+	    <br>
+	    
+	      
+	    
+	    <!-- div class="form-group">
+	     <label for="sel1">Choose delivery method:</label>
+	     
+	
+		   <select   id="selectdelivery" (ngModelChange)="addDelivery($event)" [(ngModel)]="selectdelivery"   name="selectdelivery" class="selectpicker"  placeholder="Choose one of the following..."   >
+  					  <option  *ngFor='let d of  delivery' [ngValue]="d"><b><span  style='float:left;display: inline-block;'>{{d.title}}</span><span  style='float:right;display: inline-block; ' >{{d.price}} D.A</span></b></option>
+ 					  
+           </select>	
+		   <div class=" panel panel-default">
+		   			<ul  class="list-group" >
+      		 			 <li  *ngFor = 'let d of selectdeliveries; let  i=index '  class="list-group-item " style="width:100%; height:100%;"> 
+		          			<span   style =' display: inline-block;' > {{d.title}}</span>
+		          			<span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeDelivery(d)" class='btn-info'> X</button>  </span>
+	 					 </li>
+     		 		</ul>
+          	</div>
+		
+                 
+          </div--> 
+          
+          
+          
+		
+	    <div class="form-group  text-info " >
+    		 <label for="categories" i18n="@@categories">Categories</label>
+  		
+        	 <ngx-select-dropdown (change)='selectCat($e)' [config]="config" [options]="Categories" 
+        	    [(value)]="selectcats" [multiple]="true" ></ngx-select-dropdown>     
+      			   <div i18n="@@categoriesalert" *ngIf="f.submitted && selectcats.length==0" class="help-block alert alert-danger">Ajouter au moins une catégorie</div>
+       </div>
+       
+       
+       <div   class="form-group text-info " *ngIf='boolsizing'>
+       <div class='col-sm-10 col-10 col-md-10 '>
+        <span *ngFor='let s of sizinglist' ><input   type="checkbox"  value="v"> v </span>
+       		</div>	
+       </div>
+       
+       
+       <div class="form-group text-info " >
+	       <label class='btn btn-link' for="color"> <i class="fa fa-plus"></i> <i i18n="@@couleur">Couleurs </i></label>
+	       
+	      <input type="color" (change)= "addColor($event)" id='color'  >
+	      
+	      
+     		 <div class=" card card-default">
+	      		<br>
+	       		<ul >
+      		 		<li  *ngFor = 'let c of color; let  i=index ' style="list-style: none; display:inline-block;"> 
+       	
+		          	<span  style =' display: block;  width:50px; height:20px; border:1px  solid ; display: inline-block;' [style.background]='c' > </span>
+		          	
+		          			<button type="button" (click)="removeColor(c)" class='btn btn-info'> <i class='fa fa-close'></i></button>  
+
+     		 </li>
+     		 </ul>
+          </div>
+	      </div>
+       <div class="form-group text-info" >
+       <br/> <br/>
+            <label for="description" i18n="@@description" >Description </label>
+            <textarea rows="3" class="form-control" name="description" [(ngModel)]="model.description" #description="ngModel" maxlength="1000" required ></textarea>
+			 <div i18n="@@descriptionalert" *ngIf="f.submitted && !model.description" class="help-block alert alert-danger">Ajouter une description</div>
+			
+      	    
+      </div> 
+   
+       
+            
+            <!-- ngx-select-dropdown (change)="addDelivery($event)" [multiple]="true" [(value)]="selectdeliveries" [config]="deliveryconfig" [options]="delivery" required ></ngx-select-dropdown>
+			 -->
+    
+	    
+       <h5 i18n="@@livraison" class='text-info '>Choisir vos livraisons  </h5>
+    		<div style='border-top :2px solid #D0D0D0 ; padding-top:  10px ; '>
+         
+   
+   
+		 <div class="form-group" style='margin-bottom:200px;' >
+            
+<table class="table table-sm">
+  <thead class="thead-light">
+    <tr>
+      
+    			  <th i18n="@@adtr" scope="col">Titre</th>
+			      <th i18n='@@adp' scope='col'>Poids Max</th>
+ 			      <th i18n='@@adt' scope='col'>Téléphone</th>
+ 			      <th i18n="@@adpp" scope="col">Prix</th>
+  
+
+    </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor=' let del of delivery'  >
+      
+      <td>{{del._source.title}}</td>
+      <td>{{del._source.weight}}<span class="input-group-addon" style="display:inline;" i18n='@@kg'>kg</span> </td> 
+       <td>{{del._source.phone}} </td> 
+      
+      <td>{{del._source.price}}<span class="input-group-addon" style="display:inline;" i18n="@@da22">D.A</span> </td> 
+      <td><label class="checkbox"><input type="checkbox"(change)="selectDelivery(del)"></label></td>
+    </tr>
+  </tbody>
+  </table>
+  <div i18n="@@livraisonalert"*ngIf="f.submitted &&  selectdel.length==0" class=" alert alert-warning help-block">Selectionner les livraisons </div>
+  
+  
+          
+		   </div>
+      <div class="form-group" style="float:right; ">
+              <button [disabled]="loading " class="btn btn-info" i18n="@@envoyer">Envoyer</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+			       
+			        
+              <a class="btn btn-link" (click)=cancel() i18n='@@annuler'>Annuler</a>
+         	<div i18n="@@envoyeralert" *ngIf="f.submitted &&  !f.form.valid" class="alert alert-danger help-block">Remplisser les champs obligatoires </div>
+         
+      </div>
+        
+           </div>
+    </form>
+  
+  
+    
+</div>
+</div>
+
+</div>
+</div>

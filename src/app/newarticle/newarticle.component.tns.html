@@ -1,0 +1,184 @@
+<ScrollView >	
+  <GridLayout  rows='auto, auto,* '>
+
+      <GridLayout row="0"  columns=auto,* >
+        <Label text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
+  		<Label col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+    
+    </GridLayout> 
+    
+    <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+
+      <GridLayout class='main' row='2'rows="auto,auto, auto, auto, auto, auto,auto,auto,auto, auto, 
+      auto, auto,auto,auto,auto, *, auto, auto,auto,auto, auto,auto, *">
+		
+			<Label row='0' text="Nouveau Article" class="title" ></Label>
+			
+			<Label row="1" text='Titre' class="label"    ></Label>
+			<StackLayout row="2">
+			<textField  returnKeyType="done"  hint="..." maxLength="200" [(ngModel)] ="model.title"  ></textField>
+			 <TextView editable="false"  text ="Le titre du magasin est obligatoire" *ngIf="send && model.title.length==0" class="alert"></TextView>            
+	 		<TextView   editable="false" text ="Le titre doit contenir au moins 5 caractères" *ngIf="send && model.title.length< 4" class="alert"></TextView>            
+   			 <TextView  editable="false" text ="Ce titre est trop long" *ngIf="send && model.title.length>150 " class="alert"></TextView>            
+			
+			
+			</StackLayout>
+			
+			<Label margin-bottom="5" row="3" text="+ Gallerie d'image" (tap)="onSelectMultipleTap()" class='label'></Label>
+			<GridLayout row="4" rows="*, auto,auto,auto">
+  			  <RadListView row="0" [items]="gallery" >
+   			     <ng-template let-image="item" let-i="index">
+        		    <GridLayout columns="auto, auto">
+             		   
+             		   <Image borderWidth="2" borderColor="red" *ngIf="mainpic ==i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+              		   <Image  *ngIf="mainpic !=i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+              		  
+              		  <Label  color="red"   col="1" class="fas" text="&#xf00d;" (tap)="removeObject(image)"></Label>
+            		</GridLayout>
+        		</ng-template>
+        		     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewStaggeredLayout>
+        	
+    		  </RadListView>
+    		
+    		<StackLayout  [visibility]="gallery.length!=0 ?  'visible' : 'collapsed'"  row="1" >
+    			<Label text="l'image principale: "></Label>
+    			  <Image horizontalAllignment="left"    width="80"  height="80"[src]="gallery[mainpic]" stretch="aspectFill"></Image>
+    			
+    		</StackLayout>
+    		
+    	    <StackLayout row="2" margin="15,0,0,0" backgroundColor="darkgray" colSpan="2"  height="1"></StackLayout>
+    		    		<StackLayout row="3">
+    		    		 <TextView  editable="false"  text ="Ajouter au moins une image de l'article" *ngIf="send && gallery.length==0" class="alert"></TextView>            
+    		   			 <TextView  editable="false" text ="le format de l'image sélectionné est invalide" *ngIf="alertimg " class="alert"></TextView>            
+    					</StackLayout>
+    		</GridLayout>
+    		
+    		
+    		<Label class="label" row='5'  text=' Prix '></Label> 
+    		<GridLayout row="6" columns="*,auto">
+    		<textField col="0" returnKeyType="done" hint="0.00" keyboardType="number" maxLength="20"   [(ngModel)] ="model.price" text='{{model.price}}'></textField>
+    		<Label color="#000" fontSize="14" col="1" text="D.A" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
+    		</GridLayout>
+    	    <TextView editable="false" row="7"  text ="Ajouter le prix" *ngIf="send && (model.price.length==0 || model.price=='0')" class="alert"></TextView>            
+    		
+    		<Label class="label"  row='8'  text='Nombre'></Label>
+    		<GridLayout row="9" columns="*,auto">
+    		<textField col="0" returnKeyType="done" hint="0" keyboardType="number" maxLength="5"   [(ngModel)] ="model.quantity" text='{{model.quantity}}'></textField>
+    		<Label color="#000" fontSize="14" col="1" text="UNIT" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
+    		</GridLayout>
+    		
+    		<Label row="11"  text='Catégories' class="label" ></Label>
+        	<GridLayout  row="12" margin="0,0,10,0" rows="auto,auto ">
+        	    <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+        	
+        		<DropDown  #dd
+                  itemsTextAlignment="left"
+              	 [items]="Categories"
+                  [(ngModel)]="selectedIndex1"
+                  (selectedIndexChanged)="onchange($event)"  
+                  row="0">
+        		</DropDown>
+        		<StackLayout row="1"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
+    		</GridLayout>
+    	
+    		<GridLayout rows="auto,auto" row='13'  *ngIf="selectcats.length!=0">
+       		<RadListView  row='0'  [items]="selectcats" >
+  		  		<ng-template let-c="item" let-i="index" >
+  		  		<GridLayout columns ='auto,auto'>
+                    <Label col="0" text='{{c}}' color="#000"></Label>
+                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeCat(i) '></Label>   
+   		  		</GridLayout>
+   		 		 </ng-template>
+      		</RadListView>
+      	 	<!-- TextView  editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="send && selectcat.length==0 " class="alert"></TextView>            
+      		-->
+      		
+      		 <StackLayout margin='10,0,0,0' row="1"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
+      		
+	        </GridLayout>
+	      <TextView editable="false" row="14"  text ="Ajouter au moins une catégorie" *ngIf="send && selectcats.length==0 " class="alert"></TextView>            
+	        
+    		
+    		
+    		
+    		
+    		<Label class="label" row='15' text="+ Couleurs et autres " (tap)="showARGBPicker()" ></Label>
+    		
+    		<StackLayout  margin='10,0,0,0' row="16">
+   				 
+				<RadListView  row='0'  [items]="color" >
+  		  		<ng-template let-c="item" let-i="index" >
+  		  		<GridLayout rows="*,*">
+  		  			<GridLayout columns ='auto,auto' row="0">
+                    <Label borderWidth="1" borderColor="#000"  col="0" [backgroundColor]='c' height="25" width="40"></Label>
+                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeColor(c) '></Label>   
+   		  			</GridLayout>
+   		  			<RadListView row="1" [items]="sizinglist" [visibility]="boolsizing?'visible':'collapse'">
+   		  			 <ng-template let-s='item'> 
+   		  			 <GridLayout>
+   		  			    		<Label *ngIf="sizing[c].includes(s)" (tap)='addSizing($event, c, s)'  borderWidth="2" borderColor="red"   color="#000" fontSize="10"  text="{{s}}" height="20" width="50" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
+   		  			
+   		  			          	<Label *ngIf="!sizing[c].includes(s)"  (tap)='addSizing($event, c, s)'     color="#000" fontSize="10"  text="{{s}}" height="20" width="50" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
+   		  			  </GridLayout>     
+   		  			</ng-template>
+   		  			  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="7"></ListViewStaggeredLayout>
+   		  			</RadListView>
+   		  		</GridLayout>
+   		 		 </ng-template>
+      		   </RadListView>
+   	    	</StackLayout>
+    		<StackLayout margin='10,0,0,0' row="17"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
+    		
+    		
+    		<Label class="label" row="18" text="Description"></Label>
+    		
+    		<TextView returnKeyType="done" fontSize="12" row="19" (ngModel)]="model.description" hint="..."
+       		></TextView>
+       				 
+    		
+    		<Label class="label"  row="20" text="Selectionner vos livraisons"></Label>
+    		<GridLayout  row="21" rows="*,auto,auto">
+    		 
+    		   
+    		   <RadListView row="0" [items]="delivery" >
+   		  			 <ng-template let-del='item'  >
+   		  			 <StackLayout (tap)=" selectDelivery(del)">
+   		  			 <GridLayout columns="*,auto">
+   		  				 <Label color="#000" col="0" text="{{del._source.title}}"></Label>
+   		  				<Label fontSize="24" color="#00BFFF" *ngIf="!del.checked" margin="0,0,0,15"   class="fas" col="1" text='&#xf0c8;' ></Label>
+   		  	    		<Label fontSize="24" color="#FFA500" *ngIf="del.checked" margin="0,0,0,15"  class="fas" col="1" text='&#xf14a;' ></Label>
+   		  			 </GridLayout>
+   		  			  <GridLayout  margin="0,20,0,80" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Poid max"></Label>
+   		  			  	<Label col="1" text="{{del._source.weight}} kg"></Label>
+   		  			  </GridLayout>
+   		  			  <GridLayout margin="0,20,0,80" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Téléphone"></Label>
+   		  			  	<Label col="1" text="{{del._source.phone}}"></Label>
+   		  			  </GridLayout>
+   		  	
+   		  			  <GridLayout margin="0,20,0,80" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Prix"></Label>
+   		  			  	<Label col="1" text="{{del._source.price}} D.A"></Label>
+   		  			  </GridLayout>
+   		  			   
+   		  			  
+   		  			 </StackLayout>
+   		  			 </ng-template>
+   		  	</RadListView>
+   		  	
+    		   <StackLayout margin='10,0,0,0' row="1"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+    			      <TextView editable="false" row="2"  text ="Selectionner au moins une méthode de livraison" *ngIf="send && selectdel.length==0 " class="alert"></TextView>            
+    		
+    		</GridLayout>
+    		
+    	 <GridLayout row='22' columns ='*,auto,auto, auto'>
+      
+       		  <Button  col="1" class="send " text="Envoyer" (tap)="newarticle()"></Button>
+       		  <ActivityIndicator *ngIf="loading"  col="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+      		 <Label class="undo  " col="3"  text="Annuler" (tap)="cancel()"  ></Label>
+      	</GridLayout>
+      </GridLayout>
+        
+	</GridLayout>
+</ScrollView>

@@ -1,0 +1,145 @@
+<ScrollView orientation="vertical">	   
+<StackLayout>
+		    <TextView  *ngIf ='notif.notification.length==0' class="alert" text="Vous n'avez pas de nouvelles notifications"></TextView> 
+
+ 
+<RadListView class="list-group" [items]="notif.notification" style="height:auto" >
+    <ng-template let-n="item" let-odd="odd" let-even="even" >
+
+       	   <GridLayout margin='10,5,0,5'  rows="*,*,*,*,*,*,*,*,auto,auto,auto,auto,auto,auto,auto">
+       	   <GridLayout row="0" columns='*,auto'   [nsRouterLink]="['/stores',storetitle,'commands',n.commandid]"     [visibility]="n.value=='receive' ?'visible':'collapse'" >
+       		<Label   col="0" >
+       		<FormattedString>
+       		  	<Span text='&#xf0d1; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+       		
+       		<Label class="fass" col="1"    text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>  
+       		
+       		<textView editable="false" margin="-10,0,5,10" editable="false" row="1" [visibility]="n.value=='receive' ?'visible':'collapse'"   class=" Label"   text="L'article a été reçu" >  
+       		</textView>
+       		
+             <GridLayout row="2" columns='*,auto'  [visibility]="n.value=='solvedlitige' ?'visible':'collapse'"  [nsRouterLink]="['/stores',storetitle,'commands',n.commandid]"  >
+       		<Label    col="0" >
+       		<FormattedString>
+       		  	<Span text='&#xf118; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+           
+      		 <Label class="fass" col="1"   text="&#xf017; {{n.time}}">
+       		</Label>
+ 
+ 			</GridLayout> 
+ 			
+       		<textView editable="false" margin="-10,0,5,10" editable="false" row="3"  [visibility]="n.value=='solvedlitige' ?'visible':'collapse'"  class=" Label"     text='Le litige est résolu'>  
+       		 </textView>
+       		
+       	
+       		<GridLayout row="4" columns='*,auto'  [nsRouterLink]="['/stores',storetitle,'commands',n.commandid]"  [visibility]="n.value=='command' ?'visible':'collapse'"  >
+       		
+       		<Label   col="0"   >
+       		<FormattedString>
+       		  	<Span text='&#xf218; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+      
+       		 <Label class="fass" col="1"  text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>
+       		
+       		 <textView editable="false" margin="-10,0,5,10" row="5" [visibility]="n.value=='command' ?'visible':'collapse'"  class=" Label"    text='Nouvelle commande'>  
+       		 </textView>
+       		
+       		
+       		<GridLayout row="6" columns='*,auto'  [nsRouterLink]="['/stores',storetitle,'commands',n.commandid]"  [visibility]="n.value=='litige' ?'visible':'collapse'"  >
+       		
+       		<Label   col="0"   >
+       		<FormattedString>
+       		  	<Span text='&#xf119; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+      
+       		 <Label class="fass" col="1"  text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>
+       		
+       		 <textView editable="false" margin="-10,0,5,10" row="7" [visibility]="n.value=='litige' ?'visible':'collapse'"  class=" Label"    text="ouverture d'un litige ">  
+       		 </textView>
+       		
+       		
+       		
+       		<GridLayout row="8" columns='*,auto'  [nsRouterLink]="['/stores',storetitle,'commands',n.commandid]"   [visibility]="n.value=='closed' ?'visible':'collapse'"  >
+       		
+       		<Label   col="0"   >
+       		<FormattedString>
+       		  	<Span text='&#xf14a; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+      
+       		 <Label class="fass" col="1"  text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>
+       		
+       		 <textView editable="false" margin="-10,0,5,10" row="9" [visibility]="n.value=='closed' ?'visible':'collapse'"  class=" Label"    text='Commande fermée'>  
+       		 </textView>
+       		
+       		   <GridLayout row="10" columns='*,auto'  [nsRouterLink]="['/stores',storetitle,'commands',n.commandid]"   fragment="message"    [visibility]="n.value=='message' ?'visible':'collapse'" >
+       		<Label   col="0" >
+       		<FormattedString>
+       		  	<Span text='&#xf0e0; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+       		
+       		<Label class="fass" col="1"    text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>  
+       		
+       		<textView editable="false" margin="-10,0,5,10" editable="false" row="11" [visibility]="n.value=='message' ?'visible':'collapse'"   class=" Label"   text=' Vous avez un nouveau message '>  
+       		</textView>
+       		
+       		
+       		<GridLayout row='12' columns='*,auto'  [visibility]="n.value=='stop' ?'visible':'collapse'"   [nsRouterLink]="['/stores',storetitle,'commands',n.commandid]"  >
+       		       		
+       		<Label   col="0"   >
+       		<FormattedString>
+       		  	<Span text='&#xf05e; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+       		
+       		<Label class="fass" col="1"  text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>
+       		  <textView editable="false" margin="-10,0,5,10"  row="13"  [visibility]="n.value=='stop' ?'visible':'collapse'"  class=" Label"   text='commande annulée '>  
+       		 </textView>
+       		
+       		 <StackLayout  row="14" backgroundColor="#FFA500" height="2"></StackLayout>
+       		 
+       		 
+      </GridLayout>
+
+    </ng-template>
+    
+</RadListView>
+</StackLayout>
+</ScrollView>
+

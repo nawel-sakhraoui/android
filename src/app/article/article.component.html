@@ -1,0 +1,375 @@
+<ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+<div *ngIf='art' class='scroll2'>
+<div  i18n="@@nostore" *ngIf='nostore' i18n-class="@@nostoreleft" class='text-left alert alert-info strong '>
+pas de magasin dans ce lien ! 
+</div>
+
+
+
+<div i18n='@@notopen' *ngIf='!nostore && !open'>
+<div i18n-class="@@notopenleft" class="text-left alert alert-warning strong "> Le magasin est fermé ! </div>
+</div>
+
+<div *ngIf='!nostore'>
+<div class="crop">
+
+<img    [src]="banner"   class="img0" />
+</div>
+
+
+<div  id ="storemenu" >
+<nav *ngIf = 'existstore'class="navbar navbar-default  navnav sticky-top" >
+  
+    
+      
+    <span class="form-inline ">
+     
+	  
+	    
+		<a   class="navbar-brand  btn btn-link " routerLinkActive="active"  [routerLink]="['../../store']" >
+           {{storetitle}}  </a>
+
+     <star-rating  size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: xx-small ; " i18n="@@ratingstore">( {{store.ratingcount}} votes)</span>
+
+    
+   </span> 
+  
+      	
+
+   
+</nav>
+
+<div *ngIf='model.suspend' class="container alert alert-info">
+		L'article est suspendu 
+</div>
+
+<div *ngIf='!model.suspend' class="container ">
+
+<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']"> 
+<div i18n="@@notarticle" *ngIf='!model.available' i18n-class="@@artleft" class ="text-left alert alert-danger">Cet article est epuisé   </div>
+ 
+
+       <div align="center">
+            <h3 ><b>{{model.title}}</b></h3>
+       </div>
+       
+       <div align="center">
+        <star-rating  [starType]="'svg'" [rating]="model.ratingsum/model.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> 
+        <span class="small" i18n='@@articlevote' >( {{model.ratingcount}} votes)</span>
+        </div>
+         <div  align="center">
+      		<h3><b i18n="@@articleprice">{{model.price}} D.A</b> </h3>
+      </div> 
+    
+
+
+<div class="row" *ngIf='row'>
+
+<div class="col-sm-1 col-3 crop2">
+<a data-target="#myCarousel" data-slide-to="0" href="#" >
+ <img  [src]='model.pic' class ="resizer2">
+ </a>
+ <div *ngFor= 'let g of model.gallery; let i= index' >
+ <a data-target="#myCarousel" data-slide-to="i+1" href="#"  >
+  <img [src]='g' class='resizer2'>
+ </a>
+  </div>
+  
+</div>
+
+
+
+
+<div id="myCarousel" class="carousel slide col-sm-5 col-9 resizer2" data-ride="carousel">
+  <!-- Indicators -->
+  <!-- ol class="carousel-indicators" >
+     <li data-target="#myCarousel" data-slide-to="-1" class="active"></li>
+    <li *ngFor='let g of model.gallery;let i= index'
+     data-target="#myCarousel" data-slide-to='i'></li>
+   
+  </ol-->
+
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+    	<div class='crop2 btn '>
+    	<div (click)= 'goTo(model.pic)'   >
+        <img [src]='model.pic' class='resizer2'>
+        </div>
+        </div>
+    </div>
+  	<!-- Wrapper for slides -->
+  	<div class="carousel-item" *ngFor= 'let g of model.gallery' >
+  		<div class='crop2'>
+  		 <div (click) = 'goTo(g)'  >
+  		<img [src]='g'  class='resizer2'>
+  		</div>
+  		</div>
+    </div>
+
+  </div>
+ 
+<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+
+ </div>
+ 
+     
+
+
+
+  <div style ="margin-top :80px ; " i18n-class class=" text-left col-sm-6 col-12"> 
+    
+       
+	  
+      
+  
+    	<div class = 'row' *ngIf='model.color.length!=0 ; ' >
+      	    <div i18n='@@color' class=" col-sm-4 col-4"> 
+      		   Couleurs
+      	    </div>
+      	    <div i18n-class class="text-left col-sm-8 col-8"> 
+      		  
+	       
+      		     <li  *ngFor= 'let c of model.color; let  i=index ' style="list-style: none; display:inline-block;"> 
+    
+       		       <label  class='labl' >
+       		      	
+       		          	<input type="radio" name="radiogroup"  [checked]="i===0"   id="radio"  [value]="c"  (change)="getColor(c)" />
+       	
+                       	<div for="radio" style ='width:25px; height:20px; ' [style.background]='c' >   	</div>
+       		        
+       		        
+       		        
+       		        
+       				  </label>  	
+		          			<!--  button type="button" (click)="removeColor(c)" class='btn-info'> X</button-->  
+				 </li> 
+				 
+				 
+				 
+     	  
+         	</div>
+         </div>
+         
+        <div class = 'row' *ngIf='boolsize' >
+      	    <div  i18n="@@tailles" class=" col-sm-4 col-4"> 
+      		   Tailles
+      		   </div>
+      	       <div i18n-class class="text-left col-sm-8 col-8"> 
+      		  
+	       
+      		     <li  *ngFor= 'let s of size ; let  i=index '  style="list-style: none; display:inline-block;"> 
+    
+       		       <label  class='labl' >
+       		      	
+       		          	<input type="radio" name="radiogroup2" [checked]="s===model.sizing[choosecolor][0]"   id="radio2"  [value]="s"  [disabled]="!checkSizing(s)" (change)="chooseSizing($event, s)"  >
+       	
+                       	<div  [ngClass]="{'text-secondary': checkSizing(s) , 'text-light': !checkSizing(s) }"  for="radio2" style ='width:25px; height:25px;  background-color:#D0D0D0;   text-align: center; vertical-align: middle; ' > {{s}}	</div>
+       		        
+       		        
+       		        
+       		        
+       				  </label>  	
+		          			<!--  button type="button" (click)="removeColor(c)" class='btn-info'> X</button-->  
+				 </li> 
+				 
+				 
+				 </div>
+     	  
+         </div>
+         
+         
+         
+         
+       
+     <br> 
+     
+     	 <div class = 'row' >
+      	<div i18n='@@add' class="col-sm-4 col-4"> 
+      		 Selectionner votre addresse  
+      	</div>
+      	<div class="col-sm-8 col-8 list-group">
+      	<span (click)='show =true 'class ="col-sm-8 col-8 add "  data-toggle='collapse'  href="#collapse1" >{{choosenAddressTitle}} <i  class="fa fa-angle-down" i18n-style style='float:right; '></i></span> 
+      	 </div> 
+     	<div  class='collapse scroll col-sm-12 col-12' [hidden]='!show' id ="collapse1"   [ngClass]="{'collapse.show':show, 'collapse': !show}"   >
+				 		<app-adress (getAddress)='getAddress($event) ; ' ></app-adress>
+	    	
+	    </div>
+	    
+	    </div>
+      <br>
+       <div class = 'row' >
+      	<div i18n='@@delivery' class="col-sm-4 col-4"> 
+      		Livraison
+      	</div>
+      	<div class="col-sm-8 col-8" > 
+   				<ngx-select-dropdown  (change)="getDeliveryMethod($event)" [multiple]="false" [(value)]="choosedelivery" [config]="deliveryconfig" [options]="model.delivery"></ngx-select-dropdown>
+	    
+      	</div>
+      </div>
+	     
+     <br>     
+     
+         
+       <div class = 'row' >
+      	<div i18n='@@quantity' class="col-sm-4 col-4"> 
+      		 Quantité
+      	</div>
+      	<div  i18n-class class="text-left col-sm-8 col-8"> 
+			 <input type='number'  [(ngModel)]="quantity" name="quantity"   min="1" max="model.numbers" style="width: 50px"  (change)="getQuantity($event)"  />
+			 <span style="display:inline" i18n='@@total4'>total: {{model.numbers}}</span>
+	     </div>
+      </div>
+      <br>
+      <div class = 'row' >
+      	<div i18n='@@total' class="col-sm-4 col-4"> 
+      		 Montant total
+      	</div>
+      	<div class="col-sm-8 col-8"> 
+      		<b i18n="@@total2"> {{total}} D.A  </b>
+      	</div>
+      	
+    </div> 
+    <br>
+	<br>
+    <div class='row'>
+       <span  style = 'display:inline-block; align:right; margin-right:7px ; ' ><button [disabled]="!model.available|| model.delivery.length==0 ||choosedelivery.length==0 ||(choosesize=='' &&  boolsize)"   class="btn btn-danger" (click)="buyNow()  ; "  ><i i18n='@@buy'>Acheter</i> </button></span>
+   	 
+   	  <span  style = 'display:inline-block; align:right; margin-right:7px ; ' ><button  class="btn btn-warning" (click)="addToCart() ; modal.show() ;" ><span class="fa fa-shopping-cart"> </span> <i i18n='@@panier2'>Panier</i></button></span>
+	   <ng-template ngxPermissionsOnly="ADMINStore">
+	   
+	        <span  style = 'display:inline-block; align:right;' ><button  class="btn btn-info" (click)="updateArticle()  ; "  ><i i18n='@@param'> Paramètres </i></button></span>
+	 	</ng-template>
+     </div> 
+       	  <div *ngIf="warning" i18n='@@warning1' i18n-class class='text-left alert alert-danger'>choisissez votre addresse de livraison avant de valider l'achat !</div>
+    	  <div i18n='@@warning2' *ngIf="choosedelivery.length==0 && model.delivery.length!=0 " i18n-class class='text-left alert alert-danger'>choisissez votre livraison ! </div>
+    	  
+    	   <div i18n='@@warning3' *ngIf="!warning &&model.delivery.length==0 " i18n-class  class='text-left alert alert-danger'>livraison indisponible pour votre région</div>
+    	   
+    	 
+    <div class='row'> 
+     <share-button button="facebook"></share-button>
+	<share-button button="twitter"></share-button>
+	<share-button button="messenger"></share-button>
+	<share-button button="linkedin"></share-button>
+	<share-button button="pinterest"></share-button>
+	<share-button button="whatsapp"></share-button> 
+ 
+     </div>  
+    </div>
+      
+ <div i18n-class class ="text-left col-12 col-sm-12 col-md-12">
+ <nav class="nav nav-tabs">
+
+         <a i18n='@@desc' class="nav-item nav-link active"   href="#p1" data-toggle="tab">Descriptions</a>
+		<a i18n='@@eval22' class="nav-item nav-link"   href="#p2" data-toggle="tab">Evaluations</a>	
+		<a i18n='liv' class="nav-item nav-link"   href="#p3" data-toggle="tab">Détails des livraisons</a>	
+		
+</nav>
+ <div class="tab-content">
+  <div class="tab-pane active" id="p1">
+    <div i18n-class class="text-left card-block" style ="padding :50px;">
+     <h5 i18n-class class="text-left "  i18n='detail'>Détails:</h5>
+        <p i18n-class class="text-left"  > {{model.description}}</p>
+      <h6 i18n-class class="text-left"  i18n="@@dispovilles"> Disponibilité dans les villes suivante:</h6>
+      <p i18n-class class="text-left" > <li  class ="text-info" *ngFor='let g of store.geo'><i i18n='@@gname'> {{g.name}} </i> <i class="fa fa-check "></i></li>
+      </p>
+      <!--  h5 i18n="@@cat">Catégories:</h5> 
+      <ul class ="list-group col-12 col-sm-8 col-md-5" >     
+       <li class="list-group-item" *ngFor ='let d of model.selectedCat'>
+     		 <span > {{d}}</span><span  class=' fa fa-check' style ="color:#add8e6 ; float:right; "  ></span> 
+       </li>
+       </ul>-->
+
+      
+   </div>
+  </div>
+  
+  <div class="tab-pane" id="p2">
+         <div  i18n-class class =" text-left card-block list-item"  *ngFor="let m of model.rating " >
+        
+			<span class="form-inline my-2 my-lg-0" > <span class=" profile-picture "> <img class=" resize0" alt=" Avatar" [src]='avatarlist[m.userid]' 
+                      alt="User Avatar" /></span>
+               
+                             <strong class="primary-font">{{fullnamelist[m.userid]}}</strong>      
+                             <star-rating id= "m.userid" [starType]="'svg'"  [rating]="m.value"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating>
+               	       
+
+               </span>
+                   <p i18n-class class=" text-left card-text" style ='margin-left :100px ; padding-bottom:50px;  border-bottom:1px solid #C0C0C0 ;  '> {{m.feedback}}</p>   
+      	  
+ 	           
+ 	          
+ 	    </div >
+ 	    <div *ngIf ='model.rating.length ==0'>
+ 	       	<p  i18n='@@noeval' i18n-class class=" text-left card-text " style ="padding:50px ; ">	pas d'évaluation disponible </p>
+ 	     </div>
+  </div>
+     <div class="tab-pane" id="p3">
+     
+                    
+		<table class="table table-sm table-responsive ">
+  			<thead class="thead-light">
+    		<tr>
+  
+    			  <th i18n="@@adtr" scope="col">Titre</th>
+			      <th i18n='@@adp' scope='col'>Poids Max</th>
+ 			      <th i18n='@@adt' scope='col'>Téléphone</th>
+ 			      <th i18n="@@adpp" scope="col">Prix</th>
+  		   </tr>
+  			</thead>
+
+  			<tbody>
+  			<tr *ngFor=' let del of delivery'  >
+      
+  		    	<td>{{del.title}}</td>
+   			    <td>{{del.weight}}<span class="input-group-addon" style="display:inline;"><i i18n='@@kg'>kg</i></span> </td> 
+                <td dir="ltr">{{del.phone}} </td> 
+
+      			<td>{{del.price}}<span i18n='@@da2'class="input-group-addon" style="display:inline;">D.A</span> </td> 
+      			<td><i class='fa fa-check text-warning '></i></td>
+    		</tr>
+  			</tbody>
+  			</table>
+   </div>
+</div>
+
+ 
+ 	 
+ </div>
+    
+</div>
+ 
+<div *ngIf="row2">
+	<a  i18n="@@angle-left" i18n-class class="fa fa-angle-left btn btn-link" (click)='close()'> Retour</a>
+	<div class="container col-md-8  col-md-offset-2">
+	<img [src]='toDisplay'  class='imgfullscreen'>
+	</div>
+</div>
+</ng-template>
+</div>
+
+
+</div>
+  <app-modal [me]= 'me' [fullcartwarning]="fullcartwarning" #modal  >
+    <!-- div class="app-modal-header">
+   </div-->
+    <div class="app-modal-body">
+      <div *ngIf='fullcartwarning' class="alert alert-warning">Le panier est pleins ! </div>
+       <div i18n='@@alertpn' *ngIf='!fullcartwarning' class="alert alert-warning">
+       	 Article sauvgardé dans le panier fermer pour continuer vos achats </div>
+    </div>
+    <div class="app-modal-footer">
+      <a  class="btn btn-info"  [routerLink]="['../../../../home/'+me+'/cart']"> <span i18n="@@panier3" class="fa fa-shopping-cart">  Panier </span> </a>
+     <a i18n='@@back' class="btn btn-link" (click)="modal.hide()" >Fermer</a>
+    </div>
+  </app-modal>
+ </div>
+ </div>
+  

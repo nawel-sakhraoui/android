@@ -1,0 +1,43 @@
+/* Add mobile styles for the component here.  */
+.fass {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 400; 
+   
+}
+.far {
+    font-family: Font Awesome 5 Free, fa-regular-400;
+    font-weight: 400; 
+}
+
+.fab {
+    font-family: Font Awesome 5 Brands, fa-brands-400;
+    font-weight: 400; 
+}
+
+.Label{
+	padding:10 ; 
+	margin :10,5,0,5 ; 
+	color: #333333 ; 
+	font-size:14px; 
+    border-bottom-color :#fff ; 
+	
+	  border-bottom-width: 1.5;
+	
+}
+.store{
+	color:#000;
+	font-size:16 ; 
+	
+}
+.icon {
+	font-size: 18; 
+	color: 	#00BFFF  ;   
+	
+}
+.border{
+	font-size: 14;
+	border-bottom-width:1.5 ;
+	
+    border-color: #D0D0D0;
+ 
+}

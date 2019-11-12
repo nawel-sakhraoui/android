@@ -1,0 +1,33 @@
+.head{
+	padding : 5; 
+	margin :10,5,0,0;
+	background-color:rgba(0,0,0, 0.7); 
+	color:#FFF; 
+	border-radius : 5 ; 
+}
+
+.border{
+	font-size:12 ; 
+	 border-bottom-width: 1 ;
+   	 padding:10; 
+ 	 border-bottom-color:#D0D0D0; 
+  
+}
+
+.fas {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 900; 
+}
+.dropdownLabel {
+	margin:'5,10,0,0';
+	   horizontal-alignment: right;
+	   color :#00BFFF ;
+	
+	
+}
+
+.unselect {
+	color:#000;  
+	padding : 5 ;
+	
+}

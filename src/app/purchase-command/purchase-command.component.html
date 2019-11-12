@@ -1,0 +1,359 @@
+<div i18n-class class="scroll2 text-left ">
+
+<div class='container'>
+<div *ngIf='nosale'>
+<div class="alert alert-warning strong " i18n='@@commandeintrouvable' > Commande id  introuvable  </div>
+  <a  class='btn btn-link' (click)= 'backToStore();'><span i18n-class class="fa fa-chevron-left"> </span> <i i18n="@@retour">Retour</i> </a>
+
+</div>
+
+
+<!--
+<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false}"   ></div>
+-->
+<div id ='top' *ngIf="!nosale">
+
+
+<div *ngIf='ongoing'>
+ 
+<ul  class="list-group" > 
+<li class= 'list-group-item'>
+
+ <div class='row'  >
+  <div class="col-12 col-sm-12 col-md-12">
+ <div i18n-style style='display:inline-block; float:left'  > <i i18n="@@commandeid">Commande id:</i>  <b >{{ commandid }}</b></div>
+ <div  i18n-style style="display:inline-block;  float:right"> <i i18n="@@total"> Montant total</i><b >{{ model.totalprice}}<i i18n="@@da2">DA</i> </b></div>
+ </div>
+ </div>
+ <div class="row">
+  <span i18n-style style='float:left' > <i i18n="@@magasin2"> Magasin:</i>  <b class='btn btn-link strong text-info '    (click) ='gotoStore(model.storetitle)' > {{model.storetitle }}</b></span> 
+ 
+ </div>
+ 
+ 
+ <div class="row">
+ <ul class="list-group col-md-6 col-sm-6 col-12">
+  <li class="list-group-item" >
+      <div  *ngFor = "let a of model.articles ">
+  	  	<div class='row'>
+  	  	<div class="col-sm-5 col-5">  <img [src]="a.pic" class="resize"  alt="Image"></div>
+  	 	<div class='col-sm-4 col-4'>	
+  	 		<a class="btn btn-link" (click)="gotoArticle(a.articleid, model.storetitle)"><b>{{a.title}}</b></a> <br>
+  	 		
+ 	          <i i18n="@@couleur">Couleur</i>
+      		 <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
+   			 <br>
+      		 <span><i i18n="@@quantite">Quantité</i>   {{a.quantity}} </span>
+   			
+   		</div>
+   		</div> 
+   		<div class="row" i18n-style style='float:right;  margin-right :5px'> <span >{{a.price}}<i i18n="@@da2"> DA </i> </span></div>
+ 		<br>
+ 	<div *ngIf="model.articlesrating.hasOwnProperty(a.articleid) &&  model.steps.close!=0  "  class='row form-group'>
+ 	             <star-rating id= "a.articleid" [starType]="'svg'"  [rating]="model.articlesrating[a.articleid]"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating><br>
+ 	     
+ 	</div>
+ 	<div *ngIf="!(model.articlesrating.hasOwnProperty(a.articleid)) &&  model.steps.close!=0 && model.steps.stop==0 " class='row form-group'>
+ 	
+ 	    <span i18n="@@noterarticle">Noter cet article: </span>
+        <star-rating id= "a.articleid" [starType]="'svg'"   [showHalfStars]="true"  (starClickChange)="onClickA($event, a.articleid)" ></star-rating><br>
+         <div i18n="@@evalalert" *ngIf="alertA[a.articleid]" class="alert alert-danger" role="alert">noter l'article avant d'envoyer</div> 
+         <textarea rows="5" class="message" name="message" [(ngModel)]="feedbackA[a.articleid]" #message="ngModel"  required maxlength=400></textarea>
+     </div> 
+     	</div> 
+     	 	<div i18n-style style="float:right;" *ngIf="isEmpty(model.articlesrating)  &&  model.steps.close!=0 && model.steps.stop==0  " class='row form-group'>
+     	
+ 	          <button i18n-style style="float:right; " class="btn btn-warning " (click)=" sendRatingA() " i18n='@@envoyer' >Envoyer</button>
+ 		  </div>
+ </li>
+    
+
+  <li class='list-group-item'>
+ <span ><i i18n="@@livraison2">Livraison:</i>  <span class=" text-info" >{{model.delivery.title }} </span></span>
+ <span i18n-style style='float:right;'> {{model.delivery.price }} <i i18n="@@da2">DA</i></span>
+ </li>
+  <li class='list-group-item'>
+  <span i18n="@@addresse">Addresse: </span>
+       	<table class="table table-sm table-responsive add" i18n-style style='float:right;' >     
+    <thead>
+  </thead>
+   <tbody>
+	 <tr >
+  		<td scope="col" i18n="@@mmme"> à M.Mme </td>
+  		<td>
+  		     
+    
+     		 {{model.choosenAddress.to}}
+     		
+     		   
+  		</td>
+  	</tr>
+  	<tr scope="col" >
+  	    <td i18n="@@telephone"> Téléphone </td>
+  		<td>
+
+     		 {{model.choosenAddress.phone}}
+     
+     		     
+  		</td>
+  		
+  	 </tr>
+  	<tr > 
+  	    <td scope="col" i18n='@@ville' >Ville </td>
+  		<td>
+     		 {{model.choosenAddress.city }}
+     		 
+     		   
+  		</td> 
+  		
+  	</tr>
+  	<tr> 
+  	    <td  scope="col" i18n="@@commune">Commune </td>
+  		<td>
+  		   
+     		 {{model.choosenAddress.commune }}
+     		
+     		   
+  		</td> 
+  		
+  	</tr> 
+  	<tr> 
+  	   <td  scope="col" i18n="@@codepostal">Codepostal  </td>
+  		<td>
+  		    
+           
+         
+     		 {{model.choosenAddress.zipcode}}
+     	
+  		</td> 
+  	</tr>
+  	<tr  > 
+  		<td scope="col" i18n="@@addresse">Addresse </td>
+  		<td>
+  		    
+            
+     		 {{model.choosenAddress.address}}
+     		
+  		</td> 
+    </tr>
+   
+  </tbody>
+
+</table>
+</li>
+ </ul>
+ 
+  <ul class="list-group col-md-6 col-sm-6 col-12">
+
+  <!-- li class='list-group-item row '> 
+	
+   <div class ="col-sm-6 col-xs-6 ">
+	 from User: <a (click)="gotoUser(model.userid)"><img [src]="avatarlist[model.userid]" class="resize"></a>
+   </div>
+ 	<div    *ngIf="model.userrating!=0 && model.steps.close!=0 " class=' form-group col-sm-6 col-xs-6'>
+ 	            
+ 	      <span><star-rating id= "model.userid" [starType]="'svg'"  [rating]="model.userrating"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating>
+ 	     </span> 
+ 	</div >
+ 	<div    *ngIf="model.userrating==0 && model.steps.close!=0" class='col-sm-6 col-xs-6 form-group'>
+ 	
+ 	    <span> rate user
+        <star-rating id= "model.userid" [starType]="'svg'"   [showHalfStars]="true"  (starClickChange)="onClick($event)" ></star-rating>
+        </span>
+         <div *ngIf="alert" class="alert alert-danger" role="alert"> please rate the user </div> 
+         <textarea rows="5" class="message" name="message" [(ngModel)]="model.userfeedback" #message="ngModel"  required  ></textarea>
+ 	   	 <div *ngIf="alert2" class="alert alert-danger" role="alert"> please feedback </div> 
+ 	   	
+ 	     <button  style="float:right; " class="btn btn-warning " (click)=" sendRating(m) " >send</button>
+     
+     </div>
+ 	
+  </li-->
+  
+  
+  <li class ='list-group-item '> <i i18n="@@commandefaite">
+	   		Commande faite le:  </i> <span> <span dir="ltr"> {{model.startdate}}</span></span> 
+	 
+  </li>
+  <li  class='list-group-item'>
+
+   <form-wizard  class='wizard' >
+	  <wizard-step [title]="'1'" [isActive]='true' [isValid]="model.steps.prepare!=0" [showNext]="false"[showPrev]='false' >
+ 	    <ul class="ongoingul" >
+ 	  	 <li class="ongoingli" *ngIf='model.steps.prepare==0' i18n="@@waitprepare">La commande est en cours de préparation
+ 	  	 </li>
+ 	  	  <li class="ongoingli" *ngIf='( model.steps.prepare==0 && model.steps.stop ==0)' > <i i18n="@@annulercommande" >Annuler la commande </i>
+ 	  	  		 <button [disabled]="model.steps.stoploading" class="btn btn-danger" (click)="modal2.show(); stopSend(commandid,  model.storetitle );  " > <i class="fa fa-close"></i>
+                  <i *ngIf="model.steps.stoploading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+			    </button>
+ 	  	 </li>
+ 	  	
+ 	  	 <li class="ongoingli" *ngIf='model.steps.prepare!=0'> <i i18n="@@commandepreparee" > Commande préparée le </i> <span dir='ltr'>{{model.steps.prepare}}</span></li>   
+    	</ul>
+     </wizard-step>
+       <wizard-step [title]="'1.5'" [isActive]='true'  [hidden]="model.steps.stop==0"  [isValid]="model.steps.stop!=0" [showNext]="false"[showPrev]='false' >
+ 	    <ul class="ongoingul" >
+ 	  	 <li class="ongoingli" *ngIf='model.steps.stop!=0' > <i i18n="@@commandeannulee" >Commande annulée le </i><span dir='ltr'>{{model.steps.stop}}</span> </li>
+ 	  
+    	</ul>
+     </wizard-step>
+     
+ 	 <wizard-step [title]="'2'"  [hidden]="!model.steps.stop==0"  [isActive]='model.steps.prepare!=0' [isValid]="model.steps.send!=0" [showNext]='false' [showPrev]='false'>
+	     <ul class="ongoingul" >
+	   	 <li class="ongoingli" *ngIf="model.steps.send==0" i18n="@@attenteenvoie">Attente de l'envoie </li>
+	   
+	     <li class="ongoingli" *ngIf="model.steps.send!=0" ><i i18n="@@commandeenvoyee" >Commande envoyée le </i> <span dir='ltr'> {{model.steps.send}} </span></li>
+ 		</ul>
+ 	 </wizard-step>
+ 	
+	 <wizard-step [title]="'3'"  [hidden]="!model.steps.stop==0" [isActive]='model.steps.send!=0' [isValid]="model.steps.receive!=0" [showNext]='false' [showPrev]='false'>
+	 	  <ul class="ongoingul" >
+	    <li  class="ongoingli" *ngIf="model.steps.receive==0" ><i i18n="@@waitcommanderecu" >Commande reçu </i><button  [disabled]=" model.steps.receiveloading" class="btn btn-danger" (click)=" receiveDone(commandid, model.storetitle)"> <i class="fa fa-check"></i>
+           															       <i *ngIf="model.steps.receiveloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+	
+	    																			</button>
+	    </li>
+	    <li class="ongoingli"  *ngIf="model.steps.receive!=0" ><i i18n="@@commanderecu" >Commande reçu le </i> <span dir='ltr'>  {{model.steps.receive}}</span></li>
+		</ul>	
+	 </wizard-step>
+	 
+	     <wizard-step [title]="'4.5'" [hidden]="model.steps.litige==0 || !model.steps.stop==0 " [isActive]='model.steps.litige!=0' [isValid]= 'model.steps.litigesolved!=0'  [showNext]='false' [showPrev]='false' >
+     <ul class="ongoingul" >
+        <li class="ongoingli" *ngIf="model.steps.litige!=0" >
+            <i i18n='@@litigeouvert'>  Litige ouvert le :</i><span dir='ltr'> {{model.steps.litige}}</span> 
+   		</li>
+      
+        <li class="ongoingli" *ngIf="model.steps.solvedlitige==0">
+           
+           <p class="lead" i18n="@@contactermagasin"> Veuillez contacter le magasin pour trouver une solution à votre litige</p>
+          <i i18n="@@waitlitigeresolu"> Le litige est résolu </i> <button [disabled]="model.steps.solvedlitigeloading" class="btn btn-info" (click)=" solvedlitigeDone(commandid,  model.storetitle )" > <i class="fa fa-check"></i>
+					                                 <i *ngIf="model.steps.solvedlitigeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+					               
+	           						     </button>
+        </li>
+        
+       
+         <li class="ongoingli" *ngIf="model.steps.solvedlitige !=0"> 
+         <i i18n="@@litigeresolu"  >Litige résolu le:</i> <span dir='ltr'>{{model.steps.solvedlitige}} </span>
+         </li>
+         </ul>
+        
+	  </wizard-step> 
+     <wizard-step [title]="'4'"   [hidden]="(!model.steps.litige==0 && model.steps.solvedlitige==0) || !model.steps.stop==0"  [isActive]='model.steps.receive!=0' [isValid]="model.steps.close!=0"  [showNext]='false' [showPrev]='false' >
+  		  <ul class="ongoingul" >
+	    <li class="ongoingli"  *ngIf="model.steps.close==0 && model.steps.litige==0"> <i  i18n="@@openlitige"> Ouvrir un litige</i> <button [disabled]='model.steps.litigeloading'class="btn btn-info" (click)=" litigeDone(commandid,  model.storetitle )" > <i class="fa fa-check"></i>
+																									   <i *ngIf="model.steps.litigeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+																															
+		    																								</button>	
+	    </li>
+	    <li class="ongoingli"  *ngIf="(model.steps.close==0 &&  model.steps.litige ==0) ||(model.steps.close==0 &&  model.steps.solvedlitige !=0)"> <i  i18n="@@waitclosecommande" > Fermer la commande </i> <button [disabled]="model.steps.closeloading" class="btn btn-info" (click)="  modal.show();  closeDone(commandid,  model.storetitle); "> <i class="fa fa-check"></i>
+	    																																										  <i *ngIf="model.steps.closeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+	    																																											
+	    																																											</button>
+	    </li>
+	    
+	    <li class="ongoingli" *ngIf="model.steps.close!=0 "  > <i  i18n="@@cloasecommande" >Commande fermée le </i> <span dir ="ltr" >{{model.steps.close}}</span></li>
+		</ul>
+     
+     </wizard-step>
+ 
+</form-wizard>
+	
+  </li>
+ </ul>
+ </div>  
+ 
+  <div id='message' class="card row" style ='margin-top :8px ; '>
+        <div class="card-header"  >
+                    <span class="fa fa-comment"></span><i i18n="@@messages">Messages</i>
+                    <div i18n-class class="btn-group pull-right">
+                        <a type="button" class="btn btn-default btn-xs" data-toggle="collapse"  [attr.href]="'#collapseOne_' + 0">
+                            <span class="fa fa-chevron-down"></span>
+                        </a>
+                    </div>
+          </div>
+<div  #scrollMe [scrollTop]="scrollMe.scrollHeight"  [attr.id]="'collapseOne_' + 0"  class=" card-body" [ngClass]="{'collapse.show': isopen , 'collapse':!isopen }"> 
+     
+      <div *ngFor="let message of model.messages  "  >
+	
+		 <ul class="chat">
+                     <li *ngIf='message.fromMe' i18n-class class="left clearfix"><span i18-class class="chat-img pull-left">
+                      	
+                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' 
+                      alt="User Avatar" /></span>
+                        </span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font"> {{fullnamelist[message.from]}}</strong> <small i18n-class class="pull-right text-muted">
+                                        <span class="fa fa-clock-o"></span>{{message.date}}</small>
+                                </div>
+                                <p>
+                                   {{message.text}}
+                                </p>
+                            </div>
+                        </li>
+                         <li *ngIf='!message.fromMe' i18n-class class="right clearfix"><span i18n-class class="chat-img pull-right">
+                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarlist[message.from]'
+                            alt="User Avatar"/> </span>
+                        </span>
+                        <div class="chat-body clearfix">
+                                <div class="header">
+                                    <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message.date}}</small>
+                                    <strong i18n-class class="pull-right primary-font">{{fullnamelist[message.from]}} </strong>
+                                </div>
+                                <p>
+                                  {{message.text}}
+                                </p>
+                            </div>
+                        </li>
+          </ul>
+		 <!--  span class=" profile-picture ">
+		 <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' />
+		 </span>
+		
+		 <span class='date'> </span> <br>
+		 <textarea class='form-control' rows="3"  readonly  maxlength=200  >
+		 
+		 </textarea-->
+		
+		
+  			
+  		
+	 </div> 
+	 
+ 
+   </div>
+      <div *ngIf="model.steps.close==0" class="card-footer">
+        
+      <form  name='f' (ngSubmit)="f.form.valid  && sendMessage( commandid,model.userid, f, model.storetitle)" #f="ngForm" novalidate>
+
+ 	 <textarea rows="3" class="input-group" name="message" [(ngModel)]="model.message" #message="ngModel"  required maxlength=200></textarea>
+	       <div *ngIf="message.invalid && (message.dirty || message.touched)" class="alert alert-danger">
+            <div i18n='@@messagealert' *ngIf="f.submitted && message.hasError('required')" class="help-block"> ecrivez votre message</div>
+      	    </div> 
+           <span i18n-style style ="float:right; " class="input-group-btn">
+	             <button  class="btn btn-warning btn-sm" id="btn-chat" i18n="@@envoyer" >Envoyer</button>
+          	</span>   
+     </form>
+              
+                    
+      </div>
+  </div>
+
+</li>
+</ul>
+</div>
+  <a  i18n-class class='btn btn-link fa fa-chevron-left' (click)= 'backToStore();' i18n="@@retour"> Retour </a>
+  
+  </div>
+  
+    </div></div> 
+  	 
+  <app-rating-modal2 #modal>
+    
+  </app-rating-modal2>
+  
+    <app-stop-modal2 #modal2 (stop)='getStop($event)'>
+    
+  </app-stop-modal2>
+

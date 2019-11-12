@@ -1,0 +1,82 @@
+<ScrollView>
+<GridLayout margin ="10,5,0,5" rows ="auto,*,auto">
+<GridLayout row="0"  columns ='90,*'>
+<Label col="0" text ="Magasin: " ></Label>
+<Label col="1" text ="{{model.storetitle}}" color='#000'> </Label>
+</GridLayout>
+<RadListView margin ="0,10,0,0" row="1" [items]="model.articles" >
+
+<ng-template let-a="item" let-i="index" let-odd="odd" let-even="even">
+<StackLayout>
+              <GridLayout rows="auto,auto,auto, auto,auto,auto" columns ="*,auto">
+              
+              <textView fontSize="12" col="0" row ="0" editable="false" class='titlea' text="{{a.title}}"></textView>
+              
+              <Image padding ="10" col="0" row="1" [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
+              
+              <GridLayout col="1" row="2" columns="90,auto"  [visibility]=" a.color ? 'visible' : 'collapsed'"  >
+               <Label col ="0" text="Couleur"></Label>
+               <Label col="1"  margin='0,0,5,0'  [backgroundColor]="a.color"  class="color"  ></Label>
+              </GridLayout>
+              
+                <GridLayout  col="1"  row="3" columns="90,auto"  [visibility]=" a.taille ? 'visible' : 'collapsed'" >
+               		<Label col ="0" text="Taille"></Label>
+      		 		<Label col="1" *ngIf='a==choosesize ' margin='0,0,5,0' text='{{a.taille}}' class="size" ></Label>
+              </GridLayout>
+              <GridLayout  col="1" row="4" columns="90,auto">
+               		<Label col ="0" text="Prix"></Label>
+      		 		<Label color="#000" col="1" text="{{a.price}} DA"  ></Label>
+              </GridLayout>
+               <GridLayout  col="1"  row="5" columns="90,auto">
+               		<Label col ="0" text="Quantité"></Label>
+      		 		<Label color="#000" col="1" text="{{a.quantity }} UNIT" ></Label>
+              </GridLayout>
+           
+              </GridLayout>
+    
+              
+    </StackLayout>
+</ng-template>
+</RadListView>
+<StackLayout  row="2"  margin ='0,20,0,20'>
+     					<StackLayout  margin="10,0,10,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+
+ <GridLayout columns="90,*,auto">
+               		<Label col ="0" text="Livraison: "></Label>
+               		<Label color="#000" col="1" text="{{model.delivery.title}}"></Label>
+      		 		<Label color="#000" col="2" text="{{model.delivery.price}} DA" ></Label>
+ </GridLayout>
+              
+ <GridLayout  padding="2"   backgroundColor="#D3D3D3"  rows="*,*,*,*,*,*" columns="*,*" >
+					
+						<Label class='add' row="0" col="0" text="à M.Mme" ></Label> 
+  						<Label class='add'row="0" col="1" text="{{model.choosenAddress.to}}"></Label>
+  		     			<Label class='add'row="1" col="0" text="Téléphone" ></Label> 
+  						<Label class='add' row="1" col="1" text="{{model.choosenAddress.phone}}"></Label>
+  		     			<Label class='add'row="2" col="0" text="Ville" ></Label> 
+  						<Label class='add'row="2" col="1" text="{{model.choosenAddress.city}}"></Label>
+  		   			    <Label class='add'row="3" col="0" text="Commune" ></Label> 
+  						<Label class='add'row="3" col="1" text="{{model.choosenAddress.commune}}"></Label>
+  		   			    <Label class='add'row="4" col="0" text="Codepostal" ></Label> 
+  						<Label class='add'row="4" col="1" text="{{model.choosenAddress.zipcode}}"></Label>
+  		     			<Label class='add'row="5" col="0" text="Addresse" ></Label> 
+  						<Label class='add'row="5" col="1" text="{{model.choosenAddress.address}}"></Label>
+ </GridLayout>
+     					<StackLayout  margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+  
+ <GridLayout margin="10,0,0,0" columns='*, 90,auto'>
+ <Label col="1" text='Montant total'></Label>
+<Label color="#000" col="2" text="{{  model.totalprice}} DA"></Label>
+ 
+ </GridLayout>
+   <StackLayout  margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+ 
+  <GridLayout  columns='*,auto,auto'>
+ <Button 	backgroundColor='#00BFFF' color="#fff" class="btn btn-active" col="1" text='Valider'  (tap)="buynow();" ></Button>
+ <Label margin="10,0,0,5" class="btn2" col="2" text="Annuler" (tap)= 'back();' ></Label>
+ 
+ </GridLayout>
+</StackLayout> 
+</GridLayout>
+
+</ScrollView>

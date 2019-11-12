@@ -1,0 +1,172 @@
+
+
+
+<div i18n-class  class =' text-left row list-group-item'>
+
+
+<div  *ngIf='display1'  >
+
+
+
+<table class="table table-sm">
+  <thead>
+      <th scope="col" > <i i18n="@@magasin2" >Magasin:</i> {{model.storetitle}} </th>
+  </thead>
+  <tbody >
+  
+  <tr>
+  
+  <table  class="table table-responsive  table-sm">
+  <tbody *ngFor ='let a of model.articles' >
+  <tr>
+  	<th scope="col">{{ a.title}}</th>
+  </tr>
+  <tr>
+   <td>
+       <img [src]="a.pic" class="img-responsive crop"  alt="Image">
+       <span *ngIf='a.color'>
+ 	   <i i18n="@@couleur"> Couleur </i>
+       <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
+  		</span>
+  		
+  		<span *ngIf="a.size">
+  	    <i i18n="@@taille" > Taille </i>
+  	  	<span class='text-info' style ='width:25px; height:25px;  background-color:#D0D0D0;  display:inline-block; text-align: center;  ' > {{a.size}}	</span>
+       </span>        
+       		        
+   </td>  
+  
+   
+   </tr>
+    
+  	<tr>
+  	
+      <th scope="col"></th>
+       <th scope="col" i18n='@@prix'>Prix</th>
+      <th scope="col"> {{ a.price}}<i i18n="@@da3">DA</i></th>
+
+    </tr>
+  
+    <tr>
+       <th scope="col"></th>
+      <td i18n="@@quantite">Quantité  Article(s)</td>
+      <td>{{ a.quantity}} <i i18n="@@unit">UNIT </i></td>
+      
+    </tr>
+   
+
+   
+  
+
+
+     </tbody>
+     </table>
+   </tr>
+   
+    <tr>
+ 	  <th scope="col"></th>
+      <td ><i i18n="@@livraison2">Livraison </i>{{model.delivery.title}} </td>
+      <td>{{model.delivery.price}}<i i18n='@@da3' >DA</i> </td>
+      
+    </tr>
+   <tr>
+   
+    <th scope="col"></th>
+    <td>
+<table class="table table-sm table-responsive   add"  >     
+
+   <tbody>
+   	 <tr >
+  		<td scope="col" i18n='@@mmme'> à M. Mme. </td>
+  		<td>
+  		     
+    
+     		 {{model.choosenAddress.to}}
+     		
+     		   
+  		</td>
+  	</tr>
+  	<tr scope="col" >
+  	    <td i18n="@@telephone"> Téléphone </td>
+  		<td>
+
+     		 {{model.choosenAddress.phone}}
+     	
+     		     
+  		</td>
+  		
+  	 </tr>
+  	<tr > 
+  	    <td scope="col" i18n='@@ville' > ville </td>
+  		<td>
+     		 {{model.choosenAddress.city }}
+     		 
+     		   
+  		</td> 
+  		
+  	</tr>
+  	<tr> 
+  	    <td  scope="col" i18n='@@commune'> Commune </td>
+  		<td>
+  		   
+
+     		 {{model.choosenAddress.commune }}
+     		
+     		   
+  		</td> 
+  		
+  	</tr> 
+  	<tr> 
+  	   <td  scope="col" i18n='@@codepostal'>Codepostal  </td>
+  		<td>
+  		    
+           
+         
+     		 {{model.choosenAddress.zipcode}}
+     	
+  		</td> 
+  	</tr>
+  	<tr  > 
+  		<td scope="col" i18n='@@addresse'> Addresse </td>
+  		<td>
+  		    
+            
+     		 {{model.choosenAddress.address}}
+     		
+  		</td> 
+    </tr>
+   
+  </tbody>
+
+</table>
+</td>
+   </tr>
+   
+  
+    <tr>
+   
+     
+      <th scope="col"></th>
+      <th scope="col" i18n="@@montanttotal">Montant total</th>
+      <th scope="col">  {{  model.totalprice}} <i i18n="@@da3"> DA</i> </th>
+
+    </tr>
+     
+      <tr>
+      
+      <th scope="col"> </th>
+      <th scope="col"> </th>
+      <th scope="col"> <a  class='btn btn-link' (click)= 'back();'><span i18n-class class="fa fa-chevron-left"> </span><i i18n="@@retour2"> Retour</i>  </a> </th>
+	  <th scope="col">  <button  class = "btn btn-danger   " (click)="buynow();" > <i i18n="@@valider"> Valider</i>  <span *ngIf="loading" class= "fa fa-refresh fa-spin"></span></button></th>
+		
+    </tr>
+ 
+</table>
+
+
+</div>
+ <div  *ngIf='display2' i18n='@@nobyunow'>
+   Aucun transaction en cours 
+ </div>
+ 
+</div>
