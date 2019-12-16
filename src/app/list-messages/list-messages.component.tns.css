@@ -105,11 +105,7 @@
     padding-top: 2;
 }
 
-GridLayout:hover {
-  background: #868e96 none repeat scroll 0 0;
-  /*color: #ffffff;*/
-  cursor:pointer;
-}
+
 .profilePic {
     width: 50;
     height: 50;
@@ -131,4 +127,12 @@ GridLayout:hover {
    border-color:#F27171;
    font-size:12;  
 }  
+GridLayout:pressed {
+   
+   background-color:#eeeeee ; 
+   /* color:#d9534f ;*/
+   border-width:2; 
+   border-color:#eeeeee  ;  
+}  
+
  

@@ -16,9 +16,9 @@ import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
              <StackLayout>  
                     <Image [src]="a.pic"    class="pic"  stretch="aspectFill" ></Image>
 
-                    <StackLayout   backgroundColor="rgba(0,0,0, 0.4)">
+                    <StackLayout   >
             
-                        <StarRating  isindicator="false" (valueChange)="setScore($event,a.articleid)"   android:scaleX=".3" android:scaleY=".3"
+                        <StarRating (valueChange)="setScore($event,a.articleid)"   android:scaleX=".4" android:scaleY=".4"
                                 horizontalAlignment="center" verticalAlignment="center"  [value]="rating[a.articleid]" ></StarRating>
                            
                     </StackLayout>
@@ -28,9 +28,10 @@ import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
             </StackLayout>
             </ng-template>
         </RadListView>
-        <GridLayout row="2" columns='*,auto,auto'>
-            <Button class="btn btn-active" color="#fff"  backgroundColor="#00BFFF" col="1"  (tap) ="sendRating()" text="Envoyer"></Button>
-            <Label  margin='8,0,0,5' color="#000" col="2" (tap)="hide()" text='Annuler'></Label>
+        <GridLayout row="2" columns='*,auto,auto,auto'>
+            <Button [isEnabled]='!loading' class="btn btn-active" color="#fff"  backgroundColor="#00BFFF" col="1"  (tap) ="sendRating()" text="Envoyer"></Button>
+            <ActivityIndicator col="2" *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+            <Button [isEnabled]='!loading'  class="btn btn-active" color="#333333"  backgroundColor="#fff" col="3" (tap)="hide()" text='Annuler'></Button>
         </GridLayout>
 </GridLayout>
   `,
@@ -49,7 +50,7 @@ import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
 export class RatingModalComponent {
   
   subscription: Subscription;
-     
+  loading :boolean ;    
   model:any = {} ; 
   rating :any={};
   feedback: any ={};
@@ -69,7 +70,7 @@ export class RatingModalComponent {
               private ongoingService: OngoingService, 
               private route : ActivatedRoute, 
               private router : Router, 
-              private params: ModalDialogParams, 
+              private params: ModalDialogParams
             ) {
       
       this.model = this.params.context ; 
@@ -119,6 +120,7 @@ setScore(e,a){
       this.alert[id] = false ;  
       }*/
   sendRating () {
+          this.loading = true ; 
       this.waiting = true ;  
          let bool = true ; 
          for (let m of this.model._source.articles ){
@@ -164,7 +166,7 @@ setScore(e,a){
                       })
              this.ratingDone = true
             }
-                   //put userid rating 
+               this.loading =false  ;    //put userid rating 
                                  this.ongoingService.putAllRatingArticle(this.model._id  , this.rating, this.feedback )
                                  .subscribe (
                                      data3=> {

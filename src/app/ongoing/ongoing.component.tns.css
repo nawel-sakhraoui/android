@@ -21,7 +21,7 @@
    vertical-align: center;
    height: 20;
    border-width: 1 ;
-   font-size:12;
+   font-size:10;
    border-color:#000;
    background-color:#D3D3D3;
    color:#000;
@@ -34,6 +34,7 @@
 	 vertical-align: center;
 	background-color: #FFA500 ; 
 	    border-radius:5; 
+	    color:#fff; 
 	
 	
 }
@@ -161,3 +162,44 @@ padding : 5 ;
    border-color:#F27171;
    font-size:12;  
 } 
+.color{
+	
+	width: 25;
+   height : 20; 
+   border-width:1 ; 
+   border-color:#444444;
+   
+	
+}
+.link0{
+	
+	color:#00BFFF;
+}
+Label:pressed {
+  
+    background-color:#eeeeee; 
+}
+Label:selected {
+
+    background-color:#eeeeee; 
+    
+}
+Label:pressed3 {
+   color:darkgray;
+}
+.search{
+	border-bottom-width: 1; 
+    border-bottom-color: #D0D0D0;
+	font-size:14; 
+	
+	
+}
+.searchbutton{
+
+	  text-align: center;
+    vertical-align: center;
+    	
+   border-radius:25;  
+   width:40; 
+   height:40;
+}

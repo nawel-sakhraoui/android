@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import {AddressService} from '../_services/index'; 
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
- 
+ import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
 
 @Component({
   selector: 'app-adress',
@@ -321,5 +322,18 @@ export class AdressComponent implements OnInit {
                 }
         )
     }
+        
+     ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+    }
+
 }
 

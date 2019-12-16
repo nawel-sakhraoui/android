@@ -1,4 +1,4 @@
-import {Component,ViewChild, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef  } from '@angular/core';
+import {Component,ViewChild, OnInit, AfterViewInit,  AfterContentInit, ChangeDetectorRef, ElementRef  } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {CartService, StoreService, SearchService, MyhomeService, AuthenticationService} from '../_services/index'; 
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
@@ -8,8 +8,9 @@ import { Carousel } from "nativescript-carousel";
 import { RouterExtensions } from "nativescript-angular/router";
 
 import { View } from "ui/core/view";
-
-
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
 @Component({
   moduleId: module.id,   
   selector: 'app-main',
@@ -17,7 +18,7 @@ import { View } from "ui/core/view";
   styleUrls: ['./main.component.css'], 
 })
     
-export class MainComponent implements OnInit, AfterViewInit {
+export class MainComponent implements OnInit,  AfterViewInit{
 
   constructor(  private route: ActivatedRoute,
   private router:  RouterExtensions, 
@@ -28,6 +29,7 @@ export class MainComponent implements OnInit, AfterViewInit {
   private cartService: CartService, 
   private _changeDetectionRef: ChangeDetectorRef
   ) { }
+
 
   maxcart =30;
   home :any = "" ; 
@@ -41,8 +43,8 @@ export class MainComponent implements OnInit, AfterViewInit {
     banners  =[];
     mainpics:any = []; 
     opened = false ; 
-    sizestores = 5; 
-    sizearticles =7 ; 
+    sizestores = 10; 
+    sizearticles =5 ; 
     store :any = {}
     main2 = false ; 
     loading:boolean = false ; 
@@ -74,9 +76,10 @@ export class MainComponent implements OnInit, AfterViewInit {
       this.loading2 = true ; 
        
        this.loading = true ; 
+       this.loading3 = true ; 
         this.searchService.sendcity.subscribe((data00)=>{
             this.loading2 = true ; 
-       
+             this.loading3= true ; 
               this.loading = true ; 
          this.city = data00['city'] ; 
         console.log(this.city) ; 
@@ -84,6 +87,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     
        this.storeService.getCategories()
        .subscribe (
+           
            d0 => {
                this.allCategories = d0['categories'] ; 
                
@@ -107,7 +111,7 @@ export class MainComponent implements OnInit, AfterViewInit {
                              
                                  
               
-           
+                             
                      
                                 for (let cat of this.selectcat  ){ 
                                   
@@ -133,21 +137,25 @@ export class MainComponent implements OnInit, AfterViewInit {
                                         }
                                         ,error=>{
                                          this.mainpics[s._id ] = "" ; 
-                                         console.log(error) ;     
+                                         console.log(error) ;   
+                                            this.loading3=false ;   
                                         }); 
                  }
+                                                  this.loading3=false ; 
+ 
                }, error =>{
                    console.log(error ) ; 
                }) 
            };
                
-           
                         
              },err1 =>{
                     console.log(err1 ) ; 
+                  this.loading3=false ; 
              }) ; 
            },e0 => {
                console.log(e0 ) ; 
+                this.loading3=false ; 
               }
            )
            ;
@@ -279,7 +287,7 @@ export class MainComponent implements OnInit, AfterViewInit {
      }
     
     gotoStore(id){
-                 this.router.navigate(["../../stores/"+id], { relativeTo: this.route });
+                 this.router.navigate(["../../stores/"+id+"/store"], { relativeTo: this.route });
 
        }
     
@@ -314,12 +322,12 @@ export class MainComponent implements OnInit, AfterViewInit {
         });
         }
     
-      updateArticle( id:string, storeid :string ) {
+  updateArticle( id:string, storeid :string ) {
       this.router.navigate(["../../stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
 
   } 
     
-      mouseEnter(a){
+  mouseEnter(a){
    // console.log(a ); 
       this.disp[a] = true ; 
    }
@@ -329,10 +337,10 @@ export class MainComponent implements OnInit, AfterViewInit {
           this.disp[a] =false ; 
 
    }
-     display(a) {
+   display(a) {
          this.disp[a]= !this.disp[a];
          }
-    checkedCat(e, c) {
+   checkedCat(e, c) {
         console.log(e) ; 
         
         }
@@ -383,7 +391,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     return result;
   } 
     
-    @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
+      @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
     private drawer: RadSideDrawer;
 
     ngAfterViewInit() {
@@ -391,7 +399,13 @@ export class MainComponent implements OnInit, AfterViewInit {
         this._changeDetectionRef.detectChanges();
     }
 
-   
+
+ /*    ngAfterContentInit(): void {
+    // a little delay so the spinner has time to show up
+                setTimeout(() => {
+      this.listLoaded = true;
+    }, 500);
+  }*/
 
    
     public openDrawer() {
@@ -416,8 +430,51 @@ export class MainComponent implements OnInit, AfterViewInit {
 };
     
 
+/*
+ makeSelectable(args ) {
+     console.log(args) ; 
+                args.object.nativeView.setTextIsSelectable(true);
 
-
+ }(loaded)="makeSelectable($event)"*/
+       ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+        ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+           ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+} 
+    
+    
 }
 
 

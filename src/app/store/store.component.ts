@@ -1,4 +1,4 @@
-import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
+import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,AfterContentInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {StoreService, CartService, SearchService} from '../_services/index'; 
 import {Subscription} from 'rxjs';
@@ -6,9 +6,14 @@ import {Subscription} from 'rxjs';
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import { SearchBar } from "tns-core-modules/ui/search-bar"; 
-
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
 //import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
 import * as imagepicker from "nativescript-imagepicker"; 
+
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+
+
 
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
  
@@ -19,14 +24,14 @@ import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';
   templateUrl: './store.component.html',
   styleUrls: ['./store.component.css']
 })
-export class StoreComponent implements OnInit , OnDestroy{
+export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
+      
   maxcart =30 ;
+  subarticles :any =[]  ; 
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
- menuhide = false ; 
+  menuhide = false ; 
   boolNotif = false ;
-  busy: Subscription;
-  busy2: Subscription;
-  busy3: Subscription;
+
   open:boolean = true ; 
   nostore = false ; 
   storetitle: string ="" ;   
@@ -38,7 +43,7 @@ export class StoreComponent implements OnInit , OnDestroy{
   articles :any= [] ; 
   read :any ='' ; 
   banner = "";
-    displaybanner = false ;  
+  displaybanner = false ;  
   query = ""; 
   fullcartwarning:boolean; 
     share = false ; 
@@ -48,17 +53,17 @@ export class StoreComponent implements OnInit , OnDestroy{
     display1 = false ; 
     display2 = false ; 
     page= 1; 
-    size = 4; 
+    size = 6; 
     totalArticles =0;
     nosearch :boolean ;
     nothing : boolean ; 
-    suspend :boolean ;
+    suspend :boolean=false ;
     disp =[] ; 
     maxpage = 1; 
     alertimg = false ; 
     notifCount= 0 ; 
-  private notif:any= {} ;
-     private opened: boolean = true ;
+    private notif:any= {} ;
+    private opened: boolean = true ;
   constructor(
             private route: ActivatedRoute,
             private router: Router,
@@ -69,22 +74,32 @@ export class StoreComponent implements OnInit , OnDestroy{
             private permissionsService : NgxPermissionsService,
             private _changeDetectionRef: ChangeDetectorRef ){}
  
-    
+   
+     
     ngOnInit() {
         this.loading0 = true ; 
-        console.log('store') ; 
-        this.sub = this.route.parent.params.subscribe(params => {
-        console.log (params) ;
+        this.loading = true ;  
+        this.loading2 = true ;
+        
+        
+        this.route.parent.params.subscribe(params => {
+     
             
         this.storetitle = params['store']; // (+) converts string 'id' to a number
+         
+       // this.storetitle= this.storetitle.replace(/ /g, "%20");
+        }); 
         
-        this.storeService.getSuspend (this.storetitle )
-        .subscribe(     
-        data0 =>{
-            this.suspend = data0['suspend']; 
-            
-            if (!this.suspend) {         
-            this.storeService.getStoreStatus( this.storetitle  )
+        
+        //this.storeService.getSuspend(this.storetitle )
+        //.subscribe(     
+       // data0 =>{
+           // console.log(data0) ; 
+            //this.nostore = false ; 
+          //  this.suspend = data0['suspend']; 
+            //console.log(this.suspend) ; 
+          //  if (!this.suspend) {         
+            this.storeService.getStoreStatus( this.storetitle.replace(/ /g, "%20") )
             .subscribe(
                 data0 =>{
                      console.log(data0 ) ; 
@@ -100,16 +115,17 @@ export class StoreComponent implements OnInit , OnDestroy{
                       
                      console.log(this.storetitle) ; 
                          
-                     this.storeService.getStore( this.storetitle)
+                     this.storeService.getStore( this.storetitle.replace(/ /g, "%20"))
                      .subscribe(
                          data1=> {
-                             this.loading0=false ; 
-                             this.display1 = true ; 
-                             this.store = data1 ; 
+                          
+                             this.store = data1 ;
+                             this.loading=false ;  
                              console.log(this.store) ; 
                              //check if i'm the store admin
-                            let admin = false ; 
-                             for (let a of this.store.admins  ){
+                             let admin = false ; 
+                             if (this.store.hasOwnProperty("administrators") ) 
+                             for (let a of this.store.administrators  ){
                                if( a.userid == this.me ) {
                                    admin = true ; 
                                    break ; 
@@ -130,56 +146,59 @@ export class StoreComponent implements OnInit , OnDestroy{
                                     this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
                                  
                              }else
-                                             this.permissionsService.removePermission('writeStore');
+                                this.permissionsService.removePermission('writeStore');
 
                                  
                                   
                                
               
                                  
-                                 
-                              this.loading = true ; 
-                             this.busy= this.storeService.getBanner(this.storetitle)
+                         
+                              this.storeService.getBanner(this.storetitle)
                                  .subscribe (
                                         data=>{
                                             try {
                                                 this.banner = data['banner'] ;  
                                                 this.store.banner = this.banner; 
                                                 console.log(data);
-                                                this.loading = false ; 
+                                                this.loading0 = false ; 
                                             }catch(error) {
                                                 this.banner = "" ; 
-                                                this.loading = false ; 
+                                                this.loading0 = false ; 
                                                }
                                             
                                         }
                                         ,error=>{
-                                            this.loading = false ; 
+                                            this.loading0 = false ; 
                                             console.log(error) ;     
                                         }
                                      ); 
                                  
                             
-                             this.storeService.getArticlesCount (this.storetitle, true)
-                    .subscribe(
-                        data1=> {
+                       this.storeService.getArticlesCount (this.storetitle, true)
+                       .subscribe(
+                       data1=> {
                             //console.log("XXXXXXXXXXXXXXXXXXXX"); 
-                           // console.log(data1) ;
+                           console.log(data1) ;
                             this.totalArticles = data1['count'] ; 
-                            this.maxpage = Math.ceil( this.totalArticles/this.size)  ; 
+                            this.maxpage = Math.ceil( this.totalArticles/this.size)  ;
+                             this.getPage(1);    
                             }
                         ,error1 =>{
                             console.log(error1) ; 
+                            this.loading2 = false ; 
                            }
                         
                         )
                     
-                    this.getPage(1);  
+                   
                             
                         },error1 => {
                             this.display1 = true ; 
                               console.log(error1);    
                              this.loading0 = false ; 
+                            this.loading = false ; 
+                            this.loading2 = false ; 
                         });
       
                
@@ -190,45 +209,51 @@ export class StoreComponent implements OnInit , OnDestroy{
                 ,error0=>{
                             this.display1 = true ; 
                              this.loading0 = false ;  
-                        this.nostore = true ; 
+                    this.loading=false ; 
+                    this.loading2=false ; 
+                   this.nostore = true ; 
+                 
                         console.log(error0) ; 
                 }); 
             
            
        
         
-       }else {
-             this.loading0 = false ;    
-             this.display1 = true ;
-             this.loading = true ; 
-             this.busy= this.storeService.getBanner(this.storetitle)
+     /*  }else {
+           
+        this.loading = false ;  
+        this.loading2 = false; 
+            this.storeService.getBanner(this.storetitle)
              .subscribe (
                                         data=>{
                                             try {
                                                 this.banner = data['banner'] ;  
                                                 this.store.banner = this.banner; 
                                                 console.log(data);
-                                                this.loading = false ; 
+                                                this.loading0 = false ; 
                                             }catch(error) {
                                                 this.banner = "" ; 
-                                                this.loading = false ; 
+                                                this.loading0 = false ; 
                                                }
                                             
                                         }
                                         ,error=>{
-                                            this.loading = false ; 
+                                            this.loading0 = false ; 
                                             console.log(error) ;     
                                         }
                                      );    
                 
                 
-            }}
-       ,error0=>{
+            }//}
+    /*   ,error0=>{
                 console.log(error0 ) ;    
-                
+                this.loading0 = false  ; 
+         //  this.nostore= true ; 
+                this.loading= false ; 
+                this.loading2= false ; 
                 }
-         ) 
-       })
+         ) */
+ 
   }
     addToCart(article){
          article.loadingcart = 1  ;
@@ -263,7 +288,7 @@ export class StoreComponent implements OnInit , OnDestroy{
     
     getQuery2(event){
  
-                            this.boolNotif = false ; 
+         this.boolNotif = false ; 
 
         this.enterQuery2(event); 
         
@@ -309,7 +334,7 @@ export class StoreComponent implements OnInit , OnDestroy{
        }   else {
         
  
-              this.selectArticles = this.articles ; 
+              this.selectArticles = this.articles.map(x => x)  ; 
                     this.nosearch = false ;  
                     this.drawer.closeDrawer();
             
@@ -322,7 +347,7 @@ export class StoreComponent implements OnInit , OnDestroy{
         
       if (this.query =="" ) 
       {
-             this.selectArticles = this.articles ; 
+             this.selectArticles = this.articles.map(x => x)  ; 
                     this.nosearch = false ; 
           }
         
@@ -365,12 +390,12 @@ export class StoreComponent implements OnInit , OnDestroy{
   
 
   gotoArticle( id:string ) {
-      this.router.navigate(["../articles/"+id], { relativeTo: this.route });
+      this.router.navigate(["./../articles/"+id], { relativeTo: this.route });
 
   }
    
   updateArticle( id:string ) {
-      this.router.navigate(["../articles/"+id+"/update"], { relativeTo: this.route });
+      this.router.navigate(["./../articles/"+id+"/update"], { relativeTo: this.route });
 
   } 
  
@@ -399,36 +424,38 @@ export class StoreComponent implements OnInit , OnDestroy{
 }
     
  getPage (page){
-            this.loading2 = true ; 
+           
             this.storeService.getArticlesByStoreTitle(this.storetitle, (page-1)*this.size, this.size)
                      .subscribe( 
                           data=>{
                               console.log('articles'); 
-                              this.articles = this.articles.concat(data)  
-                              //this.articles = data ;
-                                 
-                             this.display2 = true ;
+                             this.subarticles = data ; 
                               console.log(data) ; 
-                               if (this.articles.length == 0 ) 
-                                this.nothing = true ; 
-                              else 
-                                   this.nothing = false  ; 
-                              for ( let i = 0; i < this.articles.length; i++) {
-                                   console.log(this.articles[i]) ; 
-                                   this.disp[this.articles[i]._id ] = false ; 
-                                  this.storeService.getPic( this.articles[i]._id )
+                              this.page = page ; 
+                              for ( let i = 0; i < this.subarticles.length; i++) {
+                                  // console.log(articles[i]) ; 
+                                   this.disp[this.subarticles[i]._id ] = false ; 
+                                  this.storeService.getPic( this.subarticles[i]._id )
                                   .subscribe(
                                       data2=> {
                                          
-                                         this.articles[i]._source.pic= data2['pic'] ; 
-                                         this.page = page ; 
+                                         this.subarticles[i]._source.pic= data2['pic'] ; 
                                       }
                                       ,error2=>{
                                           console.log(error2) ; 
                                           });
                               
                               }   
-                               this.selectArticles =  this.articles ;
+                          
+                              this.articles = this.articles.concat(this.subarticles)  
+                              //this.articles = data ;
+                              this.selectArticles =  this.articles.map(x => x) ;
+
+                              if (this.articles.length == 0 ) 
+                                this.nothing = true ; 
+                              else 
+                                   this.nothing = false  ;  
+                           
                                this.loading2 = false ; 
                                   
                         }, error=>{
@@ -441,7 +468,7 @@ export class StoreComponent implements OnInit , OnDestroy{
   
     
     ngOnDestroy(){
-           this.sub.unsubscribe(); 
+        //  this.sub.unsubscribe(); 
    //        this.permissionsService.flushPermissions();
     //    this.rolesService.flushRoles();
          
@@ -471,14 +498,24 @@ export class StoreComponent implements OnInit , OnDestroy{
     }
     
     
-       @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
-    private drawer: RadSideDrawer;
+       @ViewChild(RadSideDrawerComponent, { static: false }) public  drawerComponent: RadSideDrawerComponent;
+        private drawer: RadSideDrawer;
 
-    ngAfterViewInit() {
-        this.drawer = this.drawerComponent.sideDrawer;
-        this._changeDetectionRef.detectChanges();
+
+        
+     ngAfterViewInit() {
+               
+         
+              this.drawer = this.drawerComponent.sideDrawer;
+                    this._changeDetectionRef.detectChanges(); 
     }
-    
+     /* ngAfterContentInit(): void {
+    // a little delay so the spinner has time to show up
+                setTimeout(() => {
+      this.listLoaded = true;
+    }, 500);
+  }*/
+ 
       display(a) {
          this.disp[a]= !this.disp[a];
          }
@@ -584,6 +621,45 @@ private startSelection(context) {
         this.notifCount= event ; 
        }
 
+ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+
+ ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+}
+    
 } 
 
 

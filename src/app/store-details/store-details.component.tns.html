@@ -1,19 +1,24 @@
 <ScrollView>
-   <GridLayout  rows='auto, auto,auto '>
+<GridLayout rows="auto,*">
+	<StackLayout row="0" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+   	</StackLayout>  
+
+   <GridLayout row="1" *ngIf='!loading' rows='auto, auto,* '>
 
 
  
-    <GridLayout row="0"  columns=auto,* >
-    <Label text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
-  		<Label col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+    <GridLayout row="0"  columns=auto,auto >
+    <Label  (touch)="ontouch($event)" text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> </Label>
+  		<Label (touch)='ontouch($event)' textWrap='true' col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
     
     </GridLayout>
     
     <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
     
-	<GridLayout   margin="15,10,15,10" row="2" columns="auto,*" rows="auto,auto,auto,auto,auto,auto,auto,auto">
+	<GridLayout   margin="15,0,15,0" row="2" columns="120,*" rows="auto,auto,auto,auto,auto,auto,auto,auto">
 
-	<Label text="{{storetitle}}" class=" border "row='0' col="0"></Label>
+	<Label textWrap='true'  text="{{storetitle}}" class=" border "row='0' col="0"></Label>
 
    <AbsoluteLayout  class=" border " row="0" col="1" >
       	           <StackLayout left="-80" top="-20" android:cursorVisible="false"  >
@@ -35,47 +40,47 @@
  
 
 	
-	<Label class="border "  row="3"  text="Description" col="0"></Label>
-	
-	<TextView row="3"  col="1" class="border "  text="{{store.description}}" editable ="false"></TextView>
+	<Label textWrap='true'  class="border "  row="3"  text="Description" col="0"></Label>
 	
 	
-	<Label class=" border "  row="4" text="Catégories" col="0"></Label>
+	<Label textWrap='true'  row="3" col="1"  class="border"  text="{{store.description}}" ></Label>
+	
+	<Label textWrap='true'  class=" border "  row="4" text="Catégories" col="0"></Label>
 	<RadListView class=" border "  row="4" [items]="store.selectedCat" col='1'>
 			<ng-template  let-c="item" >
-			<Label text='{{c}}'></Label>
+			<Label textWrap='true'  text='{{c}}'></Label>
 			</ng-template>
 	</RadListView>
 	
 	<Label class=" border "  row="5" text="Couverture Géo" col="0" editable="false"></Label >
 	<RadListView class=" border "  row="5" [items]="store.geo" col="1" >
 			<ng-template  let-g="item">
-			<Label text='{{g.name}}'></Label>
+			<Label textWrap='true' text='{{g.name}}'></Label>
 			</ng-template>
 	</RadListView>
 	
 	
-	  <Label  class="border "  row="6" text="Propriétaire" col="0"></Label>
-	  <GridLayout   columns ="auto,*" rows="auto,auto" class="border "  row="6" col="1"  orientation="horizontal">
+	  <Label  textWrap='true'  class="border "  row="6" text="Propriétaire" col="0"></Label>
+	  <GridLayout   columns ="auto,auto" rows="auto,auto" class="border "  row="6" col="1"  orientation="horizontal">
       <Image col="0" row="0"  class="profilePic " [src]=avatars[store.userid] stretch="aspectFill"></Image>
      <StackLayout col="1" row="0">
-      <Label  class='fas' text="&#xf0e0;" (tap)= 'sendMessage(store.userid, owner.fullname, avatars[store.userid])' ></Label>
-	  <Label   class="fas" text ="&#xf007;" (tap)='profile(store.userid)' ></Label>
+      <Label  (touch)='ontouch($event)' color='#FFA500'    fontSize="20"   class='fas' text="&#xf0e0;" (tap)= 'sendMessage(store.userid, owner.fullname, avatars[store.userid])' ></Label>
+	  <Label  (touch)='ontouch($event)' color='#FFA500'    fontSize="20"  class="fas" text ="&#xf007;" (tap)='profile(store.userid)' ></Label>
       
      </StackLayout>
       <Label  row="1" col='0'  text="{{owner.fullname}} "></Label>
       </GridLayout>
  
 
-	  <Label *ngIf="store.hasOwnProperty(administrators) " class=" border "  row="7" text="Administrateurs" col="0"></Label>
+	  <Label  textWrap='true'  *ngIf="store.hasOwnProperty('administrators') " class=" border "  row="7" text="Administrateurs" col="0"></Label>
 	  	<RadListView class=" border "  row="7"  [items]="store.administrators" col="1" >
 			<ng-template  let-a="item">
-			 <GridLayout rows='auto,auto' columns='auto,*'>
+			 <GridLayout rows='auto,auto' columns='auto,auto'>
       			<Image col="0" row="0" class="profilePic " [src]=avatars[a.userid] stretch="aspectFill"></Image>
-     			 <Label col="0" row="1" text="{{a.fullname}} "></Label>
+     			 <Label  textWrap='true' col="0" row="1" text="{{a.fullname}} "></Label>
      			 <StackLayout col="1" row="0">
-     			 <Label  class='fas' text="&#xf0e0;" (tap)= 'sendMessage(a.userid, a.fullname, avatars[a.userid])' ></Label>
-				  <Label  class="fas" text ="&#xf007;" (tap)='profile(a.userid)' ></Label>
+     			 <Label (touch)='ontouch($event)' color='#FFA500' fontSize="20" class='fas' text="&#xf0e0;" (tap)= 'sendMessage(a.userid, a.fullname, avatars[a.userid])' ></Label>
+				  <Label (touch)='ontouch($event)'color="#FFA500" fontSize="20" class="fas" text ="&#xf007;" (tap)='profile(a.userid)' ></Label>
     		  </StackLayout>
     		  </GridLayout>
 			
@@ -84,5 +89,6 @@
 	</RadListView>
 	 
 	</GridLayout>
+</GridLayout>
 </GridLayout>
 </ScrollView>

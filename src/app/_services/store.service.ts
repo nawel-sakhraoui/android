@@ -29,8 +29,9 @@ export class StoreService {
     } 
     
     //check storage name 
-    existStore (title : string ) {
-        return this.http.get (this.host+'/api/stores/stores/exist/'+title) ; 
+    existStore (storeid: string ) {
+         storeid= storeid.replace(/ /g, "%20");
+        return this.http.get (this.host+'/api/stores/stores/exist/'+storeid) ; 
         
     }
     
@@ -80,19 +81,19 @@ export class StoreService {
         
     }
     
-    getArticlesByStoreTitle(storeTitle : string, froms, size){
-      
-        return this.http.get (this.host+'/api/stores/'+storeTitle+'/articles/'+true+'/'+froms+'/'+size); 
+    getArticlesByStoreTitle(storetitle : string, froms, size){
+        storetitle= storetitle.replace(/ /g, "%20"); 
+        return this.http.get (this.host+'/api/stores/'+storetitle+'/articles/'+true+'/'+froms+'/'+size); 
     }
   
-    getSoldoutArticlesByStoreTitle(storeTitle : string, froms,size){
-      
-        return this.http.get (this.host+'/api/stores/'+storeTitle+'/articles/'+false+'/'+froms+'/'+size); 
+    getSoldoutArticlesByStoreTitle(storeid : string, froms,size){
+       storeid= storeid.replace(/ /g, "%20");
+        return this.http.get (this.host+'/api/stores/'+storeid+'/articles/'+false+'/'+froms+'/'+size); 
     }
     
-    getArticlesCount (storetitle:string, available:boolean){
-        
-      return this.http.get(this.host+'/api/stores/'+storetitle+'/articles/'+available+'/count');
+    getArticlesCount (storeid:string, available:boolean){
+         storeid= storeid.replace(/ /g, "%20"); 
+      return this.http.get(this.host+'/api/stores/'+storeid+'/articles/'+available+'/count');
    
     }
     
@@ -101,16 +102,17 @@ export class StoreService {
         return this.http.get ( this.host+'/api/articles/articles/'+articlesid.toString()) ;   
     }   
 
-    postBanner (storename : string , banner:any ) {
+    postBanner (storeid : string , banner:any ) {
+         storeid= storeid.replace(/ /g, "%20");
         //console.log(cover.toString());
           //this.covurl = resizeb64(this.covurl, 'auto', '800px');
-             return this.http.put(this.host+'/api/stores/'+storename+'/banner',{'banner':banner}); 
+             return this.http.put(this.host+'/api/stores/'+storeid+'/banner',{'banner':banner}); 
      }
     
-    getBanner(storetitle: string){
+    getBanner(storeid: string){
       //  console.log(storetitle ) ; 
-        
-        return  this.http.get (this.host+'/api/stores/'+storetitle+'/banner'); 
+         storeid= storeid.replace(/ /g, "%20");
+        return  this.http.get (this.host+'/api/stores/'+storeid+'/banner'); 
     }
     
    
@@ -145,9 +147,9 @@ export class StoreService {
         return this.http.get (this.host+'/api/stores/'+userid); 
     }
     
-        getStore( store:string){
-         console.log(store); 
-        return this.http.get (this.host+'/api/stores/stores/'+store); 
+        getStore( storeid:string){
+             storeid= storeid.replace(/ /g, "%20");
+        return this.http.get (this.host+'/api/stores/stores/'+storeid); 
     }
     
     getCategories (){
@@ -180,24 +182,27 @@ export class StoreService {
     }
     
      putRatingStore(storeid, value) {
+          storeid= storeid.replace(/ /g, "%20");
                 return this.http.put(this.host+'/api/stores/stores/'+storeid+'/rating',{'value':value}); 
 
         }
        
    getRatingStore (storeid : string ) {
-     
+      storeid= storeid.replace(/ /g, "%20");
         return this.http.get(this.host+'/api/stores/stores/'+storeid+'/rating'); 
 
     }
     
       getNotifications (storeid: string){
+           storeid= storeid.replace(/ /g, "%20");
          return this.http.get(this.host+'/api/stores/stores/'+storeid+'/notification') ; 
         }
     
     
     
-    putNotification ( commandid:any,value:string, time:any, storetitle:string,userid:string, fullname :  string  ){
-          return this.http.put(this.host+'/api/stores/stores/'+storetitle+'/notification', {'commandid':commandid,
+    putNotification ( commandid:any,value:string, time:any, storeid:string,userid:string, fullname :  string  ){
+         storeid= storeid.replace(/ /g, "%20");
+          return this.http.put(this.host+'/api/stores/stores/'+storeid+'/notification', {'commandid':commandid,
                                                                                                     'value':value, 
                                                                                                       'time':time,
                                                                                                       'userid': userid, 
@@ -230,9 +235,9 @@ export class StoreService {
     
     } 
     
-     removeNotificationByCommandid (storetitle:string, commandid :string, value:string ){
-
-         return this.http.put(this.host+'/api/stores/stores/'+storetitle+'/notification/remove', {'commandid':commandid,
+     removeNotificationByCommandid (storeid:string, commandid :string, value:string ){
+         storeid= storeid.replace(/ /g, "%20"); 
+         return this.http.put(this.host+'/api/stores/stores/'+storeid+'/notification/remove', {'commandid':commandid,
                                                                                                               'value':value}); 
 
       }
@@ -262,98 +267,98 @@ export class StoreService {
     
     
     updateSelectedCat( storeid , value ) {
-        
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/categories', {'selectedCat': value})  ; 
     
      }
     
     
      updateGeo( storeid , value ) {
-        
+         storeid= storeid.replace(/ /g, "%20"); 
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/geo', {'geo': value})  ; 
     
      }
      getGeo( storeid  ) {
-        
+         storeid= storeid.replace(/ /g, "%20"); 
           return  this.http.get(this.host+'/api/stores/stores/'+storeid+'/geo')  ; 
     
      }
     
      updateDescription( storeid , value ) {
-        
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/description', {'description': value})  ; 
     
      }
     updateAdmins( storeid , value :any) {
-        
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/admins', {'admins': value})  ; 
     
      }
     
       putStoreStatus( storeid  , value:boolean ) {
-        
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/close', {'open': value})  ; 
     
      }
  
-     getStoreStatus( storeid  ) {
-        
+     getStoreStatus( storeid :string ) {
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.get(this.host+'/api/stores/stores/'+storeid+'/status')  ; 
     
      }
     
      updateArticleNumbers( storeid : string, articleid:string, value:string ) {
-        
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/numbers', {'numbers': value})  ; 
     
      }  
     updateArticlePrice(storeid:string, articleid:string, value:string ) {
-        
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/price', {'price': value})  ; 
     
      }
      updateArticleTitle(storeid:string, articleid:string, value:string ) {
-        
+            storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/title', {'title': value})  ; 
     
      }
     updateArticleDescription(storeid:string, articleid:string, value:string ) {
-        
+           storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/description', {'description': value})  ; 
     
      }
       updateArticleSizing(storeid:string, articleid:string, value:string ) {
-        
+            storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/sizing', {'sizing': value})  ; 
     
      }
        updateArticleCategories(storeid:string, articleid:string, value:string ) {
-        
+            storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/categories',  {'selectedCat': value})  ; 
     
      }
  
        updateArticleDelivery( storeid:string, articleid:string, value:any) {
-        
+             storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/delivery', {'delivery': value})  ; 
     
      }
      
     updateArticleColor(storeid:string, articleid:string, value:any) {
-        
+              storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/color', {'color': value})  ; 
     
     }
     
      updateArticlesGeo(storeid:string,  value:any) {
-        
+               storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/all/geo', {'geo': value})  ; 
     
     }
     
     
     updateArticleAvailable( storeid:string, articleid:string, value:any) {
-       
+             storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/available', {'available': value})  ; 
     
     }
@@ -362,43 +367,46 @@ export class StoreService {
          return this.http.get(this.host+'/api/deliveries'); 
     }
     
-    getStoreCategories (storetitle) {
-        return this.http.get(this.host+'/api/stores/store/'+storetitle+"/selectedcat"); 
+    getStoreCategories (storeid) {
+         storeid= storeid.replace(/ /g, "%20");
+        return this.http.get(this.host+'/api/stores/store/'+storeid+"/selectedcat"); 
     }
     
     
     putIncome( storeid:string , income:any) {
-        
+         storeid= storeid.replace(/ /g, "%20"); 
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/income', {'income': income})  ; 
     
      }
     getIncome (storeid:string ) {
-        
+          storeid= storeid.replace(/ /g, "%20"); 
             return this.http.get(this.host+'/api/stores/stores/'+storeid+'/income') ;
      }
      
     putSuspend( storeid:string , suspend:boolean) {
-        
+          storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/suspend', {'suspend': suspend})  ; 
     
     }
     getSuspend (storeid:string ) {
-        
+           storeid= storeid.replace(/ /g, "%20");
            return this.http.get(this.host+'/api/stores/stores/'+storeid+'/suspend') ;
     }
     // suspended store's article 
     putSuspendArticles(storeid : string, suspend:boolean ) {
+         storeid= storeid.replace(/ /g, "%20");
          return this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/all/suspend/all', {'suspend'   :suspend}); 
     
         
     }
     putSuspendArticleById (storeid : string, articleid:string, suspend:boolean ) {
+         storeid= storeid.replace(/ /g, "%20");
          return this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/suspend', {'suspend':suspend}); 
 
         
     }
     getArticleSuspend (storeid:string, articleid : string ) {
-    
+                 storeid= storeid.replace(/ /g, "%20");
                  return  this.http.get(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/suspend')  ; 
 
     }
@@ -409,17 +417,17 @@ export class StoreService {
     }
     
     getStoresManager(storeid:string){
-        
+         storeid= storeid.replace(/ /g, "%20");
         return this.http.get(this.host+'/api/managerstores/stores/'+storeid) ; 
     }
     ///api/stores/stores/:storeid/income/validate
     putIncomeLoan( storeid:string , income:any) {
-        
+         storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/income/loan', {'income': income})  ; 
     
      }
     putIncomeValidate( storeid:string , income:any) {
-        
+          storeid= storeid.replace(/ /g, "%20");
           return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/income/validate', {'income': income})  ; 
     
      }
@@ -429,15 +437,16 @@ export class StoreService {
           //this.covurl = resizeb64(this.covurl, 'auto', '800px');
              return this.http.put(this.host+'/api/stores/'+storename+'/loan/'+date, {'loan':loan}); 
      }
-     getLoanProof (storename : string ,date:string ) {
+     getLoanProof (storeid : string ,date:string ) {
+          storeid= storeid.replace(/ /g, "%20");
         //console.log(cover.toString());
           //this.covurl = resizeb64(this.covurl, 'auto', '800px');
-             return this.http.get(this.host+'/api/stores/'+storename+'/loan/'+date); 
+             return this.http.get(this.host+'/api/stores/'+storeid+'/loan/'+date); 
      }
     
-    getAdmins(storetitle){
-        
-        return this.http.get(this.host+'/api/managerstores/stores/admins/'+storetitle) ; 
+    getAdmins(storeid){
+         storeid= storeid.replace(/ /g, "%20");
+        return this.http.get(this.host+'/api/managerstores/stores/admins/'+storeid) ; 
         }
     
     

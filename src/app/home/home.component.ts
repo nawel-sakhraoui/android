@@ -5,9 +5,8 @@ import { FacebookAccountKit, AccountKitResponseType,AccountKitOptions  } from 'n
 import * as CryptoJS from 'crypto-js'; 
 import { Color } from "tns-core-modules/color";
 import * as localStorage from  "nativescript-localstorage" ; 
- import { ActivatedRoute } from "@angular/router";
+ import { ActivatedRoute, Router } from "@angular/router";
 
-import { RouterExtensions } from "nativescript-angular/router"; 
 import { Page } from "tns-core-modules/ui/page"; 
 
 @Component({
@@ -37,27 +36,31 @@ export class HomeComponent implements OnInit {
     /* currentUser:any;
     phonemask = ["0",/[5-7]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," "]
     */
-    processing = false ; 
+    processing = false;
     login = true ; 
+    wait = false ; 
     loading = false ; 
     loading2 = false ; 
     UserPhone =false ; 
     pleaseRegister = false ;
     justLog = false ; 
-    model : any= {} ; 
+    model : any= {}//'phone':''} ; 
     suspended = false ; 
     returnUrl =""; 
     langue:string ;
     langue2:string ;
     alertLength = false ;
-
+    alertphone = false ; 
+    alertnamelength = false ;
+    alertname = false ; 
     constructor(
-               private router: RouterExtensions,
+               private router: Router,
                 private route :ActivatedRoute, 
                 //private router :Router,
                 private userService: UserService,
                private userdetailsService : UserdetailsService, 
                private page :Page 
+               
         ) {
 
                 this.page.actionBarHidden = true; 
@@ -85,13 +88,19 @@ export class HomeComponent implements OnInit {
     }*/
 
     logins(){
+    if (this.loading == false ) {
+    if ( !('phone' in this.model)) {
+        this.alertphone = true ; 
+    }else {
+            this.alertphone= false ; 
+       
         this.loading = true ; 
         this.loading2 = false ; 
         //check if userphone is already register 
-        let f = this.model.phone.replace(/\s/g, "_");
-        console.log(f) ; 
-        console.log(f.length) ; 
-        if (this.model.phone.includes('_') ) {
+     //   let f = this.model.phone.replace(/\s/g, "_");
+       // console.log(f) ; 
+       // console.log(f.length) ; 
+        if ( this.model.phone.includes('_') ) {
             this.alertLength = true ; 
             this.loading = false ; 
         }else{
@@ -106,7 +115,7 @@ export class HomeComponent implements OnInit {
                 // continuous with login 
                  
                     this.options= {
-                                prefillPhoneNumber :f.substr(1), 
+                                prefillPhoneNumber :this.model.phone.substr(1), 
                                 prefillCountryCode : "+213",
                                   defaultCountryCode : "DZ",
                                 whitelistedCountryCodes : ["DZ"],
@@ -117,7 +126,7 @@ export class HomeComponent implements OnInit {
                                        primaryColor : new Color("orange")
                                     };
                              this.facebookAccountKit.loginWithPhoneNumber(this.options).then(response => {
-
+                                       this.wait = true ; 
                              //   console.log(response);
                             
                                 this.model.userid =data['hits'][0]['_id'];  //CryptoJS.PBKDF2(this.model.phone, 'abc', { keySize: 128/32, iterations: 1}).toString();; 
@@ -131,11 +140,13 @@ export class HomeComponent implements OnInit {
                              // .pipe(first())
                                     .subscribe (
                                      data=> {
-                                             if (data['auth'] ) {
+                                           
+                                   
+                                                if (data['auth'] ) {
                                              let userid: string = this.model.userid;
-                                                 
+                                                    
                                              localStorage.setItem('currentUser', JSON.stringify({userid:this.model.userid,  token: data['token'] }));
-                                             this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home/'+this.model.userid;
+                                             this.returnUrl = '/home/'+this.model.userid; //this.route.snapshot.queryParams['returnUrl'] || 
                                              this.loading= false ; 
                                              this.router.navigateByUrl(this.returnUrl);     
                                                         
@@ -152,8 +163,10 @@ export class HomeComponent implements OnInit {
                         },
                         (error: any) => {
                             
-                                console.error(error)
-                        
+                                console.error(error);
+                                this.loading = false ; 
+                             
+
                         } );
                    
                 
@@ -176,20 +189,44 @@ export class HomeComponent implements OnInit {
             }); 
             
    }
-        
+       } }
    }
     
     register(){
         
-         this.loading2 = true ;
+    if (this.loading == false ) {
+      
+       if (!('fullname' in this.model )) 
+              this.alertname = true ; 
+      else  {
+           
+           this.alertname = false;  
+        if (this.model.fullname.length < 5 ) 
+             this.alertnamelength =true
+        else 
+            this.alertnamelength= false ;  
+     }   
+        
+      if ( !('phone' in this.model)) 
+              this.alertphone = true ; 
+        else {
+           this.alertphone=false ; 
+           if ( this.model.phone.includes('_') ) {
+               this.alertLength = true ; 
+          } else {
+                this.alertLength = false ; 
+          
+          if (this.model.fullname.length < 5 ) 
+             this.alertnamelength =true
+          else 
+            this.alertnamelength= false ;   
+               
+               
+       if ( !this.alertLength  && !this.alertphone && !this.alertnamelength && !this.alertname)
+       { 
+        this.loading2 = true ;
          this.loading =false ; 
         //check if userphone is already register 
-      let f = this.model.phone.replace(/\s/g, "");
-        
-      if (f!=10 ) {
-      this.alertLength = true ; 
-      }else{
-          this.alertLength = false ; 
         this.model.phone = this.model.phone.replace(/\s/g, "") ; 
         this.userService.checkUserPhone (this.model.phone)
         .subscribe (
@@ -199,7 +236,7 @@ export class HomeComponent implements OnInit {
                  
                         
                          this.options= {
-                                prefillPhoneNumber :f.substr(1), 
+                                prefillPhoneNumber :this.model.phone.substr(1), 
                                 prefillCountryCode : "+213",
                                   defaultCountryCode : "DZ",
                                 whitelistedCountryCodes : ["DZ"],
@@ -210,6 +247,7 @@ export class HomeComponent implements OnInit {
                                        primaryColor : new Color("orange")
                                     };
                                 this.facebookAccountKit.loginWithPhoneNumber(this.options).then(response => {
+                                           this.wait = true ;
 
                                 console.log(response);
                                
@@ -225,16 +263,23 @@ export class HomeComponent implements OnInit {
                                     
                                     data=> {
                                              if (data['auth'] ) {
-                                                
+                                                         
                                                    let userid: string = this.model.userid;
-                                                  // localStorage.setItem('currentUser', JSON.stringify({userid,  token: data['token'] }));
+                                                 //localStorage.setItem('currentUser', JSON.stringify({userid,  token: data['token'] }));
                                                     //   console.log(localStorage.getItem('currentUser'));
                                                  //localStorage.setItem('currentUser', JSON.stringify({userid:this.model.userid,  token: data['token'] }));
                                                 //create userdetails in store 
-                                                              this.userdetailsService.postUserAccount (this.model.fullname, this.model.phone)
+                                                   
+                                             localStorage.setItem('currentUser', JSON.stringify({userid:this.model.userid,  token: data['token'] }));
+                                             this.returnUrl = '/home/'+this.model.userid; //this.route.snapshot.queryParams['returnUrl'] || 
+                                             this.loading= false ; 
+                                             this.router.navigateByUrl(this.returnUrl);   
+                                                 
+                                                 this.userdetailsService.postUserAccount (this.model.fullname, this.model.phone)
                                                                 .subscribe(
                                                                       data3=>{
                                                                             console.log(data3);
+                                                                   
                                                                           this.loading2 = false ; 
                                                                       
                                                                           this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home/'+data3['_id'];
@@ -263,14 +308,18 @@ export class HomeComponent implements OnInit {
                         (error: any) => {
                             
                                 console.error(error)
-                        
+                                //refresh 
+
+                            this.loading = false ; 
+                            this.loading2 = false ; 
                         } );
                     
 
                 }else {
-                    this.login  = !this.login; 
+                    this.login  = true; 
                     this.justLog = true ; 
                     this.loading2 = false ; 
+                    this.loading=false;
                 }
             }
             ,error => {
@@ -280,8 +329,11 @@ export class HomeComponent implements OnInit {
                 
             }); 
         
-        }
+        }}
+            }
        }
+        
+        }
 /*    private loadAllUsers() {
         this.userService.getAll().subscribe(users => { this.users = users; });
     }*/

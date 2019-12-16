@@ -11,8 +11,8 @@ import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
 <GridLayout rows="*,auto"> 
 <TextView editable='false' font-size='12' row="0" col="0" text='êtes vous sure de vouloir Annuler cette  transaction ? {{model.id}} ' ></TextView>
 <GridLayout  row="1" columns='*,* '>
-<Button  col='0' text="Oui" class="btn btn-default" color="#ffffff"  backgroundColor='#d9534f'  (tap)="sendStop()" ></Button> 
-<Button  col='1' text='Non' class="btn btn-default"   backgroundColor='transparent'  (tap)="hide()" ></Button>
+<Button  col='0' text="Oui"  color="#ffffff"  backgroundColor='#d9534f'  (tap)="sendStop()" ></Button> 
+<Button  col='1' text='Non'    backgroundColor='transparent'  (tap)="hide()" ></Button>
 </GridLayout>
 </GridLayout>
     ` 

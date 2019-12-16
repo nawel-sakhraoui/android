@@ -1,50 +1,51 @@
 <FlexboxLayout>
  
-     
-    <StackLayout *ngIf="login" class="form">
+   
+       
+   
+    <StackLayout  *ngIf="login" class="form">
         <!-- Image class="logo" src=""></Image> -->
-        <Label class="header" text="SIM SIM"></Label>
+            <Label class="header" text="SIM SIM"></Label>
 
 			<StackLayout *ngIf="suspended">
-			 
-			  <TextView  class="warning" text ="Utilisateur suspendu contacter le support technique pour plus d'info ">
+			  <TextView editable= "false"  class="warning" text ="Utilisateur suspendu contacter le support technique pour plus d'info ">
 			  </TextView>
-			 
-			 
 			</StackLayout> 
-			<StackLayout *ngIf="justlog">
-			 <TextView class="warning" text="Ce téléphone est déjà enregistré, veuiller vous connecter ">
+			
+			<StackLayout *ngIf="justLog">
+			 <TextView editable='false' class="warning" text="Ce téléphone est déjà enregistré, veuiller vous connecter ">
 			 </TextView>
-			 
 			</StackLayout>
 			
         <PreviousNextView>
-          
-                <StackLayout row="1" class="input-field">
+      
+       <GridLayout rows='auto'>
+                <StackLayout row="0" class="input-field">
                    
-                    <MaskedTextField class="input" hint="Téléphone"[isEnabled]="login"
+                    <MaskedTextField [isEnabled]="!loading" class="input" hint="Téléphone"[isEnabled]="login"
                         keyboardType="phone" autocorrect="false"
                         autocapitalizationType="none" [(ngModel)]="model.phone"
                         returnKeyType="done"
                         mask="00 00 00 00 00"
                         (returnPress)='logins()'></MaskedTextField>
-                        <TextView *ngIf='alertLength' class="warning" text="Le numero que vous avez entrez est incomplet."> </TextView>
+                        <Label editable ='false' *ngIf='alertLength' class="warning" text="Numero incomplet."> </Label>
+                        <Label editable ='false' *ngIf='alertphone' class="warning" text="Entrer votre numero."> </Label>
+                      
                     <StackLayout class="hr-light"></StackLayout>
                 </StackLayout>
 
    
-                <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading"></ActivityIndicator>
-        
-
+                <ActivityIndicator row="0" color='#FFA500' rowSpan="3" [busy]="loading"></ActivityIndicator>
+        </GridLayout>
         	
     
-          <Button text="Connexion"
+          <Button [isEnabled]="!loading" text="Connexion"
             (tap)="logins()" class="btn btn-primary m-t-20"  returnKeyType="done" ></Button>
             
             
         
         </PreviousNextView>
-       <Label class="login-label sign-up-label" (tap)="login=!login">
+       <Label [isEnabled]="!loading" class="login-label sign-up-label" (tap)="login=!login">
         <FormattedString>
             <Span text="Pas de compte? "></Span>
             <Span color="#FFA500" text="S'enregistrer" class="bold" ></Span>
@@ -52,7 +53,7 @@
     	</Label>
     </StackLayout>
     
-    <StackLayout *ngIf='!login' class="form">
+    <StackLayout *ngIf='!login ' class="form">
     
     
         <!-- Image class="logo" src=""></Image> -->
@@ -60,7 +61,7 @@
 
  
 			<StackLayout *ngIf="pleaseRegister">
-			 <TextView class="warning" text=" Ce téléphone n'est pas enregister, enregistrer le "></TextView>
+			 <TextView editable="false" class="warning" text=" Ce téléphone n'est pas enregister, enregistrer le "></TextView>
 			 </StackLayout>
 
         <PreviousNextView>
@@ -70,9 +71,13 @@
                 
                 <StackLayout  row="0" class="input-field">
         
-                  <TextField  class="input" hint="Nom complet"
+                  <TextField [isEnabled]="!loading2"   class="input" hint="Nom complet"
                          autocorrect="false" autocapitalizationType="none" [(ngModel)]="model.fullname"
-                       ></TextField>
+                      ></TextField>
+                       
+                    <Label editable ='false' *ngIf='alertnamelength' class="warning" text="Entrer Nom Prénom."> </Label>
+                    <Label editable ='false' *ngIf='alertname' class="warning" text="Entrer votre nom."> </Label>
+                              
                     <StackLayout class="hr-light"></StackLayout>
                 </StackLayout>
                
@@ -81,27 +86,33 @@
                           
                		
                 
-                    <MaskedTextField  class="input" hint="Téléphone" [isEnabled]="login"
+                    <MaskedTextField [isEnabled]="!loading2"   class="input" hint="Téléphone" 
                         keyboardType="phone" autocorrect="false"
                         autocapitalizationType="none" [(ngModel)]="model.phone"
                         returnKeyType="done"
-                        mask="00 00 00 00 00"></MaskedTextField>
+                        mask="00 00 00 00 00"
+                        (returnPress)= 'register()'></MaskedTextField>
+                     
+                          <Label editable ='false' *ngIf='alertLength' class="warning" text="Numero incomplet."> </Label>
+                        <Label editable ='false' *ngIf='alertphone' class="warning" text="Entrer votre numero."> </Label>
+                         
+                        
                     <StackLayout class="hr-light"></StackLayout>
                
                 </StackLayout>
 
            
 
-                <ActivityIndicator rowSpan="3" [busy]="loading"></ActivityIndicator>
+                <ActivityIndicator  rowSpan="3" [busy]="loading2"></ActivityIndicator>
             </GridLayout>
        
-
+			<Button [isEnabled]="!loading2"  text="S'enregister"
+            (tap)="register()" class="btn btn-primary m-t-20"   returnKeyType="done"></Button>
      
          </PreviousNextView>   
             	
-        <Button text="S'enregister"
-            (tap)="register()" class="btn btn-primary m-t-20"   returnKeyType="done"></Button>
-        <Label class="login-label sign-up-label" (tap)="login=!login">
+        
+        <Label [isEnabled]="!loading2"  class="login-label sign-up-label" (tap)="login=!login">
         <FormattedString>
             <Span text="Déjà enregistré? "></Span>
             <Span text="Connexion"  color="#FFA500" class="bold" ></Span>

@@ -19,11 +19,11 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         
         if (localStorage.getItem('currentUser')) {
         
-            let me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
+            let me= JSON.parse(localStorage.getItem('currentUser'))["userid"] ; 
             let home = route.params.myhome;  
              console.log(JSON.parse(localStorage.getItem('currentUser')).token) ;  
             
-          /*   if ( me == home ) {
+             if ( me == home ) {
          
                 this.permissionsService.addPermission('readUserAccount', () => {
                 return true;
@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
                 });
                 this.rolesService.addRole('ADMIN', ['readUserAccount','writeUserAccount' ]);  
              
-             }*/
+             }
               if ( me == '1820ad1b57ff06677e1044be32659c3c') {
          
                 this.permissionsService.addPermission('readSuperAdmin',() => {
@@ -48,12 +48,13 @@ export class AuthGuard implements CanActivate, CanActivateChild {
                 this.rolesService.addRole('SUPERADMIN', ['readSuperAdmin','writeSuperAdmin' ]);  
              
              }
-               /*this.permissionsService.addPermission('readStore', () => {
+             
+            this.permissionsService.addPermission('readStore', () => {
                 return true;
                 });
                  this.permissionsService.addPermission('readProfile', () => {
                     return true;
-                });*/
+                });
             
                  
            

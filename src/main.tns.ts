@@ -9,6 +9,7 @@ import { AppModule } from './app/app.module';
 // that sets up a NativeScript application and can bootstrap the Angular framework.
 import {StarRating} from './app/rating/star-ratings.android';
 
+
 registerElement('StarRating', () => StarRating);
 
 platformNativeScriptDynamic().bootstrapModule(AppModule);

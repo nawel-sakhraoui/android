@@ -31,7 +31,7 @@ export class FirebaseService {
                  {
                     "notification": {
                          "title": fullname,
-                         "text":  "Vous avez un nouveau message.",
+                         "text":  "Vous à envoyé un nouveau message.",
                          "sound": "default"
                      },
                        "priority": "High",

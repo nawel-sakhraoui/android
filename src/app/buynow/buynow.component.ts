@@ -24,7 +24,7 @@ export class BuynowComponent implements OnInit {
   display2 = false ;
   fullname = "" ; 
     
-    
+  firebase:any = []  ; 
   constructor(private firebaseService : FirebaseService, 
               private buynowService  : BuynowService, 
               private ongoingService: OngoingService, 
@@ -73,6 +73,34 @@ export class BuynowComponent implements OnInit {
                   ,error=>{}
                   
                   )  
+      
+             this.storeService.getAdmins(this.model.storetitle)
+        .subscribe(
+            data0=>{
+              
+                        let  admins =[ data0['userid'] ] ; 
+                       for (let x of data0['administrators']) 
+                            admins.push (x.userid);  
+      
+                    for (let admin of admins){
+                         
+                            this.userdetailsService.getFirebase(admin)
+                            .subscribe(
+                                data=>{
+                                        console.log(data) ; 
+                                       this.firebase.push(data['firebase']) ; 
+                                      
+                         
+                     
+                            },error=>{
+                                      console.log(error ) ; 
+                             }) ;
+                        
+                        }
+                
+                  }
+            ,error0=>{  })  
+               
     
   }
     
@@ -82,7 +110,7 @@ export class BuynowComponent implements OnInit {
         this.loading = true ; 
         console.log(" add article to purchase") ; 
         console.log(this.model ) ; 
-        let articles = [];
+        let articles:any = [];
         for (let a of this.model.articles ){
             
             articles.push ({'articleid':a.articletitle, 
@@ -110,61 +138,30 @@ export class BuynowComponent implements OnInit {
                                              "userfeedback": "",
                                             })
             
-        // .pipe(map(res => res.json()))
-         .finally(
-                    () =>{
-                      
-                    } )
+        
         .subscribe(
             data =>{ 
-              let time = new Date().getTime() ; 
-                console.log(data) ;  
-                    this.storeService.putNotification( data['_id'], 'command', time, this.model.storetitle  , JSON.parse(localStorage.getItem('currentUser')).userid, this.fullname) 
+                     let time = new Date().getTime() ; 
+                     this.storeService.putNotification( data['_id'], 'command', time, this.model.storetitle  ,this.me, this.fullname) 
                      .subscribe (
                       data2 => { 
-                        console.log(data2)  ; 
-                        this.router.navigate(["../../../../../home/"+this.me+"/ongoing"], { relativeTo: this.route });
-
-                         }
-                        ,error2=>{
+                      
+                        
+                          },error2=>{
                           console.log(error2) ; 
-                         }); 
-            
-                  
-                      //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(this.model.storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.commandNotif( firebase,this.me, this.model.storetitle) 
+                           this.loading = false ;
+
+                     });                      //get store admin and creator 1, get tokens !  send notif ! 
+   
+                                 
+                  for (let firebase of this.firebase)
+                 this.firebaseService.commandNotif( firebase,this.fullname, this.model.storetitle) 
                                         .subscribe(
                                             d=>{
                                                 console.log(d) ;    
                                             },e=>{
                                                 console.log(e) ; 
                                           });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})  
-                
-                
-                        this.loading = false ;
-                        
-
                   
                 //remove from cart by articleid 
                 for (let a of this.model.articles ) {
@@ -176,6 +173,16 @@ export class BuynowComponent implements OnInit {
         
                     
                     }
+                          
+     
+                        this.router.navigate(["../../../../../home/"+this.me+"/ongoing"], { relativeTo: this.route });
+                           this.loading = false ; 
+                          
+                          
+             
+            
+                  
+
               
             }
           

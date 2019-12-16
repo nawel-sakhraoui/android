@@ -11,19 +11,28 @@ import * as prettyMs from 'pretty-ms';
 
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
+    import * as utils from "utils/utils";
 
-
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { SearchBar } from "tns-core-modules/ui/search-bar"; 
+import * as  clipboard from "nativescript-clipboard" ;
+import { Frame, topmost } from "tns-core-modules/ui/frame"; 
+import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview";
+ 
+ 
 @Component({
     selector: 'app-historic-sales',
   templateUrl: './historic-sales.component.html',
   styleUrls: ['./historic-sales.component.css']
 })
     
-export class  HistoricSalesComponent implements OnInit {
+export class  HistoricSalesComponent implements OnInit, AfterViewInit{
     query = ""; 
     
   ongoing = false ;    
   model : any = []; 
+    tempmodel:any =[] ; 
   messages = []; 
   connection;
   message;
@@ -50,6 +59,8 @@ opened = true ;
     loading0 :boolean ; 
     historic :boolean ; 
     isopen = {} ; 
+    loadingR :any = {};
+    
     @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
     private drawer: RadSideDrawer;
     
@@ -134,7 +145,7 @@ opened = true ;
       if( this.totalcommand != 0 ) {
                 this.ongoing = true ; 
                
-          this.getPage(1)   ;               
+                 this.getPage(1)   ;               
           
        }  else 
 
@@ -251,7 +262,7 @@ opened = true ;
     }
     */
     
-     sendMessage(i, id, f, storetitle){
+   /*  sendMessage(i, id, f, storetitle){
            let time = new Date().getTime() ;
          //this.messagesService.sendMessage({"from": localStorage.getItem('currentUser'), "message": this.model[i].message, "id":id}); 
        
@@ -264,7 +275,7 @@ opened = true ;
              }
              ,error =>{        
                    console.log(error) ; 
-             }) ; 
+             }) ; */
 
          
        /*        this.storeService.putNotification( id, 'message', time, storetitle , JSON.parse(localStorage.getItem('currentUser')).userid ) 
@@ -277,7 +288,7 @@ opened = true ;
                     }); 
         */
 
-     }
+     //}
   /*   onClick(event, articleid){
          console.log(event) ; 
          console.log(articleid ) ; 
@@ -286,17 +297,21 @@ opened = true ;
 
     
         setScore(e,i,id){
-        console.log(e.object.get('value')) ; 
-         this.model[i].userrating = Number(e.object.get('value'));
-          this.alert[id] = false ; 
-       }
+            console.log(e.object.get('value')) ; 
+            this.model[i].userrating = Number(e.object.get('value'));
+             this.alert[id] = false ; 
+        }
     
-  sendRating (command) { 
-           console.log(command.userrating);
+    
+    sendRating (command, i) { 
+          console.log(command.userrating);
+          utils.ad.dismissSoftInput() ; 
+
           if (command.userrating !=0  ) {
+              this.loadingR[command._id] = true ; 
                this.alert[command._id ] = false  ; 
-//                 
-                this.userdetailsService.putRating(command._source.userid, command.userrating, command._source.feedback ,this.storetitle) 
+               
+                this.userdetailsService.putRating(command._source.userid, command.userrating, command._source.userfeedback ,this.storetitle) 
                 .subscribe(
                     data => {
                         console.log(data); 
@@ -305,12 +320,15 @@ opened = true ;
                 .subscribe(
                     data => {
                         console.log(data) ; 
-                        command._source.userrating = command.userrating ; 
+                        this.model[i]._source.userrating = command.userrating ; 
+                                    this.loadingR[command._id] = false ; 
                     },error =>{
                         console.log(error) ; 
+                                    this.loadingR[command._id] = false;
                      }
                     )  
                     },error =>{
+                                    this.loadingR[command._id] = false ; 
                         console.log(error) ; 
                      }
                     )
@@ -325,80 +343,82 @@ opened = true ;
    getPage(page: number) {
            
         this.loading = true;
-
-         this.busy=  this.ongoingService.getArticlesByStoreIdClose (this.storetitle,  (page-1)*this.size, this.size )
+       this.ongoingService.getArticlesByStoreIdClose (this.storetitle,  (page-1)*this.size, this.size )
       .subscribe (
           
           data =>{
-               console.log(data ) ; 
-              this.model = data ; 
+                console.log(data ) ; 
+                this.tempmodel = data ; 
                 this.loading=false ; 
-              this.loading0 = false ; 
-              this.historic = true ;
+                this.loading0 = false ; 
+                this.historic = true ;
                         this.page = page ; 
                         this.sales = true ;
                      //   window.scrollTo(0, 0);
 
               
-              if(Object.keys( this.model).length !== 0 ) 
+              if(Object.keys( this.tempmodel).length != 0 ) 
                 this.ongoing = true ; 
               else 
                   this.ongoing = false ; 
               
-              for( let i  = 0 ; i < this.model.length ; i++ ) {
+              for( let i  = 0 ; i < this.tempmodel.length ; i++ ) {
                 
-                 if (! this.model[i]._source.choosenAddress ) 
-                     this.model[i]._source.choosenAddress = {} ;  
-                       this.userdetailsService.getAvatar(this.model[i]._source.userid)
+                 if (! this.tempmodel[i]._source.choosenAddress ) 
+                       this.tempmodel[i]._source.choosenAddress = {} ; 
+                                   this.tempmodel[i].userrating ="" 
+                                //   this.tempmodel[i]._source.userfeedback = "" ;  
+                                this.loadingR[this.tempmodel[i]._id] = false ; 
+                       this.userdetailsService.getAvatar(this.tempmodel[i]._source.userid)
                        .subscribe( 
                            datan => {
-                                 this.avatarlist[this.model[i]._source.userid ] = datan['avatar'] ;  
-                             console.log(datan) ;    
+                                 this.avatarlist[this.tempmodel[i]._source.userid ] = datan['avatar'] ;  
+                                 console.log(datan) ;    
                            }
                            ,errorn=> {
                                  console.log (errorn ) ;    
                            }
                            );
-                       this.userdetailsService.getFullname(this.model[i]._source.userid)
+                       this.userdetailsService.getFullname(this.tempmodel[i]._source.userid)
                        .subscribe( 
                            datan => {
-                                 this.fullnamelist[this.model[i]._source.userid ] = datan['fullname'] ;  
+                                 this.fullnamelist[this.tempmodel[i]._source.userid ] = datan['fullname'] ;  
                         //     console.log(datan) ;    
                            }
                            ,errorn=> {
                                  console.log (errorn ) ;    
-                           }
+                           } 
                            );
                   
                   
-                  this.isopen["message"+this.model[i]._id] = false ; 
-                  this.model[i].userrating = this.model[i]._source.userrating; 
-                 console.log(    this.model[i].userrating);
-                   for( let j = 0 ;j < this.model[i]._source.messages.length; j++ ) {
-             //    console.log( JSON.parse(this.model[i]._source.messages[j]) );
-                   try{
-                      // this.model[i]._source.messages[j] = JSON.parse(this.model[i]._source.messages[j]); 
-                        console.log(this.model[i]._source.messages[j].from) ; 
-                       if (! this.avatarlist[this.model[i]._source.messages[j].from ]) {
+                  this.isopen["message"+this.tempmodel[i]._id] = false ; 
+                // this.tempmodel[i].userrating = this.tempmodel[i]._source.userrating; 
+                 //console.log(    this.tempmodel[i].userrating);
+                   for( let j = 0 ;j < this.tempmodel[i]._source.messages.length; j++ ) {
+             //    console.log( JSON.parse(this.tempmodel[i]._source.messages[j]) );
+                
+                      // this.tempmodel[i]._source.messages[j] = JSON.parse(this.model[i]._source.messages[j]); 
+                    //    console.log(this.tempmodel[i]._source.messages[j].from) ; 
+                     /*  if (! this.avatarlist[this.tempmodel[i]._source.messages[j].from ]) {
                            
-                       this.userdetailsService.getAvatar(this.model[i]._source.messages[j].from)
+                       this.userdetailsService.getAvatar(this.tempmodel[i]._source.messages[j].from)
                        .subscribe( 
                            data => {
-                                 this.avatarlist[this.model[i]._source.messages[j].from ] = data['avatar'] ;  
+                                 this.avatarlist[this.tempmodel[i]._source.messages[j].from ] = data['avatar'] ;  
                         //       console.log(data) ;    
                            }
                            ,error=> {
                                  console.log (error ) ;    
                            }
                            );
-                      }
+                      }*/
                        
-                         if (! this.fullnamelist[this.model[i]._source.messages[j].from ]) {
+                         if (! this.fullnamelist[this.tempmodel[i]._source.messages[j].from ]) {
                            
-                       this.userdetailsService.getFullname(this.model[i]._source.messages[j].from)
+                       this.userdetailsService.getFullname(this.tempmodel[i]._source.messages[j].from)
                        .subscribe( 
                            data => {
-                                 this.fullnamelist[this.model[i]._source.messages[j].from ] = data['fullname'] ;  
+                                 this.fullnamelist[this.tempmodel[i]._source.messages[j].from ] = data['fullname'] ;  
                         //       console.log(data) ;    
                            }
                            ,error=> {
@@ -407,37 +427,37 @@ opened = true ;
                            );
                       }
 
-                  this.model[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.model[i]._source.messages[j].date , {compact: true} );
-                        console.log(JSON.parse(localStorage.getItem('currentUser')).userid) ; 
-                       if (this.model[i]._source.messages[j].from == JSON.parse(localStorage.getItem('currentUser')).userid) 
-                            this.model[i]._source.messages[j].fromMe = true ; 
+                  this.tempmodel[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.tempmodel[i]._source.messages[j].date , {compact: true} );
+                       // console.log(JSON.parse(localStorage.getItem('currentUser')).userid) ; 
+                       if (this.tempmodel[i]._source.messages[j].from == this.me) 
+                            this.tempmodel[i]._source.messages[j].fromMe = true ; 
                        else 
-                            this.model[i]._source.messages[j].fromMe = false ; 
+                            this.tempmodel[i]._source.messages[j].fromMe = false ; 
                        
                        
-                       } catch (error ) {
-                         console.log(error) ;   
-                        }
+                   
                   }
-                       this.model[i]._source.startdate = new Date (this.model[i]._source.startdate).toLocaleString("fr-FR").replace("à","-"); 
-                   if (this.model[i]._source.steps.prepare!=0)
-                       this.model[i]._source.steps.prepare = new Date (this.model[i]._source.steps.prepare).toLocaleString("fr-FR").replace("à","-"); 
-                   if (this.model[i]._source.steps.send!=0)
-                       this.model[i]._source.steps.send = new Date (this.model[i]._source.steps.send).toLocaleString("fr-FR").replace("à","-"); 
-                   if (this.model[i]._source.steps.receive!=0)
-                       this.model[i]._source.steps.receive = new Date (this.model[i]._source.steps.receive).toLocaleString("fr-FR").replace("à","-"); 
-                   if (this.model[i]._source.steps.solvedlitige!=0)
-                       this.model[i]._source.steps.solvedlitige = new Date (this.model[i]._source.steps.solvedlitige).toLocaleString("fr-FR").replace("à","-"); 
+                   
+                  this.tempmodel[i]._source.startdate = this.getLocalDateTime(this.tempmodel[i]._source.startdate);;
+                  if (this.tempmodel[i]._source.steps.prepare!=0) 
+                  this.tempmodel[i]._source.steps.prepare = this.getLocalDateTime(this.tempmodel[i]._source.steps.prepare) ; 
+                  if ( this.tempmodel[i]._source.steps.send !=0 ) 
+                  this.tempmodel[i]._source.steps.send = this.getLocalDateTime(this.tempmodel[i]._source.steps.send);
+                  if ( this.tempmodel[i]._source.steps.receive !=0 ) 
+                  this.tempmodel[i]._source.steps.receive= this.getLocalDateTime(this.tempmodel[i]._source.steps.receive);
+                  if (this.tempmodel[i]._source.steps.solvedlitige!=0)
+                       this.tempmodel[i]._source.steps.solvedlitige = this.getLocalDateTime(this.tempmodel[i]._source.steps.solvedlitige);
 
-                   if (this.model[i]._source.steps.litige!=0)
-                       this.model[i]._source.steps.litige = new Date (this.model[i]._source.steps.litige).toLocaleString("fr-FR").replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.litige!=0)
+                       this.tempmodel[i]._source.steps.litige = this.getLocalDateTime(this.tempmodel[i]._source.steps.litige);
 
-                   if (this.model[i]._source.steps.close!=0)
-                       this.model[i]._source.steps.close = new Date (this.model[i]._source.steps.close).toLocaleString("fr-FR").replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.close!=0)
+                       this.tempmodel[i]._source.steps.close = this.getLocalDateTime(this.tempmodel[i]._source.steps.close);
 
-                    if (this.model[i]._source.steps.stop!=0)
-                       this.model[i]._source.steps.stop = new Date (this.model[i]._source.steps.stop).toLocaleString("fr-FR").replace("à","-"); 
-
+                   if (this.tempmodel[i]._source.steps.stop!=0)
+                       this.tempmodel[i]._source.steps.stop = this.getLocalDateTime(this.tempmodel[i]._source.steps.stop);
+ 
+               
                    /*let connection = this.messagesService.getOngoingMessages(this.model[i]._id)
                   .subscribe(
                    message => 
@@ -477,18 +497,19 @@ opened = true ;
                    );*/
                  // console.log (connection ) ; 
                   
-              for( let j = 0 ;j < this.model[i]._source.articles.length; j++ ) {
-                   this.storeService.getPic(this.model[i]._source.articles[j].articleid )
+              for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
+                   this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
-                                          console.log( this.model[i][j] ) ; 
-                                        this.model[i]._source.articles[j].pic = data4['pic'];
+                                          console.log( this.tempmodel[i][j] ) ; 
+                                        this.tempmodel[i]._source.articles[j].pic = data4['pic'];
                                     }, error4 =>{
                                           console.log(error4) ; 
                                     }) ; 
                   
               }
               }
+              this.model = this.model.concat(this.tempmodel) ; 
          }
           ,error => {
               console.log(error ) ; 
@@ -506,7 +527,7 @@ opened = true ;
           }
     
     
-    getQuery2(event){
+   /* getQuery2(event){
          
          this.router.navigate(["../commands/", this.query ], { relativeTo: this.route });
 
@@ -515,7 +536,7 @@ opened = true ;
     enterQuery2(event){
       
     
-    }
+    }*/
      
     _toggleSidebar(){
            this.opened = !this.opened;
@@ -566,6 +587,7 @@ opened = true ;
     
 
 }
+   
     
     
     public onItemSelected(args) {
@@ -580,5 +602,95 @@ opened = true ;
       // console.log(args) ; 
     
     }
+       
+getLocalDateTime(date) {
 
+   date = new Date(date) ; 
+  let hours = date.getHours();
+  //if (hours < 10) hours = '0' + hours;
+
+  let minutes = date.getMinutes();
+  if (minutes < 10) minutes = '0' + minutes;
+
+  //let timeOfDay = hours < 12 ? 'AM' : 'PM';
+
+  return date.getMonth() + '/' + date.getDate() + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes 
+}
+    
+ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+    
+        getQuery2(event){
+            let searchBar = <SearchBar>event.object;
+            let query = searchBar.text ; 
+        
+             if (query!="" ) {
+        
+                  //     this.router.navigate(["./purchase/"+query], { relativeTo: this.route });
+             this.router.navigate(["../commands/", query ], { relativeTo: this.route });
+
+                //  this.selectArticles=  this.articles.filter(function(element){console.log(element['_source']['title']) ; return element['_source']['title'].includes(q);});
+             }   
+  
+      }
+    
+     selectText(args) {
+          const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("selected");
+            break;
+        case 'down':
+            label.addPseudoClass("selected");
+            break;
+    }
+         let text = args.object.text;  
+         clipboard.setText( text ).then(function() {
+                 console.log("OK, copied to the clipboard");
+            });
+         
+         }
+    
+      ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+    }
+    
+ 
+     openMsgs(i, id){
+       // let view :Elemen-tRef ; 
+       //@ViewChild("msgs"+id, { static: true } )view: ElementRef ; 
+
+         this.isopen['message'+id]= !this.isopen['message'+id]    ;
+         if (  this.isopen['message'+id]==true && this.model[i]._source.messages.length >2) {
+             
+         let listView: RadListView = <RadListView>(Frame.topmost().currentPage.getViewById(id));
+           setTimeout(()=>{
+          //      let mview:ElementRef;     
+         //   @ViewChild(id, { static: false })  mview: ElementRef; 
+
+             listView.scrollToIndex( this.model[i]._source.messages.length - 1, false, ListViewItemSnapMode.Auto);
+             },1500); 
+       }
+     
+    }
 }

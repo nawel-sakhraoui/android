@@ -164,12 +164,12 @@ button {
 }
 .pic {
 	
-    height: 140;
-	
+    height: 120;
+	width:auto ; 
 }
 .articlepic{
-	width:auto; 
-	height:auto ; 
+	width:170;
+	height:200 ; 
 	
 }
 .titleLabel {
@@ -205,7 +205,7 @@ button {
 }
 .panier{
 	background-color: #FFA500;
-     horizontal-align: center;
+    horizontal-align: center;
     border-radius:4; 
     text-align: center;
     color: #fff;
@@ -217,11 +217,12 @@ button {
 .titlea{
 	
 	background-color: transparent;
-border-color: transparent;
+    border-color: transparent;
 }
 .storetitle{
 	font-size:10;
 	text-align:center;
+	margin:0,0,2,0;
 	
 }
 .bottom {
@@ -235,11 +236,7 @@ border-color: transparent;
     font-size: 16;
     color:#404040;
 }
-Label:hover {
- /* background: #868e96 none repeat scroll 0 0;*/
-  color:#FFA500; 
-  cursor:pointer;
-} 
+
 #top {
     z-index:1;
 }
@@ -259,4 +256,22 @@ Label:hover {
 	 border-radius :2; 
    border-color:#F27171;
    font-size:12;  
+}
+Label:pressed {
+	width:auto ; 
+    padding:2; 
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}
+
+Label:pressed3 {
+	color:#D0D0D0; 
+   /* color:#d9534f ;*/
+}   
+GridLayout:pressed {
+   
+   background-color:#eeeeee ; 
+   /* color:#d9534f ;*/
+   border-width:3; 
+   border-color:#eeeeee  ;  
 }  

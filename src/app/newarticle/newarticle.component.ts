@@ -7,6 +7,12 @@ import { ColorPicker } from 'nativescript-color-picker';
 
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
 import { Color } from 'tns-core-modules/color';
+
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout"; 
+
+
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
 @Component({
   selector: 'app-newarticle',
@@ -521,6 +527,34 @@ constructor(    private route: ActivatedRoute,
         
         
         }
+    
+  ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
     }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+
+
+}
     
     

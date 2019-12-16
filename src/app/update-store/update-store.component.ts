@@ -5,7 +5,9 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
 
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
-
+import * as utils from "utils/utils";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
 
 @Component({
   selector: 'app-update-store',
@@ -19,7 +21,7 @@ export class UpdateStoreComponent implements OnInit {
   storetitle :string ;  
   isValid :boolean =false ;
   read :any ='' ; 
-  model:any = {};
+  model:any = {'geo':[],'selectedCat':[], 'administrators':[],'tempadmin':[]};
   Categories = [];
     search : any = [];
     adminquery :any  ; 
@@ -30,11 +32,15 @@ export class UpdateStoreComponent implements OnInit {
    editAdmin  = false ; 
    editStatus = false ; 
    editGeo    = false ; 
+    send = false ; 
    cities = [] ; 
     selectedIndex2 =1; 
     selectedIndex1 = 1;
     dictcities = [] ; 
     namecities= [] ; 
+    searchNothing = false ; 
+    catlength= false  ; 
+    geolength= false ; 
    me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
   config = {
             displayKey:"description" ,//if objects array passed which key to be displayed defaults to description,
@@ -121,9 +127,10 @@ export class UpdateStoreComponent implements OnInit {
        
                  
               
-                  
+              if (!this.model.hasOwnProperty('administrators') )
+                this.model['administrators']=[] ; 
               console.log(data ) ; 
-              this.loading = false ; 
+        
               this.show = true ; 
                let admin = false ; 
                              for (let a of this.model.administrators  ){
@@ -147,7 +154,7 @@ export class UpdateStoreComponent implements OnInit {
                                     this.rolesService.addRole('ADMINStore', ['writeStore', 'readStore' ]);
                                  
                              }
-              
+                    this.loading = false ; 
               }
           ,error =>{
             console.log(error ) ;     
@@ -190,35 +197,47 @@ export class UpdateStoreComponent implements OnInit {
                
                     
                 })*/
+      if (this.model.geo.length == 0 ) 
+            this.geolength = true ; 
+      else 
+             this.geolength = false ; 
+      if(this.model.selectedCat.length==0 ) 
+            this.catlength= true ; 
+      else 
+          this.catlength = false ; 
   }
     
     
     editingCat (){
         this.editCat = true; 
-        this.model['tempSelectedCat'] =  this.model['selectedCat'];
+        this.model['tempSelectedCat'] =  this.model['selectedCat'].map(x => x); ;
       }
     removeCat(){
         this.editCat = false ; 
-            this.model['selectedCat'] =      this.model['tempSelectedCat'] ;
+            this.model['selectedCat'] =      this.model['tempSelectedCat'].map(x => x); ;
       }
+    loadingcat = false ; 
     saveCat(){
+        this.loadingcat = true ;
         //save to database ! 
         if (this.model["selectedCat"].length!=0)
-        this.storeService.updateSelectedCat( this.storetitle, this.model['selectedCat'] )
-        .subscribe(
+           this.storeService.updateSelectedCat( this.storetitle, this.model['selectedCat'] )
+           .subscribe(
             data => {
                     this.editCat = false  
                      console.log(data ) ; 
+                this.loadingcat =false ;
                 }
             ,error =>{   
-                 
-                     console.log(error) ; 
-                
+                      console.log(error) ; 
+                 this.loadingcat =false ;
                 }
             )
-        else 
-  this.model['selectedCat'] =      this.model['tempSelectedCat'] ;    
-      }
+        else {
+             this.model['selectedCat'] = this.model['tempSelectedCat'].map(x => x);  
+             this.loadingcat =false ;
+        }   
+    }
     
     editingDesc (){
         this.editDesc = true; 
@@ -229,25 +248,30 @@ export class UpdateStoreComponent implements OnInit {
         this.editDesc = false ; 
         this.model['description'] =      this.model['tempdescription'] ;
       }
+    
+    loadingdesc = false ; 
     saveDesc(){
         //save to database ! 
     
-        
+        this.loadingdesc= true ; 
         this.storeService.updateDescription( this.storetitle, this.model['description'] )
         .subscribe(
             data => {
                        this.editDesc = false 
                      console.log(data ) ; 
+                this.loadingdesc=false ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                
+                 this.loadingdesc=false ;  
                 }
             )
       }
       
     editingAdmin (){
         this.editAdmin = true; 
+        if (!('administrators' in this.model)) 
+            this.model['administrators'] =[] ; 
         this.model['tempadmin'] =  this.model['administrators'].slice(0);
       }
     removeAdmin(){
@@ -255,11 +279,14 @@ export class UpdateStoreComponent implements OnInit {
             this.model['administrators'] =      this.model['tempadmin'].slice(0) ;
    }
     
+    
+    loadingadmin = false ;
+    
     saveAdmin(){
         //save to database ! 
        console.log(this.model.administrators) ; 
        console.log(this.model.tempadmin) ; 
-
+            this.loadingadmin = true ; 
             this.storeService.updateAdmins( this.storetitle, this.model['administrators'])
         .subscribe(
             data=>{
@@ -293,10 +320,11 @@ export class UpdateStoreComponent implements OnInit {
                              }) ; 
                      }
                     }
-                
+                this.loadingadmin=false ;
                  this.editAdmin = false 
                },error =>{
                     console.log(error) ; 
+                   this.loadingadmin=false ; 
             }  ) 
       }
       
@@ -309,26 +337,30 @@ export class UpdateStoreComponent implements OnInit {
         this.editStatus = false ; 
             this.model.open =   this.model.tempopen ;
       }  
+    
+    loadingstatus = false ; 
     saveStatus(){
         //save to database ! 
         //console.log(this.model.open) ; 
-        
+        this.loadingstatus= true ;
         this.storeService.putStoreStatus( this.storetitle, this.model.open  )
         .subscribe(
             data => {
                       this.editStatus = false 
-                     console.log(data ) ; 
+                     console.log(data ) ;
+                this.loadingstatus= false;  
                 }
             ,error =>{
                      console.log(error) ; 
-                
+                this.loadingstatus= false ; 
                 }
             )
         
       }
       
     addAdmin(d) {
-        
+        if (!("administrators"in this.model )) 
+             this.model['administrators'] = [] ; 
         this.model['administrators'].unshift({"userid":d._id, "phone":d._source.phone, "fullname":d._source.fullname}) ; 
      //  this.search = "" ; 
       //  this.adminquery ="" ; 
@@ -347,7 +379,15 @@ export class UpdateStoreComponent implements OnInit {
             
             data =>{
                 console.log(data) ; 
-                this.search = data; 
+                     this.search = data;   
+                if (this.search.length==0 )
+                 this.searchNothing = true ;  
+                else {
+               
+                    this.searchNothing = false ; 
+                    }
+                   utils.ad.dismissSoftInput() ; 
+
             },
             error =>{
                 console.log(error) ;     
@@ -373,37 +413,43 @@ export class UpdateStoreComponent implements OnInit {
         this.editGeo = false ; 
         this.model['geo'] =      this.model['tempGeo'].map(x => x) ;;
       }
+    loadinggeo = false ; 
     saveGeo(){
+        this.loadinggeo = true ; 
         //save to database ! 
         if (this.model["geo"].length!=0)
         this.storeService.updateGeo( this.storetitle, this.model['geo'] )
         .subscribe(
             data => {
+                     
                     this.editGeo = false  ;
                      console.log(data ) ; 
                      this.storeService.updateArticlesGeo(this.storetitle,  this.model["geo"])
                     .subscribe(
                         data=>{
                             console.log(data) ; 
+                               this.loadinggeo = false ; 
                             },error=>{
                                 console.log(error) ; 
+                                   this.loadinggeo = false ; 
                                 }
                         )
                 }
             ,error =>{   
-                 
+                       this.loadinggeo = false ; 
                      console.log(error) ; 
                 
                 }
             );
-        else 
-          this.model['geo'] =      this.model['tempGeo'].map(x => x) ; ;    
+        else {
+          this.model['geo'] =      this.model['tempGeo'].map(x => x) ; ;  
+      this.loadinggeo = true ;   
       }
-    
+    }
       
     public onchange(event: SelectedIndexChangedEventData){
        //console.log(event) ;
-        this.model.selectedCat.push(this.Categories[event.newIndex]) ;  
+        this.model['selectedCat'].push(this.Categories[event.newIndex]) ;  
                 console.log(this.model.selectedCat) ; 
 
        }
@@ -418,6 +464,31 @@ export class UpdateStoreComponent implements OnInit {
     
      public onchange1(event: SelectedIndexChangedEventData ){
              //  console.log(`Drop Down selected index changed from ${args.oldIndex} to ${args.newIndex}`);; 
-        this.model.geo.push(this.cities[event.newIndex])
+        this.model['geo'].push(this.cities[event.newIndex])
        };
+    
+    ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+}
+    ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
 }

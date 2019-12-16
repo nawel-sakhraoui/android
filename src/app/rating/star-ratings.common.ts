@@ -46,7 +46,7 @@ export const filledColorProperty = new CssProperty<Style, string>({
 });
 export const indicatorProperty = new Property<StarRatingBase, boolean>({
   name: "isindicator",
-  defaultValue: false
+  defaultValue: true
 });
 indicatorProperty.register(StarRatingBase);
 fillModeProperty.register(StarRatingBase);

@@ -3,6 +3,9 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {StoreService} from '../_services/index'; 
 //import { RouterModule, Routes } from '@angular/router'; 
 import * as  prettyMs from 'pretty-ms';
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
 
 @Component({
       
@@ -10,8 +13,8 @@ import * as  prettyMs from 'pretty-ms';
   templateUrl: './store-menu.component.html',
   styleUrls: ['./store-menu.component.css'], 
 })
-export class StoreMenuComponent implements OnInit, OnChanges {
-      
+export class StoreMenuComponent implements OnInit{
+      loading = false ; 
       @Input()  storetitle:string  ; 
       me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
@@ -29,14 +32,14 @@ export class StoreMenuComponent implements OnInit, OnChanges {
            {}     
         
     
-    
+    /*
       ngOnChanges(changes ) {
 
         console.log(changes  ) ;
-        
          console.log(changes.storetitle) ; 
          if (changes.storetitle.previousValue && changes.storetitle.previousValue!= changes.storetitle.currentValue) {
-             
+                     this.loading = true ; 
+
           
              this.storetitle = changes.storetitle.currentValue; 
                    
@@ -50,17 +53,18 @@ export class StoreMenuComponent implements OnInit, OnChanges {
                    this.notifCount.emit(this.notif.notificationcount);
  
                    console.log(data ) ; 
+             //    if (this.notif.hasOwnProperty('notification') ) 
                    for (let i= 0 ; i<  this.notif.notification.length ; i++ ) 
                         this.notif.notification[i].time=  prettyMs( new Date().getTime() - this.notif.notification[i].time,   {compact: true}  );
                         this.notif.notification= this.notif.notification.reverse(); 
                         
-                          
+                        this.loading = false ;   
                   
                   
                 }
               ,error =>{
                   console.log(error) ; 
-                 
+                 this.loading = false ; 
                }) ; 
           
           
@@ -92,6 +96,8 @@ export class StoreMenuComponent implements OnInit, OnChanges {
                 data=> {
                     this.data3 = data ; 
                     this.data3 = JSON.parse(this.data3) ; 
+                    
+                   // if (this.notif.hasOwnProperty('notification') ) 
                        for (let n of  this.notif.notification) { 
                     
                        if(n.commandid.localeCompare(this.data3['commandid'])==0  &&  this.data3['value'].localeCompare( n.value) ==0) {
@@ -130,7 +136,7 @@ export class StoreMenuComponent implements OnInit, OnChanges {
         
          }
       
-  }
+  }*/
 
 
        
@@ -139,27 +145,30 @@ export class StoreMenuComponent implements OnInit, OnChanges {
     ngOnInit() { 
     
                  
-        
+         this.loading = true ; 
            console.log(this.storetitle) ; 
    
            this.storeService.getNotifications (this.storetitle)
           .subscribe(
               data =>{
                   this.notif = data; 
-                   ; 
+                 
                  
                      this.notifCount.emit(this.notif.notificationcount);
-                   console.log(data ) ; 
+                  
+             //     if (this.notif.hasOwnProtery("notification") )
+                   
                    for (let i= 0 ; i<  this.notif.notification.length ; i++ ) 
                         this.notif.notification[i].time=  prettyMs( new Date().getTime() - this.notif.notification[i].time,   {compact: true} );
                         this.notif.notification= this.notif.notification.reverse(); 
                         
                           
                   
-                  
+                this.loading = false ;   
                 }
               ,error =>{
                   console.log(error) ; 
+                  this.loading = false ; 
                  
                }) ; 
           
@@ -286,6 +295,33 @@ export class StoreMenuComponent implements OnInit, OnChanges {
 
 */
     
+        
+   ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+ 
     
 }
 

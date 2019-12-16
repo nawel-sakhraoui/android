@@ -96,9 +96,9 @@ export class StarRating extends StarRatingBase {
   }
 
   [indicatorProperty.setNative](isindicator: boolean) {
-    //if (this.nativeView) {
+   // if (this.nativeView) {
       this.nativeView.setIsIndicator(Boolean(isindicator));
-    //}
+   // }
   }
 
   public onLoaded() {

@@ -1,27 +1,31 @@
-
-
 <ScrollView >
-<StackLayout>
-<StackLayout [visibility]="nostore ?'visible':'collapse'" >
+<GridLayout  rows="auto,auto,auto,auto,*"> 
+
+<StackLayout  row='0' >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+</StackLayout>  
+   	
+<!-- StackLayout row='1'  [visibility]="!loading && nostore ?'visible':'collapse'" >
 <Label class='alert 'text="Aucun magasin n'est disponible sur ce lien.">
 </Label>
-</StackLayout>
+</StackLayout-->
 
-<StackLayout [visibility]="suspend ?'visible':'collapse'" >
+<StackLayout  row='2' [visibility]="!loading && suspend ?'visible':'collapse'" >
 <Image backgroundColor='rgba(0,0,0, 0.3)'    [src]="banner"  class="pic"  stretch="aspectFill"></Image>
 <Label class=' alert' text=" Ce magasin est suspendu"></Label>
 </StackLayout>
 
-<StackLayout *ngIf='!nostore && !open && !suspend' >
+<StackLayout  row="3" *ngIf='!loading && !nostore && !open && !suspend' >
 <Label  class="alert" text="Ce magasin est fermé ! "></Label>
 </StackLayout>
 
 
 
-<RadSideDrawer  [visibility]="!suspend && open && !nostore ?'visible':'collapse'" tkExampleTitle tkToggleNavButton>
-    <GridLayout tkDrawerContent rows="auto,40,auto,auto, auto, auto,auto,auto,auto,auto*"  class=" sideStackLayout">
+<RadSideDrawer row="4"  [visibility]="!loading && !suspend && !nostore? 'visible':'collapse'" tkExampleTitle tkToggleNavButton>
+ 
+    <GridLayout   tkDrawerContent class=" sideStackLayout" rows="auto,40,auto,auto, auto, auto,auto,auto,auto,auto,*"  >
         <StackLayout row='0' class="sideTitleStackLayout">
-            <Label text="{{storetitle}}  &#xf104;" class='fas storetitle' (tap)="onCloseDrawerTap()"></Label>
+            <Label (touch)='ontouch($event)' text="{{storetitle}}  &#xf104;" class='fas storetitle' (tap)="onCloseDrawerTap()"></Label>
         </StackLayout>
         <!-- GridLayout row="1" columns="*,auto" orientation="horizontal">
    		<textView  col='0' hint="Rechercher dans magasin" class='search'></textView>
@@ -36,47 +40,50 @@
         </GridLayout>
 
        <ng-template ngxPermissionsOnly="ADMINStore"> 
-         <Label nsRouterLinkActive="sideStackLayoutActive" class='sideStackLayout item fas ' row='2' text='&#xf0fe; Ajouter Nouveau Article' [nsRouterLink]="['../newarticle']"></Label>
+         <Label (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive" class='sideStackLayout item fas ' row='2' text='&#xf0fe; Ajouter Nouveau Article' [nsRouterLink]="['../newarticle']"></Label>
        </ng-template>
-         <Label nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='3' text='Détails'  [nsRouterLink]="['../details']" ></Label>
-     	 <Label nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='4'text='Articles épuisés'  [nsRouterLink]="['../soldout']" ></Label>
+         <Label (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='3' text='Détails'  [nsRouterLink]="['../details']" ></Label>
+     	 <Label (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='4'text='Articles épuisés'  [nsRouterLink]="['../soldout']" ></Label>
         
        <ng-template ngxPermissionsOnly="ADMINStore">  
-         <Label nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='5' text='Paramètres'  [nsRouterLink]="['../update']"></Label>
-         <Label nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item' row='6' text='Ventes en cours' [nsRouterLink]="['../sales']" ></Label>
-         <Label nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item' row='7' text='Historique des ventes'  [nsRouterLink]="['../historic']"  ></Label>
-         <Label nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
+         <Label (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='5' text='Paramètres'  [nsRouterLink]="['../update']"></Label>
+         <Label (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item' row='6' text='Ventes en cours' [nsRouterLink]="['../sales']" ></Label>
+         <Label (touch)='ontouch($event)'  nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item' row='7' text='Historique des ventes'  [nsRouterLink]="['../historic']"  ></Label>
+         <Label (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
        </ng-template>
     
          <Label nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
     
     
-        </GridLayout>
-    
- <StackLayout tkMainContent>
-    <GridLayout  rows='auto,auto , auto,auto,auto, * '>
-
+    </GridLayout>
+   
  
-  <Image backgroundColor='rgba(0,0,0, 0.4)'  (touch) = 'displaybanner = true' row ="0" [src]="banner"  class="pic"  stretch="aspectFill"></Image>
+    <GridLayout tkMainContent  rows='auto,auto , auto,auto,auto,auto,auto '>
+
+ 	<StackLayout height="160" row="0" backgroundColor='rgba(0,0,0, 0.4)' >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading0' [busy]="loading0" ></ActivityIndicator>
+   	</StackLayout> 
+ 
+  <Image  *ngIf=' !loading0' backgroundColor='rgba(0,0,0, 0.4)'  (touch) = 'displaybanner = true' row ="0" [src]="banner"  class="pic"  stretch="aspectFill"></Image>
   
   <ng-template ngxPermissionsOnly="ADMINStore"> 
    
-   <GridLayout   [visibility]="displaybanner ?'visible':'collapse'"  row="0" columns="*,auto" rows='*,auto'>
+   <GridLayout   [visibility]="!loading0 && displaybanner ?'visible':'collapse'"  row="0" columns="*,auto" rows='*,auto'>
    <StackLayout col="1" row="1"   >
-   <Label  *ngIf="isValid"    class="fas up"  text="&#xf03e;" (tap)='onSelectTap() '></Label>
+   <Label (touch)='ontouch($event)'  *ngIf="isValid"    class="fas up"  text="&#xf03e;" (tap)='onSelectTap() '></Label>
    </StackLayout>
    <StackLayout  row="1" col="1" orientation="horizontal">
-   <Label *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="covsave()" ></Label>
-   <Label *ngIf="!isValid" class="fas up " text="&#xf00d;" (tap)="this.covremove()"></Label>
+   <Label (touch)='ontouch($event)'  *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="covsave()" ></Label>
+   <Label (touch)='ontouch($event)' *ngIf="!isValid" class="fas up " text="&#xf00d;" (tap)="this.covremove()"></Label>
    </StackLayout>
    
    </GridLayout>
    </ng-template>
    
-    <GridLayout row="1" columns="40,*,auto,50"  >
+    <GridLayout row="1" columns="40,*,50"  >
         <Button col='0' class="fas bars btn btn-active" text='&#xf0c9;' (tap)="openDrawer()"></Button>
   		<StackLayout  col="1"  >
-  		<Label  class=" storetitle"  text="{{storetitle}}" (tap)="boolNotif=false"  ></Label>
+  		<Label  (touch)='ontouch($event)' textWrap='true'   class=" storetitle"  text="{{storetitle}}" (tap)="boolNotif=false"   ></Label>
          <StackLayout margin="0,0,2,8" orientation="horizontal">
       	        <AbsoluteLayout  height="22" width="85"  android:cursorVisible="false"  >   
                  <StarRating left="-80" top="-18"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".3" android:scaleY=".3"   [value]="store.ratingsum/store.ratingcount"  ></StarRating>
@@ -88,48 +95,48 @@
      <!-- Label class='back fas'  (tap)="boolNotif=!boolNotif" [visibility]="boolNotif ?'visible':'collapse'" col="3"  text="&#xf053; " ></Label-->
      <ng-template ngxPermissionsOnly="ADMINStore"> 
         
-       <Button [visibility]="!boolNotif ?'visible':'collapse'"    id="notifications"  col="3" text="&#xf0f3; &#xf0d7;" 
-            class="bell fas btn btn-active" (tap)="boolNotif=!boolNotif"></Button> 
-        <Label [visibility]="!boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="3" text="{{notifCount}}" class="globe"
+       <Button [visibility]="!boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;&#xf0d7;" 
+            class="bell fas " (tap)="boolNotif=!boolNotif"></Button> 
+        <Label [visibility]="!boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="2" text="{{notifCount}}" class="globe"
                    ></Label> 
-                    <Button fontSize='16' color='red' [visibility]="boolNotif ?'visible':'collapse'"    id="notifications"  col="3" text="&#xf0f3;" 
-            class="bell fas btn btn-active" (tap)="boolNotif=!boolNotif"></Button> 
-        <Label [visibility]="boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="3" text="{{notifCount}}" class="globe"
+                    <Button color='#FFA500'  [visibility]="boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;&#xf0d7;" 
+            class="bell fas" (tap)="boolNotif=!boolNotif"></Button> 
+        <Label [visibility]="boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="2" text="{{notifCount}}" class="globe"
                    ></Label>
     
     </ng-template>
     </GridLayout>
        <StackLayout row="2"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 
-		    <Label row="3" *ngIf ='nothing' class="alert" text="Pas d'articles disponible dans ce magasin"></Label> 
-    		<Label row="4" *ngIf ='nosearch' class='alert' text="Recherche introuvable."></Label> 
+		    <Label row="3" *ngIf ='!boolNotif && !loading2 && nothing' class="alert" text="Pas d'articles disponible dans ce magasin"></Label> 
+    		<Label row="4" *ngIf ='!boolNotif && !loading2 && nosearch' class='alert' text="Recherche introuvable."></Label> 
     
 		
 		
 
-        <RadListView   [visibility]="!boolNotif ?'visible':'collapse'"    row="5" [items]="selectArticles" selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
-         (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)">
+        <RadListView   [visibility]=" !loading2 && !boolNotif? 'visible':'collapse'"    row="5" [items]="selectArticles"  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
+         >
 
-      		 <ng-template let-a="item" class="itemStackLayout" >
-      		 <GridLayout >
+      		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
+      		 <GridLayout (touch)='ontouch2($event)' >
       		   
-      			<Image (tap)="gotoArticle(a._id, a._source.storetitle )"  (touch)="display(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
+      			<Image (longPress)="gotoArticle(a._id, a._source.storetitle )"  (touch)="display(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
       			
  				<AbsoluteLayout  >
       			     <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="a.loadingcart==1"></ActivityIndicator>
       			
-      			<Label (tap)="addToCart(a)"  [visibility]="disp[a._id] ?'visible':'collapse'"
+      			<Label (touch)='ontouch3($event)' (tap)="addToCart(a)"  [visibility]="disp[a._id] ?'visible':'collapse'"
       					left="55" top="5" class='panier fas'>
 						<FormattedString>
-										<Span text='Panier &#xf217;' ></Span>
+										<Span text='&#xf217;Panier'></Span>
 										<Span  *ngIf=" a.loadingcart==2 " text='&#xf00c;'></Span>
 										<Span  *ngIf=" a.loadingcart==3  " text="&#xf05e;"></Span>
       					</FormattedString>
       	         </Label>
-      	        <Label left="0" top="40" row='0' id="globeItemNavigation"  class="alert" *ngIf='fullcartwarning && a.loadingcart==3 ' text="Le panier est plein" ></Label> 
+      	        <Label  left="0" top="40" row='0' id="globeItemNavigation"  class="alert" *ngIf='fullcartwarning && a.loadingcart==3 ' text="Le panier est plein" ></Label> 
       	        
       	          <ng-template ngxPermissionsOnly="ADMINStore">  
-      	          <Label  [visibility]="disp[a._id] ?'visible':'collapse'" text="Paramètre"  left="55" top="35" class="param"  (tap)="updateArticle(a._id) ; "></Label>
+      	          <Label (touch)='ontouch3($event)'  [visibility]="disp[a._id] ?'visible':'collapse'" text="Paramètre"  left="55" top="35" class="param"  (tap)="updateArticle(a._id) ; "></Label>
       	         </ng-template>
       	         
       			<GridLayout left='0' top='65' rows="auto,auto,auto"    class="title" [visibility]="disp[a._id] ?'visible':'collapse'" >
@@ -163,26 +170,21 @@
       	
       	</RadListView>
       	
- 
+ 	
          <ng-template ngxPermissionsOnly="ADMINStore"> 
   
-      <StackLayout row="5" [visibility]="boolNotif ?'visible':'collapse'" >
-    
-    <app-store-menu [storetitle]="storetitle"     (notifCount)="OnNotifCount($event)" ></app-store-menu>
+    <StackLayout row="5" [visibility]="boolNotif ?'visible':'collapse'" >
+     <app-store-menu [storetitle]="storetitle"     (notifCount)="OnNotifCount($event)" ></app-store-menu>
    	</StackLayout>
+   	
+   	
   </ng-template>    	
+  <StackLayout row="5">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading2' [busy]="loading2" ></ActivityIndicator>
+   	</StackLayout> 
    </GridLayout>
-   
- 
-
-
-
- 
- </StackLayout>
-
-
 
 </RadSideDrawer>
-</StackLayout>
 
+</GridLayout>
  </ScrollView>

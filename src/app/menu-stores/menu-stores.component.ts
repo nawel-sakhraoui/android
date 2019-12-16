@@ -6,6 +6,10 @@ import { map } from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'; 
  
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout"; 
+
 
 @Component({
   selector: 'app-menu-stores',
@@ -18,7 +22,7 @@ export class MenuStoresComponent  implements OnInit {
     stores:any = [] ;
     checkStores:boolean =false ; 
     myhome; // = JSON.parse(localStorage.getItem('currentUser')).userid ; 
-
+    loading :boolean ; 
     constructor(
         private router: Router,
         private activatedRoute : ActivatedRoute, 
@@ -32,7 +36,7 @@ export class MenuStoresComponent  implements OnInit {
     ngOnInit() {
           
           this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
-       
+        this.loading = true; 
         
           
             this.userService.getStores(this.myhome)
@@ -42,7 +46,7 @@ export class MenuStoresComponent  implements OnInit {
                if (data['_source']['store'] ) {
                    
                   this.stores = data['_source']['store'].filter(x => x ).reverse() ; 
-                   
+                   this.loading = false ; 
                    
                    console.log(this.stores) ; 
                   
@@ -50,7 +54,7 @@ export class MenuStoresComponent  implements OnInit {
                
               }}, error => {
                  console.log( error) ; 
-                    
+                    this.loading = false ; 
                 
                }); 
     }
@@ -58,5 +62,30 @@ export class MenuStoresComponent  implements OnInit {
     createStore(){
         
     }
+   ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
 
 }

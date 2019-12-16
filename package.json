@@ -1,12 +1,13 @@
 {
   "name": "Android",
+  "profiling": "timeline",
   "nativescript": {
     "id": "org.nativescript.Android",
     "tns-ios": {
       "version": "6.0.1"
     },
     "tns-android": {
-      "version": "6.0.2"
+      "version": "6.3.0-2019-11-19-150236-01"
     }
   },
   "version": "0.0.0",
@@ -41,6 +42,7 @@
     "nativescript-angular": "8.0.2",
     "nativescript-carousel": "^6.1.0",
     "nativescript-checkbox": "^3.0.3",
+    "nativescript-clipboard": "^1.2.0",
     "nativescript-color-picker": "^1.6.0",
     "nativescript-drop-down": "^5.0.4",
     "nativescript-facebook-account-kit": "^1.2.1",
@@ -66,7 +68,7 @@
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.3.3",
     "rxjs-compat": "^6.5.2",
-    "tns-core-modules": "^6.1.2",
+    "tns-core-modules": "^6.3.0-next-2019-11-21-212041-05",
     "zone.js": "0.9.1"
   },
   "devDependencies": {
@@ -85,7 +87,7 @@
     "karma-coverage-istanbul-reporter": "~2.0.0",
     "karma-jasmine": "~1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
-    "nativescript-dev-webpack": "^1.0.2",
+    "nativescript-dev-webpack": "^1.3.0",
     "protractor": "~5.3.0",
     "tns-platform-declarations": "^6.1.1",
     "ts-node": "~5.0.1",

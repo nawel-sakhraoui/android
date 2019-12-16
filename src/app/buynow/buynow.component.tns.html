@@ -19,9 +19,9 @@
                <Label col="1"  margin='0,0,5,0'  [backgroundColor]="a.color"  class="color"  ></Label>
               </GridLayout>
               
-                <GridLayout  col="1"  row="3" columns="90,auto"  [visibility]=" a.taille ? 'visible' : 'collapsed'" >
+                <GridLayout  col="1"  row="3" columns="90,auto"  [visibility]=" a.size ? 'visible' : 'collapsed'" >
                		<Label col ="0" text="Taille"></Label>
-      		 		<Label col="1" *ngIf='a==choosesize ' margin='0,0,5,0' text='{{a.taille}}' class="size" ></Label>
+      		 		<Label col="1"  margin='0,0,5,0' text='{{a.size}}' class="size" ></Label>
               </GridLayout>
               <GridLayout  col="1" row="4" columns="90,auto">
                		<Label col ="0" text="Prix"></Label>
@@ -39,7 +39,7 @@
 </ng-template>
 </RadListView>
 <StackLayout  row="2"  margin ='0,20,0,20'>
-     					<StackLayout  margin="10,0,10,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+     			<StackLayout  margin="10,0,10,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
 
  <GridLayout columns="90,*,auto">
                		<Label col ="0" text="Livraison: "></Label>
@@ -71,9 +71,10 @@
  </GridLayout>
    <StackLayout  margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
  
-  <GridLayout  columns='*,auto,auto'>
- <Button 	backgroundColor='#00BFFF' color="#fff" class="btn btn-active" col="1" text='Valider'  (tap)="buynow();" ></Button>
- <Label margin="10,0,0,5" class="btn2" col="2" text="Annuler" (tap)= 'back();' ></Label>
+  <GridLayout  columns='*,auto,auto, auto'>
+ <Button [enabled]="!loading" 	backgroundColor='#00BFFF' color="#fff"  col="1" text='Valider'  (tap)="buynow();" ></Button>
+  <ActivityIndicator col="2" *ngIf="loading" color='#00BFFF' rowSpan="2" [busy]="loading"></ActivityIndicator>
+ <Label  [enabled]="!loading" margin="12,0,0,5" class="btn2" col="3" text="Annuler" (tap)= 'back();' ></Label>
  
  </GridLayout>
 </StackLayout> 

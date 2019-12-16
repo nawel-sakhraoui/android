@@ -34,7 +34,7 @@ import { ProfileComponent } from './profile/profile.component';
 
 import { CartComponent } from './cart/cart.component';
 
-import { MyHomeComponent } from './my-home/my-home.component';
+import { MenuComponent } from './menu/menu.component';
 
 import { CreatestoreComponent } from './createstore/createstore.component';
 
@@ -79,7 +79,7 @@ export const routes: Routes = [
             canActivateChild: [AuthGuard],
     },
     */
-    { path: 'home/:myhome', component: MyHomeComponent, 
+    { path: 'home/:myhome', component: MenuComponent, 
     
      
       canActivate: [AuthGuard],
@@ -87,109 +87,118 @@ export const routes: Routes = [
       children:[
      /*  { path: '', redirectTo:'', pathMatch: 'full' },*/
 
-         { path: 'trans', component: MenuTransactionsComponent,canActivate: [AuthGuard]/* canActivate: [ NgxPermissionsGuard ], 
+         { path: 'trans', component: MenuTransactionsComponent,canActivate: [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-          }*/},
+          }},
       
         
       
-              { path: 'not', component: MenuNotificationsComponent,canActivate: [AuthGuard]/* canActivate: [ NgxPermissionsGuard ], 
+              { path: 'not', component: MenuNotificationsComponent, canActivate: [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-          }*/},
+          }},
       
-          { path: '', component: MainComponent,canActivate: [AuthGuard]/* canActivate: [ NgxPermissionsGuard ], 
+          { path: '', component: MainComponent, canActivate: [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",  
                 redirectTo : "/home"
              }
           
-          }*/},
+          }},
             
          
           
 
-       { path: 'result', component: ResultComponent, canActivate: [AuthGuard] /*[ NgxPermissionsGuard ], 
+       { path: 'result', component: ResultComponent,  canActivate:[ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-          }*/},
+          }},
     
-     { path: 'messages/tosend', component: MessageComponent,  canActivate:[AuthGuard]/* [ NgxPermissionsGuard ], 
+     { path: 'messages/tosend', component: MessageComponent, canActivate: [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-         }*/},
-        { path: 'messages', component: ListMessagesComponent, canActivate: [AuthGuard] /*[ NgxPermissionsGuard ], 
+         }},
+        { path: 'messages', component: ListMessagesComponent, canActivate: [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-        }*/}, 
+        }}, 
       
        
-        { path: 'cart', component: CartComponent,canActivate: [AuthGuard]/*  canActivate: [ NgxPermissionsGuard ], 
+        { path: 'cart', component: CartComponent, canActivate: [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-        }*/},
+        }},
         
-        { path: 'ongoing/done', component: DoneComponent,  canActivate: [AuthGuard]/* [ NgxPermissionsGuard ], 
+        { path: 'ongoing/done', component: DoneComponent,  canActivate:  [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-        }*/},
-        { path: 'ongoing/purchase/:commandid', component: PurchaseCommandComponent,  canActivate: [AuthGuard]/*[ NgxPermissionsGuard ], 
+        }},
+        { path: 'ongoing/purchase/:commandid', component: PurchaseCommandComponent,  canActivate:[ NgxPermissionsGuard ], 
           data: {
                               permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-        }*/},
+        }},
 
-        { path: 'ongoing', component: OngoingComponent,  canActivate: [AuthGuard]/* [ NgxPermissionsGuard ], 
+        { path: 'ongoing', component: OngoingComponent,  canActivate:  [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-        }*/},
+        }},
         
-        { path: 'createstore', component: CreatestoreComponent, canActivate: [AuthGuard ]/* canActivate: [ NgxPermissionsGuard ], 
+        { path: 'createstore', component: CreatestoreComponent, canActivate: [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
           
-         }*/},
-        
+         }},
+                      
+        { path: 'stores', component:  MenuStoresComponent,  canActivate:   [ NgxPermissionsGuard ], 
+          data: {
+            permissions: {
+                only: "ADMIN",
+                redirectTo : "/home"
+             }
+          
+         }},
+
 
          { path: 'profile/:userid', component: ProfileComponent,  canActivate: [AuthGuard] },
             { path: '**', redirectTo: '' },
@@ -200,7 +209,7 @@ export const routes: Routes = [
     // later public stores components to create ! 
     //{ path: 'stores/:store', component:StoresMenuComponent, canActivate: [AnAuthGuard]},
     
-        { path: 'stores', component: MyHomeComponent,  
+    /*    { path: 'stores', component: MenuComponent,  
           canActivate: [AuthGuard],
           canActivateChild: [AuthGuard],
           children: [
@@ -208,23 +217,25 @@ export const routes: Routes = [
               //  { path: '', redirectTo: '', pathMatch: 'full' ,  canActivate:  [ AuthGuard ] },
                 { path: '', component:  MenuStoresComponent,  canActivate:  [ AuthGuard ]},
 
-            ]},
+            ]},*/
         
-        { path: 'stores/:store', component: MyHomeComponent,  
+        { path: 'stores/:store', component: MenuComponent,  
           canActivate: [AuthGuard],
           canActivateChild: [AuthGuard],
           children: [
           
                 { path: '', redirectTo: 'store', pathMatch: 'full' ,  canActivate:  [ AuthGuard ] },
+                //{ path: '', component: StoreComponent,  canActivate:  [ AuthGuard ]},
+
                 { path: 'store', component: StoreComponent,  canActivate:  [ AuthGuard ]},
                 { path: 'soldout', component: SoldoutComponent,  canActivate: [AuthGuard], },
-                { path: 'sales', component: SalesComponent, canActivate: [AuthGuard],/* canActivate: [ NgxPermissionsGuard ], 
+                { path: 'sales', component: SalesComponent, canActivate: [ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
                             redirectTo : "../"
                          }
-                         } */
+                         } 
                  },
                    
                  { path: 'monthincome', component: MonthIncomeComponent ,canActivate: [AuthGuard],/*  canActivate: [ NgxPermissionsGuard ], 
@@ -236,55 +247,55 @@ export const routes: Routes = [
                          } */
                  },
                 
-                { path: 'commands/:commandid', component: SaleCommandComponent,  canActivate:[AuthGuard], /*[ NgxPermissionsGuard ], 
+                { path: 'commands/:commandid', component: SaleCommandComponent,  canActivate:[ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
                             redirectTo : "../"
                          }
-                         } */
+                         } 
                  },
 
                   
                 
-                { path: 'update', component: UpdateStoreComponent,  canActivate: [AuthGuard],/*canActivate: [ NgxPermissionsGuard ], 
+                { path: 'update', component: UpdateStoreComponent,  canActivate:  [ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
                             redirectTo : "../"
                          }
           
-                         }*/
+                         }
                 },
-                { path: 'newarticle', component: NewarticleComponent,  canActivate: [AuthGuard],/*[ NgxPermissionsGuard ], 
+                { path: 'newarticle', component: NewarticleComponent,  canActivate: [ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
                             redirectTo : "../"
                          }
           
-                         } */
+                         } 
                 },
                 { path: 'details', component: StoreDetailsComponent,  canActivate: [AuthGuard], },
-                { path: 'historic', component: HistoricSalesComponent,canActivate: [AuthGuard]/*  canActivate: [ NgxPermissionsGuard ], 
+                { path: 'historic', component: HistoricSalesComponent,canActivate: [ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
                             redirectTo : "../"
                          }
           
-                         } */
+                         } 
                 },
   
       
-                  { path : "articles/:article/update", component: UpArticleComponent,  canActivate: [AuthGuard]/*[ NgxPermissionsGuard ], 
+                  { path : "articles/:article/update", component: UpArticleComponent,  canActivate:[ NgxPermissionsGuard ], 
                     data: {
                         permissions: {
                         only: "ADMINStore",
                         redirectTo : "../"
                         }
           
-                    } */},
+                    } },
         
                     { path:  'articles/:article', component: ArticleComponent,  canActivate: [AuthGuard] }, 
         
@@ -295,21 +306,17 @@ export const routes: Routes = [
         ]},
     
         
-        // otherwise redirect to home
-     
       
-       //]},   
     { path:'home', redirectTo:'' , pathMatch: 'full'},
     { path: '', component: HomeComponent, canActivate: [AnAuthGuard]},
     { path: 'login', component: HomeComponent, canActivate: [AnAuthGuard] },
    // { path: 'signin', component: SigninComponent, canActivate: [AnAuthGuard] },
     //{ path: 'validation/:userid', component: UserValidationComponent, canActivate: [AnAuthGuard] },
     //{ path: 'loginaccount', component: LoginAccountKitComponent, canActivate: [AnAuthGuard] },
-
        
 
     // otherwise redirect to home
-    { path: '**', redirectTo: '' }
+    { path: '**', redirectTo: '' , pathMatch: 'full'} 
     
     
 

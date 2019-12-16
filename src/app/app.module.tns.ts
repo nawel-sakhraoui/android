@@ -137,6 +137,7 @@ import { SocketIOModule } from "nativescript-socketio/angular";
     NativeScriptModule,
     AppRoutingModule,
     NativeScriptHttpClientModule,
+    HttpClientModule,
     MaskedTextFieldModule,
     //SocketIOModule.forRoot(),
    NgxPermissionsModule.forRoot(), 

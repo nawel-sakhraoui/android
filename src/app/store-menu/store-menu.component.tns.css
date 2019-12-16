@@ -50,3 +50,16 @@
    border-color:#F27171;
    font-size:12;  
 } 
+
+
+Label:pressed {
+  
+   background-color:#eeeeee;
+    
+}  
+GridLayout:pressed {
+   background-color:#eeeeee;
+     border-color: #eeeeee;
+    border-width: 2;
+   /* color:#d9534f ;*/
+}

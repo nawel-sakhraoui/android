@@ -1,60 +1,59 @@
 
 <ScrollView #scrollView>
-<StackLayout>
-<StackLayout  [visibility]="nosale? 'visible' : 'collapsed'" >
+<GridLayout rows="auto,auto,* ">
+
+<StackLayout  #top row="0"  [visibility]="!loading && nosale? 'visible' : 'collapsed'" >
 <Label class="alert" text='Commande introuvable' *ngIf="nosale"></Label>
-<Label class="fas" fontSize="16" text='{{model.storetitle}}&#xf053;' [nsRouterLink]="['../']"  ></Label>
+<Label (touch)="ontouch($event)" class="fas" fontSize="16" text='{{model.storetitle}}&#xf053;' [nsRouterLink]="['../']"  ></Label>
 </StackLayout>
 
-<ActivityIndicator *ngIf="!ongoing" color='#FFA500' rowSpan="3" [busy]="!ongoing"></ActivityIndicator>
+<StackLayout row="1" >
+<ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="3" [busy]="loading"></ActivityIndicator>
+</StackLayout>
 
-<StackLayout #top margin='5,0,0,0' [visibility]=" ongoing ? 'visible' : 'collapsed'"  >
+<GridLayout  row="2" rows="auto,auto,auto,auto,auto,auto,auto,*,*,auto,*,auto,*,auto,*,*,auto"  #top margin='5,0,0,0' [visibility]="!nosale && !loading ? 'visible' : 'collapsed'"  >
       		
-      		  <Label [nsRouterLink]="['../../sales']"    >
+      		  <Label  row="0" [nsRouterLink]="['../../sales']"  (touch)="ontouch($event)" >
 				      		  <FormattedString>
             					
-         					    <Span fontSize="16" text="&#xf053; " class="fas" color='#000'  ></Span>
+         					    <Span fontSize="16" text="&#xf053; " class="fas link0"   ></Span>
          					    <Span text="Retour Vente en cours"></Span>
        						</FormattedString>
 			 </Label>
      
      
-     		<StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+			<StackLayout row="1"  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
       		   
 
-      		    
- <GridLayout rows="auto,auto,auto,auto,auto,*,*,auto,*,auto,*,auto,*,*,auto">
-				      <Label row='0'   >
-				      		  <FormattedString>
-            					<Span text="Commande id:  "  ></Span>
-         					    <Span text="{{commandid}}" class="fas" color='#FFA500'  ></Span>
-       						</FormattedString>
+		  <StackLayout row='2' orientation='horizontal'   >
+				      		  
+            					<Label text="Commande id:  "  ></Label>
+         					    <Label text="{{commandid}}" class="fas link0"   (touch)="ontouch($event)" (longPress)='selectText($event)'></Label>
+       						
 				      	
-				      </Label>
-					   <StackLayout row="1" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+		 </StackLayout>
+	       <StackLayout row="3" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
 					  
-					  <GridLayout    row='2'  columns='*,auto'>
+			 <GridLayout    row='4'  columns='*,auto'>
 					  		<Label col='0'  text="Montant total:  "  ></Label>
-         					<Label col="1"  text="{{ model.totalprice}} DA" class="fas" color='#000'  (tap)="gotoPurchase(commandid)"  ></Label>
-       					
+         					<Label col="1"  text="{{ model.totalprice}} DA" class="fas" color='#000'    ></Label>
+       		  </GridLayout> 
 					  
-					  </GridLayout> 
-					  
-					  <StackLayout row="3" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
-					 <GridLayout row="4" rows="auto,auto,auto">
+			  <StackLayout row="5" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+			<GridLayout row="6" rows="auto,auto,auto">
 					 <StackLayout  row='0' orientation="horizontal">
 					  
             					<Label margin="20,10,0,0" text="De: "  ></Label>
             					 <Image [src]="avatarlist[model.userid]" class="resize" stretch="aspectFill" ></Image>
             					
-         					    <Label margin="20,0,0,10" verticalAlign='center'  text="{{fullnamelist[model.userid]}} " class="fas" color='#FFA500' (tap) ='gotoUser(model.userid)'  ></Label>
+         					    <Label margin="20,0,0,10" verticalAlign='center'  text="{{fullnamelist[model.userid]}} " class="fas link0 "  (tap) ='gotoUser(model.userid)'  (touch)="ontouch($event)" (longPress)='selectText($event)' ></Label>
 		  						
 		  
 		  
 					  </StackLayout>
 					          	
 							 	<StackLayout  margin="0,10,0,25"  row="1"  [visibility]="model.userrating!=0 ? 'visible' : 'collapsed'"  >
-  									 <AbsoluteLayout  height="35" width="85"  class=" border "  backgroundColor="rgba(0,0,0,0.4)">
+  									 <AbsoluteLayout  height="35" width="85"  class=" border " >
       	          							 <StackLayout  left="-80" top="-10" android:cursorVisible="false"  >
       	           
                 								 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="model.userrating"  ></StarRating>
@@ -65,19 +64,19 @@
  	    						 <stackLayout #rating row="1"  [visibility]="model.userrating==0 && steps.stop==0 && steps.close!=0? 'visible' : 'collapsed'"  >
  	    						  <Label margin='0,10,0,10' text="Evaluation:" ></Label>
         							<StackLayout  margin="0,10,0,25">	
- 			 						 <AbsoluteLayout height="35" width="85"     class=" border "  backgroundColor="rgba(0,0,0,0.4)">
-      	          					 <StackLayout left="-80" top="-10" android:cursorVisible="false"  >
+ 			 						 <AbsoluteLayout height="35" width="95"     class=" border " >
+      	          					 <StackLayout left="-70" top="-10" >
       	           
-                								 <StarRating filledColor="#FFA500" isindicator="false" (valueChange)="setScore($event, commandid)"   android:scaleX=".3" android:scaleY=".3"  value="0"  ></StarRating>
-               								 </StackLayout>
+                								 <StarRating filledColor="#FFA500" (valueChange)="setScore($event, commandid)"   android:scaleX=".4" android:scaleY=".4"  value="0"  ></StarRating>
+               						 </StackLayout>
                  
        							    </AbsoluteLayout>
        							    
        							      <Label editable="false"  *ngIf="alert" class="alert" text="S'il vous plait évaluer ce client"></Label> 
        							    	<TextView    fontSize="12"  hint="laisser un commentaire" class="input" [(ngModel)]="model.userfeedback"    returnKeyType="done" 
-                							 returnPress="onReturnPress" maxLength="300"></TextView>
+                							 returnPress="sendRating(m)" maxLength="300"></TextView>
        								
-							 			 <GridLayout columns='*,auto'>  <Label padding="5" col="1" borderRadius="3"  class="btn btn-active" color="#fff"  backgroundColor="#FFA500" (tap)='sendRating(m)  ' text="Envoyer"></Label>
+							 			 <GridLayout columns='*,auto'>  <Label padding="5" col="1" borderRadius="3"  class="btn btn-active" color="#fff"  backgroundColor="#FFA500" (tap)='sendRating()  ' text="Envoyer"></Label>
 										</GridLayout>
  			 						</StackLayout>
 							 			
@@ -85,10 +84,10 @@
        					</stackLayout>
  	    						 
  	    						 
-					  </GridLayout>
-					  <StackLayout row="5" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+				</GridLayout>
+				 <StackLayout row="7" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
 					  
-					  <RadListView  row="6" [items]="model.articles" >
+				<RadListView  row="8" [items]="model.articles" >
 						<ng-template let-a="item"  >
 						<StackLayout >
 							 <GridLayout columns='*,*'>
@@ -100,11 +99,12 @@
 							    	<TextView editable="false" row="0"  class="titlea" text="{{a.title}}"  (tap)="gotoArticle(a.articleid, model.storetitle)">
  					    			</TextView>
 							    	<GridLayout row="1" rows="*,*,*,*" columns='*,auto'>
-							    	<Label row='0' col="0"  text="Couleur: "></Label>
-							    	<Label row="0" col="1" width="20" height="20" [backgroundColor]='a.color'></Label>
-							        <Label row="1" col="0" text='Taille: '></Label>
-							        <Label row='1' col="1" class='size' text='{{a.taille}}' > </Label>
-							        <Label row='2' col="0" text="Quantité: "></Label>
+							    	<Label   *ngIf="a.hasOwnProperty('color')" row='0' col="0"  text="Couleur: "></Label>
+							    	<Label   *ngIf="a.hasOwnProperty('color')" row="0" col="1" class='color'  [backgroundColor]='a.color'></Label>
+							        <Label   *ngIf="a.hasOwnProperty('size')" row="1" col="0" text='Taille: '></Label>
+							        <Label   *ngIf="a.hasOwnProperty('size')" row='1' col="1" class='size' text='{{a.size}}' > </Label>
+							       
+							    	 <Label row='2' col="0" text="Quantité: "></Label>
 							        <Label row='2' col="1" color="#000" text='{{a.quantity}} UNIT'></Label>
 							        <Label row='3' col="0" text="Prix: "></Label>
 							        <Label row='3' col="1" color="#000"  text='{{a.price}} DA'></Label>
@@ -115,8 +115,9 @@
 							 
 						</StackLayout>
 						</ng-template>	
-					</RadListView> 
-					<GridLayout row="7" columns='*,auto'>
+				</RadListView> 
+				
+				<GridLayout row="9" columns='*,auto'>
 					 <Label col="0" >
 					 		 <FormattedString>
             					<Span text="Livraison:  "  ></Span>
@@ -124,10 +125,14 @@
        						</FormattedString>
 					 </Label>
 					 <Label col="1" text=" {{delivery.price }} DA" class="fas" color="#000"></Label>
-					</GridLayout>
-					<StackLayout row="8" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
-						<Label row="9"   text="Addresse: "></Label>
-					<GridLayout padding="2"  row="10" backgroundColor="#D3D3D3"  rows="*,*,*,*,*,*" columns="*,*" >
+				</GridLayout>
+				
+					
+				<StackLayout row="10" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+						
+				<Label row="11"   text="Addresse: "></Label>
+				
+				<GridLayout padding="2"  row="12" backgroundColor="#D3D3D3"  rows="*,*,*,*,*,*" columns="*,*" >
 					
 						<Label class='add' row="0" col="0" text="à M.Mme" ></Label> 
   						<Label class='add'row="0" col="1" text="{{choosenAddress.to}}"></Label>
@@ -142,78 +147,84 @@
   		     			<Label class='add'row="5" col="0" text="Addresse" ></Label> 
   						<Label class='add'row="5" col="1" text="{{choosenAddress.address}}"></Label>
   		     			
-					</GridLayout>
-      		    	<StackLayout row="11" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+				</GridLayout>
+      		    
+      		   	<StackLayout row="13" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
       		    	
-      		    	<GridLayout row="12" rows='auto,*'>
+      		    <GridLayout row="14" rows='auto,*'>
       		    	   <GridLayout margin='0,0,10,0' row="0" columns="*,auto,auto,auto,auto,auto">
       		    	
       		    	    <Image   col="0" src="res://trolley" class='wizardimg' stretch="aspectFill"></Image>
       		    	    <Label    col='0'  class='wizardActive'></Label>
       		    	   
       		    	
-      		  		  	<Image  [visibility]="steps.stop!=0 ? 'visible' : 'collapsed'"  col="1" src="res://close" class='wizardimg' stretch="aspectFill"></Image>
-      		    	    <Label  [visibility]="steps.stop!=0 ? 'visible' : 'collapsed'"  col='1'  class='wizardActive'></Label>
+      		  		  	<Image  [visibility]="model.steps.stop!=0 ? 'visible' : 'collapsed'"  col="1" src="res://close" class='wizardimg' stretch="aspectFill"></Image>
+      		    	    <Label  [visibility]="model.steps.stop!=0 ? 'visible' : 'collapsed'"  col='1'  class='wizardActive'></Label>
       		    	   
       		    	
-      		  		  	<Image  [visibility]="steps.stop==0  ? 'visible' : 'collapsed'"   col="2" src="res://delivery" class='wizardimg' stretch="aspectFill"></Image>
-      		  		  	<Label  [visibility]="steps.stop==0  && steps.send==0  ? 'visible' : 'collapsed'"  col='2'  class='wizard'></Label>
-      		    	    <Label  [visibility]="steps.stop==0  && steps.send!=0  ? 'visible' : 'collapsed'"  col='2'  class='wizardActive'></Label>
+      		  		  	<Image  [visibility]="model.steps.stop==0  ? 'visible' : 'collapsed'"   col="2" src="res://delivery" class='wizardimg' stretch="aspectFill"></Image>
+      		  		  	<Label  [visibility]="model.steps.stop==0  && model.steps.send==0  ? 'visible' : 'collapsed'"  col='2'  class='wizard'></Label>
+      		    	    <Label  [visibility]="model.steps.stop==0  && model.steps.send!=0  ? 'visible' : 'collapsed'"  col='2'  class='wizardActive'></Label>
       		    	   
       		  		  	
       		  		  	
       		    	
-      		 		   	<Image  [visibility]="steps.stop==0  ? 'visible' : 'collapsed'" col="3" src="res://closebox" class='wizardimg' stretch="aspectFill"></Image>
-        			    <Label  [visibility]="steps.stop==0  && steps.receive==0  ? 'visible' : 'collapsed'"  col='3'  class='wizard'></Label>
-      		    	    <Label  [visibility]="steps.stop==0  && steps.receive!=0  ? 'visible' : 'collapsed'"  col='3'  class='wizardActive'></Label>
+      		 		   	<Image  [visibility]="model.steps.stop==0  ? 'visible' : 'collapsed'" col="3" src="res://closebox" class='wizardimg' stretch="aspectFill"></Image>
+        			    <Label  [visibility]="model.steps.stop==0  && model.steps.receive==0  ? 'visible' : 'collapsed'"  col='3'  class='wizard'></Label>
+      		    	    <Label  [visibility]="model.steps.stop==0  && model.steps.receive!=0  ? 'visible' : 'collapsed'"  col='3'  class='wizardActive'></Label>
       		    	   
       		  		  	
       		    	
-      		  		  	<Image  [visibility]="steps.stop==0 &&  steps.litige !=0 ? 'visible' : 'collapsed'" col="4" src="res://litige" class='wizardimg' stretch="aspectFill"></Image>
-       		 		  	<Label  [visibility]="steps.stop==0  && steps.litige !=0 ? 'visible' : 'collapsed'" col='4'  class='wizardActive'></Label>
+      		  		  	<Image  [visibility]="model.steps.stop==0 &&  model.steps.litige !=0 ? 'visible' : 'collapsed'" col="4" src="res://litige" class='wizardimg' stretch="aspectFill"></Image>
+       		 		  	<Label  [visibility]="model.steps.stop==0  && model.steps.litige !=0 ? 'visible' : 'collapsed'" col='4'  class='wizardActive'></Label>
        		 		  	
  
-      		 	        <Image  [visibility]="steps.stop==0  ? 'visible' : 'collapsed'" col="5" src="res://checked" class='wizardimg' stretch="aspectFill"></Image>
-       		 	        <Label  [visibility]="steps.close==0 ? 'visible' : 'collapsed'" col='5'  class='wizard'></Label>
-       		 		  	<Label  [visibility]="steps.close!=0 ? 'visible' : 'collapsed'" col='5'  class='wizardActive'></Label>
+      		 	        <Image  [visibility]="model.steps.stop==0  ? 'visible' : 'collapsed'" col="5" src="res://checked" class='wizardimg' stretch="aspectFill"></Image>
+       		 	        <Label  [visibility]="model.steps.close==0 ? 'visible' : 'collapsed'" col='5'  class='wizard'></Label>
+       		 		  	<Label  [visibility]="model.steps.close!=0 ? 'visible' : 'collapsed'" col='5'  class='wizardActive'></Label>
       		    	
       		    		</GridLayout>
       		    		<StackLayout row="1">
       		    			 <Label class="ongoingli"   text="Commande faite le: {{model.startdate}} "></Label>
       		    			
-      		    			<Label  class="ongoingli"  *ngIf='steps.stop!=0' text='Commande annulée le: {{steps.stop}}'></Label>
+      		    			<Label  class="ongoingli"  *ngIf='steps.stop!=0' text='Commande annulée le: {{model.steps.stop}}'></Label>
       		    			
       		    			    <StackLayout orientation="horizontal">
-      		    			   		 <Label class="ongoingli"  *ngIf="steps.prepare==0  && steps.stop==0" text='Commande prête'></Label>
-      		    			   		  <Button *ngIf="steps.prepare==0  && steps.stop==0"  height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas"  (tap)= 'prepareDone(commandid,  model.userid); '>
+      		    			   		 <Label class="ongoingli"  *ngIf="model.steps.prepare==0  && model.steps.stop==0" text='Commande prête'></Label>
+      		    			   		  <Button [isEnabled]="!model.steps.prepareloading" *ngIf="model.steps.prepare==0  && model.steps.stop==0"  height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas"  (tap)= 'prepareDone(commandid,  model.userid); '>
    									 </Button>
+   									  <ActivityIndicator   *ngIf="model.steps.prepareloading" color='#00BFFF' rowSpan="2" [busy]="model.steps.prepareloading"></ActivityIndicator>
+   									 
       		    				</StackLayout>
- 	  	 					<Label class="ongoingli"  *ngIf=' steps.prepare!=0 && steps.stop==0'  text='Commande préparée le: {{steps.prepare}}'></Label>
+ 	  	 					<Label class="ongoingli"  *ngIf=' model.steps.prepare!=0 && model.steps.stop==0'  text='Commande préparée le: {{model.steps.prepare}}'></Label>
  	  	 				   
  	  	 				   
  	  					   <StackLayout orientation="horizontal">
- 	  	 				    <Label class="ongoingli"    *ngIf='( steps.prepare!=0 && steps.send==0 && steps.stop ==0)' text='Commande envoyée'></Label>
- 	  	  				    <Button *ngIf='( steps.prepare!=0 && steps.send==0 && steps.stop ==0)' (tap)="sendDone(commandid, model.userid);" height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas">  </Button>
+ 	  	 				    <Label class="ongoingli"    *ngIf='( model.steps.prepare!=0 && model.steps.send==0 && model.steps.stop ==0)' text='Commande envoyée'></Label>
+ 	  	  				    <Button   [isEnabled]="!model.steps.sendloading"  *ngIf='( model.steps.prepare!=0 && model.steps.send==0 && model.steps.stop ==0)' (tap)="sendDone(commandid, model.userid);" height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas">  </Button>
+ 	  	 					<ActivityIndicator   *ngIf="model.steps.sendloading" color='#00BFFF' rowSpan="2" [busy]="model.steps.sendloading"></ActivityIndicator>
+ 	  	 					
+ 	  	 					
  	  	 					</StackLayout>
  	  			
  	  				 
-	     					<Label  class="ongoingli"  *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 " text='Commande envoyée le: {{steps.send}}'> </Label>
+	     					<Label  class="ongoingli"  *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 " text='Commande envoyée le: {{model.steps.send}}'> </Label>
 					 	    
 					 	     
-					 	     <Label  class="ongoingli" *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 && steps.receive!=0" text="Commande reçu le: {{steps.receive}} "></Label>
+					 	     <Label  class="ongoingli" *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 && model.steps.receive!=0" text="Commande reçu le: {{model.steps.receive}} "></Label>
 					 	     
 					 	    
 					
 					 	    
-					 	    <Label  class="ongoingli"   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 "  text="Litige ouvert le: {{steps.litige}}"></Label> 
+					 	    <Label  class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 "  text="Litige ouvert le: {{model.steps.litige}}"></Label> 
 					 	    
-	 						<Label  class="ongoingli"   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 && steps.solvedlitige==0 " text="Veuillez contacter le client pour trouver une solution à votre litige" ></Label>
+	 						<Label  class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige==0 " text="Veuillez contacter le client pour trouver une solution à votre litige" ></Label>
 	 			
   
-  						 	<Label  class="ongoingli"   *ngIf="steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 &&steps.litige!=0 && steps.solvedlitige!=0 " text='Litige résolu le: {{steps.solvedlitige}}'></Label>
+  						 	<Label  class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige!=0 " text='Litige résolu le: {{model.steps.solvedlitige}}'></Label>
   						 
-  						    <Label  class="ongoingli"   *ngIf="steps.close==0 && steps.send!=0 && steps.prepare!=0 && steps.stop==0 &&  steps.receive!=0 && ((steps.litige!=0 && steps.solvedlitige!=0) ||steps.litige==0)  " text="Attente de la fermeture de la commande"></Label>
-  						    <Label  class="ongoingli" *ngIf="steps.close!=0 "  text='Commande fermée le {{steps.close}}'></Label>
+  						    <Label  class="ongoingli"   *ngIf="model.steps.close==0 && model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 && ((model.steps.litige!=0 && model.steps.solvedlitige!=0) ||model.steps.litige==0)  " text="Attente de la fermeture de la commande"></Label>
+  						    <Label  class="ongoingli" *ngIf="model.steps.close!=0 "  text='Commande fermée le {{model.steps.close}}'></Label>
      				
        
       		    
@@ -222,59 +233,67 @@
       	
       		    		
       		    		
-      		   		</GridLayout>
-      		    	<StackLayout row="13">
-      		    	<GridLayout  rows="auto,*,auto" margin="5,0,5,0">
+      		   	</GridLayout>
+      		    
+      		  	<StackLayout row="15">
+      		    	<GridLayout  rows="auto,*,auto,auto" margin="5,0,5,0">
       		    	<StackLayout #message row="0" orientation='horizontal'>
       		    	 <Label  text="&#xf075; Messages " class='msgtitle fas ' width="90%"></Label>
-      		    	 <Label text ='&#xf107;' class="msgtitle fas"  (tap)="isopen=!isopen" ></Label>
+      		    	 <Label text ='&#xf107;' class="msgtitle fas"  (tap)=" openMsgs()" (touch)='ontouch3($event)'  ></Label>
       		    	 </StackLayout>
-      		    	<RadListView  row="1" [items]="model.messages "    [visibility]="isopen? 'visible' : 'collapsed'" >
+      		    	<RadListView #msgs height="200"  row="1" [items]="model.messages "    [visibility]="isopen? 'visible' : 'collapsed'" >
 						<ng-template let-message="item"  >
 						<StackLayout>
 						
 						<GridLayout columns="auto,*" [visibility]="!message.fromMe? 'visible' : 'collapsed'" >
 						
-						<Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+						<!--  Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					    -->
 					    <GridLayout col="1" rows='auto,auto'  >
 					   		 <StackLayout  row="0" orientation=horizontal>
 					   		 	<Label width="80%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
 					   		 	<Label class="fas" fontSize='10' text="&#xf017;{{message.date}}"></Label>
 					   		  </StackLayout>
-					  		 <textView row="1" text='{{message.text}}' editable="false" class="msgs1"></textView>
+					  		 <TextView margin="0,25,5,25"  row="1" text='{{message.text}}' editable="false" class="msgs1"></TextView>
 						 </GridLayout> 
 						</GridLayout>
 						
 						<GridLayout  columns="*,auto" [visibility]="message.fromMe? 'visible' : 'collapsed'" >
-								<Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+							<!-- Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					      -->
 					       <GridLayout col="0" rows="auto,auto" >
 					   		 <StackLayout row="0" orientation=horizontal horizontalAlignment="right"  >
-					   		     <Label width="50%" class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
+					   		     <Label width="60%" class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
 					   		  
-					   		 	 <Label width="50%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	 <Label width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
 					   		  </StackLayout>
-					  		 <TextView  row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
+					  		 <TextView margin="0,25,5,25"   row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
 						 </GridLayout>
 						
 						</GridLayout>
 						</StackLayout>
 						</ng-template>
+						  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 						
 						
 						
       		       </RadListView>
-      		    	 <StackLayout  row="2" orientation="horizontal" [visibility]="steps.close==0  ? 'visible' : 'collapsed'"  >
-      		    	 <textView  width='80%' class="msg"  returnKeyType="done" text='{{model.message}}' [(ngModel)]="model.message" ></textView>
-      		    	 <Label  text='Envoyer' class="send" returnKeyType="done" (tap)=" sendMessage(commandid,model.userid)"></Label>
+      		    	 <StackLayout  row="2" orientation="horizontal" [visibility]="model.steps.close==0  ? 'visible' : 'collapsed'"  >
+      		    	 <textView  [isEnabled]="!loadingM"     width='80%' class="msg"  returnKeyType="done" text='{{textmessage}}' [(ngModel)]="textmessage" ></textView>
+      		    	 <Label  [isEnabled]="!loadingM"    (touch)='ontouch3($event)' text='Envoyer' class="send" returnKeyType="done" (tap)=" sendMessage(commandid,model.userid)"></Label>
       		    	 </StackLayout>
-      		    
+      		    	  <StackLayout  row="2">
+      		    			<ActivityIndicator    color='#FFA500' rowSpan="3" [busy]="loadingM"></ActivityIndicator>
+					  
+      		    	 </StackLayout>
+      		    	<Label row='3' class="alert" text='taper votre message !' ></Label>
+      		    		
       		    	
       		    </GridLayout>
       		  
       		     <StackLayout  margin="10,0,10,0"  colSpan="0" backgroundColor="#D0D0D0" height="6"></StackLayout>
-      		    </StackLayout>
+      		   </StackLayout>
       		   
      </GridLayout>
-     </StackLayout>
-</StackLayout>
+    </GridLayout>
 </ScrollView>

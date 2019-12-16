@@ -1,9 +1,9 @@
 <ScrollView >	
   <GridLayout  rows='auto, auto,* '>
 
-      <GridLayout row="0"  columns=auto,* >
-        <Label text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
-  		<Label col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+      <GridLayout row="0"  columns=auto,auto >
+        <Label (touch)="ontouch($event)" text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
+  		<Label (touch)="ontouch($event)" col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
     
     </GridLayout> 
     
@@ -24,7 +24,7 @@
 			
 			</StackLayout>
 			
-			<Label margin-bottom="5" row="3" text="+ Gallerie d'image" (tap)="onSelectMultipleTap()" class='label'></Label>
+			<Label (touch)="ontouch($event)" margin-bottom="5" row="3" text="&#xf067; Gallerie d'image" (tap)="onSelectMultipleTap()" class='label fas '></Label>
 			<GridLayout row="4" rows="*, auto,auto,auto">
   			  <RadListView row="0" [items]="gallery" >
    			     <ng-template let-image="item" let-i="index">
@@ -69,14 +69,16 @@
     		
     		<Label row="11"  text='Catégories' class="label" ></Label>
         	<GridLayout  row="12" margin="0,0,10,0" rows="auto,auto ">
-        	    <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+        	    <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
         	
         		<DropDown  #dd
                   itemsTextAlignment="left"
               	 [items]="Categories"
                   [(ngModel)]="selectedIndex1"
                   (selectedIndexChanged)="onchange($event)"  
-                  row="0">
+                  row="0"
+                  itemsPadding="5"
+                  >
         		</DropDown>
         		<StackLayout row="1"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
     		</GridLayout>
@@ -102,7 +104,7 @@
     		
     		
     		
-    		<Label class="label" row='15' text="+ Couleurs et autres " (tap)="showARGBPicker()" ></Label>
+    		<Label (touch)='ontouch($event)' class=" fas label" row='15' text="&#xf067; Couleurs et autres " (tap)="showARGBPicker()" ></Label>
     		
     		<StackLayout  margin='10,0,0,0' row="16">
    				 
@@ -175,8 +177,8 @@
     	 <GridLayout row='22' columns ='*,auto,auto, auto'>
       
        		  <Button  col="1" class="send " text="Envoyer" (tap)="newarticle()"></Button>
-       		  <ActivityIndicator *ngIf="loading"  col="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
-      		 <Label class="undo  " col="3"  text="Annuler" (tap)="cancel()"  ></Label>
+       		  <ActivityIndicator *ngIf="loading"  col="2" color="#00BFFF" rowSpan="2" [busy]="loading"></ActivityIndicator>
+      		 <Label (touch)='ontouch($event)' class="undo  " col="3"  text="Annuler" (tap)="cancel()"  ></Label>
       	</GridLayout>
       </GridLayout>
         

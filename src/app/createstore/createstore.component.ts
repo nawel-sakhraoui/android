@@ -2,7 +2,8 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ListPicker } from 'tns-core-modules/ui/list-picker/list-picker';
-
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
 import {StoreService, UserService, AddressService} from '../_services/index';
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
 @Component({
@@ -246,6 +247,17 @@ newstore (){
          this.model.geo.splice(index, 1);
 
      }
-    
+       
+     ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+    }
     
 }

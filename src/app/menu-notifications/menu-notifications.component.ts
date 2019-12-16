@@ -8,6 +8,11 @@ import * as prettyMs from 'pretty-ms';
 import {Subscription} from 'rxjs';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'; 
  
+ 
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { GridLayout } from "tns-core-modules/ui/layouts/grid-layout"; 
+
 
 @Component({
   selector: 'app-menu-notifications',
@@ -20,7 +25,7 @@ export class MenuNotificationsComponent implements OnInit  {
 
     checkStores:boolean =false ; 
     notifications:any = []; 
-notif :any ; 
+    notif :any ; 
     temptime = [] ;
 
      data3 :any ; 
@@ -60,11 +65,12 @@ notif :any ;
                 this.notifications.notification= this.notifications.notification.reverse(); 
                                    this.notifCount.emit(this.notifications.notificationcount);
 
-                  
+                  this.loading = false ; 
                   
               }
               ,error =>{
                   console.log(error) ; 
+                  this.loading = false ; 
                   }) ;
           
           
@@ -198,7 +204,31 @@ notif :any ;
      }
     
    
-    
+ ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
         
 
        

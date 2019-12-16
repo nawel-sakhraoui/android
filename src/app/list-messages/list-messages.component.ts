@@ -3,7 +3,9 @@ import {UserdetailsService, MessagesService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs';
 
-
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { GridLayout} from "tns-core-modules/ui/layouts/grid-layout";
 
 @Component({
   selector: 'app-list-messages',
@@ -12,7 +14,7 @@ import {Subscription} from 'rxjs';
 })
 export class ListMessagesComponent implements OnInit {
 
-    listmessage =false ;
+    listmessage ;
     me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
     to ="";
    
@@ -50,7 +52,7 @@ export class ListMessagesComponent implements OnInit {
  
   
   getPage (page) {
-          
+          this.loading = true  ; 
               this.messagesService.getUserMessages((page-1)*this.sizemsg , this.sizemsg )
         .subscribe (
             data => {
@@ -239,6 +241,19 @@ goToMessage(me, userid, fullname, avatar, unread){
       // console.log(args) ; 
     
     }
-    
+
+        
+    ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    } 
    
 }
+        
+        }

@@ -6,6 +6,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'; 
  
  import { SelectedIndexChangedEventData } from "nativescript-drop-down";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
 
 @Component({
   selector: 'app-cart',
@@ -24,8 +27,10 @@ export class CartComponent implements OnInit {
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
   
   
-  busy : Subscription;
-  busy3: Subscription ; 
+  page =1; 
+  maxpage =1; 
+  size =30; 
+    
   loading = false ; 
   model :any ; 
   choosenAddressTitle = {} ;//= "select My Address " ; 
@@ -35,7 +40,7 @@ export class CartComponent implements OnInit {
   detailshow = false ;   
   titlestoreDel = [] ;
    storeshow = []; 
-    
+    stores = [] ; 
    deliveryconfig = {
         "search":false, //true/false for the search functionlity defaults to false,
        "height": "auto",  //height of the list so that if there are more no of items it can show a scroll defaults to auto. With auto height scroll will never appear
@@ -55,7 +60,7 @@ export class CartComponent implements OnInit {
     
        this.loading = true ; 
        console.log('cart ') ; 
-         this.busy= this.cartService.getCart( )
+        this.cartService.getCart( )
          .subscribe(
                  
                 data => {
@@ -68,12 +73,17 @@ export class CartComponent implements OnInit {
                     .subscribe(
                         data2=>{ 
                         
-                            this.model = data2; 
-                            for ( let i = 0 ; i < this.model.length ; i++ ) 
+                           this.model = data2; 
+                           for ( let i = 0 ; i < this.model.length ; i++ ) 
                                 this.model[i]._source._id = i ; 
-                             
-                            console.log(this.model) ; 
-                            this.model =this.groupBy ( this.model,"_source", "storetitle") ; 
+                             this.stores = this.model.map((x)=>x._source.storetitle); 
+                          // this.stores= [... new Set(this.stores)]; 
+                     
+                          
+                            
+                        //   this.maxpage = Math.ceil( this.stores.length/this.size)  ; 
+
+                           this.model =this.groupBy ( this.model,"_source", "storetitle") ; 
                            
                            /* var items = Object.keys(this.model).map(function(key) {
                                  return [key, this.model[key]];
@@ -83,17 +93,52 @@ export class CartComponent implements OnInit {
                                 });
                             */
                             
-                            this.loading = false ;
+                         
                             console.log(this.model) ; 
                             if (Object.keys(this.model).length !==0) {
                                  this.cart = true ; this.empty = false ; 
+                                  this.getPage(1);
                             }else { 
                                  this.cart =false ; this.empty = true ; 
                             }
                          
-                             
+                            
+                  
+                         
+                     },
+                     error2=>{
+                            this.cart =false ; this.empty = true ;
+                            this.loading = false ; 
+                         
+                         
+                           // console.log(error2) ; 
+                     })
+                
+                }, 
+                error =>{
+                 console.log(error) ;     
+                    this.loading = false ; 
+                }) ; 
+      
+       
+
+                
+  }
+    
+
+       getPage(page) {
+           
+                            this.loading = true ; 
+           
+                            this.page = page ; 
                             console.log(this.model ) ; 
-                            for( let i of Object.keys(this.model)) {
+                             let max = this.size+((this.page-1)*this.size)  ; 
+                                if (max > this.stores.length) 
+                                        max= this.stores.length ; 
+            
+                            for( let index = (this.page-1)*this.size; index < max ; index++) {
+                                
+                                let i = this.stores[index];
                                 this.show[i] = false ; 
                                 let del =[];
                                 this.buyall[i] = true ;
@@ -155,9 +200,9 @@ export class CartComponent implements OnInit {
                               //  if (this.storedelivery[i].length>  0   ) 
                               //  this.choosestoredelivery[i] =[ this.storedelivery[i][0]];
                                 this.titlestoreDel[i] = this.storedelivery[i].reduce((result, filter) => {
-                         result =result.concat([filter.title]) ;
-                        return result;
-                        },[]);
+                                    result =result.concat([filter.title]) ;
+                                   return result;
+                              },[]);
                               //  else
                                 this.send [i] = false ;
                                 this.choosestoredelivery[i] = [] ;  
@@ -168,9 +213,9 @@ export class CartComponent implements OnInit {
 
                               }
                          
-                              for( let i of Object.keys(this.model)) {
+                             for( let index = (this.page-1)*this.size; index < max ; index++) {
 
-                                 
+                                   let i= this.stores[index] ; 
                              
                                     const sum = this.model[i].reduce(this.add, 0);// => a['_source']['price']+ b['_source']['price'], 0) ; 
                                   
@@ -181,30 +226,13 @@ export class CartComponent implements OnInit {
                                        this.totaldelivery[i] = this.totalprices[i] ; 
                               } 
                         
-                        
-                  
-                         
-                     },
-                     error2=>{
-                            this.cart =false ; this.empty = true ;
-                            this.loading = false ; 
-                         
-                         
-                           // console.log(error2) ; 
-                     })
-                
-                }, 
-                error =>{
-                 console.log(error) ;     
-                }) ; 
-      
-       
-
-                
-  }
-    
-
-          
+                           this.loading = false 
+           
+                   
+           
+           
+           
+           }
           
   groupBy (xs,s, key) {
   return xs.reduce(function(rv, x) {
@@ -445,9 +473,9 @@ export class CartComponent implements OnInit {
         }
                 }
         this.model[k][i]._source.delivery = ad ; 
-       //if(  this.model[k][i]._source.delivery.length >0 )
-        //       this.model[k][i].choosedelivery = [this.model[k][i]._source.delivery[0]]  ;
-        //else  
+       if(  this.model[k][i]._source.delivery.length !=0 )
+               this.model[k][i].choosedelivery = [this.model[k][i]._source.delivery[0]]  ;
+        else  
         this.model[k][i].choosedelivery = [] ; 
         
         if(  this.model[k][i]._source.delivery.length ==0  )
@@ -497,9 +525,9 @@ export class CartComponent implements OnInit {
         }
         this.storedelivery[k] = ad  ; 
        // console.log(this.storedelivery[k]  ) ; 
-        //if(  this.storedelivery[k].length >0 )
-         //      this.choosestoredelivery[k] = [this.storedelivery[k][0] ] ;
-        //else  
+        if(  this.storedelivery[k].length >0 )
+              this.choosestoredelivery[k] = [this.storedelivery[k][0] ] ;
+        else  
          this.choosestoredelivery[k] = [] ; 
          const sum = this.model[k].reduce(this.add, 0);// => a['_source']['price']+ b['_source']['price'], 0) ; 
          this.totalprices[k]=sum ;
@@ -561,4 +589,66 @@ export class CartComponent implements OnInit {
                        this.model[k][i]._source.total = (this.model.price *this.model[k][i]._source.quantity );
     */
        } 
+        
+ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+
+   ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+    }
+    public onLoadMoreItemsRequested(args )
+    {
+     
+       console.log('ondemand') ; 
+       const listView = args.object;
+       this.page+=1;
+       if (this.page <=  this.maxpage) {
+      
+                this.getPage(this.page)  ;
+                listView.notifyLoadOnDemandFinished();
+          
+        } else {
+            args.returnValue = false;
+            listView.notifyLoadOnDemandFinished(true);
+        }
+  
+   
+  //  if (this.sizemsg *this.page < this.countmsg ) 
+    
+    
+
+}
+   
 }

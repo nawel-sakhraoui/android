@@ -4,6 +4,11 @@ import {StoreService, UserdetailsService, MessagesService} from '../_services/in
 import {Subscription} from 'rxjs';
 //import * as prettyMs from 'pretty-ms';
 //import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+
+ 
 
 
 @Component({
@@ -231,7 +236,33 @@ export class StoreDetailsComponent implements OnInit {
                          this.router.navigate(["../"], { relativeTo: this.route });
 
         }
-      
+    
+   ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+
 
       
 }

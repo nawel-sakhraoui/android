@@ -1,13 +1,18 @@
-<ScrollView orientation="vertical">	   
-<StackLayout>
-
-<StackLayout margin ='5,5,5,5' colSpan="2" backgroundColor="#00BFFF" height="2"></StackLayout>
+<ScrollView>	   
+<GridLayout rows="auto,auto,*">
+<StackLayout row='0'>
+ <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+</StackLayout>
+<StackLayout row="1"    [visibility]="notifications.notificationcount==0 && !loading? 'visible':'collapse'" >
+<Label class="alert"  text="Pas de nouvelles notifications"> </Label>
  
-<RadListView class="list-group" [items]="notifications.notification" style="height:auto" >
-    <ng-template let-n="item" let-odd="odd" let-even="even" >
-
-       	   <GridLayout margin='10,5,0,5'  rows="*,*,*,*,*,*,*,*,auto">
-       	   <GridLayout row="0" columns='*,auto'   [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]"  fragment="message"    [visibility]="n.value=='message' ?'visible':'collapse'" >
+ </StackLayout>
+<RadListView row="2"  [items]="notifications.notification"  [visibility]="!loading? 'visible':'collapse'"   >
+    <ng-template let-n="item"  >
+			
+		<GridLayout rows="auto,auto">
+       	   <GridLayout row="0"  (touch)='ontouch2($event)'  [visibility]="n.value=='message' ?'visible':'collapse'" padding ="5" rows="auto,auto"   nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}'  fragment="message"   >
+       	   <GridLayout row="0"  columns='*,auto'    >
        		<Label   col="0" >
        		<FormattedString>
        		  	<Span text='&#xf0e0; ' class='fass icon' ></Span>
@@ -21,10 +26,13 @@
        		</Label>
        		</GridLayout>  
        		
-       		<textView editable="false" margin="-10,0,5,10" editable="false" row="1" [visibility]="n.value=='message' ?'visible':'collapse'"   class=" Label"   text=' Vous avez un nouveau message '>  
+       		<textView  row="1" editable="false" margin="-10,0,-5,0"   class="Label" text='Vous avez un nouveau message'>  
        		</textView>
+       		</GridLayout>
        		
-             <GridLayout row="2" columns='*,auto'  [visibility]="n.value=='send' ?'visible':'collapse'"  [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]"  >
+       		
+       		<GridLayout  row="0"   (touch)='ontouch2($event)' padding='5'  rows="auto,auto"   [visibility]="n.value=='send' ?'visible':'collapse'"   nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' >
+             <GridLayout row="0" columns='*,auto'  >
        		<Label    col="0" >
        		<FormattedString>
        		  	<Span text='&#xf0d1; ' class='fass icon' ></Span>
@@ -39,10 +47,14 @@
  
  			</GridLayout> 
  			
-       		<textView editable="false" margin="-10,0,5,10" editable="false" row="3"  [visibility]="n.value=='send' ?'visible':'collapse'"  class=" Label"     text='Votre commande a été Envoyée'>  
+       		<textView editable="false" margin="-10,0,-5,0" editable="false" row="1"   class=" Label"     text='Votre commande a été Envoyée'>  
        		 </textView>
+       		</GridLayout>
        		
-       		<GridLayout row="4" columns='*,auto'  [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]"  [visibility]="n.value=='prepare' ?'visible':'collapse'"  >
+       		
+       		 
+       		<GridLayout  row="0" (touch)='ontouch2($event)' padding='5' rows="auto,auto"    [visibility]="n.value=='prepare' ?'visible':'collapse'"    nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' >
+       		<GridLayout row="0" columns='*,auto'  >
        		
        		<Label   col="0"   >
        		<FormattedString>
@@ -56,10 +68,13 @@
        		</Label>
        		</GridLayout>
        		
-       		 <textView editable="false" margin="-10,0,5,10" row="5" [visibility]="n.value=='prepare' ?'visible':'collapse'"  class=" Label"    text='Votre commande est prête, en attente de livraison'>  
+       		 <textView editable="false" margin="-10,0,-5,0" row="1" [visibility]="n.value=='prepare' ?'visible':'collapse'"  class=" Label"    text='Votre commande est prête, en attente de livraison'>  
        		 </textView>
+       		</GridLayout>
        		
-       		<GridLayout row='6' columns='*,auto'  [visibility]="n.value=='rating' ?'visible':'collapse'"   [nsRouterLink]="['/home',myhome,'ongoing','purchase',n.commandid]" fragment="rating" >
+       		
+       		<GridLayout row="0" (touch)='ontouch2($event)' [visibility]="n.value=='rating' ?'visible':'collapse'"  nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' fragment="rating"  padding="5" rows="auto,auto" >
+       		<GridLayout row='0' columns='*,auto'   >
        		       		
        		<Label   col="0"   >
        		<FormattedString>
@@ -73,18 +88,19 @@
        		<Label class="fass" col="1"  text="&#xf017; {{n.time}}">
        		</Label>
        		</GridLayout>
-       		  <textView editable="false" margin="-10,0,5,10"  row="7"  [visibility]="n.value=='rating' ?'visible':'collapse'"  class=" Label"   text='Vous pouvez noter les articles '>  
+       		  <textView editable="false" margin="-10,0,-5,0"  row="1"   class=" Label"   text='Vous pouvez noter les articles '>  
        		 </textView>
+       		</GridLayout>
        		
-       		 <StackLayout  row="8" colSpan="2" backgroundColor="#00BFFF" height="2"></StackLayout>
+       		 <StackLayout row='1' colSpan="2" backgroundColor="#00BFFF" height="2"></StackLayout>
        		 
        		 
-      </GridLayout>
-
+   </GridLayout>
+	
     </ng-template>
     
 </RadListView>
-</StackLayout>
+</GridLayout>
 </ScrollView>
 
 

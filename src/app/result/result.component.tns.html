@@ -2,15 +2,15 @@
 <RadSideDrawer tkExampleTitle tkToggleNavButton>
     <GridLayout tkDrawerContent rows="40, *" class="sideStackLayout">
         <StackLayout class="sideTitleStackLayout">
-            <Label text="Catégories  &#xf104;" class='fas' (tap)="onCloseDrawerTap()"></Label>
+            <Label (touch)='ontouch($event)'   text="Catégories  &#xf104;" class='fas' (tap)="onCloseDrawerTap()"></Label>
         </StackLayout>
         <ScrollView row="1">
         <RadListView row ="0" class="list-group" [items]="allCategories " style="height:auto" >
   				  <ng-template let-k="item" let-i='index' >
             		<StackLayout  class="sideStackLayout ">
-           		     <TextView     editable="false"  *ngIf='k!=filter' text="{{k}}" class="sideLabel list-group-item" (tap)="selectFilter(k, orderby);onCloseDrawerTap();"></TextView>
+           		     <Label textWrap="true" (touch)='ontouch($event)'   editable="false"  *ngIf='k!=filter' text="{{k}}" class="sideLabel list-group-item" (tap)="selectFilter(k, orderby);onCloseDrawerTap();"></Label>
            		    
-           		      <TextView     editable="false"   *ngIf='k==filter' text="{{k}}" class="sideLabelActive list-group-item" (tap)="selectFilter(k, orderby);onCloseDrawerTap();"></TextView>
+           		      <Label textWrap="true"   (touch)='ontouch($event)'  editable="false"   *ngIf='k==filter' text="{{k}}" class="sideLabelActive list-group-item" (tap)="selectFilter(k, orderby);onCloseDrawerTap();"></Label>
            		    </StackLayout> 
                   </ng-template>
         </RadListView>
@@ -22,15 +22,20 @@
  <StackLayout row="0" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
   
  <GridLayout    row="1" columns="auto,*,auto" rows='35,35,*' >
-       <Label row='0'  margin="7,0,0,5" text="Catégories &#xf02b;" col='0'  (tap)="openDrawer()" class=" fas cat"></Label>
+       <Label (touch)='ontouch($event)' row='0'  margin="7,0,0,5" text="Catégories &#xf02b;" col='0'  (tap)="openDrawer()" class=" fas cat"></Label>
+        <StackLayout row='0' margin='5,0,0,5' col="1" orientation='horizontal'>    
             
-        <Label row='0' margin='5,0,0,5' col="1" text='{{filter}}' class="fas filter">  </Label>
+        <Label  text='{{filter}}' class="fas filter">  </Label>
+        <Label margin="0,0,0,4" *ngIf='filter!="Indefinie" ' (tap)='removeFilter();' text='&#xf057;' class="fas" color='red'></Label>
+        
+        </StackLayout>
+        
         <Label *ngIf='query.length!=0' row='2' margin="7,0,0,5"  col="0" text="Requête: " class="fas cat"></Label>
         
-        
-        <TextView *ngIf='query.length!=0'  row="2" col="1"     text='{{query}}' class=" query" editable="false"> </TextView>
-        <Label  *ngIf='query.length!=0' row="2" col="2"  class='fas close' text='&#xf00d; ' (tap)="removeQuery()"></Label>
-  
+        <StackLayout orientation="horizontal" row="2" col="1"  >
+        <TextView margin='-5,0,0,0' *ngIf='query.length!=0'    text='{{query}}' class=" query" editable="false"> </TextView>
+        <Label  *ngIf='query.length!=0' margin='10,0,0,4'  text='&#xf057;' class="fas" color='red'  (tap)="removeQuery()"></Label>
+       </StackLayout>
         
          <Label row='1' margin="8,5,0,5" text="Trier par &#xf0dc;" col='0' class=" fas cat"></Label>
 
@@ -56,20 +61,23 @@
 	textTransform="none"
  >
     <StackLayout *tabItem="{title: 'Articles'}">
-   
-   <Label class="notfound" text="Pas d'articles disponibles"  [visibility]="notfound? 'visible' : 'collapsed'">
+  
+ 		
+   <Label class="notfound" text="Pas d'articles disponibles"  [visibility]=" !loading &&  notfound? 'visible' : 'collapsed'">
    
    </Label>
-  		<RadListView  [visibility]="!notfound? 'visible' : 'collapsed'"  [items]="articles"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedArticles($event)"
+  		<RadListView  [visibility]="!loading && !notfound? 'visible' : 'collapsed'"  [items]="articles"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedArticles($event)"
          (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" >
       		 <ng-template let-a="item" class="itemStackLayout" >
-      		 <GridLayout  rows='*,auto'>
+
+      		 
+      		 <GridLayout (touch)="ontouch2($event)"  rows='*,auto'  (tap)="gotoArticle(a._id, a._source.storetitle )" >
       		   
-      			<Image row="0" (tap)="gotoArticle(a._id, a._source.storetitle )"  (touch)="display(a._id)" [src]='mainpics[a._id]' class='articlepic' stretch="aspectFill" ></Image>
+      			<Image row="0" [src]='mainpics[a._id]' class='articlepic' stretch="aspectFill"   (touch)="display(a._id)"   ></Image>
       			
       			<AbsoluteLayout  >
-      			      		     <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="a.loadingcart==1"></ActivityIndicator>
-      			
+			      <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='a.loadingcart==1' [busy]="a.loadingcart==1" ></ActivityIndicator>
+			      			
       			<Label (tap)="addToCart(a)"  [visibility]="disp[a._id] ?'visible':'collapse'"
       					left="55" top="5" class='panier fas'>
 						<FormattedString>
@@ -96,7 +104,7 @@
                                 	<Label fontSize="10" left ="60" top="10" text="({{a._source.ratingcount}} votes)"></Label>
                 
                 </AbsoluteLayout>
-               <Label (tap)='gotoStore(a._source.storetitle)' class='storetitle' row="2" text='Magasin: {{a._source.storetitle}}'></Label>
+               <Label textWrap="true" (touch)='ontouch($event); gotoStore(a._source.storetitle);' class='storetitle' row="2" text='Magasin: {{a._source.storetitle}}'></Label>
       			<Label class='price' row="3"   text=' {{a._source.price}} D.A'  ></Label>
 			   </GridLayout>
       			</AbsoluteLayout>
@@ -105,24 +113,31 @@
       		  
       		  
       		  </GridLayout>
-      		  
+      		
      		 </ng-template>	
      
      		
      		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewStaggeredLayout>
     
-      </RadListView>  
+      </RadListView> 
+       
+    <StackLayout >
+  <ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+ </StackLayout>  
     </StackLayout>
     
     <StackLayout *tabItem="{title: 'Magasins'}">
-    <Label class="notfound" text="Pas de magasin disponible"  [visibility]="notfoundstore ? 'visible' : 'collapsed'">
+    <Label class=" notfound " text="Pas de magasin disponible"  [visibility]=" !loading && notfoundstore ? 'visible' : 'collapsed'">
    
    </Label>
-       <RadListView [visibility]="!notfoundstore ? 'visible' : 'collapsed'"  [items]="stores"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedStores($event)" >
+       <RadListView [visibility]="!loading && !notfoundstore ? 'visible' : 'collapsed'"  [items]="stores"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedStores($event)" >
       		 <ng-template let-s="item" class="itemStackLayout"  >
-      		 <GridLayout rows='*,auto'>
+      	
+
+      		 
+      		 <GridLayout  (tap)="gotoStore(s._id )" (touch)="ontouch2($event)" rows='*,auto'>
       		   
-      			<Image row="0" (tap)="gotoStore(s._id )" [src]='s.banner' class='storepic' stretch="aspectFill" (touch)="storedisplay(s._id)" ></Image>
+      			<Image row="0"[src]='s.banner' (touch)="storedisplay(s._id) "class='storepic' stretch="aspectFill" ></Image>
       			
       			<AbsoluteLayout  >
       			
@@ -149,13 +164,17 @@
       		    <StackLayout row="1" margin="0,0,0,0"  colSpan="2" backgroundColor="#333333" height="8"></StackLayout>
       		  
       		  </GridLayout>
-      		  
+  
      		 </ng-template>	
      
      		
      		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
     
       </RadListView>
+       
+    <StackLayout >
+  <ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+ </StackLayout> 
     </StackLayout>
 </TabView>
 </GridLayout>

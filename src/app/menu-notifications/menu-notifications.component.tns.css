@@ -41,3 +41,22 @@
     border-color: #D0D0D0;
  
 }
+.alert {
+	padding :5 ; 
+	background-color: #FFA1A1; 
+	color :#444444; 
+	 border-width: 1 ;
+	 border-radius :2; 
+   border-color:#F27171;
+   font-size:12;  
+} 
+Label:pressed {
+    
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}  
+GridLayout:pressed {
+    
+   background-color:#D0D0D0; 
+   /* color:#d9534f ;*/
+}

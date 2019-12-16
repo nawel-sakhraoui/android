@@ -1,15 +1,20 @@
 <ScrollView>
-<GridLayout rows="auto,auto">		
-   <Label  row="0" *ngIf="empty" class="alert"  text="Aucun article sélectionné"></Label>
-   
-<RadListView row ="1" class="list-group" [items]="model | keyvalue ">
+<GridLayout rows="auto,auto,*">		
+   <Label  row="0" *ngIf="empty &&!loading" class="alert"  text="Aucun article sélectionné"></Label>
+   <StackLayout row="1">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading" ></ActivityIndicator>
+   	</StackLayout>  
+   	 
+<RadListView row ="2" class="list-group" [items]="stores"  
+				 [visibility]="!loading? 'visible' : 'collapsed'"
+				  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
     <ng-template let-k="item"  >
     
         <GridLayout class="list-group-item" rows="*, *,auto"  >
          
-         <Label row="0" [text]="k.key" class="list-group-item-heading title" ></Label>
+         <Label row="0" [text]="k" class="list-group-item-heading title" ></Label>
             
-          <RadListView row ="1" class="list-group" [items]="k.value" ><!-- [itemTemplateSelector]="templateSelector" (itemTap)="onItemTap($event)" -->
+          <RadListView row ="1" class="list-group" [items]="model[k]" ><!-- [itemTemplateSelector]="templateSelector" (itemTap)="onItemTap($event)" -->
     		<ng-template let-m="item" let-i='index'><!--  tkListItemTemplate  -->
     		<GridLayout rows="*,auto,auto,auto,auto,auto">
   		      <GridLayout row="0"  rows="auto,auto, auto" columns="*,*">
@@ -19,8 +24,8 @@
    			         <GridLayout  row="0" col="1" rows="25,auto,*,auto,*" >
    			         	
    			         	<GridLayout  row="0"  columns="40, 58,20,20">
-   			 	         	 <Button col="3" text="&#xf064;" class=" fass button2 " (tap)="gotoArticle(m._id, k.key )"></Button>
-   			 	      		 <Button col="2" text="&#xf00d;" class="fass  button3 "(tap)="deleteArticle(k.key, m)"></Button>
+   			 	         	 <Button col="3" text="&#xf064;" class=" fass button2  btn-active  " (tap)="gotoArticle(m._id, k )"></Button>
+   			 	      		 <Button margin="0,20,0,0" col="2" text="&#xf00d;" class="fass  button3   btn-active"(tap)="deleteArticle(k, m)" ></Button>
    			 	       </GridLayout>  
    			 	     
    			         
@@ -31,7 +36,7 @@
              	  	      
              	  	    <Label row="2"  text="{{m._source.price}} D.A" class=" fass titlea " ></Label>
 
-            		 	 <Label margin="8,0,0,0" row="3"  text="+details" (tap)="m.details=!m.details"   class="button0 "  ></Label>
+            		 	 <Label (touch)='ontouch($event)'  margin="8,0,0,0" row="3"  text="+details" (tap)="m.details=!m.details"   class="button0 "  ></Label>
             		 
             		   	
 				</GridLayout>
@@ -46,8 +51,8 @@
   								<RadListView     col="1"  [items]="m._source.color" >
       							 <ng-template let-a="item" >
       						 	<GridLayout>	
-      					 		<Label *ngIf='m.choosecolor==a'  margin='0,0,5,0'  [backgroundColor]="a"  class="colorActive"  (tap)="getColor(a, k.key, m)"   ></Label>
-      						    <Label *ngIf='m.choosecolor!=a'  margin='0,0,5,0'  [backgroundColor]="a"  class="color"  (tap)="getColor(a,k.key,m)"   ></Label>
+      					 		<Label *ngIf='m.choosecolor==a'  margin='0,0,5,0'  [backgroundColor]="a"  class="colorActive"  (tap)="getColor(a, k, m)"   ></Label>
+      						    <Label *ngIf='m.choosecolor!=a'  margin='0,0,5,0'  [backgroundColor]="a"  class="color"  (tap)="getColor(a,k,m)"   ></Label>
       							</GridLayout>
       							</ng-template>
       					     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewStaggeredLayout>
@@ -61,11 +66,11 @@
       		 				<ng-template let-a="item" >
       		 					<GridLayout>
       		 					<Label *ngIf=' !m._source.sizing[m.choosecolor].includes(a)' margin='0,0,5,0' text='{{a}}' class="sizeDisable"></Label>
-	      		 				<Label *ngIf='a==m.choosesize ' margin='0,0,5,0' text='{{a}}' class="sizeActive" (tap)="chooseSizing( e,a,k.key,m )" ></Label>
-      			 				<Label *ngIf=' a!=m.choosesize && m._source.sizing[m.choosecolor].includes(a)'  margin='0,0,5,0' text='{{a}}' class="size" (tap)="chooseSizing(e, a,k.key,m)" ></Label>
+	      		 				<Label *ngIf='a==m.choosesize ' margin='0,0,5,0' text='{{a}}' class="sizeActive" (tap)="chooseSizing( e,a,k,m )" ></Label>
+      			 				<Label *ngIf=' a!=m.choosesize && m._source.sizing[m.choosecolor].includes(a)'  margin='0,0,5,0' text='{{a}}' class="size" (tap)="chooseSizing(e, a,k,m)" ></Label>
       							</GridLayout>
       						</ng-template>
-      							<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="6"></ListViewStaggeredLayout>
+      							<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewStaggeredLayout>
       						 </RadListView>
  						 </GridLayout>
   
@@ -73,7 +78,7 @@
    
   							<Label class="titlea "  col="0"  margin="10,0,0,0" text="Quantité"></Label>
   							<TextField class='input titlea '  returnKeyType="done" col="1" color='#000'   text='{{m.choosequantity}}'  [(ngModel)] ="m.choosequantity"
-  								 keyboardType="number" maxLength="3" (returnPress)="getQuantity('', k.key,m)" ></TextField>
+  								 keyboardType="number" maxLength="3" (returnPress)="getQuantity('', k,m)" ></TextField>
   							<Label class="titlea "   margin="12,0,10,0" col="2" text='Total: ({{m._source.numbers}})'></Label>
   	
  							 </GridLayout>
@@ -81,12 +86,12 @@
        		      <GridLayout margin="10,15,0,15" row="3"  columns="100,*" >
   
   						<Label col="0" class="titlea"  text="Votre Adresse"></Label>
-  						<GridLayout col="1"   rows="auto,auto, auto,auto">
- 					      <Label row="0" text='&#xf078;'  class="fas titlea dropdownLabel" (tap)="m.show=!m.show"    ></Label>
-   					    <Label row ="0" text ="{{m.selectedAddress.title}} " color="#000"   ></Label>
+  						<GridLayout col="1"   rows="auto,auto,auto,auto">
+ 					      <Label  (touch)='ontouch($event)' row="0" text='&#xf078;'  class="fas titlea dropdownLabel" (tap)="m.show=!m.show"    ></Label>
+   					    <Label (touch)='ontouch($event)'  row ="0" text ="{{m.selectedAddress.title}} " color="#000"   (tap)="m.show=!m.show"  ></Label>
    					     <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
 						<StackLayout  row="1" [visibility]=" m.show? 'visible' : 'collapsed'" >
-  					  <app-adress (getAddress)='getAddress($event,k.key, i) ; ' ></app-adress>
+  					  <app-adress (getAddress)='getAddress($event,k, i) ; ' ></app-adress>
   				    </StackLayout>
   					</GridLayout>
   			  	</GridLayout>
@@ -99,10 +104,11 @@
        				 <DropDown  #dd
                  		 [items]="m._source.titleDel "
                  		 color='#000'
-               			   (selectedIndexChanged)="onchange($event,k.key, i)"
+               			   (selectedIndexChanged)="onchange($event,k, i)"
                 		  colSpan="2"
                 		  row="0"
-                		  fontSize="12">
+                		  fontSize="12"
+                		       paddingItem="5"  >
         			</DropDown>
 					 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
 					</GridLayout>
@@ -116,7 +122,7 @@
             		
             		
             	 <GridLayout  row="2" col="0" columns="*,auto">
-   			 	  <Button col='1' text="Acheter"   class=" button1" (tap)="  buynow(k.key, m) " ></Button>
+   			 	  <Button col='1' text="Acheter"   class=" button1   btn-active " (tap)="  buynow(k, m) " ></Button>
    			 	
   	
   				</GridLayout>		
@@ -157,18 +163,18 @@
  	
  			 <GridLayout  row="2"  rows="*,*,*,*,auto,auto">
    			 	     <GridLayout  margin="10,0,0,0" row='0' columns="*,auto" >
-   			 	      <Label class="titlea "  text="Total: ({{k.value.length}}Articles) " col="0"></Label>
-   			 	       <Label class="titlea fas"  text="{{totalprices[k.key]}} DA " col="1"></Label>
+   			 	      <Label class="titlea "  text="Total: ({{model[k].length}}Articles) " col="0"></Label>
+   			 	       <Label class="titlea fas"  text="{{totalprices[k]}} DA " col="1"></Label>
    			 	     </GridLayout>      		
        		      <GridLayout  margin="10,0,0,0" row="1"  columns="100,*" >
   
   						<Label col="0" class="titlea"  text="Votre Adresse"></Label>
   						<GridLayout col="1"   rows="auto,auto, auto,auto">
- 					      <Label row="0" text='&#xf078;'  class="fas titlea dropdownLabel" (tap)="storeshow[k.key]=!storeshow[k.key]"    ></Label>
-   					    <Label row ="0" text ="{{k.value.selectedAddress.title}}" color="#000"   ></Label>
+ 					      <Label (touch)='ontouch($event)' row="0" text='&#xf078;'  class="fas titlea dropdownLabel" (tap)="storeshow[k]=!storeshow[k]"    ></Label>
+   					    <Label (touch)='ontouch($event)'  (tap)="m.show=!m.show"   row ="0" text ="{{model[k].selectedAddress.title}}" color="#000"   ></Label>
    					     <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
-						<StackLayout  row="1" [visibility]="storeshow[k.key]? 'visible' : 'collapsed'" >
-  					  <app-adress (getAddress)='getAddress2($event, k.key) ; ' ></app-adress>
+						<StackLayout  row="1" [visibility]="storeshow[k]? 'visible' : 'collapsed'" >
+  					  <app-adress (getAddress)='getAddress2($event, k) ; ' ></app-adress>
   				    </StackLayout>
   					</GridLayout>
   			  	</GridLayout>
@@ -179,35 +185,36 @@
   					<GridLayout col="1" rows="auto,auto,auto">
         
        				 <DropDown  #dd
-                 		 [items]="titlestoreDel[k.key] "
+                 		 [items]="titlestoreDel[k] "
                  		 color='#000'
                  		 fontSize="12"
-               			 (selectedIndexChanged)="onchange2($event,k.key)"
+               			 (selectedIndexChanged)="onchange2($event,k)"
                 		  colSpan="2"
                 		  row="0"
+                		  paddingItem="5" 
                 		  fontSize="12">
         			</DropDown>
 					 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
 					</GridLayout>
 			</GridLayout>
 			
-			<GridLayout columns="*,60,auto" row="3">
-			 <Label margin="10,0,0,0" class="titlea fas" text="{{totaldelivery[k.key]}} DA " col="1"></Label>
+			<GridLayout columns="*,auto,auto" row="3">
+			 <Label textWrap="true"  margin="10,0,0,0" class="titlea fas" text="{{totaldelivery[k]}} DA " col="1"></Label>
 			
-   			<Button  text="Tout Acheter"  col="2"   class=" button1" (tap) =  'multiplebuynow(k.key)'  ></Button>
+   			<Button  text="Tout Acheter"  col="2"   class=" button1 btn-active " (tap) =  'multiplebuynow(k)'  ></Button>
    			 </GridLayout>
  	
  			<GridLayout row="4" rows="auto,auto,auto">
- 			<Label row="0" *ngIf ="!buyall[k.key]" classs="alert" text="certains articles dans la selection ne sont plus disponible !"></Label>
+ 			<Label textWrap="true" row="0" *ngIf ="!buyall[k]" class="alert" text="certains articles dans la selection ne sont plus disponible !"></Label>
  		
- 		 	<Label row="1" class="alert" *ngIf =' send[k.key]&& storedelivery[k.key].length!=0 &&choosestoredelivery[k.key].length==0 '
+ 		 	<Label textWrap="true" row="1" class="alert" *ngIf =' send[k]&& storedelivery[k].length!=0 &&choosestoredelivery[k].length==0 '
 				text="choississez la livraison "></Label>
 		
- 			 <Label row="2" class="alert" *ngIf ='send[k.key]&&  model[k.key].selectedAddress==""'
+ 			 <Label textWrap="true" row="2" class="alert" *ngIf ='send[k]&&  model[k].selectedAddress==""'
 				 text="Selectionnez votre addresse  !"></Label>
 			
 			 
-			  <Label row="3" class="alert" *ngIf ='  storedelivery[k.key].length==0'
+			  <Label textWrap="true"  row="3" class="alert" *ngIf ='  storedelivery[k].length==0'
 				text=" Aucune livraison disponible pour votre addresse ! "></Label>
 			 
  		

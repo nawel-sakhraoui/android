@@ -27,6 +27,7 @@ export class MessageComponent implements OnInit {
               private firebaseService: FirebaseService
       ) { }
     loading = false ;
+    loading1= false ;
     display1 = false ; 
     display2 = false ; 
     model:any  = {"message":""};
@@ -312,10 +313,13 @@ export class MessageComponent implements OnInit {
       
     
     sendMessage(){
-        
-        if (this.model.message.length ==0 ) 
-           this.msgAlert = true  ; 
-        else {
+        this.loading1 = true ; 
+        if (this.model.message.length ==0 ) {
+           this.msgAlert = true  ;
+           this.loading1= false ; 
+           this.view.nativeElement.dismissSoftInput();
+           this.view.nativeElement.android.clearFocus();   
+        }else {
             this.msgAlert = false ; 
           this.messagesService.putPrivateMessage(this.model.fromMe, this.model.to, this.model.message )
         .subscribe (
@@ -323,28 +327,34 @@ export class MessageComponent implements OnInit {
                 this.usersdetailsService.putMessagesNotification (this.model.to )
                 .subscribe(
                     data =>{
-                    console.log(data) ; 
-                        
-                    },
-                    error =>{
-                    console.log(error ) ;    
-                    }
-                    );
-                   this.firebaseService.messageNotif(this.firebaseToken, this.fullname) 
-                        .subscribe(
-                            data=>{
+                             console.log(data) ; 
+                             this.model.message = '' ;  
+                             this.view.nativeElement.dismissSoftInput();
+                             this.view.nativeElement.android.clearFocus();
+                             this.loading1=false ; 
+                             this.firebaseService.messageNotif(this.firebaseToken, this.fullname) 
+                             .subscribe(
+                                data=>{
                                 console.log(data) ; 
                                 },error=>{
                                     console.log(error) ; 
-                                    }
-                            
+                                }
                             )
-                
-              //  f.reset();
+                   
+
+            },error =>{
+                    console.log(error ) ;
+                    this.loading1=false ;    
+                    this.view.nativeElement.dismissSoftInput();
+                    this.view.nativeElement.android.clearFocus();
+                            
+             
+            
+            }
+                    );
+             
                   
-                this.model.message = '' ;  
-                this.view.nativeElement.dismissSoftInput();
-                this.view.nativeElement.android.clearFocus();
+           
                 
         
                 }, 
@@ -364,6 +374,8 @@ export class MessageComponent implements OnInit {
               this.router.navigate(["../"], { relativeTo: this.route });
 
         }
+    
+    
    hide () {
     this.view.nativeElement.dismissSoftInput();
     this.view.nativeElement.android.clearFocus();

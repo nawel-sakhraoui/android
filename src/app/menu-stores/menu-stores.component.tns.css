@@ -85,3 +85,13 @@ Label:hover {
     border-color: darkgray;
  
 } 
+Label:pressed {
+    padding:2; 
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}  
+GridLayout:pressed {
+    padding:3; 
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}  

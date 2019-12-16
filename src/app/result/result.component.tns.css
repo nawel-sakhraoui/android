@@ -112,14 +112,14 @@ button {
     color: #00BFFF ;
     border-bottom-width: 1;
     border-bottom-color:  #00BFFF ;
-  
+   font-size:14;
 }
-
 .sideLabelActive {
     padding: 5;
     color: #FFA500;
     border-bottom-width: 1;
     border-bottom-color:  #FFA500;
+    font-size:14;
 }
 
 .sideLightGrayLabel {
@@ -289,3 +289,15 @@ Label:hover {
 	border-bottom-color:#333333;
 	border-bottom_width:4; 
 }
+Label:pressed {
+
+   background-color:#eeeeee; 
+    
+}  
+GridLayout:pressed {
+   
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+   border-width:2; 
+   border-color: #eeeeee; 
+}    

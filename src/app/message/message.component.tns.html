@@ -1,13 +1,13 @@
 <ScrollView #scroll>
-<GridLayout  rows="auto,auto,*" margin="5,5,5,5" (tap)='hide()'>
+<GridLayout  rows="auto,auto,*,auto" margin="5,5,5,5" (tap)='hide()'>
       		    	<StackLayout  class ='head' row="0" orientation='horizontal'>
   					<Image backgroundColor="#D3D3D3" class="profilePic"   stretch="aspectFill" [src]="avatarTo ? avatarTo : null"></Image>
                      <Label text='{{model.fullname}}'></Label>
                  	
       		    	 </StackLayout>
       		    	 
-      		    	<RadListView  #top row="2" [items]="messages "  		selectionBehavior="LongPress" (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" 
-				loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"    >
+      		    	<RadListView  #top row="2" [items]="messages "  
+				loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"    >
 						<ng-template let-message="item"  >
 						<StackLayout>
 						
@@ -34,7 +34,7 @@
 					   		  
 					   		 	 <Label    text="{{this.model.fullname}}" class="fname"></Label>
 					   		  </StackLayout>
-					  		 <TextView row="1" text=' {{message._source.text}}' class="msgs2" editable="false"></TextView>
+					  		 <Label row="1" text=' {{message._source.text}}' class="msgs2" textWrap=true></Label>
 						 </GridLayout>
 						
 						</GridLayout>
@@ -45,11 +45,15 @@
 						
       		       </RadListView>
       		    	<GridLayout margin="0,0,10,0" row="1" rows="auto,auto">
-      		    	 <StackLayout row='0' orientation="horizontal">
-      		    	 <TextView #View   width='75%' class="msg"  returnKeyType="done"   [(ngModel)]='model.message'></TextView>
-      		    	 <Label  text='Envoyer' class="send" returnKeyType="done" (tap)=" sendMessage()"></Label>
-      		    	 </StackLayout>
-      		    	 <TextView row="1" editable ='false' class="alert" *ngIf='msgAlert' text='taper votre message ! '></TextView>
+      		    	 <GridLayout row='0' columns="*,75"  orientation="horizontal">
+      		    	 <TextField [isEnabled]="!loading1"  #View col="0"  (returnPress)=" sendMessage()" fontSize="14"   class="msg"  returnKeyType="done"   [(ngModel)]='model.message'></TextField>
+      		    	 <Button [isEnabled]="!loading1"  text='Envoyer' col="1" class="send" returnKeyType="done" (tap)=" sendMessage()"></Button>
+      		    	   <ActivityIndicator col="1"  color='#FFA500' rowSpan="2" [busy]="loading1"></ActivityIndicator>
+      		    	 
       		    	 </GridLayout>
+      		    	 <Label row="1" class="alert" *ngIf='msgAlert' text='taper votre message ! ' textWrap='true'></Label>
+      		    	 </GridLayout>
+      		    	          <ActivityIndicator row="3"  color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+      		    	     
       		    	</GridLayout>
       </ScrollView>		    	 

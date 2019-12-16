@@ -8,9 +8,11 @@ import { ColorPicker } from 'nativescript-color-picker';
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
 import { Color } from 'tns-core-modules/color';
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'
+
+    import * as utils from "utils/utils";
  
-
-
 
 @Component({
   selector: 'app-up-article',
@@ -28,8 +30,8 @@ loading0 :boolean ;
   gallery = [];
   color = [];  
     boolsizing =false; 
-   
-  busy : Subscription ; 
+   loading:boolean ; 
+
   display:boolean ;
     Categories = [] ;  
     config = {
@@ -44,7 +46,7 @@ loading0 :boolean ;
 
     
     selectdel= [] ; 
-    delivery = []; 
+    delivery:any = []; 
  
     
  
@@ -81,7 +83,7 @@ loading0 :boolean ;
     editGallery:boolean = false ; tempGallery :any = [] ; tempPic :any = ""  ; 
     editColor:boolean =false ; tempColor:any = [];
     editDelivery: boolean = false ; tempDelivery:any=[] ; 
-    editAvailable :boolean = false ; 
+    editAvailable :boolean = false ; tempsizing:any={};
     editCat :boolean = false ; 
     store :any ; 
     
@@ -147,7 +149,7 @@ loading0 :boolean ;
                            })
      
          console.log(this.articletitle) ; 
-         this.busy = this.storeService.getArticle(this.articletitle )
+       this.storeService.getArticle(this.articletitle )
              .subscribe(
                 data => {
                  console.log(data) ; 
@@ -259,7 +261,7 @@ loading0 :boolean ;
     
     addColor(event) {
         let c = document.getElementById("color")['value'];
-        this.model.color.unshift( c); 
+        this.model.color.push( c); 
         //console.log(v) ; 
         //this.model.color.push (v);
         //console.log(this.color) ;
@@ -300,17 +302,20 @@ loading0 :boolean ;
         this.editTitle = false ; 
             this.model.title =      this.model.tempTitle ;
       }
+    loadingtitle = false ; 
     saveTitle(){
         //save to database ! 
        if (this.model.title !="") {
-        
+         this.loadingtitle = true ; 
          this.storeService.updateArticleTitle(this.storetitle,  this.articletitle, this.model.title )
         .subscribe(
             data => {
+                 this.loadingtitle = false ; 
                       this.editTitle = false 
                      console.log(data ) ; 
                 }
             ,error =>{
+                this.loadingtitle = false ; 
                      console.log(error) ; 
                 
                 }
@@ -336,10 +341,12 @@ loading0 :boolean ;
             this.model.gallery =      this.tempGallery.map(x => x); ;
            this.model.pic = this.tempPic ; 
       }
+    
+    loadinggallery = false ;
     saveGallery(){
         //save to database ! 
      //if (this.model.gallery.length !=0 ) {
-        
+           this.loadinggallery =  true ; 
               this.storeService.postPic(this.articletitle , this.model.gallery[this.mainpic] )
                      .subscribe(
                         data2=>{
@@ -352,14 +359,17 @@ loading0 :boolean ;
                              data3=>{
                                console.log(data3) ;    
                                this.editGallery = false 
+                                  this.loadinggallery = false;  
                               }
                               ,error3=>{
                                  console.log(error3) ; 
+                                   this.loadinggallery =  false ;
                               }
                              );  
                           }
                           ,error2=>{
                              console.log(error2) ;    
+                               this.loadinggallery =  false ; 
                           }
                        );
                   
@@ -380,17 +390,21 @@ loading0 :boolean ;
         this.editPrice = false ; 
             this.model.price =      this.model.tempPrice ;
       }
+    
+    loadingprice = false ; 
     savePrice(){
-        //save to database ! 
+        //save to database 
+        this.loadingprice = true ; 
          this.storeService.updateArticlePrice( this.storetitle, this.articletitle, this.model.price )
         .subscribe(
             data => {
                       this.editPrice = false 
                      console.log(data ) ; 
+                     this.loadingprice = false; 
                 }
             ,error =>{
                      console.log(error) ; 
-                
+                         this.loadingprice = false ; 
                 }
             ) 
       }
@@ -403,16 +417,21 @@ loading0 :boolean ;
         this.editQt = false ; 
             this.model.numbers =      this.model.tempQt ;
       }
+    
+    loadingqt = false ; 
     saveQt(){
         //save to database ! 
+        this.loadingqt = true ; 
          this.storeService.updateArticleNumbers( this.storetitle, this.articletitle, this.model.numbers )
         .subscribe(
             data => {
+                this.loadingqt = false ; 
                       this.editQt = false 
                      console.log(data ) ; 
                 }
             ,error =>{
                      console.log(error) ; 
+                this.loadingqt = false ; 
                 
                 }
             ) 
@@ -420,37 +439,45 @@ loading0 :boolean ;
     
      editingColor (){
         this.editColor= true; 
-        this.model.tempColor =  this.model.color.map(x => x);
-         this.model.tempSizing = this.model.sizing.map(x=>x) ; 
+        this.tempColor =  this.model.color.map(x => x);
+        if(this.boolsize) 
+         
+         this.tempsizing = this.model.sizing;
          
       }
     removingColor(){
-        this.editColor = false ; 
-            this.model.color =      this.model.tempColor ;
-        this.model.sizing = this.model.tempsizing ; 
+            this.editColor = false ; 
+            this.model.color =      this.tempColor.map(x=>x)  ;
+            if(this.boolsize) 
+              this.model.sizing = this.tempsizing;
       }
+    loadingcolor =false ; 
     saveColor(){
+        this.loadingcolor = true ; 
         //save to database ! olor
          this.storeService.updateArticleColor( this.storetitle, this.articletitle, this.model.color )
         .subscribe(
             data => {
+               
                 console.log(data ) ; 
                 this.storeService.updateArticleSizing(this.storetitle, this.articletitle, this.model.sizing)
                 .subscribe(
                     data3=> {
+                         this.loadingcolor = false ;  
                             console.log(data3) ; 
                             this.editColor= false 
                           this.size =new Set([].concat.apply([], Object.values(this.model.sizing ))); 
 
                     }
                     ,error3=>{
+                         this.loadingcolor = false ; 
                          console.log(error3) ; 
                         
                     }) ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                
+                 this.loadingcolor = false ;  
                 }
             )
       }
@@ -464,19 +491,23 @@ loading0 :boolean ;
         this.editDelivery = false ; 
             this.model.delivery = this.model.tempDelivery.map(x => x);;
       }
+    
+    loadingdelivery = false ; 
     saveDelivery(){
         //save to database ! 
       console.log(this.model.delivery ) ; 
       if (this.model.delivery.length !=0 ) {
+          this.loadingdelivery = true ; 
          this.storeService.updateArticleDelivery( this.storetitle, this.articletitle, this.model.delivery )
         .subscribe(
             data => {
                       this.editDelivery = false 
                      console.log(data ) ; 
+                 this.loadingdelivery = false ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                
+                 this.loadingdelivery = false ; 
                 }
             )
             }else {
@@ -493,17 +524,20 @@ loading0 :boolean ;
         this.editDesc = false ; 
             this.model.description =      this.model.tempDesc;
       }
+    loadingdesc = false  ;
     saveDesc(){
+        this.loadingdesc = true  ;
         //save to database ! 
          this.storeService.updateArticleDescription( this.storetitle, this.articletitle, this.model.description )
         .subscribe(
             data => {
+                  this.loadingdesc = false ; 
                       this.editDesc = false 
                      console.log(data ) ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                
+                      this.loadingdesc = false ;  
                 }
             )
       }
@@ -516,17 +550,20 @@ loading0 :boolean ;
         this.editAvailable = false ; 
             this.model.available =      this.model.tempAvailable;
       }
+    loadingavailable = false ; 
     saveAvailable(){
         //save to database ! 
+        this.loadingavailable = true ; 
          this.storeService.updateArticleAvailable(this.storetitle,  this.articletitle, this.model.available )
         .subscribe(
             data => {
+                this.loadingavailable = false ; 
                       this.editAvailable = false 
                      console.log(data ) ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                
+                this.loadingavailable = false ;   
                 }
             )
       }
@@ -540,18 +577,23 @@ loading0 :boolean ;
         this.editCat = false ; 
             this.model['selectedCat'] =  this.model['tempSelectedCat'].map(x => x)   ;
     }
-    selectedIndex1 = 1 ; 
+    selectedIndex1 = 1 ;
+    
+    loadingcat = false ; 
     saveCat(){
+        
         //save to database ! 
         if ( this.model['selectedCat'].length !=0 ) {
+            this.loadingcat = true ; 
         this.storeService.updateArticleCategories( this.storetitle, this.articletitle, this.model['selectedCat'] )
         .subscribe(
             data => {
                     this.editCat = false  
                      console.log(data ) ; 
-                }
+                this.loadingcat= false ;     
+            }
             ,error =>{   
-                 
+                this.loadingcat= false ;   
                      console.log(error) ; 
                 
                 }
@@ -579,6 +621,7 @@ loading0 :boolean ;
                     this.delivery = [] ; 
                     for (let x of data['hits']['hits'] ) {
                        // console.log(x['_source'])  ;
+                        if(!( x._source in this.delivery ))
                        this.delivery.push(x._source );
                         }
                    // console.log(this.delivery ) ; 
@@ -709,8 +752,8 @@ loading0 :boolean ;
               }
     }
     
-    addSize(event, color , c) {
-        console.log(event ) ; 
+    addSize(color , c) {
+      
         
         if(!this.model.sizing[color].includes(c) ) 
             this.model.sizing[color].push(c) ;  
@@ -740,7 +783,35 @@ loading0 :boolean ;
         
     }
     
+   ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
    
-    
+} 
+    ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+}
+ 
+    hide(){
+                     utils.ad.dismissSoftInput() ; 
 
+   }
+
+    
 }

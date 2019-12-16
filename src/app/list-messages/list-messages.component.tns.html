@@ -1,7 +1,7 @@
 <ScrollLayout >		
-<GridLayout rows='auto,auto'>   
+<GridLayout rows='auto,auto,auto'>   
 
-<Label class="alert" *ngIf='!listmessage' text="Pas de messages privés"> </Label>
+<Label class="alert" *ngIf='!listmessage && !loading' text="Pas de messages privés"> </Label>
 
 <RadListView row="1"  class="list-group" [items]="model" 
   				selectionBehavior="LongPress" (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" 
@@ -9,8 +9,8 @@
 				
 				>
     <ng-template let-m="item"  >
-       
-    	<GridLayout columns="auto,*" rows="*, auto" (tap)= "goToMessage(me,  m.to, m.tofullname, m._source.last.avatar, m._source.unread)"> >
+      
+    	<GridLayout (touch)="ontouch2($event)" columns="auto,*" rows="*, auto"   (tap)= "goToMessage(me,  m.to, m.tofullname, m._source.last.avatar, m._source.unread)" > 
     
 
     	<Image backgroundColor='rgba(0,0,0, 0.3)'  col="0" class="site-template-image thumb-with-background" stretch="aspectFill" [src]="m && m._source.last.avatar ? m._source.last.avatar : null"></Image>
@@ -27,8 +27,9 @@
 			 
 		</GridLayout>
 		
-		
      </ng-template>
 </RadListView>
+      <ActivityIndicator row="2" *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+
 </GridLayout>
 </ScrollLayout>      

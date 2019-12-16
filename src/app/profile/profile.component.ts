@@ -19,7 +19,11 @@ import * as imagepicker from "nativescript-imagepicker";
 
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
  
-
+import * as util from "utils/utils";
+  
+//                util.ad.dismissSoftInput() ; 
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
@@ -79,6 +83,7 @@ export class ProfileComponent implements OnInit {
 
     
   ngOnInit() {
+      this.loading = true ;  
         
        console.log('profile') ; 
         let sub = this.route.params.subscribe(params => {
@@ -120,7 +125,7 @@ export class ProfileComponent implements OnInit {
             this.permissionsService.removePermission('writeProfile');
              }
       
-         this.loading = true ; 
+         
          this.usersdetailsService.getUserAccount(this.userid)
          .subscribe (
               data=>
@@ -458,11 +463,13 @@ this.newAddress = true ;
     
       public onSelectTap() {
        // this.isSingleMode = false;
-
+  
         let context = imagepicker.create({
             mode: "single"
         });
         this.startSelection(context);
+       util.ad.dismissSoftInput() ; 
+
     }
 
 
@@ -489,11 +496,14 @@ private startSelection(context) {
                  this.avatar  =  "data:image/"+extension+";base64,"+img.toBase64String(extension );
               //  console.log(this.banner) ; 
                         this.isValid = false ; 
+                       util.ad.dismissSoftInput() ; 
+
 
             }else 
                 this.alertimg = true ; 
-                
-           
+                       util.ad.dismissSoftInput() ; 
+
+
             
         }).catch(function (e) {
             console.log(e);
@@ -507,4 +517,30 @@ private startSelection(context) {
             
 
        } 
+    
+    ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+    
+       ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+}
 }

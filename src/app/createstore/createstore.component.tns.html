@@ -5,22 +5,23 @@
 
      <Label row="1" text='Titre' class="label"></Label>
      <GridLayout row ="2" rows="auto, auto, auto , auto,auto">
-      <TextField maxLength="50" row="0" hint="" class='input'  [(ngModel)]="model.title"></TextField>
-	 <TextView editable="false" row="1" text ="Le titre du magasin est obligatoire" *ngIf="send && model.title.length==0" class="alert"></TextView>            
-	 <TextView   editable="false" row="2" text ="Le titre doit contenir au moins 5 caractères" *ngIf="send && model.title.length< 5" class="alert"></TextView>            
-   	 <TextView  editable="false" row="3" text ="Ce titre est trop long" *ngIf="send && model.title.length>50 " class="alert"></TextView>            
-   	<TextView   editable="false" row="4" text ="Ce titre existe déjà choisissez un autre" *ngIf="send && exist" class="alert"></TextView>            
+      <TextField   returnKeyType="done"  maxLength="50" row="0" hint="" class='input'  [(ngModel)]="model.title"  [isEnabled]="!loading" ></TextField>
+	 <Label editable="false" row="1" text ="Le titre du magasin est obligatoire" *ngIf="send && model.title.length==0" class="alert"></Label>            
+	 <Label   editable="false" row="2" text ="Le titre doit contenir au moins 5 caractères" *ngIf='send && model.title.length< 5' class="alert"></Label>            
+   	 <Label  editable="false" row="3" text ="Ce titre est trop long" *ngIf="send && model.title.length>50 " class="alert"></Label>            
+   	<Label   editable="false" row="4" text ="Ce titre existe déjà choisissez un autre" *ngIf="send && exist" class="alert"></Label>            
 	</GridLayout>
 
       <Label row="3"  text='Catégories' class="label" ></Label>
         <GridLayout  margin="0,0,10,0"  row='4' rows="auto,auto ">
-        <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+        <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
         <DropDown  #dd
-                  itemsTextAlignment="center"
+                  itemsTextAlignment="left"
               	 [items]="Categories"
                   [(ngModel)]="selectedIndex1"
                   (selectedIndexChanged)="onchange($event)"  
-                  colSpan="2"
+                  colSpan="0"
+                  itemsPadding="5"
                   row="0">
         </DropDown>
         <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
@@ -31,26 +32,27 @@
        <RadListView  row='0'  [items]="model.selectedCat " >
   		  <ng-template let-c="item" let-i="index" >
   		  <GridLayout columns ='auto,auto'>
-                    <Label col="0" text='{{c}}' color="#000"></Label>
-                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeCat(i) '></Label>   
+                    <Label col="0" text='{{c}}' color="#000" class="border"></Label>
+                    <Label col="1" text="&#xf057;"  (tap)='removeCat(i) ' class="fas border"></Label>   
    		  </GridLayout>
    		  </ng-template>
       </RadListView>
-      	 <TextView  editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="send && model.selectedCat.length==0 " class="alert"></TextView>            
+      	 <Label editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="send && model.selectedCat.length==0 " class="alert"></Label>            
       
 	  </GridLayout>
 
         <Label row="6" text='Couverture Géographique' class="label" ></Label>
       
           <GridLayout margin="0,0,10,0" row='7' rows="auto,auto ">
-        <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+        <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
         
         <DropDown  #dd
                   [items]="cities"
                   
                   [(ngModel)]="selectedIndex2"
                   (selectedIndexChanged)="onchange1($event)"
-                  colSpan="2"
+                  colSpan="0"
+					itemsPadding="5"
                   row='0'>
         </DropDown>
 		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
@@ -61,18 +63,18 @@
         <RadListView row='0' [items]="model.geo">
             <ng-template let-c="item" let-i="index" let-odd="odd" let-even="even">
               <GridLayout columns ='auto,auto'>
-                    <Label col="0" text='{{c}}' color="#000"></Label>
-                    <Label col="1" text="&#xf057;" class="fas " (tap)="removeGeo(i)"></Label>   
+                    <Label col="0" text='{{c}}' color="#000" class="border "></Label>
+                    <Label col="1" text="&#xf057;"  (tap)="removeGeo(i)" class="border fas" ></Label>   
    		  		</GridLayout>
             </ng-template>
         </RadListView>
-        <TextView  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="send && model.geo.length ==0 " class="alert"></TextView>            
+        <Label  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="send && model.geo.length ==0 " class="alert"></Label>          
        </GridLayout>
  	 
  	  <Label row='9' text="Description" class="label"></Label>
  	  <GridLayout row='10'  rows="auto,auto,auto">
-      <TextView row='0' hint="" class="input" [(ngModel)]="model.description"    returnKeyType="done" 
-        returnPress="onReturnPress"
+      <TextView  [isEnabled]="!loading"  row='0' hint="" class="input" [(ngModel)]="model.description"    returnKeyType="done" 
+        returnPress="newstore()"
   
         maxLength="300"></TextView>
       <TextView  editable="false" row="1" text ="Ajoutez une description à votre magasin" *ngIf="send && model.description.length ==0 " class="alert"></TextView>            
@@ -82,10 +84,10 @@
     
       <GridLayout row='11' columns ='*,auto,auto, auto'>
       
-         <Button  col="1" class="send " text="Envoyer" (tap)=" newstore()"></Button>
+         <Button [isEnabled]="!loading"  col="1" class="send " text="Envoyer" (tap)=" newstore()"></Button>
          <ActivityIndicator *ngIf="loading"  col="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
       
-         <Label class="undo  " col="3"  text="Annuler"  [nsRouterLink]="['/myhome']"  ></Label>
+         <Label (touch)='ontouch($event)' [isEnabled]="!loading"  class="undo  " col="3"  text="Annuler"  [nsRouterLink]="['/myhome']"  ></Label>
       </GridLayout>
       
     </GridLayout>

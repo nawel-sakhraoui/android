@@ -1,22 +1,22 @@
 
 <ScrollView>
 <RadSideDrawer tkExampleTitle tkToggleNavButton>
-    <GridLayout tkDrawerContent rows="auto,40,auto,auto, auto, auto,auto,auto,auto,auto*"  class=" sideStackLayout">
+    <GridLayout tkDrawerContent rows="auto,40,auto,auto, auto, auto,auto,auto,auto,auto*"  class=" sideStackLayout" (tap)="hide()">
         <StackLayout row='0' class="sideTitleStackLayout">
-            <Label text="Ventes en cours &#xf104;" class='fas storetitle' (tap)="onCloseDrawerTap()"></Label>
+            <Label (touch)='ontouch($event)' text="Ventes en cours &#xf104;" class='fas storetitle' (tap)="onCloseDrawerTap()"></Label>
         </StackLayout>
         <GridLayout row="1" columns="*,auto" orientation="horizontal">
    		<textField col='0' hint="Recherche Commande Id" class='search' [(ngModel)]="query" ></textField>
            <Button col="1" text="&#xf002;" class="fas searchbutton "  (tap)="getQuery2($event)"></Button>
         </GridLayout>
-        <Label   nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='2' text='Ajouter Nouveau Article' [nsRouterLink]="['../newarticle']"  ></Label>
-         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='3' text='Détails'  [nsRouterLink]="['../details']"  ></Label>
-     	 <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='4'text='Articles épuisés'  [nsRouterLink]="['../soldout']" ></Label>
-         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='5' text='Paramètres'  [nsRouterLink]="['../update']"></Label>
-         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='6' text='Ventes en cours' [nsRouterLink]="['../sales']" ></Label>
-         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='7' text='Historique des ventes'  [nsRouterLink]="['../historic']"  ></Label>
-         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
-         <Label  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
+        <Label   (touch)='ontouch($event)'  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='2' text='Ajouter Nouveau Article' [nsRouterLink]="['../newarticle']"  ></Label>
+         <Label  (touch)='ontouch($event)'  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='3' text='Détails'  [nsRouterLink]="['../details']"  ></Label>
+     	 <Label  (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='4'text='Articles épuisés'  [nsRouterLink]="['../soldout']" ></Label>
+         <Label  (touch)='ontouch($event)'  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='5' text='Paramètres'  [nsRouterLink]="['../update']"></Label>
+         <Label  (touch)='ontouch($event)'  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='6' text='Ventes en cours' [nsRouterLink]="['../sales']" ></Label>
+         <Label  (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='7' text='Historique des ventes'  [nsRouterLink]="['../historic']"  ></Label>
+         <Label  (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
+         <Label  (touch)='ontouch($event)'  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
     
     </GridLayout>
     
@@ -27,18 +27,18 @@
 
 
  
-    <GridLayout row="0" columns="40,*,50" >
+    <GridLayout row="0" columns="40,auto" >
         <Button col='0' class="fas bars btn btn-active" text='&#xf0c9;' (tap)="openDrawer()"></Button>
-  		<Label col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+  		<Label  (touch)='ontouch($event)' textWrap='true'  col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
     
-       <Button id="notifications"  col="2" text="&#xf0f3; &#xf0d7;" 
+       <!-- Button id="notifications"  col="2" text="&#xf0f3; &#xf0d7;" 
             class="bell fas"></Button> 
-        <Label id="globeItemNavigation" row="0" col="2" text="3" class="globe"></Label> 
+        <Label id="globeItemNavigation" row="0" col="2" text="3" class="globe"></Label--> 
     </GridLayout>
     <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 
   
-<GridLayout row="2" rows='auto,auto,*'>
+<GridLayout row="2" rows='auto,auto,auto,auto'>
 <GridLayout row="0" columns='*'>
 <Label col="0" margin='10,0,0,5'  >
         <FormattedString>
@@ -54,23 +54,22 @@
 <StackLayout row="1"  margin="5,0,0,0"  colSpan="2" backgroundColor="#D3D3D3" height="3"></StackLayout>
 
 
-<RadListView  row="2" [items]="model" selectionBehavior="LongPress"  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
-         (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)">
+<RadListView  row="2" [items]="model"  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
           <ng-template let-m="item" let-i="index"  >
             <StackLayout orientation='vertical'>
 				 <GridLayout  margin="0,15,0,15" rows="auto,auto,auto,auto,auto,*,*,auto,*,auto,*,auto,*,*">
-				      <Label row='0' [nsRouterLink]="['../commands',m._id]"  >
-				      		  <FormattedString>
-            					<Span text="Commande id:  "  ></Span>
-         					    <Span text="{{m._id}}" class="fas" color='#FFA500'  (tap)="gotoPurchase(m._id)"  ></Span>
-       						</FormattedString>
+				      <StackLayout orientation="horizontal" row='0' >
+				      		 
+            					<Label text="Commande id:  "  ></Label>
+         					    <Label  text="{{m._id}}" class="fas link0"   nsRouterLink="./../commands/{{m._id}}"  (touch)="ontouch($event)" (longPress)="selectText($event)" ></Label>
+       						
 				      	
-				      </Label>
+				      </StackLayout>
 					   <StackLayout row="1" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
 					  
 					  <GridLayout    row='2'  columns='*,auto'>
 					  		<Label col='0'  text="Montant total:  "  ></Label>
-         					<Label col="1"  text="{{ m._source.totalprice}} DA" class="fas" color='#000'  (tap)="gotoPurchase(m._id)"  ></Label>
+         					<Label col="1"  text="{{ m._source.totalprice}} DA" class="fas" color='#000'   ></Label>
        					
 					  
 					  </GridLayout> 
@@ -81,7 +80,7 @@
             					<Label margin="20,10,0,0" text="De: "  ></Label>
             					 <Image [src]="avatarlist[m._source.userid]" class="resize" stretch="aspectFill" ></Image>
             					
-         					    <Label margin="20,0,0,10" vertical-align='center'  text="{{fullnamelist[m._source.userid]}} " class="fas" color='#FFA500' (tap) ='gotoUser(m._source.userid)'  ></Label>
+         					    <Label textWrap='true' margin="20,0,0,10" vertical-align='center'  text="{{fullnamelist[m._source.userid]}} " class="fas link0" (touch)="ontouch($event)" (longPress)="selectText($event)" (tap) ='gotoUser(m._source.userid)'  ></Label>
 		  
 					  </StackLayout>
 					  
@@ -96,13 +95,14 @@
 							    <GridLayout col="1" rows="auto,*" >
 							    
 							    	
-							    	<TextView editable="false" row="0"  class="titlea" text="{{a.title}}"  (tap)="gotoArticle(a.articleid, m._source.storetitle)">
- 					    			</TextView>
+							    	<Label textWrap='true' row="0"  (longPress)="selectText($event)"  class="titlea fas" text="{{a.title}}" (touch)='ontouch($event)' (tap)="gotoArticle(a.articleid, m._source.storetitle)">
+ 					    			</Label>
 							    	<GridLayout row="1" rows="*,*,*,*" columns='*,auto'>
-							    	<Label row='0' col="0"  text="Couleur: "></Label>
-							    	<Label row="0" col="1" width="20" height="20" [backgroundColor]='a.color'></Label>
-							        <Label row="1" col="0" text='Taille: '></Label>
-							        <Label row='1' col="1" class='size' text='{{a.taille}}' > </Label>
+							    	<Label *ngIf='a.hasOwnProperty("color")'  row='0' col="0"  text="Couleur: "></Label>
+							    	<Label *ngIf='a.hasOwnProperty("color")'  row="0" col="1" class="color" [backgroundColor]='a.color'></Label>
+							        <Label *ngIf='a.hasOwnProperty("size")' row="1" col="0" text='Taille: '></Label>
+							        <Label *ngIf='a.hasOwnProperty("size")'  row='1' col="1" class='size' text='{{a.size}}' > </Label>
+							      
 							        <Label row='2' col="0" text="Quantité: "></Label>
 							        <Label row='2' col="1" color="#000" text='{{a.quantity}} UNIT'></Label>
 							        <Label row='3' col="0" text="Prix: "></Label>
@@ -184,15 +184,19 @@
       		    			
       		    			    <StackLayout orientation="horizontal">
       		    			   		 <Label class="ongoingli"  *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0" text='Commande prête'></Label>
-      		    			   		  <Button *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0"  height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas"  (tap)= 'prepareDone(m._id, i, m._source.userid); '>
+      		    			   		  <Button  [isEnabled]="!m._source.steps.prepareloading"  *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0"  height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas"  (tap)= 'prepareDone(m._id, i, m._source.userid); '>
    									 </Button>
+   									  <ActivityIndicator   *ngIf="m._source.steps.prepareloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.prepareloading"></ActivityIndicator>
+   									 
       		    				</StackLayout>
  	  	 					<Label class="ongoingli"  *ngIf=' m._source.steps.prepare!=0 && m._source.steps.stop==0'  text='Commande préparée le: {{m._source.steps.prepare}}'></Label>
  	  	 				   
  	  	 				   
  	  					   <StackLayout orientation="horizontal">
  	  	 				    <Label class="ongoingli"    *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' text='Commande envoyée'></Label>
- 	  	  				    <Button *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' (tap)="sendDone(m._id, i, m._source.userid);" height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas">  </Button>
+ 	  	  				    <Button  [isEnabled]="!m._source.steps.sendloading" *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' (tap)="sendDone(m._id, i, m._source.userid);" height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas">  </Button>
+ 	  	 					<ActivityIndicator   *ngIf="m._source.steps.sendloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.sendloading"></ActivityIndicator>
+ 	  	 					
  	  	 					</StackLayout>
  	  			
  	  				 
@@ -223,54 +227,63 @@
       		    		
       		   		</GridLayout>
       		    	<StackLayout row="13">
-      		    	<GridLayout  rows="auto,*,40" margin="5,0,5,0">
+      		    	<GridLayout  rows="auto,*,auto,auto" margin="5,0,5,0">
       		    	<StackLayout row="0" orientation='horizontal'>
       		    	 <Label  text="&#xf075; Messages " class='msgtitle fas ' width="90%"></Label>
-      		    	 <Label text ='&#xf107;' class="msgtitle fas"  (tap)="isopen['message'+m._id]= !isopen['message'+m._id]" ></Label>
+      		    	 <Label (touch)='ontouch3($event)'  text ='&#xf107;' class="msgtitle fas"  (tap)="openMsgs(i,m._id)" ></Label>
       		    	 </StackLayout>
-      		    	<RadListView  row="1" [items]="m._source.messages "    [visibility]="isopen['message'+m._id] ? 'visible' : 'collapsed'" >
+      		   	
+      		    	<RadListView id={{m._id}}  height='200' row="1" [items]="m._source.messages "    [visibility]="isopen['message'+m._id] ? 'visible' : 'collapsed'" >
 						<ng-template let-message="item"  >
-						<StackLayout>
+					<StackLayout>
 						
 						<GridLayout columns="auto,*" [visibility]="message.fromMe? 'visible' : 'collapsed'" >
 						
-						<Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+						<!-- Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					    -->
 					    <GridLayout col="1" rows='auto,auto'  >
 					   		 <StackLayout  row="0" orientation=horizontal>
-					   		 	<Label width="60%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	<Label width="80%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
 					   		 	<Label class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
 					   		  </StackLayout>
-					  		 <textView row="1" text='{{message.text}}' editable="false" class="msgs1"></textView>
+					  		 <textView  margin="0,25,5,25" row="1" text='{{message.text}}' editable="false" class="msgs1"></textView>
 						 </GridLayout> 
 						</GridLayout>
 						
 						<GridLayout  columns="*,auto" [visibility]="!message.fromMe? 'visible' : 'collapsed'" >
-								<Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+								<!-- Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
+					       -->
 					       <GridLayout col="0" rows="auto,auto" >
 					   		 <StackLayout row="0" orientation=horizontal horizontalAlignment="right"  >
-					   		     <Label width="60%"  class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
+					   		     <Label width="50%"  class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
 					   		  
-					   		 	 <Label width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	 <Label width="50%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
 					   		  </StackLayout>
-					  		 <TextView  row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
+					  		 <TextView margin="0,25,5,25"  row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
 						 </GridLayout>
 						
 						</GridLayout>
 						</StackLayout>
 						</ng-template>
 						
+						     	  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 						
 						
       		       </RadListView>
-      		    	
+      		       
       		    	 <StackLayout  row="2" orientation="horizontal">
-      		    	 <textView  width='80%' class="msg"  returnKeyType="done" text="{{m._source.message}}" [(ngModel)]="m._source.message" ></textView>
-      		    	 <Label  text='Envoyer' class="send" returnKeyType="done" (tap)=" sendMessage(i, m._id, m._source.storetitle)"></Label>
+      		    	 <textView [isEnabled]="!loadingM[m._id]"   width='80%' class="msg"  returnKeyType="done" text="{{m._source.message}}" [(ngModel)]="m._source.message" ></textView>
+      		    	 <Label [isEnabled]="!loadingM[m._id]"  (touch)='ontouch3($event)'text='Envoyer' class="send"  (tap)=" sendMessage(i, m._id, m._source.userid)"></Label>
       		    	 </StackLayout>
       		    	</GridLayout>
       		    	 
       		    	 
       		    	</StackLayout>
+      		    	 <StackLayout row="2" horizontalAlligment="left">
+      		    	       		  <ActivityIndicator  color='#FFA500' rowSpan="2" [busy]="loadingM[m._id]" ></ActivityIndicator>
+      		    	  </StackLayout>
+      		    	<textView row='3' editable ='false' class="alert" text='taper votre message !' *ngIf='alertM[m._id]'></textView>
+      		    
       		    	
       		    </GridLayout>
       		     <StackLayout  margin="10,0,10,0"  colSpan="0" backgroundColor="#D0D0D0" height="6"></StackLayout>
@@ -280,7 +293,9 @@
      	  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 
 </RadListView>  
-
+   	<StackLayout row="3">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+   	</StackLayout>
 
 </GridLayout>
 </GridLayout>

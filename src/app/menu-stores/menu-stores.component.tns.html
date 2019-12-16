@@ -1,24 +1,31 @@
 <ScrollView >
 
 
-<GridLayout rows="auto, auto, auto,auto" >	
-<StackLayout row="0" margin ='5,10,0,10' colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+<GridLayout rows="auto, auto, *, auto,auto" >	
+
+ <ActivityIndicator row='0' color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+
+<StackLayout *ngIf='!loading'  row="1" margin ='5,10,0,10' colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 
 	   
-<RadListView margin="0,10,0,10" row ="1" [items]="stores" >
-    <ng-template let-k="item" >
-        <GridLayout  rows="*" columns='40, *'   class="border ">
+<RadListView margin="0,10,0,10" row ="2" [items]="stores" >
+    <ng-template let-k="item"  >
+        <GridLayout>
+     
+        <GridLayout (touch)='ontouch2($event)'   rows="*" columns='40, *'   class="border" nsRouterLink="/stores/{{k}}"  >
             <Label col="0" row="0" text='&#xf54f;' class="fass icon "></Label>
-            <Label col="1" row="0" class="store" text=" {{k}}" [nsRouterLink] ="['/stores',k, 'store']" ></Label>                     
+            <Label textWrap='true' col="1" row="0" class="store" text=" {{k}}" ></Label>                     
+        </GridLayout>
+        
         </GridLayout>       
     </ng-template>
 </RadListView>
- <GridLayout  margin='0,10,0,10' row="2" columns='40, *'   class="border ">
+
+ <GridLayout  [nsRouterLink] ="['/home',myhome, 'createstore']"  (touch)='ontouch2($event)' margin='0,10,0,10' row="3" columns='40, *'   class="border">
             <Label col="0"  text='&#xf0fe;' class="fass icon "></Label>
-            <Label  col="1"   class=" store " text='Créer un magasin' [nsRouterLink] ="['/home',myhome, 'createstore']"   ></Label>
+            <Label textWrap='true'  col="1"   class=" store " text='Créer un magasin'    ></Label>
    </GridLayout> 
 
-
-
 </GridLayout>
+
 </ScrollView>      

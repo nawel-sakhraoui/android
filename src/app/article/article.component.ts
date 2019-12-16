@@ -11,6 +11,8 @@ import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';
  
 import { ModalDialogService } from "nativescript-angular/directives/dialogs";
 import {ModalComponent} from './modal.component'; 
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
 
 //import * as prettyMs from 'pretty-ms';
 
@@ -313,7 +315,7 @@ export class ArticleComponent implements OnInit {
               this.row2 = false ; 
                this.row = true ; 
         }
-  
+  loadingcart  = false ; 
     addToCart(){
       /*  this.articleCart  = {"articleid":this.articletitle,
                                         // "storeid": this.model.storetitle, 
@@ -324,14 +326,16 @@ export class ArticleComponent implements OnInit {
                           rewards              //"available": true
                                          }; 
            console.log(this.articleCart) ; */
-      
+       
         this.cartService.getCountCart ()
           .subscribe( 
                data0 => {
+                   this.loadingcart = true ; 
                    console.log(data0) ; 
                if ( data0['cartcount']>=this.maxcart ){
                         //the cart is full
                    this.fullcartwarning = true ;  
+                    this.loadingcart = false ; 
                    this.showModal();
                }else{
                     this.fullcartwarning = false ;  
@@ -339,18 +343,23 @@ export class ArticleComponent implements OnInit {
                 this.cartService.postToCart ( this.articletitle)
                 .subscribe(
                     data => {
+                        this.loadingcart = false ; 
+
                         console.log(data) ;
                       
                 
                   }, 
                     error =>{
+                        this.loadingcart = false ; 
+
                         console.log(error) ;     
                     }) ;
                    
                }
       
            }, error0=> {
-              
+                 this.loadingcart = false ; 
+
               console.log(error0 ) ; 
          }) ; 
         
@@ -369,7 +378,7 @@ export class ArticleComponent implements OnInit {
                           'title':article._source.title, 
                           'quantity':article.choosequantity, 
                           'color': article.choosecolor, 
-                           'size': article.choosesize 
+                           'size': this.choosesize 
                 }
             
             buynow['articles']=[A];
@@ -449,7 +458,7 @@ export class ArticleComponent implements OnInit {
      }     
     getAddress(event ) {
         this.model.delivery = this.model.tempdelivery.filter(n=>n) ;  ; 
-        
+     
         console.log(event) ;
        
       // if(event) 
@@ -477,16 +486,24 @@ export class ArticleComponent implements OnInit {
                 break ; 
             }
         this.model.delivery = ad ; 
+        
+        if (this.model.delivery.length!=0 ) {
+            this.selectedIndex=0;
+            this.choosedelivery = [this.model.delivery[0]] ;
+        }else 
+            this.choosedelivery=[];
+        
+        
         //if( this.model.delivery.length >0 )
          //      this.choosedelivery = [this.model.delivery[0]]  ;
         //else  
-                this.choosedelivery = [] ; 
+            //    this.choosedelivery = [] ; 
        
-          this.delTitle = this.model.delivery.reduce((result, filter) => {
+        this.delTitle = this.model.delivery.reduce((result, filter) => {
                          result =result.concat([filter.title]) ;
                         return result;
                         },[]);
-        console.log(this.model.delivery ) ; 
+     //  console.log(this.model.delivery ) ; 
    }
     checkSizing(s) { 
         if ( this.model.sizing[this.choosecolor].includes(s) ) {
@@ -513,12 +530,13 @@ export class ArticleComponent implements OnInit {
     
       public onchange(event: SelectedIndexChangedEventData){
        //console.log(event) ;
-        this.choosedelivery= [this.model.delivery[event.newIndex]] ;  
+        
+         this.choosedelivery= [this.model.delivery[event.newIndex]] ;  
                 console.log( this.choosedelivery) ; 
           
           if (this.choosedelivery.length!=0 ) 
                       this.total = (this.model.price *this.quantity )   +this.choosedelivery[0]['price']; 
-                    else 
+                   else 
                        this.total = (this.model.price *this.quantity );
 
        } 
@@ -559,6 +577,17 @@ export class ArticleComponent implements OnInit {
     enable (){
         return !this.model.available|| this.model['delivery'].length==0 || this.choosedelivery.length==0 ||(this.choosesize=='' &&  this.boolsize)
         }
+    
+     ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
     }
 
-
+}

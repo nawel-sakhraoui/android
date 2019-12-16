@@ -2,11 +2,22 @@
 import { Component, OnInit, AfterViewInit,ViewContainerRef , ViewChild, ElementRef} from '@angular/core';
 import { FirebaseService, OngoingService, UserdetailsService, MessagesService  , StoreService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd  } from '@angular/router';
-    import {Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import * as prettyMs from 'pretty-ms';
- import { ModalDialogService } from "nativescript-angular/directives/dialogs";
+import { ModalDialogService } from "nativescript-angular/directives/dialogs";
 import {StopModal2Component} from './stop-modal2.component'; 
 import {RatingModal2Component} from './rating-modal2.component'; 
+import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
+import * as utils from "utils/utils";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+
+import * as  clipboard from "nativescript-clipboard" ;
+ 
+import { Frame, topmost } from "tns-core-modules/ui/frame"; 
+import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview"; 
+import { ScrollView} from 'tns-core-modules/ui/scroll-view';
+import { Page } from "ui/page"; 
 
 @Component({
   selector: 'app-purchase-command',
@@ -14,40 +25,39 @@ import {RatingModal2Component} from './rating-modal2.component';
   styleUrls: ['./purchase-command.component.css']
 })
 export class  PurchaseCommandComponent implements OnInit {
-         @ViewChild("msgs", { static: true } ) msgsView: ElementRef; 
-
-        @ViewChild("scrollView", { static: true }) scrollView :ElementRef;
-       @ViewChild("message", { static: true } ) messageView: ElementRef; 
-        @ViewChild("top", { static: true } ) topView: ElementRef ;
-        @ViewChild("rating", { static: true } ) ratingView: ElementRef ;
+     
     query :string=""; 
     alert :boolean;
     alertA= {};
     alert2:boolean; 
     alertM=false ; 
     commandid :string ; 
-    model :any = {};
+    model :any = {"steps":{"stop":""}, 'articles':[]};
     userrating =0;
-    articlesrating ={};
+    articlesrating :any={};
     feedback:any ;
-    feedbackA={}; 
-    avatarlist = {};
-    fullnamelist = {}; 
+    feedbackA:any={}; 
+    avatarlist:any = {};
+    fullnamelist:any = {}; 
     sales :boolean ; 
     ongoing :boolean =false  ; 
     isopen =false ;
     fragment :string ="";
-    busy : Subscription;  
+   // busy : Subscription;  
     nosale= false ; 
     message :any ; 
+    textmessage =""
     me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
     fullname ="" ; 
-    delivery = {}; 
-    steps = {};
-    choosenAddress = {} ; 
-    marticlesrating = {}; 
-    articles =[] ; 
-  constructor(private ongoingService:OngoingService, 
+    delivery:any = {}; 
+    steps:any = {};
+    choosenAddress:any = {} ; 
+    marticlesrating:any = {}; 
+    articles:any =[] ; 
+    loading:boolean =true ; 
+    first =true ; 
+    loadingM= false  ; 
+    constructor(private ongoingService:OngoingService, 
               private router :Router, 
               private route : ActivatedRoute, 
               private userdetailsService : UserdetailsService,
@@ -55,8 +65,10 @@ export class  PurchaseCommandComponent implements OnInit {
               private storeService : StoreService,
                private vcRef: ViewContainerRef, 
               private modal: ModalDialogService, 
-              private firebaseService: FirebaseService ) {
-      
+              private firebaseService: FirebaseService , 
+              private Page :Page) {
+  
+  
      this.router.events.subscribe(s => {
        //console.log(s) ; 
       if (s instanceof NavigationEnd) {
@@ -67,65 +79,64 @@ export class  PurchaseCommandComponent implements OnInit {
           
        
       }
-   });    
+   });  
   
   }
 
     
     
     ngOnInit() {
-   
-      console.log('commandid') ; 
-        console.log(this.fragment)  ; 
-        let sub = this.route.params.subscribe(params => {
+        this.ongoing = false ; 
+        this.loading = true ; 
+       
+        this.route.params.subscribe(params => {
       
         this.commandid = params['commandid'];
     
-      this.router.events.subscribe(s => {
-      if (s instanceof NavigationEnd) {
+        this.router.events.subscribe(s => {
+         if (s instanceof NavigationEnd) {
        
           console.log(s) ; 
-        let tree = this.router.parseUrl(this.router.url);
+          let tree = this.router.parseUrl(this.router.url);
           console.log(tree) ; 
           this.fragment = tree.fragment ; 
-      
-   
-       
-      }
-             });
-        this.userdetailsService.getFullname(this.me)
-              .subscribe(
+          }
+         });
+         
+         this.userdetailsService.getFullname(this.me)
+         .subscribe(
                 data=>{
                 //   console.log(data) ; 
                     this.fullname = data['fullname']; 
-                }
-                  
-                  ,error=>{}
-                  
-                  )   
+                },error=>{} )   
 
-       this.ongoingService.getOngoingById(this.commandid)
-        .subscribe(
+         this.ongoingService.getOngoingById(this.commandid)
+         .subscribe(
                     _source =>{
                         this.model = _source ; 
+                        //console.log("aaaaaaaaaaaaaaaaaaaaaaa") ; 
+                        //console.log(this.model) ; 
+                        
                         this.steps = this.model.steps 
                         this.delivery = this.model.delivery; 
                         this.marticlesrating = this.model.articlesrating; 
-                        this.articles = this.model.articles
+                        this.articles = this.model.articles;
+                        this.textmessage=""; 
                         if ( this.model.choosenAddress ) 
                              this.choosenAddress =   this.model.choosenAddress; 
            
                         this.sales= true; 
-                         
+                        
+
                         if (! this.model.choosenAddress ) 
                                 this.model.choosenAddress = {} ; 
                         //_source= JSON.parse(_source) ; 
                        // console.log(_source['userid']);
                         
-          // if ( this.fragment=="message") {
-           // this.isopen = true ;
+                      // if ( this.fragment=="message") {
+                      // this.isopen = true ;
                
-                   if (this.fragment !="rating") {
+                      if (this.fragment !="rating") {
                         console.log(this.fragment) ; 
                         //remove store notif 
                         this.userdetailsService.removeNotifByCommandId(this.me, this.commandid , this.fragment )
@@ -139,8 +150,8 @@ export class  PurchaseCommandComponent implements OnInit {
                            );
                        
                         }
-             //    }     
-                       this.userdetailsService.getAvatar(this.model.userid)
+                      //    }     
+                   /*   this.userdetailsService.getAvatar(this.model.userid)
                        .subscribe( 
                            datan => {
                                  this.avatarlist[this.model.userid ] = datan['avatar'] ;  
@@ -150,7 +161,7 @@ export class  PurchaseCommandComponent implements OnInit {
                                  console.log (errorn ) ;    
                            }
                            );
-                        
+                        */
                          this.userdetailsService.getFullname(this.model.userid)
                        .subscribe( 
                            datan => {
@@ -165,9 +176,9 @@ export class  PurchaseCommandComponent implements OnInit {
                     for( let j = 0 ;j < this.model.messages.length; j++ ) {
                         //    console.log( JSON.parse(this.model.messages[j]) );
                                 
-                       try{
+                     //  try{
                         // this.model.messages[j] = JSON.parse(this.model.messages[j]); 
-                         if (! this.avatarlist[this.model.messages[j].from ]) {
+                     /*   if (! this.avatarlist[this.model.messages[j].from ]) {
                            
                          this.userdetailsService.getAvatar(this.model.messages[j].from)
                          .subscribe( 
@@ -179,7 +190,7 @@ export class  PurchaseCommandComponent implements OnInit {
                                  console.log (error ) ;    
                            }
                            );
-                      }
+                         }*/
                            
                          if (! this.fullnamelist[this.model.messages[j].from ]) {
                            
@@ -206,40 +217,40 @@ export class  PurchaseCommandComponent implements OnInit {
                            
                            
                            
-                       } catch (error ) {
-                         console.log(error) ;   
-                        }
+                   //    } catch (error ) {
+                     //    console.log(error) ;   
+                      //  }
                   }
                   
                   this.model.steps.prepareBool = false ;  
                     this.model.steps.sendBool = false ; 
-                  this.model.startdate = new Date (this.model.startdate).toLocaleString("ar-AR");//"fr-FR").replace("à","-"); 
+                  this.model.startdate =  this.getLocalDateTime(this.model.startdate);//"fr-FR").replace("à","-"); 
                   if (this.model.steps.prepare!=0) 
-                  this.model.steps.prepare = new Date (this.model.steps.prepare).toLocaleString("fr-FR").replace("à","-"); 
+                  this.model.steps.prepare = this.getLocalDateTime(this.model.steps.prepare); 
                   if ( this.model.steps.send !=0 ) 
-                  this.model.steps.send = new Date (this.model.steps.send).toLocaleString("fr-FR").replace("à","-"); 
+                  this.model.steps.send =  this.getLocalDateTime(this.model.steps.send); 
                   if ( this.model.steps.receive !=0 ) 
-                  this.model.steps.receive= new Date (this.model.steps.receive).toLocaleString("fr-FR").replace("à","-"); 
+                  this.model.steps.receive= this.getLocalDateTime(this.model.steps.receive); 
                   if (this.model.steps.solvedlitige!=0)
-                       this.model.steps.solvedlitige = new Date (this.model.steps.solvedlitige).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.solvedlitige =  this.getLocalDateTime(this.model.steps.solvedlitige); 
 
                    if (this.model.steps.litige!=0)
-                       this.model.steps.litige = new Date (this.model.steps.litige).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.litige =  this.getLocalDateTime(this.model.steps.litige); 
 
                    if (this.model.steps.close!=0)
-                       this.model.steps.close = new Date (this.model.steps.close).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.close =  this.getLocalDateTime(this.model.steps.close); 
 
                   if (this.model.steps.stop!=0)
-                       this.model.steps.stop = new Date (this.model.steps.stop).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.stop =  this.getLocalDateTime(this.model.steps.stop); 
 
                 this.ongoing = true ; 
-                let connection = this.messagesService.getOngoingMessages(this.commandid)
+                 this.messagesService.getOngoingMessages(this.commandid)
                   .subscribe(
                    message0 => 
                    {
                       // console.log(message) ;
                     this.message = message0 ; 
-                       this.message = JSON.parse(this.message ) ;
+                    this.message = JSON.parse(this.message ) ;
                        if(JSON.parse(localStorage.getItem('currentUser')).userid== this.message.from ) 
                            this.message.fromMe= true ; 
                        else {
@@ -252,7 +263,7 @@ export class  PurchaseCommandComponent implements OnInit {
 
                    //   console.log(message.text ) ; 
                      this.model.messages.push(this.message);
-                     if (!this.avatarlist[this.message.from]) {
+                   /*  if (!this.avatarlist[this.message.from]) {
                        this.userdetailsService.getAvatar(this.message.from)
                        .subscribe( 
                            data => {
@@ -265,7 +276,7 @@ export class  PurchaseCommandComponent implements OnInit {
                            }
                            );
                           
-                         }
+                         }*/
                        
                       if (!this.fullnamelist[this.message.from]) {
                        this.userdetailsService.getFullname(this.message.from)
@@ -301,12 +312,40 @@ export class  PurchaseCommandComponent implements OnInit {
                                     }) ; 
                   
               }
+                             this.model.firebases = [] ; 
+           this.storeService.getAdmins(this.model.storetitle)
+        .subscribe(
+            data0=>{
               
+                        let  admins =[ data0['userid'] ] ; 
+                       for (let x of data0['administrators']) 
+                            admins.push (x.userid);  
+      
+                    for (let admin of admins){
+                         
+                            this.userdetailsService.getFirebase(admin)
+                            .subscribe(
+                                data=>{
+                                        console.log(data) ; 
+                                       this.model.firebases.push(data['firebase']) ; 
+                                      
+                         
+                     
+                            },error=>{
+                                      console.log(error ) ; 
+                             }) ;
+                        
+                        }
+                
+                  }
+            ,error0=>{  })  
               
+              this.loading = false ;
             }
           
             ,error7=> {
                         this.nosale = true ; 
+                         this.loading = false ; 
                         console.log(error7) ; 
                     }) ; 
 
@@ -315,22 +354,44 @@ export class  PurchaseCommandComponent implements OnInit {
   
     ngAfterViewInit() {
    
+         if (this.first ) {
+                     this.first = false ;   
+
        let interval = setInterval(()=> {
      
            if ( this.fragment=="message") {
                          this.isopen = true ;
-                         this.scrollView.nativeElement.scrollToVerticalOffset(this.messageView.nativeElement.getLocationRelativeTo(this.topView.nativeElement).y, false);
- 
+                         
+                         let scrollView :ScrollView= this.Page.getViewById('scrollview');;
+                         let topView :any= this.Page.getViewById('top');
+                        let messageView :any = this.Page.getViewById('message') ; 
+                        scrollView.scrollToVerticalOffset(messageView.getLocationRelativeTo(topView)['y'], false);
+                         if ( this.model.messages.length >2) {
+             
+                            let listView: RadListView = <RadListView>(Frame.topmost().currentPage.getViewById('msgs'));
+                            setTimeout(()=>{
+              
+                                listView.scrollToIndex( this.model.messages.length-1, false, ListViewItemSnapMode.Auto);
+                             },1000); 
+                         }     
+               
+               
            }else{
                
               if ( this.fragment=="rating") {
-                 this.scrollView.nativeElement.scrollToVerticalOffset(this.ratingView.nativeElement.getLocationRelativeTo(this.topView.nativeElement).y, false);
- 
+
+                         let scrollView :ScrollView= this.Page.getViewById('scrollview');;
+
+                        let topView :any= this.Page.getViewById('top');
+                        let ratingView :any = this.Page.getViewById('rating') ; 
+                        scrollView.scrollToVerticalOffset(ratingView.getLocationRelativeTo(topView)['y'], true);
+                        
                 }   
                
             }
              
-      }, 1000);  
+      }, 1000);
+        }
    }
  
        
@@ -357,7 +418,7 @@ export class  PurchaseCommandComponent implements OnInit {
             this.ongoingService.putReceive(id, time ) 
             .subscribe(
                 data =>{ console.log(data) ;
-                        this.model.steps.receive = new Date(time).toLocaleString("fr-FR").replace("à","-");  
+                        this.model.steps.receive =  this.getLocalDateTime(time);  
                              this.model.steps.receiveloading = false ;  }, 
                 error => {console.log(error) ; 
                              this.model.steps.receiveloading = false ; })  ;
@@ -372,35 +433,10 @@ export class  PurchaseCommandComponent implements OnInit {
                     }); 
         
            //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.receiveNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
-        
+         for (let firebase of this.model['firebases']) 
+               this.firebaseService.receiveNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
           
     }
     
@@ -410,7 +446,7 @@ export class  PurchaseCommandComponent implements OnInit {
             this.ongoingService.putLitige(id, time ) 
             .subscribe(
                 data =>{ console.log(data) ;
-                        this.model.steps.litige = new Date(time).toLocaleDateString("it-IT") ; 
+                        this.model.steps.litige =  this.getLocalDateTime(time) ; 
                             this.model.steps.litigeloading = false ;  }, 
                 error => {console.log(error) ;
                                 this.model.steps.litigeloading = false ;  })  ;
@@ -425,34 +461,10 @@ export class  PurchaseCommandComponent implements OnInit {
                     });         
         
            //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.litigeNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+        for (let firebase of this.model['firebases']) 
+               this.firebaseService.litigeNotif( firebase,this.fullnamelist[this.model.userid ]  , storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
         
     }
   
@@ -473,9 +485,10 @@ export class  PurchaseCommandComponent implements OnInit {
            this.ongoingService.putClose(id, time ) 
             .subscribe(
                 data =>{ console.log(data) ;
-                        this.model.steps.close = new Date(time).toLocaleDateString("it-IT") ;  
+                        this.model.steps.close = this.getLocalDateTime (time) ; 
                         this.model.steps.closeloading = false ; 
                       let price = this.model.totalprice - this.model.delivery.price ;   
+                    if (this.model.steps.litige==0 ) 
                     this.storeService.putIncome(storetitle, {'price':price,'total':1,'month': new Date().getMonth(), 'year': new Date().getFullYear()})
                       .subscribe(
                         data3 =>{
@@ -498,34 +511,10 @@ export class  PurchaseCommandComponent implements OnInit {
                     }); 
         
            //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.closeNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+         for (let firebase of this.model['firebases']) 
+               this.firebaseService.closeNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
         
     }
     
@@ -536,7 +525,7 @@ export class  PurchaseCommandComponent implements OnInit {
             .subscribe(
                 data =>{ console.log(data) ; 
                           console.log(time); 
-                        this.model.steps.solvedlitige = new Date(time).toLocaleDateString("it-IT") ;
+                        this.model.steps.solvedlitige =  this.getLocalDateTime(time) ; 
                         this.model.steps.solvedlitigeloading = false ;   }, 
                 error => {console.log(error) ;
                             this.model.steps.solvedlitigeloading = false ;  })  ;
@@ -550,34 +539,10 @@ export class  PurchaseCommandComponent implements OnInit {
                     }); 
         
            //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.closelitigeNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+          for (let firebase of this.model['firebases']) 
+               this.firebaseService.closelitigeNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
         
     }
     
@@ -587,29 +552,40 @@ export class  PurchaseCommandComponent implements OnInit {
     sendMessage( id, storetitle){
       
         
-          let time:number = new Date().getTime() ;
+          let time: number = new Date().getTime() ;
          //this.messagesService.sendMessage({"from": localStorage.getItem('currentUser'), "message": this.model[i].message, "id":id}); 
-         if (!this.model.message  ||this.model.message.length==0 ){
+         if (this.textmessage=='' ){
                 this.alertM = true ;  
          }else {
-        
-            this.messagesService.putOngoingMessage(id, this.model.message)
+              this.loadingM=true ; 
+               this.alertM =false ;  
+            this.messagesService.putOngoingMessage(id, this.textmessage)
             .subscribe(
              data =>{    
             // console.log(f) ;     
                          
                   this.isopen = true ;
 
-                // time =prettyMs( new Date().getTime() - time, {compact: true}   );
+                //  time =prettyMs( new Date().getTime() - time, {compact: true}   );
 
-                 this.model.messages.push({'text':this.model.message, 'date': time}) ; 
+              //   this.model.messages.push({'text':this.model.message, 'date': time, 'from':this.me}) ; 
                 
-                
+                   this.textmessage = '' ; 
+                 utils.ad.dismissSoftInput() ; 
+ 
         
-                
-                 this.model.message = '' ;  
+                  if ( this.model.messages.length >2) {
+             
+                            let listView: RadListView = <RadListView>(Frame.topmost().currentPage.getViewById('msgs'));
+                            setTimeout(()=>{
+              
+                                listView.scrollToIndex( this.model.messages.length-1 , false, ListViewItemSnapMode.Auto);
+                             },1500); 
+                         }  
+                   this.loadingM=false ;
              }
              ,error =>{        
+                   this.loadingM=false ; 
                    console.log(error) ; 
              }) ; 
           
@@ -625,34 +601,10 @@ export class  PurchaseCommandComponent implements OnInit {
         }
         
            //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.usermessageNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+          for (let firebase of this.model['firebases']) 
+               this.firebaseService.usermessageNotif( firebase,this.fullnamelist[this.model.userid ]  , storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
      }
     
     backToStore () {
@@ -717,6 +669,7 @@ export class  PurchaseCommandComponent implements OnInit {
     
   sendRatingA () { 
          let bool = true ; 
+        utils.ad.dismissSoftInput() ; 
          for (let a of this.model.articles) {
              if (!this.articlesrating.hasOwnProperty(a.articleid))
              {     
@@ -734,6 +687,7 @@ export class  PurchaseCommandComponent implements OnInit {
                  for (let m of this.model.articles){
                  this.storeService.putRating(m.articleid,this.articlesrating[m.articleid ],  
                                              this.me, this.feedbackA[m.articleid] ) 
+                      
                  .subscribe(
                      data => {
                          console.log(data) ; 
@@ -794,12 +748,12 @@ export class  PurchaseCommandComponent implements OnInit {
                                      .subscribe(
                                        data =>{ console.log(data) ;
                                         this.model.steps.stoploading = false ; 
-                                         this.model.steps.close = new Date(stop.time).toLocaleDateString("it-IT") ;  }, 
+                                         this.model.steps.close =  this.getLocalDateTime(stop.time);  }, 
                                        error => {console.log(error) ; 
                                                 this.model.steps.stoploading = false ; 
                                        })  
                         
-                        this.model.steps.stop = new Date(stop.time).toLocaleDateString("it-IT") ;  }, 
+                        this.model.steps.stop =  this.getLocalDateTime(stop.time) ;  }, 
                 error => {console.log(error) ; })  ;
                this.storeService.putNotification( this.commandid, 'stop', stop.time, this.model.storetitle , JSON.parse(localStorage.getItem('currentUser')).userid, this.fullname ) 
              .subscribe (
@@ -811,34 +765,10 @@ export class  PurchaseCommandComponent implements OnInit {
                     }); 
         
            //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(this.model.storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.stopNotif( firebase,this.me, this.model.storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+          for (let firebase of this.model['firebases']) 
+               this.firebaseService.stopNotif( firebase, this.fullnamelist[this.model.userid ]  , this.model.storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
         
     }
 
@@ -888,11 +818,82 @@ export class  PurchaseCommandComponent implements OnInit {
         
       
          this.isopen= !this.isopen   ;
-            setTimeout(()=>{
-                this.msgsView.nativeElement.scrollToVerticalOffset(this.msgsView.nativeElement.scrollableHeight, false);
-             },150); 
+         
+         if (this.isopen ) 
+            
+                  if ( this.model.messages.length > 2 && this.isopen==true ) {
+             
+                            let listView: RadListView = <RadListView>(Frame.topmost().currentPage.getViewById('msgs'));
+                            setTimeout(()=>{
+              
+                                listView.scrollToIndex( this.model.messages.length-1, false, ListViewItemSnapMode.Auto);
+                             },1500); 
+                         }  
         
-     
-    } 
+       }  
+    
+    getLocalDateTime(date) {
+
+   date = new Date(date) ; 
+  let hours = date.getHours();
+  //if (hours < 10) hours = '0' + hours;
+
+  let minutes = date.getMinutes();
+  if (minutes < 10) minutes = '0' + minutes;
+
+  //let timeOfDay = hours < 12 ? 'AM' : 'PM';
+
+  return date.getMonth() + '/' + date.getDate() + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes 
+}
+    
+     ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+
+ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+}
+  
+    
+     selectText(args) {
+          const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("selected");
+            break;
+        case 'down':
+            label.addPseudoClass("selected");
+            break;
+    }
+         let text = args.object.text;  
+         clipboard.setText( text ).then(function() {
+                 console.log("OK, copied to the clipboard");
+            });
+         
+         }
+   
+    hide(){
+        utils.ad.dismissSoftInput() ; 
+ 
+        }
 }
     

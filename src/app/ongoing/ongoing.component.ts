@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild,ViewContainerRef , ElementRef,   AfterViewChecked, AfterContentInit} from '@angular/core';
+import { Component, OnInit,ViewChild,ViewContainerRef , ElementRef,AfterViewInit,   AfterViewChecked, AfterContentInit} from '@angular/core';
 //import {RatingModalComponent} from './rating-modal.component';
 import {FirebaseService, RatingModalService, MessagesService, OngoingService, StoreService, UserdetailsService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd  } from '@angular/router';
@@ -9,36 +9,48 @@ import { filter } from 'rxjs/operators';
 import { ModalDialogService } from "nativescript-angular/directives/dialogs";
 import {StopModalComponent} from './stop-modal.component'; 
 import {RatingModalComponent} from './rating-modal.component'; 
+import * as utils from "utils/utils";
+
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { SearchBar } from "tns-core-modules/ui/search-bar"; 
+
+import * as  clipboard from "nativescript-clipboard" ;
+import { Page } from "ui/page"; 
+import { Frame, topmost } from "tns-core-modules/ui/frame"; 
+import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview";
+ 
 
 @Component({
   selector: 'app-ongoing',
   templateUrl: './ongoing.component.html',
   styleUrls: ['./ongoing.component.css']
 })
-export class OngoingComponent implements OnInit {
+export class OngoingComponent implements OnInit , AfterViewInit{
   
- @ViewChild("msgs", { static: true } ) msgsView: ElementRef; 
- 
+ msgsViews:ElementRef[] ; 
  loading :boolean  ; 
-  busy :Subscription; 
   ongoing :boolean ;    
   model :any =[]; 
   messages = []; 
   connection;
+  tempmodel :any = []  ; 
   message:any={} ;
   avatarlist = {};
   fullnamelist = {};
   isopen = {}; 
   fragment :string='' ;
   totalcommand= 0 ; 
-  size = 2; 
+  size = 3; 
   page = 1;
   maxpage =1;  
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
   open = false ;
   fullname ="" ; 
   alertM = {} ; 
-    constructor(private messagesService: MessagesService,
+    loadingM= {};
+ 
+  constructor(private messagesService: MessagesService,
               private ongoingService :OngoingService, 
               private storeService: StoreService, 
               private ratingModalService : RatingModalService,
@@ -47,16 +59,17 @@ export class OngoingComponent implements OnInit {
               private router : Router, 
               private vcRef: ViewContainerRef, 
               private modal: ModalDialogService , 
-              private firebaseService: FirebaseService ) {
+              private firebaseService: FirebaseService
+              ) {
    //   let sub = this.route.fragment.pipe(filter(f => !!f)).subscribe(f => document.getElementById(f).scrollIntoView());
    //   console.log(sub) ; 
-   this.router.events.subscribe(s => {
+ /*  this.router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
         let tree = this.router.parseUrl(this.router.url); 
           this.fragment = tree.fragment ; 
        
       }
-   });
+   });*/
   }
     
   
@@ -64,14 +77,14 @@ export class OngoingComponent implements OnInit {
   ngOnInit() {
      
      this.loading = true ; 
-       this.router.events.subscribe(s => {
+   /*    this.router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
         let tree = this.router.parseUrl(this.router.url);
           this.fragment = tree.fragment ; 
             if (this.fragment) {
            //   this.isopen[this.fragment] = true ;
                     //  this.ngxAutoScroll.forceScrollDown(); 
-              let element = document.getElementById(this.fragment);
+           //   let element = document.getElementById(this.fragment);
               console.log(element ) ; 
               if (element) { element.scrollIntoView(); }
              // const collapse =  document.getElementById('collapseOne_' + this.fragment); 
@@ -80,7 +93,7 @@ export class OngoingComponent implements OnInit {
    
        
       }
-             });
+             });*/
      
           
           this.userdetailsService.getFullname (this.me)
@@ -90,9 +103,7 @@ export class OngoingComponent implements OnInit {
                     this.fullname = data['fullname']; 
                 }
                   
-                  ,error=>{}
-                  
-                  )   
+                  ,error=>{})   
        
           this.ongoingService.getCountArticlesByUserId (this.me)
         .subscribe(
@@ -121,47 +132,51 @@ export class OngoingComponent implements OnInit {
     getPage (page ) {
         this.loading = true ; 
         this.page = page ;
-         this.busy = this.ongoingService.getArticlesByUserId (this.me, (this.page-1)*this.size, this.size )
+         this.ongoingService.getArticlesByUserId (this.me, (this.page-1)*this.size, this.size )
          .subscribe (
           
             data =>{
                  this.open = true ;
-                
-                 this.model= this.model.concat(data) ; 
+                 this.tempmodel = data ; 
+                // this.model= this.model.concat(data) ; 
                     //  this.page = page ; 
                      //window.scrollTo(0, 0);
                 this.loading = false ; 
-              for( let i  = 0 ; i < this.model.length ; i++ ) {
-                  if (! this.model[i]._source.choosenAddress ) 
-                   this.model[i]._source.choosenAddress = {} ; 
+              for( let i  = 0 ; i < this.tempmodel.length ; i++ ) {
+                  this.tempmodel[i].message = ""; 
+                  if (! this.tempmodel[i]._source.choosenAddress ) 
+              
+                   this.tempmodel[i]._source.choosenAddress = {} ; 
                  // console.log();
-                  this.isopen["message"+this.model[i]._id] = false ;
-                
-                   for( let j = 0 ;j < this.model[i]._source.messages.length; j++ ) {
-             //    console.log( JSON.parse(this.model[i]._source.messages[j]) );
-                   try{
-                      // this.model[i]._source.messages[j] = JSON.parse(this.model[i]._source.messages[j]); 
-                        console.log(this.model[i]._source.messages[j].from) ; 
-                       if (! this.avatarlist[this.model[i]._source.messages[j].from ]) {
+                  this.isopen["message"+this.tempmodel[i]._id] = false ;
+                          this.loadingM[this.tempmodel[i]._id ]= false  ; 
+                   for( let j = 0 ; j < this.tempmodel[i]._source.messages.length; j++ ) {
+             //    console.log( JSON.parse(this.tempmodel[i]._source.messages[j]) );
+                 
+                       this.tempmodel[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.tempmodel[i]._source.messages[j].date, {compact: true}   );
+
+                      // this.tempmodel[i]._source.messages[j] = JSON.parse(this.tempmodel[i]._source.messages[j]); 
+                      /*  console.log(this.tempmodel[i]._source.messages[j].from) ; 
+                       if (! this.avatarlist[this.tempmodel[i]._source.messages[j].from ]) {
                            
-                       this.userdetailsService.getAvatar(this.model[i]._source.messages[j].from)
+                       this.userdetailsService.getAvatar(this.tempmodel[i]._source.messages[j].from)
                        .subscribe( 
                            data => {
-                                 this.avatarlist[this.model[i]._source.messages[j].from ] = data['avatar'] ;  
+                                 this.avatarlist[this.tempmodel[i]._source.messages[j].from ] = data['avatar'] ;  
                         //       console.log(data) ;    
                            }
                            ,error=> {
                                  console.log (error ) ;    
                            }
                            );
-                      }
+                      }*/
                        
-                        if (! this.fullnamelist[this.model[i]._source.messages[j].from ]) {
+                        if (! this.fullnamelist[this.tempmodel[i]._source.messages[j].from ]) {
                            
-                       this.userdetailsService.getFullname(this.model[i]._source.messages[j].from)
+                       this.userdetailsService.getFullname(this.tempmodel[i]._source.messages[j].from)
                        .subscribe( 
                            data => {
-                                 this.fullnamelist[this.model[i]._source.messages[j].from ] = data['fullname'] ;  
+                                 this.fullnamelist[this.tempmodel[i]._source.messages[j].from ] = data['fullname'] ;  
                         //       console.log(data) ;    
                            }
                            ,error=> {
@@ -171,60 +186,58 @@ export class OngoingComponent implements OnInit {
                       }
                         
 
-                       this.model[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.model[i]._source.messages[j].date, {compact: true}   );
-                        console.log(JSON.parse(localStorage.getItem('currentUser')).userid) ; 
-                       if (this.model[i]._source.messages[j].from == JSON.parse(localStorage.getItem('currentUser')).userid) 
-                            this.model[i]._source.messages[j].fromMe = true ; 
+                      //  console.log(JSON.parse(localStorage.getItem('currentUser')).userid) ; 
+                       if (this.tempmodel[i]._source.messages[j].from == JSON.parse(localStorage.getItem('currentUser')).userid) 
+                            this.tempmodel[i]._source.messages[j].fromMe = true ; 
                        else 
-                            this.model[i]._source.messages[j].fromMe = false ; 
+                            this.tempmodel[i]._source.messages[j].fromMe = false ; 
                        
                        
-                       } catch (error ) {
-                         console.log(error) ;   
-                        }
+                 
                   }
                   
-                  let  options = {   day: 'numeric', month: 'numeric', year: 'numeric', hour:'2-digit', minutes:'2-digit'};
+                 // let  options =  {   day: 'numeric', month: 'numeric', year: 'numeric', hour:'2-digit', minute:'2-digit'};
 
-                       this.model[i]._source.startdate =  new Date (this.model[i]._source.startdate).toLocaleDateString("fr-FR", options); 
-                   if (this.model[i]._source.steps.prepare!=0)
-                       this.model[i]._source.steps.prepare = new  Date (this.model[i]._source.steps.prepare).toLocaleString().replace("à","-"); 
-                   if (this.model[i]._source.steps.send!=0)
-                       this.model[i]._source.steps.send = new Date (this.model[i]._source.steps.send).toLocaleString().replace("à","-"); 
-                   if (this.model[i]._source.steps.receive!=0)
-                       this.model[i]._source.steps.receive = new Date (this.model[i]._source.steps.receive).toLocaleString("fr-FR").replace("à","-"); 
-                   if (this.model[i]._source.steps.solvedlitige!=0)
-                       this.model[i]._source.steps.solvedlitige = new Date (this.model[i]._source.steps.solvedlitige).toLocaleString("fr-FR").replace("à","-"); 
+                       this.tempmodel[i]._source.startdate =  this.getLocalDateTime(this.tempmodel[i]._source.startdate); 
+                   if (this.tempmodel[i]._source.steps.prepare!=0)
+                       this.tempmodel[i]._source.steps.prepare = this.getLocalDateTime( this.tempmodel[i]._source.steps.prepare);//.replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.send!=0)
+                       this.tempmodel[i]._source.steps.send = this.getLocalDateTime(this.tempmodel[i]._source.steps.send)//.replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.receive!=0)
+                       this.tempmodel[i]._source.steps.receive = this.getLocalDateTime( this.tempmodel[i]._source.steps.receive);//"fr-FR").replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.solvedlitige!=0)
+                       this.tempmodel[i]._source.steps.solvedlitige = this.getLocalDateTime(this.tempmodel[i]._source.steps.solvedlitige);//"fr-FR").replace("à","-"); 
 
-                   if (this.model[i]._source.steps.litige!=0)
-                       this.model[i]._source.steps.litige = new Date (this.model[i]._source.steps.litige).toLocaleString("fr-FR").replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.litige!=0)
+                       this.tempmodel[i]._source.steps.litige = this.getLocalDateTime(this.tempmodel[i]._source.steps.litige);//"fr-FR").replace("à","-"); 
                     try {
-                   if (this.model[i]._source.steps.stop!=0)
-                       this.model[i]._source.steps.stop = new Date (this.model[i]._source.steps.stop).toLocaleString("fr-FR").replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.stop!=0)
+                       this.tempmodel[i]._source.steps.stop = this.getLocalDateTime(this.tempmodel[i]._source.steps.stop);//"fr-FR").replace("à","-"); 
                     }catch(e) {
-                        this.model[i]._source.steps.stop=0; 
+                        this.tempmodel[i]._source.steps.stop=0; 
                         }
-                   if (this.model[i]._source.steps.close!=0)
-                       this.model[i]._source.steps.close = new Date (this.model[i]._source.steps.close).toLocaleString("fr-FR").replace("à","-"); 
+                   if (this.tempmodel[i]._source.steps.close!=0)
+                       this.tempmodel[i]._source.steps.close = this.getLocalDateTime(this.tempmodel[i]._source.steps.close);//"fr-FR").replace("à","-"); 
 
-                 let connection = this.messagesService.getOngoingMessages(this.model[i]._id)
+                this.messagesService.getOngoingMessages(this.tempmodel[i]._id)
                   .subscribe(
                    message0 => 
                    {
-                       console.log(message0) ;
-                    this.message =message0 ; 
-                       this.message = JSON.parse(this.message ) ;
-                       if(JSON.parse(localStorage.getItem('currentUser')).userid== this.message.from ) 
+                        console.log(message0) ;
+                        this.message =message0 ; 
+                        this.message = JSON.parse(this.message ) ;
+                        if(JSON.parse(localStorage.getItem('currentUser')).userid== this.message.from ) 
                            this.message.fromMe= true ; 
-                       else 
+                        else 
                            this.message.fromMe= false ;  
-                       this.message.new = true ; 
-                     // console.log(message.text ) ; 
-                     this.message.date =prettyMs( new Date().getTime() - this.message.date,  {compact: true}  );
+                       
+                        this.message.new = true ; 
+                        // console.log(message.text ) ; 
+                       this.message.date =prettyMs( new Date().getTime() - this.message.date,  {compact: true}  );
 
                        
-                     this.model[i]._source.messages.push(this.message);
-                     if (!this.avatarlist[this.message.from]) {
+                     this.tempmodel[i]._source.messages.push(this.message);
+                     /*if (!this.avatarlist[this.message.from]) {
                        this.userdetailsService.getAvatar(this.message.from)
                        .subscribe( 
                            data => {
@@ -238,8 +251,8 @@ export class OngoingComponent implements OnInit {
                            }
                            );
                           
-                         }
-                             if (!this.fullnamelist[this.message.from]) {
+                         }*/
+                       if (!this.fullnamelist[this.message.from]) {
                        this.userdetailsService.getFullname(this.message.from)
                        .subscribe( 
                            data => {
@@ -261,19 +274,50 @@ export class OngoingComponent implements OnInit {
                    );
                   //console.log (connection ) ; 
                   
-              for( let j = 0 ;j < this.model[i]._source.articles.length; j++ ) {
-                  console.log(this.model[i]._source.articles) ; 
-                   this.storeService.getPic(this.model[i]._source.articles[j].articleid )
+              for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
+                  console.log(this.tempmodel[i]._source.articles) ; 
+                   this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
                                        //   console.log( this.model[i][j] ) ; 
-                                        this.model[i]._source.articles[j].pic = data4['pic'];
+                                        this.tempmodel[i]._source.articles[j].pic = data4['pic'];
                                     }, error4 =>{
                                           console.log(error4) ; 
                                     }) ; 
                   
               }
+                     this.tempmodel[i].firebases = [] ; 
+           this.storeService.getAdmins(this.tempmodel[i]._source.storetitle)
+        .subscribe(
+            data0=>{
+              
+                        let  admins =[ data0['userid'] ] ; 
+                       for (let x of data0['administrators']) 
+                            admins.push (x.userid);  
+      
+                    for (let admin of admins){
+                         
+                            this.userdetailsService.getFirebase(admin)
+                            .subscribe(
+                                data=>{
+                                        console.log(data) ; 
+                                       this.tempmodel[i].firebases.push(data['firebase']) ; 
+                                      
+                         
+                     
+                            },error=>{
+                                      console.log(error ) ; 
+                             }) ;
+                        
+                        }
+                
+                  }
+            ,error0=> {console.log(error0);}  )  
               }
+             
+                
+                
+                this.model = this.model.concat(this.tempmodel);
               
               }
           ,error => {
@@ -301,9 +345,13 @@ export class OngoingComponent implements OnInit {
       
   }
   
- /*  ngAfterViewInit() {
+  ngAfterViewInit() {
+      // this.mviews= this.mview.map(view => {
+     // return view.nativeElement;
+  //  })
+      
    
-    let interval = setInterval(()=> {
+  /*  let interval = setInterval(()=> {
      
            if ( this.fragment) {
            // this.isopen[this.fragment] = true ;
@@ -319,8 +367,8 @@ export class OngoingComponent implements OnInit {
             //      collapse.scrollIntoView(false);
            }
              
-    }, 1000);  
-}*/
+    }, 1000);  */
+}
        
    
 
@@ -355,7 +403,7 @@ export class OngoingComponent implements OnInit {
             this.ongoingService.putReceive(id, time ) 
             .subscribe(
                 data =>{ console.log(data) ;
-                        this.model[index]._source.steps.receive = new Date(time).toLocaleString("fr-FR").replace("à","-");   
+                        this.model[index]._source.steps.receive = this.getLocalDateTime(time);   
                              this.model[index]._source.steps.receiveloading = false ; }
                , error => {console.log(error) ; 
                                  this.model[index]._source.steps.receiveloading = false ;
@@ -370,34 +418,11 @@ export class OngoingComponent implements OnInit {
                     console.log(error) ; 
                     }); 
         //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.receiveNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+        for (let firebase of this.model[index].firebases) 
+               this.firebaseService.receiveNotif( firebase,this.fullname, storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
+
         
           
     }
@@ -408,7 +433,7 @@ export class OngoingComponent implements OnInit {
             this.ongoingService.putLitige(id, time ) 
             .subscribe(
                 data =>{ console.log(data) ;
-                        this.model[index]._source.steps.litige = new Date(time).toLocaleDateString("it-IT") ; 
+                        this.model[index]._source.steps.litige = this.getLocalDateTime(time)  ; 
                         this.model[index]._source.steps.litigeloading = false ; 
                 }, 
                 error => {    console.log(error) ; 
@@ -427,34 +452,12 @@ export class OngoingComponent implements OnInit {
         
         
         //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.litigeNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+             //get store admin and creator 1, get tokens !  send notif ! 
+        for (let firebase of this.model[index].firebases) 
+               this.firebaseService.litigeNotif( firebase,this.fullname, storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
+
         
     }
   
@@ -478,10 +481,11 @@ export class OngoingComponent implements OnInit {
            this.ongoingService.putClose(id, time ) 
             .subscribe(
                 data =>{ console.log(data) ;
-                        this.model[index]._source.steps.close = new Date(time).toLocaleDateString("it-IT") ;   
+                        this.model[index]._source.steps.close = this.getLocalDateTime(time) ;   
                         this.model[index]._source.closeloading = false ; 
                     // add to the store income
-                    let price = this.model[index]._source.totalprice - this.model[index]._source.delivery.price ;   
+                    let price = this.model[index]._source.totalprice - this.model[index]._source.delivery.price ; 
+                    if(this.model[index]._source.steps.litige==0 )   
                     this.storeService.putIncome(storetitle, {'price':price,'total':1,'month': new Date().getMonth(), 'year': new Date().getFullYear()})
                     .subscribe(
                         data3 =>{
@@ -507,34 +511,10 @@ export class OngoingComponent implements OnInit {
                     }); 
         
         //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.closeNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{}) 
+          for (let firebase of this.model[index].firebases) 
+               this.firebaseService.closeNotif( firebase,this.fullname, storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
     }
     
     solvedlitigeDone (id , index, storetitle ){
@@ -544,7 +524,7 @@ export class OngoingComponent implements OnInit {
             .subscribe(
                 data =>{ console.log(data) ; 
                           console.log(time); 
-                        this.model[index]._source.steps.solvedlitige = new Date(time).toLocaleDateString("it-IT") ; 
+                        this.model[index]._source.steps.solvedlitige = this.getLocalDateTime(time) ; 
                      this.model[index]._source.steps.solvedlitigeloading = false ;
                 }, 
                         
@@ -561,64 +541,49 @@ export class OngoingComponent implements OnInit {
                     }); 
         
         //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.closelitigeNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+          for (let firebase of this.model[index].firebases) 
+               this.firebaseService.closelitigeNotif( firebase,this.fullname, storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
     }
     
     
      sendMessage(i, id, storetitle){
-           let time = new Date().getTime() ;
+          this.loadingM[this.model[i]._id ]= true ;  
+           let time :number = new Date().getTime() ;
          //this.messagesService.sendMessage({"from": localStorage.getItem('currentUser'), "message": this.model[i].message, "id":id}); 
-        if (!this.model[i].message  ||this.model[i].message.length==0 ){
-         this.alertM['message'+this.model[i]._id ] = true ;  
+        if( this.model[i].message=='' ){
+                  this.alertM['message'+this.model[i]._id ] = true ;  
+                  this.loadingM[this.model[i]._id ]= false ;  
          }else {
          
+             this.alertM['message'+this.model[i]._id ] = false ;  
          this.messagesService.putOngoingMessage(id, this.model[i].message)
          .subscribe(
              data =>{    
-            // console.log(f) ;     
-                 this.isopen["message"+this.model[i]._id] = true  ;
+              // this.model[i]._source.messages.push( {'date':'~0s','text': this.model[i].message, 'fromMe':true, })
 
-               //  time =prettyMs( new Date().getTime()-time, {compact: true}   );
-
-                 this.model[i]._source.messages.push({'text':this.model[i].message, 'date': time}) ; 
-                
-                 this.model[i].message = '' ;  
-        
+               this.model[i].message = '' ;
+               utils.ad.dismissSoftInput() ;  
+                 
+               this.isopen["message"+this.model[i]._id] = true  ;
+               if ( this.model[i]._source.messages.length >2) {
+             
+                    let listView: RadListView = <RadListView>(Frame.topmost().currentPage.getViewById(id));
+                    setTimeout(()=>{
+                       listView.scrollToIndex( this.model[i]._source.messages.length - 1, false, ListViewItemSnapMode.Auto);
+                     },500); 
+                    }
+              this.loadingM[this.model[i]._id ]= false  ;  
              }
              ,error =>{        
                    console.log(error) ; 
+                   this.loadingM[this.model[i]._id ]= false  ;  
              }) ; 
 
          
-               this.storeService.putNotification( id, 'message', time, storetitle , JSON.parse(localStorage.getItem('currentUser')).userid, this.fullname ) 
-        .subscribe (
+               this.storeService.putNotification( id, 'message', time, storetitle , this.me, this.fullname ) 
+             .subscribe (
                 data => { 
                         console.log(data)  ; 
                  }
@@ -629,34 +594,10 @@ export class OngoingComponent implements OnInit {
         }
          
          //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.usermessageNotif( firebase,this.me, storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})
+         for (let firebase of this.model[i].firebases) 
+               this.firebaseService.usermessageNotif( firebase,this.fullname, storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
      }
     
      getStop(event) {
@@ -670,7 +611,7 @@ export class OngoingComponent implements OnInit {
                      this.ongoingService.putClose(stop.id, stop.time ) 
                      .subscribe(
                         data =>{ console.log(data) ;
-                             this.model[stop.index]._source.steps.close = new Date(stop.time).toLocaleDateString("it-IT") ; 
+                             this.model[stop.index]._source.steps.close = this.getLocalDateTime(stop.time) ; 
                                           this.model[stop.index]._source.steps.stoploading = false ; 
  
                         }, 
@@ -680,9 +621,13 @@ export class OngoingComponent implements OnInit {
                        })      
                     
                     
-                        this.model[stop.index]._source.steps.stop = new Date(stop.time).toLocaleDateString("it-IT") ;  }, 
-                error => {console.log(error) ; })  ;
-               this.storeService.putNotification( stop.id, 'stop', stop.time, stop.storetitle , JSON.parse(localStorage.getItem('currentUser')).userid, this.fullname ) 
+                        this.model[stop.index]._source.steps.stop = this.getLocalDateTime(stop.time) ; 
+                 },error => {
+                     console.log(error) ;
+                     this.model[stop.index]._source.steps.stoploading = false ; 
+
+                 })  ;
+               this.storeService.putNotification( stop.id, 'stop', stop.time, stop.storetitle ,this.me, this.fullname ) 
              .subscribe (
                 data => { 
                         console.log(data)  ; 
@@ -692,34 +637,11 @@ export class OngoingComponent implements OnInit {
                     }); 
                 
             //get store admin and creator 1, get tokens !  send notif ! 
-        this.storeService.getAdmins(stop.storetitle)
-        .subscribe(
-            data0=>{
-                    let admins =[ data0['userid'] ].concat(data0['admins']) ;   
-                    for (let admin of admins){
-                         let firebase ="" ; 
-                            this.userdetailsService.getFirebase(admin)
-                            .subscribe(
-                                data=>{
-                                        console.log(data) ; 
-                                        firebase = data['firebase']; 
-                                        this.firebaseService.stopNotif( firebase,this.me, stop.storetitle) 
-                                        .subscribe(
-                                            d=>{
-                                                console.log(d) ;    
-                                            },e=>{
-                                                console.log(e) ; 
-                                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ;
-                        
-                        }
-                      
-            }
-            ,error0=>{})       
+         for (let firebase of this.model[stop.index].firebases) 
+               this.firebaseService.stopNotif( firebase,this.fullname, stop.storetitle)
+                .subscribe(
+                    data=>{},error=>{}) ; 
+       
          
          
     
@@ -761,8 +683,9 @@ export class OngoingComponent implements OnInit {
         });
      
     }
+
     
-     public onLoadMoreItemsRequested(args )
+      public onLoadMoreItemsRequested(args )
     {
      
        console.log('ondemand') ; 
@@ -798,14 +721,99 @@ export class OngoingComponent implements OnInit {
       // console.log(args) ; 
     
     }
-    openMsgs(id){
-        
-      
+    openMsgs(i, id){
+       // let view :ElementRef ; 
+       //@ViewChild("msgs"+id, { static: true } )view: ElementRef ; 
+
          this.isopen['message'+id]= !this.isopen['message'+id]    ;
-            setTimeout(()=>{
-                this.msgsView.nativeElement.scrollToVerticalOffset(this.msgsView.nativeElement.scrollableHeight, false);
+         if (  this.isopen['message'+id]==true && this.model[i]._source.messages.length >2) {
+             
+         let listView: RadListView = <RadListView>(Frame.topmost().currentPage.getViewById(id));
+           setTimeout(()=>{
+          //      let mview:ElementRef;     
+         //   @ViewChild(id, { static: false })  mview: ElementRef; 
+
+             listView.scrollToIndex( this.model[i]._source.messages.length - 1, false, ListViewItemSnapMode.Auto);
              },150); 
-        
+       }
      
     }
+    
+getLocalDateTime(date) {
+
+   date = new Date(date) ; 
+  let hours = date.getHours();
+  //if (hours < 10) hours = '0' + hours;
+
+  let minutes = date.getMinutes();
+  if (minutes < 10) minutes = '0' + minutes;
+
+  //let timeOfDay = hours < 12 ? 'AM' : 'PM';
+
+  return date.getMonth() + '/' + date.getDate() + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes 
+}
+    
+     ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+         ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+}
+    
+    
+    
+        getQuery2(event){
+            let searchBar = <SearchBar>event.object;
+            let query = searchBar.text ; 
+        
+             if (query!="" ) {
+        
+                       this.router.navigate(["./purchase/"+query], { relativeTo: this.route });
+
+                //  this.selectArticles=  this.articles.filter(function(element){console.log(element['_source']['title']) ; return element['_source']['title'].includes(q);});
+             }   
+  
+      }
+    
+     selectText(args) {
+          const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("selected");
+            break;
+        case 'down':
+            label.addPseudoClass("selected");
+            break;
+    }
+         let text = args.object.text;  
+         clipboard.setText( text ).then(function() {
+                 console.log("OK, copied to the clipboard");
+            });
+         
+         }
+   
+     hide () {
+         utils.ad.dismissSoftInput() ;  
+   // this.view.nativeElement.dismissSoftInput();
+   // this.view.nativeElement.android.clearFocus();
+   }
 }

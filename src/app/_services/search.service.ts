@@ -79,9 +79,9 @@ export class SearchService {
         return this.http.get( this.host+'/api/stores/stores/search/'+query) ; 
         
     }
-    searchArticlesStore(store : string , query: string, available :boolean) {
-  
-        return this.http.get(this.host+'/api/stores/search/store/'+store+'/'+query +"/available/"+available);
+    searchArticlesStore(storeid : string , query: string, available :boolean) {
+        storeid= storeid.replace(/ /g, "%20");
+        return this.http.get(this.host+'/api/stores/search/store/'+storeid+'/'+query +"/available/"+available);
     }
     
     

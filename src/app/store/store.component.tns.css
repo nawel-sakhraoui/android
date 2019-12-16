@@ -44,6 +44,7 @@
 	color:  #FFA500;   
 	  margin-left:8;
 	 margin-top:13;
+	margin-right:8;	 
 }
 .pic {
     
@@ -92,15 +93,14 @@
 	z-index:3; 
 }
 .bell {
-color:#FFA500;
+color:#00BFFF;
 font-size:14 ; 
 
 }
 .bars{
 
-	font-size :16; 
- margin-top:5; 
- margin-left: 8;	
+    margin-top:5; 
+    margin-left: 8;	
  	color: #00BFFF; 
     background-color: transparent;
    border-radius:25;  
@@ -130,11 +130,11 @@ Button {
 	
 }
 .up {
-	padding :2; 
+	padding :8; 
 	color : #FFA500 ; 
-	font-size: 18 ; 
+	font-size: 25 ; 
 	border-radius: 5;
-	margin:10,10,0,0;
+	margin:10,15,0,0;
 }
 .itemStackLayout {
     text-align: left;
@@ -154,17 +154,14 @@ Button {
 .angle{
 	font-size:20 ; 
 	color: #00BFFF  ; 
-	    text-align:right;
+	text-align:right;
 	
 }
 .price{
       font-size : 14; 
       text-align: center;     
-          font-weight: 900; 
-         
-    
-
-      	 
+      font-weight: 900; 
+        	 
 }
 .panier{
 	background-color: #FFA500;
@@ -193,17 +190,26 @@ Button {
 	background-color: transparent;
 border-color: transparent;
 }
-Label:hover {
- /* background: #868e96 none repeat scroll 0 0;*/
-  color:#FFA500; 
-  cursor:pointer;
-} 
+
 .back{
 	
 	margin:15,5,0,0; 
 	font-size:24; 
 	color : #FFA500; 
 }
+
+Label:pressed {
+
+	background-color:#eeeeee; 
+    
+}  
+GridLayout:pressed {
+   
+   background-color:#eeeeee;  
+   /* color:#d9534f ;*/
+   border-width:2; 
+   border-color:#eeeeee;   
+}    
 
 .alert {
 	padding :5 ; 
@@ -214,3 +220,7 @@ Label:hover {
    border-color:#F27171;
    font-size:12;  
 }
+Label:pressed3 {
+   color:darkgray;
+}
+

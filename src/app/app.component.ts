@@ -12,6 +12,8 @@ import { FilterSelect } from 'nativescript-filter-select';
 registerElement('FilterSelect', () => FilterSelect);
 
 
+registerElement("Ripple", () => require("nativescript-ripple").Ripple);
+
 @Component({
       moduleId: module.id,
 

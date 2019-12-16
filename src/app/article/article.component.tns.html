@@ -1,21 +1,39 @@
 <ScrollView>
-<StackLayout>
-<Label class="alert" [visibility]="nostore  ? 'visible' : 'collapsed'" text="pas de magasin dans ce lien ! "></Label>
-<Label class="alert" [visibility]="(!nostore && !open)  ? 'visible' : 'collapsed'" text="Le magasin est fermé ! "></Label>
+<GridLayout rows="auto,auto,auto,auto,auto,*">
+  <StackLayout row="0" >
+  		<Label  (touch)='ontouch($event)' textWrap='true'    class=" storetitle "  text="{{storetitle}}"  nsRouterLink='../../store' ></Label>
+         <StackLayout margin="0,0,2,8" orientation="horizontal">
+      	        <AbsoluteLayout  height="22" width="85"  android:cursorVisible="false"  >   
+                 <StarRating left="-80" top="-18"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".3" android:scaleY=".3"   [value]="store.ratingsum/store.ratingcount"  ></StarRating>
+                </AbsoluteLayout>
+                 <Label margin="3,0,0,5" fontSize="10"   text="({{store.ratingcount}} votes)"></Label>
+          </StackLayout>
+   </StackLayout>
+  
+  
 
 
-<StackLayout [visibility]="!nostore ? 'visible' : 'collapsed'"  orientation="vertical">
+  <StackLayout row="1"    colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+  
+	<StackLayout row="2">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading0' [busy]="loading0" ></ActivityIndicator>
+   	</StackLayout>  
+
+
+<Label  row="3" class="alert" [visibility]="!loading0 && nostore  ? 'visible' : 'collapsed'" text="pas de magasin dans ce lien ! "></Label>
+<Label row="4" class="alert" [visibility]="(!loading0 && nostore && !open)  ? 'visible' : 'collapsed'" text="Le magasin est fermé ! "></Label>
+
+
+<GridLayout rows="auto,*" row="5" [visibility]="!loading0 && !nostore ? 'visible' : 'collapsed'"  orientation="vertical">
     
-    <Label  [visibility]="model.suspend? 'visible' : 'collapsed'" class="alert" text="L'article est suspendu "></Label>
-<GridLayout    [visibility]="!model.suspend? 'visible' : 'collapsed'" rows='auto,auto,auto,auto,260,*,auto,*'>
+    <Label row="0"  [visibility]="model.suspend? 'visible' : 'collapsed'" class="alert" text="L'article est suspendu "></Label>
+<GridLayout  row="1"  [visibility]="!model.suspend? 'visible' : 'collapsed'" rows='auto,auto,auto,auto,260,*,auto,*'>
 
 
   <!-- Image row ="0" [src]="banner" class="pic"  stretch="aspectFill"></Image-->
  
-  <Label row="0" class=" storetitle"  text="{{storetitle}}"  [nsRouterLink]="['../..']"></Label>
-  <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
-  
-  <Label margin='10,5,0,5' row="2" [visibility]="!model.available? 'visible' : 'collapsed'"  class="alert" text="Article épuisé"></Label>
+
+  <Label margin='10,5,0,5' row="2" [visibility]="!loading0 && !model.available? 'visible' : 'collapsed'"  class="alert" text="Article épuisé"></Label>
   
  
   <GridLayout row="3" class="title " rows="*,*,*">
@@ -38,7 +56,7 @@
   </GridLayout>
    	
    
-   	<StackLayout   row="4">
+   	<StackLayout   *ngIf='!loading'   row="4">
     <Carousel #carouseln debug="true" [items]="model.gallery" height="90%" width="100%" color="#000000" (pageChanged)="myChangePageEvent($event)" 
                     indicatorAnimation="swap"  indicatorColor="#FFA500" indicatorOffset="0,-10" showIndicator="true" indicatorColorUnselected="#D0D0D0" >
         <CarouselItem *ngFor="let item of model.gallery" >
@@ -54,7 +72,10 @@
      
  	</StackLayout>
  	 
-
+<StackLayout row="4"  *ngIf='loading'  >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"[busy]="loading" ></ActivityIndicator>
+ 
+</StackLayout>
 	
  <GridLayout margin="0,10,0,10"  row="5" rows = '*,*,auto,auto'>
  <GridLayout row="0"   rows='auto,auto,auto,auto,auto,auto'>
@@ -95,9 +116,9 @@
   <GridLayout margin="15,0,0,0" row="2"  columns="100,*" >
   
   		<Label col="0"  text="Votre Adresse"></Label>
-  		<GridLayout col="1"   rows="auto,auto, auto,auto">
-       <Label row="0" text='&#xf078;'  class="fas dropdownLabel" (tap)="show=!show"    ></Label>
-       <Label row ="0" text ="{{choosenAddressTitle}}" color="#000"   ></Label>
+  		<GridLayout col="1" columns ='*,auto'  rows="auto,auto, auto,auto">
+       <Label col='1' row="0" text='&#xf078;'  class="fas dropdownLabel" (tap)="show=!show"  (touch)="ontouch($event)"   ></Label>
+       <Label col='0' row ="0" text ="{{choosenAddressTitle}}" color="#000"   (tap)="show=!show" (touch)='ontouch($event)'   ></Label>
         <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
 		<StackLayout  row="1" [visibility]=" show? 'visible' : 'collapsed'" >
   			  <app-adress (getAddress)='getAddress($event) ; ' ></app-adress>
@@ -109,14 +130,15 @@
   
   	<Label  col="0" text="Livraison"></Label>
   	<GridLayout col="1" rows="auto,auto,auto">
-  	  <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+  	  <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
         
         <DropDown  #dd
                   [items]="delTitle "
                   color='#000'
                   [(ngModel)]="selectedIndex"
                   (selectedIndexChanged)="onchange($event)"
-                  colSpan="2"
+                  colSpan="0"
+                  paddingItem="5" 
                   row="0">
         </DropDown>
 		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
@@ -140,15 +162,16 @@
   </GridLayout>
 </GridLayout>
 
- <GridLayout row="2" columns='*,auto, auto, auto'>
- <Button   [visibility]="model.available ?'visible':'collapse'"   text="Acheter" col="1"  backgroundColor="#d9534f" color="#FFF"  (tap)='buyNow()'></Button>
-  <Button   [visibility]="!model.available ?'visible':'collapse'"   text="Acheter" col="1"  backgroundColor="#e84c4f" color="#D3D3D3"  (tap)='buyNow()'></Button>
+ <GridLayout row="2" columns='*,auto, auto,auto, auto'>
+ <Button   [visibility]="model.available ?'visible':'collapse'"   text="Acheter"  col="1"   backgroundColor="#d9534f" color="#FFF"  (tap)='buyNow()'></Button> 
   
- <Button text="Panier &#xf218;"  class="fas" col="2" backgroundColor="#FFA500" color="#FFF" (tap)="addToCart() ;  "></Button>
-
+ <Button text="&#xf218;Panier"  class="fas" col="2" backgroundColor="#FFA500" color="#FFF" (tap)="addToCart() ;  "></Button>
+<StackLayout col="3">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loadingcart' [busy]="loadingcart" ></ActivityIndicator>
+   	</StackLayout> 
 <ng-template ngxPermissionsOnly="ADMINStore">
 
- <Button text="Paramètre" col="3"  backgroundColor="#00BFFF" color="#FFF" (tap)="updateArticle() ; "></Button>
+ <Button text="Paramètre" col="4"  backgroundColor="#00BFFF" color="#FFF" (tap)="updateArticle();" ></Button>
 </ng-template>
  </GridLayout>
   
@@ -245,16 +268,13 @@
    		  			   
    		  			  
    		  			 </StackLayout>
-   		  			 </ng-template>
+   	 </ng-template>
 </RadListView>
 </StackLayout>
 </GridLayout>
 
  
 
- 
- 
-</StackLayout>
-</StackLayout>
+ </GridLayout></GridLayout>
 
 </ScrollView>

@@ -42,9 +42,11 @@
 }  
 .storetitle{
 	font-size:16;
-	 color: #000 ; 
+	color: #00BFFF ;   
 	  margin-left:8;
 	 margin-top:13;
+	 margin-bottom:8;
+	margin-right:8;	 
 }
 .soldout{
 	font-size:14;
@@ -313,12 +315,11 @@ Button {
 	background-color: transparent;
 border-color: transparent;
 }
-Label:hover {
- /* background: #868e96 none repeat scroll 0 0;*/
-  color:#FFA500; 
-  cursor:pointer;
-} 
+Label:pressed {
 
+	background-color:#eeeeee; 
+    
+} 
 .alert {
 	padding :5 ; 
 	background-color: #FFA1A1; 
@@ -328,3 +329,21 @@ Label:hover {
    border-color:#F27171;
    font-size:12;  
 }
+.param{
+	background-color: #00BFFF  ;
+     horizontal-align: center;
+    border-radius:4; 
+    text-align: center;
+    color: #fff;
+    font-size: 16;
+  padding: 3 ; 
+  height:auto;
+   width:auto; 
+} 
+GridLayout:pressed {
+   
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+   border-width:2; 
+   border-color: #eeeeee;  
+}  

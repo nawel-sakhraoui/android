@@ -73,11 +73,11 @@
 }
 .undo {
 	
-	margin: 12,0,0,2; 
+	margin: 12,0,6,2; 
     color :#00BFFF; 
     padding:5 ; 
-    margin :10, 0,0,2 ;
-    	 font-size :14 ; 
+   
+    font-size :14 ; 
      
 } 
 .alert {
@@ -149,3 +149,14 @@ border-color: transparent;
 	 margin-top:15; 
 	 
 }   
+
+Label:pressed {
+  
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}  
+GridLayout:pressed {
+    padding:3; 
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+} 

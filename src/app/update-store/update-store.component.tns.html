@@ -1,42 +1,52 @@
 
 <ScrollView>
-<StackLayout>
-<StackLayout>
+<GridLayout rows="auto,auto,*">
+<StackLayout row="0"  >
   	
-         <GridLayout  columns=auto,* >
-         <Label text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
-  		<Label col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+    <GridLayout  columns="auto,auto" >
+         <Label (touch)="ontouch($event)"  text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
+  		 <Label (touch)="ontouch($event)"  textWrap='true' col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
     
     </GridLayout>
 
-    <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+    <StackLayout  colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 </StackLayout>
-<GridLayout rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
-<Label class='head' col="0" row="0" text="Catégories"></Label>
+
+<StackLayout row="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf="loading" [busy]="loading" ></ActivityIndicator>
+</StackLayout>  
+
+<GridLayout [visibility]="!loading ?'visible':'collapse'"   row="2" rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
+
+<Label class='head' textWrap='true' col="0" row="0" text="Catégories"></Label>
 <StackLayout class='head' col="1" row="0" orientation ="horizontal">
-<Label [visibility]="!editCat ?'visible':'collapse'"   (tap)='editingCat()' text='&#xf14b;' class="fas"></Label>
-<Label margin="0,5,0,0" [visibility]="editCat  ?'visible':'collapse'"    (tap)='saveCat()'  text='&#xf0c7;' class="fas"></Label>
-<Label [visibility]="editCat  ?'visible':'collapse'"     (tap)='removeCat()' text='&#xf00d;' class="fas"></Label>
+<Label (touch)="ontouch3($event)" textWrap='true'  fontSize='20' [visibility]="!editCat ?'visible':'collapse'"   (tap)='editingCat()' text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   textWrap='true' fontSize='20'  margin="0,40,0,0" [visibility]="editCat  ?'visible':'collapse'"    (tap)='saveCat()'  text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    textWrap='true' fontSize='20'  [visibility]="editCat  ?'visible':'collapse'"     (tap)='removeCat()' text='&#xf00d;' class="fas"></Label>
 </StackLayout>
 
 <GridLayout [visibility]="!editCat ?'visible':'collapse'"  col="1" row="1" >
 <RadListView    [items]="model.selectedCat" >
 			<ng-template  let-c="item" >
-			<Label class="border" text='{{c}}'></Label>
+			<Label  textWrap='true' class="border" text='{{c}}'></Label>
 			</ng-template>
-	</RadListView>
+</RadListView>
 
 </GridLayout>
-<GridLayout rows="*,*" [visibility]="editCat ?'visible':'collapse'"  col="1" row="1" >
-   <GridLayout  margin="0,0,10,0"  row='0' rows="auto,auto ">
-        <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+<GridLayout [isEnabled]="!loadingcat"  rows="*,*" [visibility]="editCat ?'visible':'collapse'"  col="1" row="1" >
+   <GridLayout   row='0' rows="auto,auto ">
+        <!--Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
         <DropDown  #dd
                   itemsTextAlignment="left"
+                  itemsPadding="5"  
               	 [items]="Categories"
                   [(ngModel)]="selectedIndex1"
                   (selectedIndexChanged)="onchange($event)"  
                   colSpan="2"
-                  row="0">
+                  row="0"
+                  fontSize="14"
+                  >
+                  
         </DropDown>
         <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
         
@@ -46,22 +56,25 @@
        <RadListView  row='0'  [items]="model.selectedCat " >
   		  <ng-template let-c="item" let-i="index" >
   		  <GridLayout columns ='auto,auto'>
-                    <Label col="0" text='{{c}}' color="#000"></Label>
+                    <Label class="border" col="0" text='{{c}}' color="#000"></Label>
                     <Label col="1" text="&#xf057;" class="fas " (tap)='removeC(i) '></Label>   
    		  </GridLayout>
    		  </ng-template>
       </RadListView>
-      	 <TextView  editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="send && model.selectedCat.length==0 " class="alert"></TextView>            
+      	 <TextView  editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="model.selectedCat.length==0" class="alert"></TextView>            
       
 	  </GridLayout>
 
 </GridLayout>
+<StackLayout row="1" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingcat" ></ActivityIndicator>
+</StackLayout>  
 
-<Label class="head" col="0" row="2" text="Couverture Géo"></Label>
+<Label   textWrap='true'  class="head" col="0" row="2" text="Couverture Géo"></Label>
 <StackLayout class="head" orientation ="horizontal" col="1" row="2">
-<Label [visibility]="!editGeo?'visible':'collapse'"  (tap)="editingGeo()"  text='&#xf14b;' class="fas"></Label>
-<Label margin="0,5,0,0" [visibility]="editGeo  ?'visible':'collapse'"  (tap)="saveGeo()"  text='&#xf0c7;' class="fas"></Label>
-<Label [visibility]="editGeo ?'visible':'collapse'"   (tap)="removeGeo()" text='&#xf00d;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   fontSize='20' [visibility]="!editGeo?'visible':'collapse'"  (tap)="editingGeo()"  text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   fontSize='20'   margin="0,40,0,0" [visibility]="editGeo  ?'visible':'collapse'"  (tap)="saveGeo()"  text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   fontSize='20'  [visibility]="editGeo ?'visible':'collapse'"   (tap)="removeGeo()" text='&#xf00d;' class="fas"></Label>
 </StackLayout>
 <GridLayout [visibility]="!editGeo ?'visible':'collapse'"  col="1" row="3" >
 	<RadListView [items]="model.geo"  >
@@ -70,18 +83,20 @@
 			</ng-template>
 	</RadListView>
 </GridLayout>
-<GridLayout rows="*,*" [visibility]="editGeo ?'visible':'collapse'"  col="1" row="3" >
+<GridLayout [isEnabled]="!loadinggeo"  rows="*,*" [visibility]="editGeo ?'visible':'collapse'"  col="1" row="3" >
      
-          <GridLayout margin="0,0,10,0" row='0' rows="auto,auto ">
-        <Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label>
+          <GridLayout  row='0' rows="auto,auto ">
+        <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
         
         <DropDown  #dd
                   [items]="namecities"
-                  
+                  itemsTextAlignment="left"
+                  fontSize="14"
                   [(ngModel)]="selectedIndex2"
                   (selectedIndexChanged)="onchange1($event)"
                   colSpan="2"
-                  row='0'>
+                  row='0'
+                     itemsPadding="5" >
         </DropDown>
 		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
 			
@@ -89,30 +104,33 @@
 		<GridLayout rows="auto,auto" row='1'>
 		
         <RadListView row='0' [items]="model.geo">
-            <ng-template let-c="item" let-i="index" let-odd="odd" let-even="even">
+            <ng-template let-c="item" let-i="index" >
               <GridLayout columns ='auto,auto'>
-                    <Label col="0" text='{{c.name}}' color="#000"></Label>
-                    <Label col="1" text="&#xf057;" class="fas " (tap)="removeGeo(i)"></Label>   
+                    <Label  textWrap='true' class="border" col="0" text='{{c.name}}' color="#000"></Label>
+                    <Label col="1" text="&#xf057;" class="fas " (tap)="removeG(i)"></Label>   
    		  		</GridLayout>
             </ng-template>
         </RadListView>
-        <TextView  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="send && model.geo.length ==0 " class="alert"></TextView>            
+        <TextView  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="model.geo.length==0" class="alert"></TextView>            
        </GridLayout>
 
 </GridLayout>
+<StackLayout row="3"  col="1">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadinggeo" ></ActivityIndicator>
+</StackLayout>   
 
-
-<Label class='head' col="0" row="4" text="Administrateurs"></Label>
+<Label  textWrap='true' class='head' col="0" row="4" text="Administrateurs"></Label>
 <StackLayout class="head" orientation ="horizontal" col="1" row="4">
-<Label [visibility]="!editAdmin ?'visible':'collapse'" (tap)="editingAdmin()"   text='&#xf14b;' class="fas"></Label>
-<Label margin="0,5,0,0" [visibility]="editAdmin  ?'visible':'collapse'"  (tap)="saveAdmin()"     text='&#xf0c7;' class="fas"></Label>
-<Label [visibility]="editAdmin ?'visible':'collapse'"    (tap)="removeAdmin()"  text='&#xf00d;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20'   [visibility]="!editAdmin ?'visible':'collapse'" (tap)="editingAdmin()"   text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   fontSize='20' margin="0,40,0,0" [visibility]="editAdmin  ?'visible':'collapse'"  (tap)="saveAdmin()"     text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20' [visibility]="editAdmin ?'visible':'collapse'"    (tap)="removeAdmin()"  text='&#xf00d;' class="fas"></Label>
 </StackLayout>
 <GridLayout [visibility]="!editAdmin ?'visible':'collapse'"  col="1" row="5" >
- <RadListView class=" border "  row="7"  [items]="model.administrators" col="1" >
+ <RadListView  row="7"  [items]="model.administrators" col="1" >
 			<ng-template  let-a="item">
-			 <GridLayout >
-      			 <Label text="{{a.fullname}} : {{a.phone}}"></Label>
+			 <GridLayout class=" border2 "  columns="auto,auto" >
+      			 <Label   textWrap='true'  col="0" text="{{a.fullname}}: "></Label>
+     		     <Label   textWrap='true' col="1" text="{{a.phone}}"></Label>
      			 
     		  </GridLayout>
 			
@@ -121,52 +139,82 @@
 	</RadListView>
 
 </GridLayout>
-<GridLayout [visibility]="editAdmin ?'visible':'collapse'"  col="1" row="5" >
+<GridLayout [isEnabled]="!loadingadmin"  rows="auto,auto,auto" [visibility]="editAdmin ?'visible':'collapse'"  col="1" row="5" >
+	<GridLayout row="0" columns="auto,auto" >
+   		<textField  keyboardType="phone"  [(ngModel)]="adminquery" col='0' hint="Rechercher par téléphone" class='border2'     returnKeyType="next"   (returnPress)='getAdminQuery($event)'  ></textField>
+           <Button col="1" text="&#xf002;" class="fas searchbutton "  (tap)="getAdminQuery($event)"></Button>
+       
+     </GridLayout>
+     <Label row="1" text="Recherche introuvable" *ngIf='searchNothing'></Label>
+      <RadListView class=" border2 "  row="1"  [items]="search" >
+			<ng-template  let-d="item" let-i="index">
+			 <GridLayout class="border2" columns="auto,auto">
+      			 <Label   textWrap='true'  col='0' text="{{d._source.fullname}} "></Label>
+      			 <Label col="1" text="&#xf067;" class="fas"(tap)="addAdmin(d)" ></Label> 
+     		 </GridLayout>
+			</ng-template>
+	 </RadListView>
+ 	   <RadListView class=" border2 "  row="2"  [items]="model.administrators" >
+			<ng-template  let-d="item" let-i="index">
+			 <GridLayout columns="auto,auto">
+      			 <Label   textWrap='true'  col='0' text="{{d.fullname}} "></Label>
+      			 <Label   textWrap='true' col="1" text='&#xf00d;' class="fas"  (tap)="removeAd(d)" ></Label> 
+     		 </GridLayout>
+			</ng-template>
+	 </RadListView>
+ 	
 </GridLayout>
+<StackLayout row="5" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingadmin" ></ActivityIndicator>
+</StackLayout>  
 
-<Label  class="head" col="0" row="6" text="Description"></Label>
+<Label   textWrap='true'  class="head" col="0" row="6" text="Description"></Label>
 <StackLayout  class="head" orientation ="horizontal"  col="1" row="6">
-<Label [visibility]="!editDesc ?'visible':'collapse'"   (tap)="editingDesc()" text='&#xf14b;' class="fas"></Label>
-<Label margin="0,5,0,0" [visibility]="editDesc  ?'visible':'collapse'"  (tap)='saveDesc()'  text='&#xf0c7;' class="fas"></Label>
-<Label [visibility]="editDesc ?'visible':'collapse'"    text='&#xf00d;' (tap)='removeDesc()' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20'  [visibility]="!editDesc ?'visible':'collapse'"   (tap)="editingDesc()" text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20'  margin="0,40,0,0" [visibility]="editDesc  ?'visible':'collapse'"  (tap)='saveDesc()'  text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20'  [visibility]="editDesc ?'visible':'collapse'"    text='&#xf00d;' (tap)='removeDesc()' class="fas"></Label>
 </StackLayout>
 <GridLayout [visibility]="!editDesc ?'visible':'collapse'"  col="1" row="7" >
 	<TextView class="border "  text="{{model.description}}" editable ="false"></TextView>
 
 </GridLayout>
-<GridLayout [visibility]="editDesc ?'visible':'collapse'"  col="1" row="7" >
+<GridLayout [isEnabled]="!loadingdesc" [visibility]="editDesc ?'visible':'collapse'"  col="1" row="7" >
 	<TextView class="border "  text="{{model.description}}" editable ="true"></TextView>
 
 
 </GridLayout>
+<StackLayout row="7" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingdesc" ></ActivityIndicator>
+</StackLayout>  
 
-
-<Label  class="head" col="0" row="8" text="Etat"></Label>
+<Label   textWrap='true' class="head" col="0" row="8" text="Etat"></Label>
 <StackLayout  class="head" orientation ="horizontal" col="1" row="8">
-<Label [visibility]="!editStatus ?'visible':'collapse'"  (tap)='editingStatus()'  text='&#xf14b;' class="fas"></Label>
-<Label margin="0,5,0,0" [visibility]="editStatus  ?'visible':'collapse'"  (tap)="saveStatus()"  text='&#xf0c7;' class="fas"></Label>
-<Label [visibility]="editStatus ?'visible':'collapse'"   (tap)="removeStatus()"text='&#xf00d;' class="fas"></Label>
+<Label  (touch)="ontouch3($event)"   fontSize='20'  [visibility]="!editStatus ?'visible':'collapse'"  (tap)='editingStatus()'  text='&#xf14b;' class="fas"></Label>
+<Label  (touch)="ontouch3($event)"   fontSize='20'   margin="0,40,0,0" [visibility]="editStatus  ?'visible':'collapse'"  (tap)="saveStatus()"  text='&#xf0c7;' class="fas"></Label>
+<Label  (touch)="ontouch3($event)"   fontSize='20'   [visibility]="editStatus ?'visible':'collapse'"   (tap)="removeStatus()"text='&#xf00d;' class="fas"></Label>
 </StackLayout>
 <GridLayout margin='0,0,15,0' [visibility]="!editStatus ?'visible':'collapse'"  col="1" row="9" >
   <Label class="border" *ngIf= "model.open" text='Ouvert'></Label> 
   <Label class="border" *ngIf= "!model.open" text="Fermé"></Label>
 
 </GridLayout>
-<GridLayout   margin='0,0,15,0' rows ='*,*'[visibility]="editStatus ?'visible':'collapse'"  col="1" row="9" > 
+<GridLayout   [isEnabled]='!loadingstatus' margin='0,0,15,0' rows ='*,*'[visibility]="editStatus ?'visible':'collapse'"  col="1" row="9" > 
  	<stackLayout row="0" orientation="horizontal">
- 	<Label (tap)=" model.open= true "  class="select" text='Ouvert'></Label> 
- 	<Label  (tap)=" model.open= true " fontSize="24" color="#00BFFF" *ngIf="!model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
-   	<Label  (tap)=" model.open= true " fontSize="24" color="#FFA500" *ngIf="model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
+ 	<Label (touch)="ontouch3($event)"   (tap)=" model.open= true "  class="select" text='Ouvert'></Label> 
+ 	<Label (touch)="ontouch3($event)"    (tap)=" model.open= true " fontSize="20" color="#00BFFF" *ngIf="!model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
+   	<Label (touch)="ontouch3($event)"    (tap)=" model.open= true " fontSize="20" color="#FFA500" *ngIf="model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
    </stackLayout>
    <stackLayout row="1" orientation="horizontal">
- 	<Label (tap)=" model.open= false "  class="select" text='Fermé'></Label> 
- 	<Label  (tap)=" model.open= false " fontSize="24" color="#00BFFF" *ngIf="model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
-   	<Label  (tap)=" model.open= false " fontSize="24" color="#FFA500" *ngIf="!model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
+ 	<Label (touch)="ontouch3($event)"   (tap)=" model.open= false "  class="select" text='Fermé'></Label> 
+ 	<Label (touch)="ontouch3($event)"    (tap)=" model.open= false " fontSize="20" color="#00BFFF" *ngIf="model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
+   	<Label (touch)="ontouch3($event)"    (tap)=" model.open= false " fontSize="20" color="#FFA500" *ngIf="!model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
    </stackLayout> 
  </GridLayout>
-
+<StackLayout row="9" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingstatus" ></ActivityIndicator>
+</StackLayout>  
 </GridLayout>
 
-</StackLayout>
+</GridLayout>
 
 </ScrollView>

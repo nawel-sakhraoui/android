@@ -1,25 +1,30 @@
-import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
+import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,AfterContentInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {SearchService, StoreService, CartService} from '../_services/index'; 
+import {StoreService, CartService, SearchService} from '../_services/index'; 
 import {Subscription} from 'rxjs';
-//import * as prettyMs from 'pretty-ms';
-import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
-
+//import * as prettyMs from 'pretty-ms'; 
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
+import { SearchBar } from "tns-core-modules/ui/search-bar"; 
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
+//import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
 import * as imagepicker from "nativescript-imagepicker"; 
 
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+
+
+
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
-  
-
-
+ 
+import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
 
 @Component({
   selector: 'app-soldout',
   templateUrl: './soldout.component.html',
   styleUrls: ['./soldout.component.css']
 })
-export class SoldoutComponent implements OnInit , OnDestroy{
+export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
         
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
@@ -110,7 +115,8 @@ export class SoldoutComponent implements OnInit , OnDestroy{
                              console.log(this.store) ; 
                              //check if i'm the store admin
                             let admin = false ; 
-                             for (let a of this.store.admins  ){
+                             if (this.store.hasOwnProperty("administrators")) 
+                             for (let a of this.store.adminisrators  ){
                                if( a.userid == this.me ) {
                                    admin = true ; 
                                    break ; 
@@ -552,6 +558,34 @@ private startSelection(context) {
     }
 
     
+        
+ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+} 
+   
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+
+  
     
     
     

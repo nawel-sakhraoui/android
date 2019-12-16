@@ -2,29 +2,38 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angula
 import { FirebaseService,OngoingService, UserdetailsService, MessagesService  , StoreService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd  } from '@angular/router';
 import * as prettyMs from 'pretty-ms';
+import * as utils from "utils/utils";
+import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+
+import * as  clipboard from "nativescript-clipboard" ;
+
 
 @Component({
   selector: 'app-sale-command',
   templateUrl: './sale-command.component.html',
   styleUrls: ['./sale-command.component.css']
 })
-export class SaleCommandComponent implements OnInit {
+export class SaleCommandComponent implements OnInit,AfterViewInit {
         
    
         @ViewChild("scrollView", { static: true }) scrollView :ElementRef;
        @ViewChild("message", { static: true } ) messageView: ElementRef; 
+           @ViewChild("msgs", { static: true } ) msgsView: ElementRef; 
+
         @ViewChild("top", { static: true } ) topView: ElementRef ;
         @ViewChild("rating", { static: true } ) ratingView: ElementRef ; 
     query :string=""; 
     alert :boolean;
-    
+    textmessage ="" ; 
     alert2:boolean; 
     commandid :string ; 
-    model :any= {} ;
+    model :any= {'steps':{"stop":0}} ;
     userrating =0;
     feedback:any ; 
-    avatarlist = {}; 
-    fullnamelist = {};
+    avatarlist :any= {}; 
+    fullnamelist:any = {};
     sales :boolean ; 
     ongoing :boolean =false  ; 
     isopen =false ;
@@ -34,9 +43,13 @@ export class SaleCommandComponent implements OnInit {
     opened = true ;
     menuhide = false ;  
     storetitle ="" ;
-    steps= {} ;
-    delivery ={} ;  
-    choosenAddress = {} ; 
+    steps:any= {'stop': 0} ;
+    delivery:any ={} ;  
+    loading:boolean ; 
+    choosenAddress:any = {} ; 
+    alertM=false ;
+    firebase='';
+    loadingM=false ; 
      me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
     constructor(private ongoingService:OngoingService, 
@@ -64,7 +77,7 @@ export class SaleCommandComponent implements OnInit {
     
     ngOnInit() {
 
-        
+        this.loading = true ; 
         console.log('commandid') ; 
         this.route.params.subscribe(params => {
         
@@ -151,12 +164,25 @@ export class SaleCommandComponent implements OnInit {
                            }
                            );
                         
+                     
+                             this.userdetailsService.getFirebase(this.model.userid)
+                          .subscribe(
+                               data=>{
+                                 this.firebase = data['firebase']; 
+                  
+                         
+                     
+                               },error=>{
+                                    console.log(error ) ; 
+                                 }) ; 
+        
+                        
                 for( let j = 0 ;j < this.model.messages.length; j++ ) {
                         //    console.log( JSON.parse(this.model.messages[j]) );
                                 
-                       try{
-                         this.model.messages[j] = JSON.parse(this.model.messages[j]); 
-                         if (! this.avatarlist[this.model.messages[j].from ]) {
+                     //  try{
+                     //    this.model.messages[j] = JSON.parse(this.model.messages[j]); 
+                         /*if (! this.avatarlist[this.model.messages[j].from ]) {
                            
                          this.userdetailsService.getAvatar(this.model.messages[j].from)
                          .subscribe( 
@@ -168,7 +194,7 @@ export class SaleCommandComponent implements OnInit {
                                  console.log (error ) ;    
                            }
                            );
-                      }
+                      }*/
                            
                            
                             if (! this.fullnamelist[this.model.messages[j].from ]) {
@@ -197,36 +223,36 @@ export class SaleCommandComponent implements OnInit {
                            
                            
                            
-                       } catch (error ) {
-                         console.log(error) ;   
-                        }
+                 //      } catch (error ) {
+                  //       console.log(error) ;   
+                   //     }
                   }
                   
                   this.model.steps.prepareBool = false ;  
                     this.model.steps.sendBool = false ; 
-                  this.model.startdate = new Date (this.model.startdate).toLocaleString("fr-FR").replace("à","-"); 
+                  this.model.startdate = this.getLocalDateTime(this.model.startdate);
                   if (this.model.steps.prepare!=0) 
-                  this.model.steps.prepare = new Date (this.model.steps.prepare).toLocaleString("fr-FR").replace("à","-"); 
+                  this.model.steps.prepare = this.getLocalDateTime(this.model.steps.prepare); 
                   if ( this.model.steps.send !=0 ) 
-                  this.model.steps.send = new Date (this.model.steps.send).toLocaleString("fr-FR").replace("à","-"); 
+                  this.model.steps.send = this.getLocalDateTime(this.model.steps.send); 
                   if ( this.model.steps.receive !=0 ) 
-                  this.model.steps.receive= new Date (this.model.steps.receive).toLocaleString("fr-FR").replace("à","-"); 
+                  this.model.steps.receive=this.getLocalDateTime (this.model.steps.receive); 
                   if (this.model.steps.solvedlitige!=0)
-                       this.model.steps.solvedlitige = new Date (this.model.steps.solvedlitige).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.solvedlitige = this.getLocalDateTime (this.model.steps.solvedlitige);
 
                    if (this.model.steps.litige!=0)
-                       this.model.steps.litige = new Date (this.model.steps.litige).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.litige = this.getLocalDateTime (this.model.steps.litige); 
 
                    if (this.model.steps.close!=0)
-                       this.model.steps.close = new Date (this.model.steps.close).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.close = this.getLocalDateTime(this.model.steps.close);
 
                    if (this.model.steps.stop!=0)
-                       this.model.steps.stop = new Date (this.model.steps.stop).toLocaleString("fr-FR").replace("à","-"); 
+                       this.model.steps.stop = this.getLocalDateTime(this.model.steps.stop); 
 
                   this.ongoing = true ; 
  
                
-                   let connection = this.messagesService.getOngoingMessages(this.commandid)
+                   this.messagesService.getOngoingMessages(this.commandid)
                   .subscribe(
                    message => 
                    {
@@ -242,7 +268,7 @@ export class SaleCommandComponent implements OnInit {
                             this.message.new = true ; 
                    //   console.log(message.text ) ; 
                      this.model.messages.push(this.message);
-                     if (!this.avatarlist[this.message.from]) {
+                     /*if (!this.avatarlist[this.message.from]) {
                        this.userdetailsService.getAvatar(this.message.from)
                        .subscribe( 
                            data => {
@@ -256,7 +282,7 @@ export class SaleCommandComponent implements OnInit {
                            }
                            );
                           
-                         }
+                         }*/
                    }
                    ,errors =>
                     {
@@ -276,13 +302,14 @@ export class SaleCommandComponent implements OnInit {
                                     }) ; 
                   
               }
-              
+              this.loading = false ;
               
             }
           
             ,error7=> {
                         this.nosale = true ; 
                         console.log(error7) ; 
+                this.loading = false ; 
                     }) ; 
 
   });
@@ -296,6 +323,8 @@ export class SaleCommandComponent implements OnInit {
                          this.isopen = true ;
                          this.scrollView.nativeElement.scrollToVerticalOffset(this.messageView.nativeElement.getLocationRelativeTo(this.topView.nativeElement)['y'], false);
  
+                        this.msgsView.nativeElement.scrollToIndex(this.model.messages.length - 1, false, ListViewItemSnapMode.Auto);
+
            }else{
                
               if ( this.fragment=="rating") {
@@ -328,7 +357,7 @@ export class SaleCommandComponent implements OnInit {
             this.ongoingService.putPrepare(id, time ) 
             .subscribe(
                 data =>{ console.log(data) ;
-                        this.model.steps.prepare = new Date (time).toLocaleString("fr-FR").replace("à","-"); ;  
+                        this.model.steps.prepare = this.getLocalDateTime (time) ;  
                            this.model.steps.prepareBool= false;
                                 this.model.steps.prepareloading = false ; 
                 },
@@ -344,24 +373,13 @@ export class SaleCommandComponent implements OnInit {
                 ,error=>{
                     console.log(error) ; 
                     });   
-            let firebase ="" ; 
-              this.userdetailsService.getFirebase(to)
-               .subscribe(
-                 data=>{
-                      console.log(data) ; 
-                      firebase = data['firebase']; 
-                     this.firebaseService.prepareNotif(firebase, this.model.storetitle )
+            this.firebaseService.prepareNotif(this.firebase, this.model.storetitle )
                      .subscribe(
                          d=>{
                            console.log(d) ;    
                          },e=>{
                            console.log(e) ; 
                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ; 
         
     }
     
@@ -373,7 +391,7 @@ export class SaleCommandComponent implements OnInit {
     this.ongoingService.putSend(id, time ) 
             .subscribe(
                 data =>{ //console.log(data) ; 
-                this.model.steps.send =new Date( time ).toLocaleString("fr-FR").replace("à","-");  
+                this.model.steps.send =this.getLocalDateTime( time );  
                 this.model.steps.sendBool = false ; 
                                      this.model.steps.sendloading = false ; 
  
@@ -391,27 +409,15 @@ export class SaleCommandComponent implements OnInit {
                     console.log(error) ; 
                     });    
        
-           let firebase ="" ; 
-              this.userdetailsService.getFirebase(to)
-               .subscribe(
-                 data=>{
-                      console.log(data) ; 
-                      firebase = data['firebase']; 
-                     this.firebaseService.storemessageNotif(firebase, this.model.storetitle )
+             this.firebaseService.storemessageNotif(this.firebase, this.model.storetitle )
                      .subscribe(
                          d=>{
                            console.log(d) ;    
                          },e=>{
                            console.log(e) ; 
                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ; 
+    
     }
-    
-    
     
   /*    closeDone (id,  to  ){
           
@@ -435,17 +441,28 @@ export class SaleCommandComponent implements OnInit {
                 error => {console.log(error) ; })  ;
     }*/
 
-      sendMessage( id,  userid ){
-          let time = new Date().getTime() ;
+ sendMessage( id,  userid ){
+     if(this.textmessage==""){  
+        this.alertM=true ; 
+     }else {
+         this.loadingM = true ; 
+         this.alertM= false ; 
+         let time = new Date().getTime() ;
          //this.messagesService.sendMessage({"from": localStorage.getItem('currentUser'), "message": this.model[i].message, "id":id}); 
        
-         this.messagesService.putOngoingMessage(id, this.model.message)
+         this.messagesService.putOngoingMessage(id, this.textmessage)
          .subscribe(
              data =>{    
+           //   this.model.messages.push({'text':this.model.message, 'date': time, 'from':this.me}) ; 
+                
+                   this.textmessage = '' ; 
+                 utils.ad.dismissSoftInput() ; 
             // console.log(f) ;     
                  this.isopen = true ;
                 //f.reset();
-                 this.model.message = '' ;  
+                 this.loadingM=false  ;
+                this.msgsView.nativeElement.scrollToIndex(this.model.messages.length-1, false, ListViewItemSnapMode.Auto);
+
              }
              ,error =>{        
                    console.log(error) ; 
@@ -462,25 +479,15 @@ export class SaleCommandComponent implements OnInit {
                     console.log(error) ; 
                     });  
           
-              let firebase ="" ; 
-              this.userdetailsService.getFirebase(userid)
-               .subscribe(
-                 data=>{
-                      console.log(data) ; 
-                      firebase = data['firebase']; 
-                     this.firebaseService.storemessageNotif(firebase, this.model.storetitle )
+                   this.firebaseService.storemessageNotif(this.firebase, this.model.storetitle )
                      .subscribe(
                          d=>{
                            console.log(d) ;    
                          },e=>{
                            console.log(e) ; 
                          });
-                         
-                     
-                },error=>{
-                       console.log(error ) ; 
-                }) ; 
-
+              }
+         
      }
     backToStore () {
          this.router.navigate(["../../store"], { relativeTo: this.route });
@@ -496,7 +503,8 @@ export class SaleCommandComponent implements OnInit {
   }
     
   sendRating () { 
-          
+                  utils.ad.dismissSoftInput() ; 
+ 
           if (this.userrating !=0  ) {
                this.alert = false  ; 
 //                 
@@ -530,5 +538,83 @@ export class SaleCommandComponent implements OnInit {
           this.alert = false ; 
        }
     
+         openMsgs(){
+        
+      
+         this.isopen= !this.isopen   ;
+         
+         if (this.isopen ) 
+            setTimeout(()=>{
+                
+                      this.scrollView.nativeElement.scrollToVerticalOffset(this.messageView.nativeElement.getLocationRelativeTo(this.topView.nativeElement).y, false);
+                      this.msgsView.nativeElement.scrollToIndex(this.model.messages.length - 1, false, ListViewItemSnapMode.Auto);
+
+//                this.msgsView.nativeElement.scrollToVerticalOffset(this.msgsView.nativeElement.scrollableHeight, false);
+             },150); 
+        
+     
+    } 
+    
+
+getLocalDateTime(date) {
+
+   date = new Date(date) ; 
+  let hours = date.getHours();
+  //if (hours < 10) hours = '0' + hours;
+
+  let minutes = date.getMinutes();
+  if (minutes < 10) minutes = '0' + minutes;
+
+  //let timeOfDay = hours < 12 ? 'AM' : 'PM';
+
+  return date.getMonth() + '/' + date.getDate() + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes 
+}
+    
+     ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+    
+        ontouch3(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed3");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed3");
+            break;
+    }
+   
+}
+    
+  
+    
+ selectText(args) {
+          const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("selected");
+            break;
+        case 'down':
+            label.addPseudoClass("selected");
+            break;
+    }
+         let text = args.object.text;  
+         clipboard.setText( text ).then(function() {
+                 console.log("OK, copied to the clipboard");
+            });
+         
+         }
+   
     
 }

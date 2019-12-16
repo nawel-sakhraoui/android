@@ -25,7 +25,7 @@ import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
    <TextView fontSize='12' row='0' editable ='false' text="Le panier est rempli vous pouvez supprimer quelques articles avant l'ajout"></TextView>
    <GridLayout row='1' columns ="*,auto,auto" >
 
-    <Button  fontSize='12' text="Panier &#xf07a;"  class="fas" col="1" backgroundColor="#FFA500" color="white"   (tap)='gotocart()' ></Button>
+    <Button  fontSize='12' text="Panier &#xf07a;"  class="fas" col="1" backgroundColor="#FFA500" color="white"  nsRouterLink="/home/+{{me}}+/cart" ></Button>
     <Button fontSize="12" text="Fermer" col="2" backgroundColor="transparent" color="#444444" (tap)='hide()'></Button>
  
    </GridLayout>
@@ -49,7 +49,7 @@ export class ModalComponent {
  
     warning = false ; 
     constructor( private route : ActivatedRoute, 
-              private router : RouterExtensions, 
+              private router : Router, 
               private params: ModalDialogParams ){
         
       
@@ -68,7 +68,7 @@ export class ModalComponent {
   }
     public gotocart (){
      
-         this.router.navigateByUrl("//home/"+this.me+'/cart');
+         this.router.navigateByUrl("/home/"+this.me+'/cart');
 
      this.params.closeCallback();
  

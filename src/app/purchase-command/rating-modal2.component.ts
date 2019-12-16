@@ -16,21 +16,23 @@ import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
              <StackLayout>  
                     <Image [src]="a.pic"    class="pic"  stretch="aspectFill" ></Image>
 
-                    <StackLayout   backgroundColor="rgba(0,0,0, 0.4)">
+                    <StackLayout  >
             
-                        <StarRating  isindicator="false" (valueChange)="setScore($event,a.articleid)"   android:scaleX=".3" android:scaleY=".3"
+                        <StarRating  (valueChange)="setScore($event,a.articleid)"   android:scaleX=".4" android:scaleY=".4"
                                 horizontalAlignment="center" verticalAlignment="center"  [value]="rating[a.articleid]" ></StarRating>
                            
                     </StackLayout>
                   
                     <TextView fontSize="12" row='0' hint="votre évaluation" class="input" [(ngModel)]="feedback[a.articleid]"    returnKeyType="done" 
-                 returnPress="onReturnPress" maxLength="300"></TextView>
+                  maxLength="300"></TextView>
             </StackLayout>
             </ng-template>
         </RadListView>
-        <GridLayout row="2" columns='*,auto,auto'>
-            <Button class="btn btn-active" color="#fff"  backgroundColor="#00BFFF" col="1"  (tap) ="sendRating()" text="Envoyer"></Button>
-            <Label  margin='15,0,0,4' color="#000" col="2" (tap)="hide()" text='Annuler'></Label>
+        <GridLayout row="2" columns='*,auto,auto,auto'>
+            <Button  [isEnabled]='!loading' color="#fff"  backgroundColor="#00BFFF" col="1"  (tap) ="sendRating()" text="Envoyer"></Button>
+                <ActivityIndicator col="2" *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+        
+            <Button  [isEnabled]='!loading' color="#00BFFF"  backgroundColor="#fff"   col="2" (tap)="hide()" text='Annuler'></Button>
         </GridLayout>
 </GridLayout>
   `,
@@ -57,7 +59,7 @@ export class RatingModal2Component {
   alert2:any={};   
   public visible = false;
   public visibleAnimate = false;
-
+ loading:boolean ; 
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
     ratingDone = false ; 
@@ -118,6 +120,7 @@ setScore(e,a){
       this.alert[id] = false ;  
       }*/
   sendRating () {
+      this.loading = true ; 
       this.waiting = true ;  
          let bool = true ; 
          for (let m of this.model.articles ){
@@ -162,6 +165,7 @@ setScore(e,a){
                       })
              this.ratingDone = true
             }
+            this.loading = false ; 
                    //put userid rating 
             this.ongoingService.putAllRatingArticle(this.commandid  , this.rating, this.feedback )
             .subscribe (
@@ -179,7 +183,8 @@ setScore(e,a){
            this.waiting = false ; 
           
         
-      }
+      }else 
+          this.loading = false ; 
 
 }
 }

@@ -7,12 +7,13 @@
 }
 
 .border{
-	font-size:12 ; 
+	font-size:14 ; 
 	 border-bottom-width: 1 ;
    	 padding:10; 
  	 border-bottom-color:#D0D0D0; 
   
 }
+
 
 .fas {
     font-family: Font Awesome 5 Free, fa-solid-900;
@@ -30,4 +31,22 @@
 	color:#000;  
 	padding : 5 ;
 	
+}
+.storetitle{
+	font-size:16;
+	 color: #00BFFF ; 
+	 
+} 
+
+Label:pressed {
+
+	background-color:#eeeeee; 
+  
+} 
+
+
+Label:pressed3 {
+    /*padding:2; */
+   color:#D0D0D0;
+   
 }

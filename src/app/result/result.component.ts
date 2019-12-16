@@ -5,7 +5,10 @@ import {CartService, StoreService, SearchService, MyhomeService, AuthenticationS
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import { RouterExtensions } from "nativescript-angular/router";
- 
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+
 @Component({
   selector: 'app-result',
   templateUrl: './result.component.html',
@@ -13,17 +16,19 @@ import { RouterExtensions } from "nativescript-angular/router";
 })
 
 
-export class ResultComponent implements OnInit {
+export class ResultComponent implements OnInit,AfterViewInit {
 
 
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
-    maxcart =3 ; 
+    maxcart =30 ; 
     search :boolean = false ;
     notfound= false ; 
     notfoundstore = false ;   
-    articles:any  =[] ;  
+    articles:any  =[] ;
+    temparticles:any = [];  
     countStore = 0 ;  
     stores:any  =[]; 
+    tempstores :any  = [] ; 
     store0 :any ={};
     banners  =[];
     mainpics:any = []; 
@@ -41,7 +46,7 @@ export class ResultComponent implements OnInit {
  
     fullcartwarning:boolean ; 
     articlesize =6; 
-    storesize =4;
+    storesize =3;
     
     countarticle = 0  ; 
     countstore = 0 ;
@@ -57,7 +62,7 @@ export class ResultComponent implements OnInit {
     context = ""; //"filter"; //"query"
     city : string ; 
   constructor(  private route: ActivatedRoute,
-  private router: RouterExtensions, 
+    private router: Router,
   private myhomeService: MyhomeService, 
   private authService: AuthenticationService,
   private searchService: SearchService, 
@@ -89,7 +94,7 @@ export class ResultComponent implements OnInit {
                         
          
     this.searchService.sendcity.subscribe((data00)=>{
-                 this.loading = true ; 
+             //    this.loading = true ; 
 
          this.city = data00['city'] ; 
         console.log(this.city) ; 
@@ -201,12 +206,12 @@ export class ResultComponent implements OnInit {
     
      gotoArticle( id:string , storeid : string ) {
      
-         this.router.navigate(["../../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+         this.router.navigate(["./../../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
 
      }
     
     gotoStore(id){
-                 this.router.navigate(["../../../stores/"+id], { relativeTo: this.route });
+                 this.router.navigate(["./../../../stores/"+id], { relativeTo: this.route });
 
        }
     
@@ -355,7 +360,7 @@ export class ResultComponent implements OnInit {
     
    getArticlePage (page ){
         
-       
+       this.loading = true ; 
        if (this.context == "filter") {
        if (this.filter !="Indefinie")  {
 
@@ -365,10 +370,11 @@ export class ResultComponent implements OnInit {
             data2 => {
             //    console.log(data2 ) ; 
                 //this.articles = data2['hits']['hits'] ; 
-                this.articles = this.articles.concat(data2['hits']['hits'] )  ;
+                this.temparticles = data2['hits']['hits'];
 
                 this.articleprocess() ; 
-                     
+                                
+
                  this.articlepage = page ; 
                  this.loading = false ;
                   this.search = true ;
@@ -384,7 +390,8 @@ export class ResultComponent implements OnInit {
         .subscribe(
             data2 => {
                 //console.log(data2 ) ; 
-                this.articles = data2['hits']['hits'] ; 
+                this.temparticles = data2['hits']['hits'];
+
                 this.articleprocess() ;
                 this.articlepage = page ; 
                 this.loading = false ;
@@ -403,15 +410,15 @@ export class ResultComponent implements OnInit {
     
     
     getStorePage (page ) {
-        
+        this.loading= true ; 
         if (this.context =="filter"){
            if (this.filter !="Indefinie")  {
                 this.searchService.getStores ( this.storesize, (page-1)*this.storesize, this.filter, this.orderby, this.city )
         .subscribe(
             data => {
                 console.log(data ) ; 
-                //this.stores = data["hits"]["hits"]; 
-                this.stores = this.stores.concat(data['hits']['hits'] )  ;
+                this.tempstores = data["hits"]["hits"]; 
+             
 
                 this.storeprocess()  ; 
                 this.storepage = page ; 
@@ -429,7 +436,7 @@ export class ResultComponent implements OnInit {
         .subscribe(
             data => {
                 console.log(data ) ; 
-                this.stores = data["hits"]["hits"]; 
+                this.tempstores = data["hits"]["hits"]; 
                       this.storeprocess()  ; 
                  this.storepage = page ; 
          
@@ -446,7 +453,7 @@ export class ResultComponent implements OnInit {
 }
   
     storeprocess () {
-                if(this.stores.length == 0 ) {
+                if(this.tempstores.length == 0 ) {
                       
                       this.notfoundstore = true ; 
                      
@@ -454,29 +461,30 @@ export class ResultComponent implements OnInit {
                      
                          
                       this.notfoundstore =  false ; 
-                        for (let i = 0 ; i < this.stores.length; i++){
-                         this.storedisp[this.stores[i]._id ] = false ; 
+                        for (let i = 0 ; i < this.tempstores.length; i++){
+                         this.storedisp[this.tempstores[i]._id ] = false ; 
 
-                        this.storeService.getBanner(this.stores[i]._id)
+                        this.storeService.getBanner(this.tempstores[i]._id)
                                  .subscribe (
                                         data1=>{
                                             try {
                                                 console.log (data1) ; 
-                                                 this.stores[i]['banner'] = data1['banner'];  
+                                                 this.tempstores[i]['banner'] = data1['banner'];  
                                                 // console.log( this.stores[i]['banner']  )  ; 
                                             }catch(error) {
-                                                 this.stores[i]['banner'] = "";  
+                                                 this.tempstores[i]['banner'] = "";  
 
                                             }   
                                         }
                                         ,error=>{
 
-                                            this.stores[i]['banner'] = "";  
+                                            this.tempstores[i]['banner'] = "";  
                                            console.log(error) ;     
                                         }
                                      ); 
                        }
-                      
+                               this.stores =  this.stores.concat(this.tempstores) ; 
+
                    
        
                       
@@ -484,7 +492,7 @@ export class ResultComponent implements OnInit {
         }
     
     articleprocess () {
-                if(this.articles.length == 0 ) {
+                if(this.temparticles.length == 0 ) {
                           
                       this.notfound = true ; 
                       this.loading = false ; 
@@ -492,7 +500,7 @@ export class ResultComponent implements OnInit {
                   } else {
                           this.loading = false ;
                            this.notfound = false  ;  
-                      for (let s of this.articles){
+                      for (let s of this.temparticles){
                                 this.disp[s._id ] = false ; 
                            this.storeService.getPic(s._id)
                            .subscribe (
@@ -512,6 +520,7 @@ export class ResultComponent implements OnInit {
                         }
                       
       
+                     this.articles = this.articles.concat(this.temparticles);
                  
                       
                    } 
@@ -762,6 +771,33 @@ export class ResultComponent implements OnInit {
     
     
 
+}
+    
+       ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+    }
+       
+         
+        ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
 }
     
 }

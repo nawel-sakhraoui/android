@@ -10,7 +10,8 @@ import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { SearchBar } from "tns-core-modules/ui/search-bar"; 
 import {Page} from "ui/page" ; 
  import { SelectedIndexChangedEventData } from "nativescript-drop-down";
-
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
 //geolocalisation ici !! 
 import * as geolocation from "nativescript-geolocation";
 import { Accuracy } from "tns-core-modules/ui/enums";
@@ -36,6 +37,7 @@ export class MenuComponent implements OnInit {
     stores:any = [] ;
     checkStores:boolean =false ; 
     notifications:any = []; 
+    notificationsCount = 0 ; 
     messagesnotif = 0 ; 
     temptime = [] ;
     menuState ="" ;  
@@ -82,7 +84,7 @@ export class MenuComponent implements OnInit {
               if (event instanceof NavigationStart) {
                   this.menuState = 'out';
               } });*/
-        
+     /*   
         
               this.router.events.subscribe( (event: Event) => {
               if (event instanceof NavigationStart) {
@@ -106,26 +108,26 @@ export class MenuComponent implements OnInit {
         
                this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
-         this.userdetailsService.getLocation(this.myhome)
-         .subscribe(
-             data=>{
-                 console.log(data) ; 
-                 if (data['location']) {
-                    this.city = data['location'];   
-                    this.cityAr  = data['locationAr'] ; 
-                     this.selectedIndex = this.cities.indexOf(this.city) ; 
-                     }
-                 else {
-                        this.city= 'Toutes les villes'; 
-                        this.cityAr='كل الولايات'; 
-                     }
-                   this.searchService.sendCity({
-                                   "city": this.city}) ;
-             },error=>{
-                 console.log(error) ; 
-                 this.city= 'Toutes les villes'; 
-                 this.cityAr='كل الولايات';
-            });
+     this.userdetailsService.getLocation(this.myhome)
+     .subscribe(
+         data=>{
+             console.log(data) ; 
+             if (data['location']) {
+                this.city = data['location'];   
+                this.cityAr  = data['locationAr'] ; 
+                 this.selectedIndex = this.cities.indexOf(this.city) ; 
+                 }
+             else {
+                    this.city= 'Toutes les villes'; 
+                    this.cityAr='كل الولايات'; 
+                 }
+               this.searchService.sendCity({
+                               "city": this.city}) ;
+         },error=>{
+             console.log(error) ; 
+             this.city= 'Toutes les villes'; 
+             this.cityAr='كل الولايات';
+        });
          this.addressService.getCities () 
           .subscribe (
              data => {
@@ -151,7 +153,7 @@ export class MenuComponent implements OnInit {
               this.langue2='fr' ; 
                 this.langue='ar'; 
           }
-
+*/
      }
 
     
@@ -165,7 +167,7 @@ export class MenuComponent implements OnInit {
           this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
           console.log(this.myhome) ; 
           
-         
+  
           
           this.addressService.getCities () 
           .subscribe (
@@ -177,21 +179,44 @@ export class MenuComponent implements OnInit {
                          result =result.concat([filter.name]) ;
                         return result;
                         },[]);
-               //  this.cities.unshift("Toutes les villes") ;
-                 this.selectedIndex = this.cities.indexOf(this.city) ; 
-             }, error => {
+               
+                this.userdetailsService.getLocation(this.myhome)
+                 .subscribe(
+                     data=>{
+                      console.log(data) ; 
+                      if (data['location']) {
+                      this.city = data['location'];   
+                      this.cityAr  = data['locationAr'] ; 
+                      this.selectedIndex = this.cities.indexOf(this.city) ; 
+                    }
+                    else {
+                        this.city= 'Toutes les villes'; 
+                        this.cityAr='كل الولايات'; 
+                   }
+                       this.searchService.sendCity({
+                               "city": this.city}) ;
+                 },error=>{
+                     console.log(error) ; 
+                    this.city= 'Toutes les villes'; 
+                    this.cityAr='كل الولايات';
+                        this.searchService.sendCity({
+                               "city": this.city}) 
+                 });
+                 
+                 
+                 
+               }, error => {
                     console.log(error);   
         
-          }); 
-          //this.userdetailsService.getcity (this.myhome) 
-          //this.city = data['position']
-          this.userdetailsService.getFullname (this.myhome)
+                }); 
+          
+              this.userdetailsService.getFullname (this.myhome)
               .subscribe(
                 data=>{
                 //   console.log(data) ; 
                     this.name = data['fullname']; 
                 
-               this.loading= false ; 
+                     this.loading= false ; 
 
         
           
@@ -217,15 +242,10 @@ export class MenuComponent implements OnInit {
           this.userdetailsService.getNotifications (this.myhome)
           .subscribe(
               data =>{
-                  this.notifications = data ; 
-                   console.log(data ) ; 
-                   for (let i= 0 ; i<  this.notifications.notification.length ; i++ ) {   
-                  //  this.notifications.notification[i].time = prettyMs( new Date().getTime() - this.notifications.notification[i].time,  {compact: true}  );
-                    }
-                this.notifications.notification= this.notifications.notification.reverse(); 
-       
-              }
-              ,error =>{
+                  this.notificationsCount  = data['notificationcount'] ; 
+                  this.notifications =data ;
+              
+              },error =>{
                   console.log(error) ; 
                   }) ;
           
@@ -256,12 +276,12 @@ export class MenuComponent implements OnInit {
                 data2=> {
                    this.notif= data2 ;
                     this.notif = JSON.parse (this.notif ) ;  
-                    console.log(data2);
+                   // console.log(data2);
                    
                    //  this.notif['time'] =prettyMs( new Date().getTime() -this.notif['time'],  {compact: true} ) ;  
                        
-                    this.notifications.notification.unshift(this.notif ) ; 
-                    this.notifications.notificationcount+=1; 
+                    //this.notifications.notification.unshift(this.notif ) ; 
+                   this.notificationsCount +=1;
                 
                 }
                 ,error2 =>{
@@ -274,7 +294,7 @@ export class MenuComponent implements OnInit {
                 data2=> {
                     this.mnotif = data2 ; 
                     this.mnotif = JSON.parse(this.mnotif) ;
-                    console.log(data2 ) ; 
+                   // console.log(data2 ) ; 
                  //data2.time = prettyMs( new Date().getTime() - data2.time);
                   
               
@@ -291,7 +311,7 @@ export class MenuComponent implements OnInit {
                 data2=> {
                     this.mnotif = data2 ; 
                     this.mnotif = JSON.parse(this.mnotif) ;
-                    console.log(data2 ) ; 
+                    //console.log(data2 ) ; 
                   // // data2.time = prettyMs( new Date().getTime() - data2.time);
                   
                     if (this.messagesnotif >0 ) 
@@ -309,25 +329,25 @@ export class MenuComponent implements OnInit {
               datan=> {
                   this.data3 = datan  ;
                   this.data3 = JSON.parse(this.data3) ;  
-                  console.log(this.notifications.notification) ; 
-                 // console.log(data3) ;
+                  //console.log(this.notifications.notification) ; 
+                   console.log(this.data3) ;
                    for (let n of  this.notifications.notification) { 
                         console.log(n.commandid) ; 
-                       if(n.commandid.localeCompare(this.data3['commandid'])==0  &&  this.data3['value'].localeCompare( n.value) ==0) {
+                       if( n.commandid== this.data3['commandid'] &&  this.data3['value']==n.value) {
                                     
-                              let index = this.notifications.notification.indexOf(n);
-                             console.log(index) ;     
+                             // let index = this.notifications.notification.indexOf(n);
+                            // console.log(index) ;     
                                      
-                               this.notifications.notification.splice(index,1);
-                                this.notifications.notificationcount -=1 ; 
+                            //   this.notifications.notification.splice(index,1);
+                               this.notificationsCount -=1 ; 
 
                         }else {
-                            if(n.commandid.localeCompare( this.data3['commandid'] )==0)  {
-                                let index = this.notifications.notification.indexOf(n);
-                                 console.log(index) ;     
+                            if(n.commandid == this.data3['commandid'] )  {
+                             //   let index = this.notifications.notification.indexOf(n);
+                              //   console.log(index) ;     
 
-                              this.notifications.notification.splice(index,1);
-                                       this.notifications.notificationcount -=1 ; 
+                            //  this.notifications.notification.splice(index,1);
+                                 this.notificationsCount -=1 ; 
 
                             }
                             }
@@ -362,13 +382,14 @@ export class MenuComponent implements OnInit {
         this.rolesService.flushRoles();
        // this.authenticationService.logout();
         localStorage.removeItem('currentUser');
-                localStorage.removeItem('Language');
+         //       localStorage.removeItem('Language');
 
         this.router.navigateByUrl('/');// || '/home/'+this.userid;
 
     }
     
       
+    
     goToLink(commandid , notif ){
         console.log(notif) ; 
         if (notif.localeCompare("rating")==0){
@@ -616,8 +637,17 @@ export class MenuComponent implements OnInit {
 
        } 
     
-    
+   ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
    
 }
 
-
+}

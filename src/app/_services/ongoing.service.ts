@@ -23,6 +23,7 @@ export class OngoingService {
         };
     
     getArticlesByStoreId(storeid: string,froms :number, size:number ){
+        storeid= storeid.replace(/ /g, "%20");
                   let v = "notclose" ; 
                 return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/"+froms+"/"+size);
 
@@ -30,12 +31,14 @@ export class OngoingService {
     
       
     getArticlesByStoreIdClose(storeid: string,froms :number, size:number ){
+        storeid= storeid.replace(/ /g, "%20");
              let v = "close" ;
                 return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/"+froms+"/"+size);
 
          };
     
         getCountArticlesByStoreId(storeid: string ){
+            storeid= storeid.replace(/ /g, "%20");
             console.log(storeid) ; 
              let v = "notclose" ;
              return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/count/");
@@ -45,7 +48,7 @@ export class OngoingService {
         
         getCountArticlesByStoreIdClose(storeid: string ){
                          console.log(storeid )  ;
-
+                storeid= storeid.replace(/ /g, "%20");
              let v = "close" ;
              return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/count/");
 
@@ -163,7 +166,7 @@ export class OngoingService {
              }
     
         getOngoingStoreUser(userid : string, storeid : string ) {
-            
+            storeid= storeid.replace(/ /g, "%20");
             
              return this.http.get (this.host+'/api/ongoing/ongoing/store/'+storeid+"/user/"+ userid ) ; 
             }

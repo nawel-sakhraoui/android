@@ -197,6 +197,13 @@ Button {
  	 border-bottom-color:#D0D0D0; 
   
 }
+.desc{
+	font-size:12 ; 
+	 border-bottom-width: 1 ;
+   	 
+ 	 border-bottom-color:#D0D0D0; 
+  
+}
 .profilePic {
     width: 50;
     height: 50;
@@ -205,3 +212,16 @@ Button {
     border-color: #4db8ff;
     border-width: 1;
 }
+
+Label:pressed {
+  
+   background-color:#eeeeee;
+    
+}  
+GridLayout:pressed {
+ 
+     border-color: #eeeeee;
+    border-width: 2;
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}   
