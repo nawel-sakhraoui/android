@@ -109,7 +109,7 @@ loading0 :boolean ;
       
     ngOnInit() {
        this.loading0 = true ; 
-        let s = this.route.parent.params.subscribe(params =>
+        let s = this.route.params.subscribe(params =>
         {
           
             this.storetitle = params.store ; 
@@ -331,7 +331,8 @@ loading0 :boolean ;
     
      editingGallery (){
         this.editGallery= true; 
-        this.tempGallery=  this.model.gallery.map(x => x); 
+         
+        this.tempGallery=  this.model.galler.map(x => x); 
         this.tempPic = this.model.pic;
          this.tempmainpic = this.mainpic   ; 
       }
@@ -672,7 +673,9 @@ loading0 :boolean ;
             if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
               that.alertimg = false ; 
                 //console.log(element) ; 
-               let img:ImageSource = <ImageSource> fromFile(element._android);
+                element.options = {width:300, height:200, keepAspectRatio:true };
+
+               let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
                 console.log(img) ; 
                 console.log(extension) ; 
                 

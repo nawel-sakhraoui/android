@@ -54,13 +54,13 @@ export class StoreDetailsComponent implements OnInit {
     ngOnInit() {
         this.loading = true ; 
         console.log('store') ; 
-        this.sub = this.route.parent.params.subscribe(params => {
+        this.sub = this.route.params.subscribe(params => {
         console.log (params) 
         this.storetitle = params['store']; // (+) converts string 'id' to a number
         // In a real app: dispatch action to load the details here.
        // console.log(this.storetitle) ; 
         this.storeService.getStoreStatus( this.storetitle  )
-            .subscribe(
+        .subscribe(
                 data0 =>{
                     console.log(data0 ) ; 
                     this.open = data0['open']; 
@@ -90,6 +90,7 @@ export class StoreDetailsComponent implements OnInit {
                              this.loading = false ; 
                              this.show = true ; 
                               let admin = false ; 
+                            /*
                              for (let a of this.store.administrators  ){
                                if( a.userid == this.me ) {
                                    admin = true ; 
@@ -137,6 +138,7 @@ export class StoreDetailsComponent implements OnInit {
   
                   
                                  )
+                             if (this.store.hasOwnProperty('administrators'))
                              for (let d of this.store.administrators) {
                                  
                               this.userdetailsService.getAvatar(d.userid)

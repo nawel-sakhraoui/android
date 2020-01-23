@@ -1,13 +1,10 @@
-
-
-
 import {Component,ViewChild, OnInit,ViewContainerRef, AfterViewInit,  ChangeDetectorRef, ElementRef  } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {StoreService, CartService, BuynowService, UserdetailsService} from '../_services/index'; 
+import {PicService, StoreService, CartService, BuynowService, UserdetailsService} from '../_services/index'; 
 //import { DialogService } from "ng2-bootstrap-modal";
 import {Subscription} from 'rxjs'
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
- import { SelectedIndexChangedEventData } from "nativescript-drop-down";
+import { SelectedIndexChangedEventData } from "nativescript-drop-down";
  
 import { ModalDialogService } from "nativescript-angular/directives/dialogs";
 import {ModalComponent} from './modal.component'; 
@@ -25,6 +22,8 @@ import { Carousel } from "nativescript-carousel";
   templateUrl: './article.component.html',
   styleUrls: ['./article.component.css']
 })
+
+
 export class ArticleComponent implements OnInit {
     maxcart = 30; 
     row = true ; 
@@ -67,6 +66,7 @@ export class ArticleComponent implements OnInit {
     showdesc = true ; 
     showeval = false ; 
     showdel = false; 
+    gallery = [] ; 
     send = false ; 
     boolrating = false ; 
     deliveryconfig = {
@@ -87,16 +87,18 @@ export class ArticleComponent implements OnInit {
   private permissionsService : NgxPermissionsService, 
   private rolesService : NgxRolesService, 
   private userdetailsService : UserdetailsService, 
-   private modal: ModalDialogService , 
-    private vcRef: ViewContainerRef  ) { }
+  private modal: ModalDialogService , 
+  private vcRef: ViewContainerRef , 
+  private picService: PicService ) { }
 
    
   ngOnInit() {
-  this.selectedIndex=0 ;
+      console.log('xxxxx');
+      //this.selectedIndex=0 ;
         this.loading0 = true ; 
         console.log('article') ; 
         this.loading = true ; 
-          this.route.parent.params.subscribe(params => {
+          this.route.params.subscribe(params => {
           
             this.storetitle= params.store ; 
             console.log(params ) ;
@@ -143,7 +145,7 @@ export class ArticleComponent implements OnInit {
                                     this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
                                  
                              }else
-                                             this.permissionsService.removePermission('writeStore');
+                                    this.permissionsService.removePermission('writeStore');
 
               
               
@@ -165,16 +167,14 @@ export class ArticleComponent implements OnInit {
                         }
                         ); */
               
-              }, 
-                         error1 =>{
-                             console.log(error1) ; 
-                     ; 
-                             })
+              },error1 =>{
+                  console.log(error1) ; 
+               })
                 
           }, error0 => {
                     console.log(error0 ) ; 
                      this.loading = false ; 
-                    }); 
+          }); 
         });
       
        this.route.params.subscribe(params => {
@@ -182,14 +182,13 @@ export class ArticleComponent implements OnInit {
             this.articletitle = params.article ; 
             console.log(params ) ;
            
-            
-     
-              
+         
         
        this.storeService.getArticle(this.articletitle )
              .subscribe(
                 data => {
-                    console.log(data) ; 
+                    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') ;
+                    console.log(data["gallerynames"]) ; 
                     this.model = data ;
  
                       this.model.gallery  = []; 
@@ -223,8 +222,15 @@ export class ArticleComponent implements OnInit {
                      this.delivery = this.model.delivery ; 
                      this.loading0 = false ;
                     this.display = true ; 
-                 
-                       this.storeService.getPic(this.articletitle )
+                    
+                    this.model.pic = this.picService.getPicLink(this.model.picname)
+                   this.gallery.push( this.model.pic) ; 
+                    if( this.model.hasOwnProperty('gallerynames') )
+                        for (let m of this.model.gallerynames ) 
+                           this.gallery.push( this.picService.getGalleryLink(m)) ; 
+
+                    
+                  /*     this.storeService.getPic(this.articletitle )
                      .subscribe(
                           data4=> {
                     
@@ -250,7 +256,7 @@ export class ArticleComponent implements OnInit {
                           error4 =>{
                              console.log(error4) ; 
                      
-                          }) ;
+                          }) ;*/
                     
                            
                              if('sizing' in this.model) {
@@ -296,6 +302,7 @@ export class ArticleComponent implements OnInit {
                         }
                  }, 
                  error =>{
+                     console.log("xxxxxxxxxxxxxxxxxxxx") ; 
                      this.loading0 = false ; 
                  console.log(error) ;  
                      this.nostore = false ;    
@@ -336,17 +343,17 @@ export class ArticleComponent implements OnInit {
                         //the cart is full
                    this.fullcartwarning = true ;  
                     this.loadingcart = false ; 
-                   this.showModal();
+                   //
                }else{
                     this.fullcartwarning = false ;  
-                   this.showModal(); 
+                  
                 this.cartService.postToCart ( this.articletitle)
                 .subscribe(
                     data => {
                         this.loadingcart = false ; 
 
                         console.log(data) ;
-                      
+                      this.showModal();
                 
                   }, 
                     error =>{
@@ -589,5 +596,7 @@ export class ArticleComponent implements OnInit {
             break;
     }
     }
-
+ chooseAddress(){
+     this.show = !this.show; 
+     }
 }

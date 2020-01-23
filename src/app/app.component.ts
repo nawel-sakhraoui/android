@@ -1,9 +1,12 @@
 import { Component, OnInit } from "@angular/core";
+import { Router} from '@angular/router';
 
 import * as firebase from 'nativescript-plugin-firebase';
+
+
 import { registerElement } from 'nativescript-angular/element-registry';
 // Register Custom Elements for Angular
-import {  UserdetailsService } from './_services/index';
+import {  UserdetailsService, MessagesService} from './_services/index';
 import { Carousel, CarouselItem } from 'nativescript-carousel';
 registerElement('Carousel', () => Carousel);
 registerElement('CarouselItem', () => CarouselItem);
@@ -13,7 +16,7 @@ registerElement('FilterSelect', () => FilterSelect);
 
 
 registerElement("Ripple", () => require("nativescript-ripple").Ripple);
-
+import { ActivatedRoute } from '@angular/router';
 @Component({
       moduleId: module.id,
 
@@ -26,7 +29,10 @@ export class AppComponent implements OnInit {
 
     token ='';
     user=''; 
-    constructor(private userdetailsService:UserdetailsService){
+    
+    constructor(private userdetailsService:UserdetailsService, 
+                private router: Router, 
+                private route : ActivatedRoute){
         
         
         }
@@ -34,7 +40,7 @@ export class AppComponent implements OnInit {
     ngOnInit(): void {
       
                             
-             this.user=JSON.parse(localStorage.getItem('currentUser')).userid ; 
+            this.user=JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
             firebase.init({
                          showNotifications: true,
@@ -61,10 +67,12 @@ export class AppComponent implements OnInit {
       }*/
     })
       .then(() => {
-        console.log('[Firebase] Initialized');
+          console.log('[Firebase] Initialized');
+          this.router.navigateByUrl( this.route.snapshot.data.data);
       })
       .catch(error => {
-        console.log('[Firebase] Initialize', { error });
+            console.log('[Firebase] Initialize', { error });
+            this.router.navigateByUrl( this.route.snapshot.data.data); 
       });
 
    /* firebase.init({
@@ -85,8 +93,10 @@ export class AppComponent implements OnInit {
       .catch(error => {
         console.log('[Firebase] Initialize', { error });
       });*/
+        
+        
 
-  }
-
+   
+}
 
 }

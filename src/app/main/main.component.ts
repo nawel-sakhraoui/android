@@ -1,6 +1,6 @@
 import {Component,ViewChild, OnInit, AfterViewInit,  AfterContentInit, ChangeDetectorRef, ElementRef  } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {CartService, StoreService, SearchService, MyhomeService, AuthenticationService} from '../_services/index'; 
+import {UserdetailsService, PicService, CartService, StoreService, SearchService, MyhomeService, AuthenticationService} from '../_services/index'; 
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import { Carousel } from "nativescript-carousel"; 
@@ -27,6 +27,8 @@ export class MainComponent implements OnInit,  AfterViewInit{
   private searchService: SearchService, 
   private storeService : StoreService, 
   private cartService: CartService, 
+  private picService : PicService, 
+  private userdetailsService : UserdetailsService, 
   private _changeDetectionRef: ChangeDetectorRef
   ) { }
 
@@ -76,15 +78,19 @@ export class MainComponent implements OnInit,  AfterViewInit{
       this.loading2 = true ; 
        
        this.loading = true ; 
-       this.loading3 = true ; 
-        this.searchService.sendcity.subscribe((data00)=>{
+       this.loading3 = true ;
+            
+          
+                  
+        this.searchService.sendcity.subscribe(
+        (data00)=>{
             this.loading2 = true ; 
-             this.loading3= true ; 
-              this.loading = true ; 
-         this.city = data00['city'] ; 
-        console.log(this.city) ; 
-      
-    
+            this.loading3= true ; 
+            this.loading = true ; 
+            this.city = data00['city'] ; 
+     
+       
+        
        this.storeService.getCategories()
        .subscribe (
            
@@ -123,8 +129,9 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                       this.articlescats[cat] = data['hits']['hits']; 
                                       console.log(this.articlescats[cat]) ;  
                                        for (let s of  this.articlescats[cat]){
+                                           this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
                                            this.disp[s._id ] = false ; 
-                                           this.storeService.getPic(s._id)
+                                           /*this.storeService.getPic(s._id)
                                          .subscribe (
                                            data0=>{
                                             try {
@@ -139,7 +146,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                          this.mainpics[s._id ] = "" ; 
                                          console.log(error) ;   
                                             this.loading3=false ;   
-                                        }); 
+                                        }); */
                  }
                                                   this.loading3=false ; 
  
@@ -176,14 +183,19 @@ export class MainComponent implements OnInit,  AfterViewInit{
          .subscribe (
          
              data => {
-                 this.loading = false ; 
+        
                  this.main = true ; 
                 if (data['hits']['hits'].length !=0 ) {
-                 this.store = data['hits']['hits'][0] ;
+                /*  this.store = data['hits']['hits'][0] ;
                
                      console.log(this.store) ;  
                  
-                    this.storeService.getBanner(this.store._id)
+                    
+                    if (this.store._source.hasOwnProperty("bannername"))
+                        this.store['banner'] = this.picService.getBannerLink(this.store._source.bannername); 
+                     else 
+                         this.store['banner'] = '' ;
+                    /*this.storeService.getBanner(this.store._id)
                                  .subscribe (
                                         data1=>{
                                             try {
@@ -199,17 +211,22 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                             this.store['banner'] = "";  
                                            console.log(error) ;     
                                         }
-                                     ); 
+                                     ); */
                    
                  
-                 if ( data['hits']['hits'].length >=2){
+                // if ( data['hits']['hits'].length >=2){
                  this.stores = data['hits']['hits'] ; 
-                 this.stores.shift() ; 
+                // this.stores.shift() ; 
                 
                  this.home =true ; 
-                     
+                     console.log(this.stores) ; 
                  for (let i = 0 ; i < this.stores.length; i++){
-                      this.storeService.getBanner(this.stores[i]._id)
+                    
+                     if (this.stores[i]._source.hasOwnProperty("bannername"))
+                        this.stores[i]['banner'] = this.picService.getBannerLink(this.stores[i]._source.bannername); 
+                     else 
+                         this.stores[i]['banner'] = '' ; 
+                    /*  this.storeService.getBanner(this.stores[i]._id)
                                  .subscribe (
                                         data1=>{
                                             try {
@@ -225,13 +242,13 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                             this.stores[i]['banner'] = "";  
                                          //  console.log(error) ;     
                                         }
-                                     ); 
+                                     ); */
                   }
-                     
-                  } } else {
+                              this.loading = false ; 
+                  }/* } else {
                      this.store= {'_source' : {}} ;
                       
-                    }
+                    }*/
                      
              },error =>{
                      this.loading =false ; 
@@ -239,19 +256,22 @@ export class MainComponent implements OnInit,  AfterViewInit{
                  
              }
          ) ;
+        
+        
+        
 
-         this.myhomeService.getArticlesByNewest(this.sizearticles, this.city)
+        this.myhomeService.getArticlesByNewest(this.sizearticles, this.city)
          .subscribe (
          
              data => {
                  console.log(data) ; 
              //     this.countStore = data ; 
                  this.articles = data['hits']['hits'] ; 
-                 this.loading2 = false ; 
                  this.main2 = true ; 
                  for (let s of this.articles){
                         this.disp[s._id ] = false ; 
-                      this.storeService.getPic(s._id)
+                   this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
+                  /*    this.storeService.getPic(s._id)
                                  .subscribe (
                                         data0=>{
                                             try {
@@ -265,29 +285,37 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                         ,error=>{
                                          this.mainpics[s._id ] = "" ; 
                                          console.log(error) ;     
-                                        }); 
+                                        }); */
                  }
+                  this.loading2 = false ; 
+
              },error =>{
                  console.log(error) ; 
                  this.loading2= false ; 
                  
               });
-         
-        });
-        
+            
+            
+      }); 
+
+    
+          //   });
            // @ViewChild('stack') scrollView: ElementRef;
           //  const stackView  = this.scrollView.nativeElement;
            //     stackView._nativeView.requestDisallowInterceptTouchEvent(false);
      }
     
+    
+    
+  
      gotoArticle( id:string , storeid : string ) {
      
-         this.router.navigate(["../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+         this.router.navigate(["stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
 
      }
     
     gotoStore(id){
-                 this.router.navigate(["../../stores/"+id+"/store"], { relativeTo: this.route });
+                 this.router.navigate(["stores/"+id+"/store"], { relativeTo: this.route });
 
        }
     
@@ -323,7 +351,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
         }
     
   updateArticle( id:string, storeid :string ) {
-      this.router.navigate(["../../stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
+      this.router.navigate(["stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
 
   } 
     

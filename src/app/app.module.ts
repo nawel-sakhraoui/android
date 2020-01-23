@@ -36,7 +36,8 @@ import { BuynowComponent } from './buynow/buynow.component';
 import { PurchaseCommandComponent } from './purchase-command/purchase-command.component';
 import { SaleCommandComponent } from './sale-command/sale-command.component';
 import { StoreMenuComponent } from './store-menu/store-menu.component';
-
+import { Resolver} from './resolver';
+import { MenuBottomComponent } from './menu-bottom/menu-bottom.component'; 
 
 
 @NgModule({
@@ -73,12 +74,13 @@ import { StoreMenuComponent } from './store-menu/store-menu.component';
     PurchaseCommandComponent,
     SaleCommandComponent,
     StoreMenuComponent,
+    MenuBottomComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
   ],
-  providers: [],
+  providers:  [Resolver],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

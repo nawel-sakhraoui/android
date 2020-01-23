@@ -155,7 +155,7 @@ export class BuynowComponent implements OnInit {
    
                                  
                   for (let firebase of this.firebase)
-                 this.firebaseService.commandNotif( firebase,this.fullname, this.model.storetitle) 
+                 this.firebaseService.commandNotif( firebase,this.fullname, this.model.storetitle, data['_id']) 
                                         .subscribe(
                                             d=>{
                                                 console.log(d) ;    

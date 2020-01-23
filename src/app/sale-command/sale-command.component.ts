@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef,AfterViewChecked } from '@angular/core';
 import { FirebaseService,OngoingService, UserdetailsService, MessagesService  , StoreService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd  } from '@angular/router';
 import * as prettyMs from 'pretty-ms';
@@ -9,23 +9,24 @@ import { Label } from 'tns-core-modules/ui/label';
 
 import * as  clipboard from "nativescript-clipboard" ;
 
+ 
+import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
 
 @Component({
   selector: 'app-sale-command',
   templateUrl: './sale-command.component.html',
   styleUrls: ['./sale-command.component.css']
 })
-export class SaleCommandComponent implements OnInit,AfterViewInit {
+export class SaleCommandComponent implements OnInit, AfterViewChecked {
         
    
         @ViewChild("scrollView", { static: true }) scrollView :ElementRef;
-       @ViewChild("message", { static: true } ) messageView: ElementRef; 
-           @ViewChild("msgs", { static: true } ) msgsView: ElementRef; 
-
+        @ViewChild("message", { static: true } ) messageView: ElementRef; 
+        @ViewChild("msgs", { static: true } ) msgsView: ElementRef; 
         @ViewChild("top", { static: true } ) topView: ElementRef ;
         @ViewChild("rating", { static: true } ) ratingView: ElementRef ; 
     query :string=""; 
-    alert :boolean;
+    alert :boolean=false;
     textmessage ="" ; 
     alert2:boolean; 
     commandid :string ; 
@@ -50,6 +51,8 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
     alertM=false ;
     firebase='';
     loadingM=false ; 
+    flag= false ; 
+    admins :any[] = [] ; 
      me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
     constructor(private ongoingService:OngoingService, 
@@ -58,7 +61,9 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
               private userdetailsService : UserdetailsService,
               private messagesService : MessagesService, 
               private storeService : StoreService, 
-              private firebaseService : FirebaseService) {
+              private firebaseService : FirebaseService, 
+              private rolesService:  NgxRolesService , 
+              private permissionsService : NgxPermissionsService) {
       
    this.router.events.subscribe(s => {
        console.log(s) ; 
@@ -76,14 +81,18 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
     ; 
     
     ngOnInit() {
-
+        
         this.loading = true ; 
         console.log('commandid') ; 
         this.route.params.subscribe(params => {
         
         console.log (params) ;
         this.commandid = params['commandid'];
-             
+            this.route.parent.params.subscribe(parent =>{
+                console.log(parent) ; 
+                this.storetitle = parent["store"]
+            });
+        
       this.router.events.subscribe(s => {
            // console.log(s) ; 
       if (s instanceof NavigationEnd) {
@@ -105,8 +114,23 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
        
       }
              });
-            
-            
+        this.storeService.getAdmins(this.storetitle)
+            .subscribe(
+                data0=>{
+                    this.admins =[ data0['userid'] ] ; 
+                       for (let x of data0['administrators']) 
+                            this.admins.push (x.userid);  
+                         if ( this.admins.includes(this.me ) ) {
+                                  this.flag = true ; 
+                                    this.permissionsService.addPermission('writeStore', () => {
+                                          return true;
+                                    })
+                    
+                                  
+                                    this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
+                             
+                             
+                                       
       this.ongoingService.getOngoingById(this.commandid)
                 .subscribe(
                     _source =>{
@@ -311,11 +335,32 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
                         console.log(error7) ; 
                 this.loading = false ; 
                     }) ; 
+                             
+                             
+                             
+                             
+                             
+                             
+                             
+                             
+                             
+                             
+                             
+                             
+                                 
+                             }else
+                                this.permissionsService.removePermission('writeStore');
+
+                              
+                },error=>{
+                 console.log(error) ;    
+                })
+  
 
   });
 }
-    
-      ngAfterViewInit() {
+   
+      ngAfterViewChecked() {
    
        let interval = setInterval(()=> {
      
@@ -335,6 +380,7 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
             }
              
       }, 500);  
+          
    }
  
  
@@ -373,7 +419,7 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
                 ,error=>{
                     console.log(error) ; 
                     });   
-            this.firebaseService.prepareNotif(this.firebase, this.model.storetitle )
+            this.firebaseService.prepareNotif(this.firebase, this.model.storetitle, this.commandid )
                      .subscribe(
                          d=>{
                            console.log(d) ;    
@@ -409,7 +455,7 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
                     console.log(error) ; 
                     });    
        
-             this.firebaseService.storemessageNotif(this.firebase, this.model.storetitle )
+             this.firebaseService.sendNotif(this.firebase, this.model.storetitle , this.commandid)
                      .subscribe(
                          d=>{
                            console.log(d) ;    
@@ -479,7 +525,7 @@ export class SaleCommandComponent implements OnInit,AfterViewInit {
                     console.log(error) ; 
                     });  
           
-                   this.firebaseService.storemessageNotif(this.firebase, this.model.storetitle )
+                   this.firebaseService.storemessageNotif(this.firebase, this.model.storetitle, this.commandid )
                      .subscribe(
                          d=>{
                            console.log(d) ;    

@@ -5,7 +5,9 @@ import { FacebookAccountKit, AccountKitResponseType,AccountKitOptions  } from 'n
 import * as CryptoJS from 'crypto-js'; 
 import { Color } from "tns-core-modules/color";
 import * as localStorage from  "nativescript-localstorage" ; 
- import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+
+//import * as firebase from 'nativescript-plugin-firebase';
 
 import { Page } from "tns-core-modules/ui/page"; 
 
@@ -53,6 +55,7 @@ export class HomeComponent implements OnInit {
     alertphone = false ; 
     alertnamelength = false ;
     alertname = false ; 
+   
     constructor(
                private router: Router,
                 private route :ActivatedRoute, 
@@ -60,6 +63,7 @@ export class HomeComponent implements OnInit {
                 private userService: UserService,
                private userdetailsService : UserdetailsService, 
                private page :Page 
+             //  private ngZone : NgZone
                
         ) {
 
@@ -111,10 +115,11 @@ export class HomeComponent implements OnInit {
         .subscribe (
             data =>{
                 console.log(data );  
-                if (data['total']!=0 && data['hits'][0]['_source']['enable'] ==true ) {   
+                if (data['total']['value']!=0 ) {
+                if ( data['hits'][0]['_source']['enable'] ==true ) {   
                 // continuous with login 
-                 
-                    this.options= {
+                    
+                            this.options= {
                                 prefillPhoneNumber :this.model.phone.substr(1), 
                                 prefillCountryCode : "+213",
                                   defaultCountryCode : "DZ",
@@ -126,19 +131,43 @@ export class HomeComponent implements OnInit {
                                        primaryColor : new Color("orange")
                                     };
                              this.facebookAccountKit.loginWithPhoneNumber(this.options).then(response => {
-                                       this.wait = true ; 
+                    
+                    
+                    /*  firebase.login({
+                          
+                      type: firebase.LoginType.PHONE,
+                      phoneOptions: {
+                         phoneNumber: '+213'+this.model.phone.substr(1),
+                         verificationPrompt: "taper votre code ", // default "Verification code"
+                         // Optional
+                        android: {
+                            timeout: 30 // The maximum amount of time you are willing to wait for SMS auto-retrieval to be completed by the library
+                            }
+                        }
+                }).then(
+                 result=> {
+                           console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                           // JSON.stringify(result);
+                     
+                        
+                            console.log(result) ; 
+                           
+                                 
+                      //          this.wait = true ; 
                              //   console.log(response);
-                            
+                   */         
                                 this.model.userid =data['hits'][0]['_id'];  //CryptoJS.PBKDF2(this.model.phone, 'abc', { keySize: 128/32, iterations: 1}).toString();; 
-                                
+                                //let userid = result['phoneNumber'].substr(4);
                             
-                                let salt = this.model.userid ; 
-                                console.log(salt) ; 
+                               let salt = this.model.userid ; 
+                              //  console.log(salt) ; 
+                     //salt must be random selected !!  
+                             
                                 let token =  CryptoJS.PBKDF2(response,  salt, { keySize: 128/32, iterations: 100 }).toString();; 
                                                   
                                 this.userService.loginUser( this.model.userid, token )
                              // .pipe(first())
-                                    .subscribe (
+                                 .subscribe (
                                      data=> {
                                            
                                    
@@ -148,7 +177,7 @@ export class HomeComponent implements OnInit {
                                              localStorage.setItem('currentUser', JSON.stringify({userid:this.model.userid,  token: data['token'] }));
                                              this.returnUrl = '/home/'+this.model.userid; //this.route.snapshot.queryParams['returnUrl'] || 
                                              this.loading= false ; 
-                                             this.router.navigateByUrl(this.returnUrl);     
+                                          this.router.navigateByUrl(this.returnUrl);     
                                                         
     
            
@@ -159,9 +188,14 @@ export class HomeComponent implements OnInit {
                                     }});  
                                 // create user session and useraccount ! 
                                 
-                                
-                        },
-                        (error: any) => {
+                        //     },
+               /*   function (errorMessage) {
+                          console.log(errorMessage);
+                 }
+                );         */   
+                     
+                   
+                      },  (error: any) => {
                             
                                 console.error(error);
                                 this.loading = false ; 
@@ -171,16 +205,18 @@ export class HomeComponent implements OnInit {
                    
                 
                 }else {
-                   if (data['total']!=0 && data['hits'][0]['_source']['enable'] ==false  ) {
+                  
                         this.suspended = true ; 
                         this.loading = false ;
-                   }else {
+                 }
+                
+                } else {
                     this.login  = !this.login; 
                     //the phone is not registered please register first 
                     this.pleaseRegister = true ; 
                     this.loading = false ; 
                 }
-            }}
+            }
             ,error => {
                     console.log(error ) ; 
                     this.loading = false ; 
@@ -188,9 +224,9 @@ export class HomeComponent implements OnInit {
                 
             }); 
             
-   }
+   
        } }
-   }
+   }}
     
     register(){
         
@@ -232,7 +268,7 @@ export class HomeComponent implements OnInit {
         .subscribe (
             data =>{
                 console.log(data ) ;  
-                if (data['total']==0 ) {   
+                if (data['total']['value']==0 ) {   
                  
                         
                          this.options= {

@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import {CartService , StoreService,BuynowService} from '../_services/index';
+import {PicService, CartService , StoreService,BuynowService} from '../_services/index';
 import {Subscription} from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'; 
@@ -21,7 +21,8 @@ export class CartComponent implements OnInit {
               private  storeService: StoreService,
               private router : Router, 
               private  route : ActivatedRoute , 
-              private  buynowService: BuynowService 
+              private  buynowService: BuynowService , 
+              private picService : PicService
             ) { }
     
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
@@ -29,7 +30,7 @@ export class CartComponent implements OnInit {
   
   page =1; 
   maxpage =1; 
-  size =30; 
+  size =1; 
     
   loading = false ; 
   model :any ; 
@@ -56,6 +57,7 @@ export class CartComponent implements OnInit {
    choosestoredelivery = [];
    buyall= {} ; 
     send = [] ; 
+    displaystores= [] ; 
    ngOnInit( ) {
     
        this.loading = true ; 
@@ -74,14 +76,21 @@ export class CartComponent implements OnInit {
                         data2=>{ 
                         
                            this.model = data2; 
-                           for ( let i = 0 ; i < this.model.length ; i++ ) 
-                                this.model[i]._source._id = i ; 
-                             this.stores = this.model.map((x)=>x._source.storetitle); 
-                          // this.stores= [... new Set(this.stores)]; 
-                     
-                          
+                          for ( let i = 0 ; i < this.model.length ; i++ ) 
+                               this.model[i]._source._id = i ; 
                             
-                        //   this.maxpage = Math.ceil( this.stores.length/this.size)  ; 
+                            
+                             this.stores = this.model.map((x)=>x._source.storetitle); 
+                          console.log(this.stores) ; 
+                         //  this.stores= [...new Set(this.stores)]; 
+                       this.stores = this.stores.filter((value, index, self)=>{
+                          return self.indexOf(value) == index ; 
+                         });
+   
+                           // console.log("icii");
+                           //console.log(this.stores) ;
+                            
+                           this.maxpage = Math.ceil( this.stores.length/this.size)  ; 
 
                            this.model =this.groupBy ( this.model,"_source", "storetitle") ; 
                            
@@ -92,12 +101,12 @@ export class CartComponent implements OnInit {
                                 return second._source._id - first.source_id;
                                 });
                             */
-                            
+                            //console.log(this.model) ; 
                          
-                            console.log(this.model) ; 
-                            if (Object.keys(this.model).length !==0) {
+                          //  console.log(this.model) ; 
+                            if (this.stores.length !==0) {
                                  this.cart = true ; this.empty = false ; 
-                                  this.getPage(1);
+                                 this.getPage(1);
                             }else { 
                                  this.cart =false ; this.empty = true ; 
                             }
@@ -131,13 +140,13 @@ export class CartComponent implements OnInit {
                             this.loading = true ; 
            
                             this.page = page ; 
-                            console.log(this.model ) ; 
+                            console.log("lalalalal" ) ; 
                              let max = this.size+((this.page-1)*this.size)  ; 
                                 if (max > this.stores.length) 
                                         max= this.stores.length ; 
-            
+                                 
                             for( let index = (this.page-1)*this.size; index < max ; index++) {
-                                
+                                this.displaystores.push(this.stores[index]) ; 
                                 let i = this.stores[index];
                                 this.show[i] = false ; 
                                 let del =[];
@@ -150,7 +159,9 @@ export class CartComponent implements OnInit {
                                     if (!this.model[i][j]._source.available ) {
                                       this.buyall[i]=false ; 
                                    }
-                                  this.storeService.getPic(this.model[i][j]._id )
+                                    
+                                     this.model[i][j].pic = this.picService.getPicLink( this.model[i][j]._source.picname);
+                                 /* this.storeService.getPic(this.model[i][j]._id )
                                   .subscribe(
                                      data4=> {
                                          // console.log( this.model[i][j] ) ; 
@@ -158,7 +169,7 @@ export class CartComponent implements OnInit {
     
                                      }, error4 =>{
                                           console.log(error4) ; 
-                                    }) ; 
+                                    }) ; */
                                   this.model[i][j].show = false; 
                                     this.model[i][j]._source.tempdelivery = this.model[i][j]._source.delivery.filter(x=>x) ;
                               //  if (this.model[i][j]._source.delivery.length!=0 )   
@@ -213,7 +224,7 @@ export class CartComponent implements OnInit {
 
                               }
                          
-                             for( let index = (this.page-1)*this.size; index < max ; index++) {
+                           for( let index = (this.page-1)*this.size; index < max ; index++) {
 
                                    let i= this.stores[index] ; 
                              
@@ -224,7 +235,7 @@ export class CartComponent implements OnInit {
                                     this.totaldelivery[i] = this.totalprices[i]+ this.choosestoredelivery[i][0].price ; 
                                   else 
                                        this.totaldelivery[i] = this.totalprices[i] ; 
-                              } 
+                              }
                         
                            this.loading = false 
            
@@ -650,5 +661,6 @@ ontouch(args: TouchGestureEventData) {
     
 
 }
-   
+    
+ 
 }

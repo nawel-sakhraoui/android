@@ -13,3 +13,4 @@ export * from './delivery.service';
 export * from './ongoing.service'; 
 export * from './rating-modal.service';
 export * from './firebase.service';
+export * from './pic.service';

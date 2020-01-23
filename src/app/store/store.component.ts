@@ -1,6 +1,6 @@
-import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,AfterContentInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
+import {Component,ViewChild, OnDestroy ,OnInit, AfterViewInit,AfterContentInit,  ChangeDetectorRef, ElementRef,NgZone  } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {StoreService, CartService, SearchService} from '../_services/index'; 
+import {PicService, StoreService, CartService, SearchService} from '../_services/index'; 
 import {Subscription} from 'rxjs';
 //import * as prettyMs from 'pretty-ms'; 
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
@@ -8,15 +8,11 @@ import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import { SearchBar } from "tns-core-modules/ui/search-bar"; 
 import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label'; 
+import {Image } from 'tns-core-modules/ui/image'; 
 //import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
 import * as imagepicker from "nativescript-imagepicker"; 
-
 import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
-
-
-
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
- 
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
 
 @Component({
@@ -25,7 +21,7 @@ import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';
   styleUrls: ['./store.component.css']
 })
 export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
-      
+
   maxcart =30 ;
   subarticles :any =[]  ; 
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
@@ -62,6 +58,10 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     maxpage = 1; 
     alertimg = false ; 
     notifCount= 0 ; 
+    saveloading = false ; 
+    bannerExt="";
+    tempbannername ="" ;
+    imgbanner :ImageSource ;  
     private notif:any= {} ;
     private opened: boolean = true ;
   constructor(
@@ -72,17 +72,19 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
             private searchService : SearchService, 
             private rolesService:  NgxRolesService , 
             private permissionsService : NgxPermissionsService,
-            private _changeDetectionRef: ChangeDetectorRef ){}
+            private _changeDetectionRef: ChangeDetectorRef, 
+            private ngZone : NgZone, 
+            private picService :PicService ){}
  
    
      
     ngOnInit() {
-        this.loading0 = true ; 
+       this.loading0 = true;
         this.loading = true ;  
         this.loading2 = true ;
         
         
-        this.route.parent.params.subscribe(params => {
+        this.route.params.subscribe(params => {
      
             
         this.storetitle = params['store']; // (+) converts string 'id' to a number
@@ -115,7 +117,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                       
                      console.log(this.storetitle) ; 
                          
-                     this.storeService.getStore( this.storetitle.replace(/ /g, "%20"))
+                     this.storeService.getStore( this.storetitle)
                      .subscribe(
                          data1=> {
                           
@@ -150,22 +152,38 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
 
                                  
                                   
-                               
-              
-                                 
-                         
-                              this.storeService.getBanner(this.storetitle)
+                              if (this.store.hasOwnProperty('bannername')){
+                              
+                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
+                                    this.store.banner = this.banner ; 
+                                    this.tempbannername = this.store.bannername ;
+                                    // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); 
+                                    //console.log(this.banner) ;
+                                  this.loading0 = false ;  
+
+    
+                               }else{
+                                  
+                                   this.store.banner = "" ;
+                                  this.banner ="" ; 
+                                  this.loading0 = false ;
+                               }
+                      /*        this.picService.getBanner(this.storetitle)
                                  .subscribe (
                                         data=>{
+                                         //    this.ngZone.run(() => {
                                             try {
-                                                this.banner = data['banner'] ;  
-                                                this.store.banner = this.banner; 
-                                                console.log(data);
+                                              console.log(data);
+                                                this.banner = JSON.parse(data['banner'] );
+                                              // console.log(this.banner) ;  
+                                               this.store.banner = this.banner; 
+                                                
                                                 this.loading0 = false ; 
                                             }catch(error) {
                                                 this.banner = "" ; 
                                                 this.loading0 = false ; 
                                                }
+                                        //   });
                                             
                                         }
                                         ,error=>{
@@ -173,16 +191,24 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                                             console.log(error) ;     
                                         }
                                      ); 
-                                 
+                                 */
                             
                        this.storeService.getArticlesCount (this.storetitle, true)
                        .subscribe(
                        data1=> {
-                            //console.log("XXXXXXXXXXXXXXXXXXXX"); 
+                            console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"); 
                            console.log(data1) ;
                             this.totalArticles = data1['count'] ; 
                             this.maxpage = Math.ceil( this.totalArticles/this.size)  ;
-                             this.getPage(1);    
+                          
+                               
+                          if( this.totalArticles == 0) {
+                                this.nothing = true ; 
+                              this.loading2 = false ;
+                          }else {
+                               this.nothing =false ; 
+                                this.getPage(1);
+                              }
                             }
                         ,error1 =>{
                             console.log(error1) ; 
@@ -258,7 +284,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     addToCart(article){
          article.loadingcart = 1  ;
 
-          this.cartService.getCountCart ()
+          this.cartService.getCountCart()
           .subscribe( 
                data0 => {
                    console.log(data0) ; 
@@ -270,7 +296,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                     this.fullcartwarning = false ;
         
                     console.log(article) ; 
-                    this.cartService.postToCart ( article._id  ) 
+                    this.cartService.postToCart( article._id  ) 
                     .subscribe(
                        data => {
                         console.log(data) ; 
@@ -355,20 +381,75 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     
     
      covsave() {
+       this.saveloading = true ; 
        console.log ('saving cover') ; 
-       this.storeService.postBanner(this.storetitle, this.banner)
-                        .subscribe(
+         
+       if (this.tempbannername !="" ) {
+         //remove before add 
+           this.picService.deleteBanner(this.tempbannername ) 
+           .subscribe (
+               data => {
+                     console.log(data ) ; 
+                       this.picService.putBanner(this.store.bannername, this.banner, this.bannerExt)//postBanner(this.storetitle, this.banner)
+                       .subscribe(
                         data => {
+                         this.ngZone.run(() => {
+                         //this.images.push(path.replace(/^.*[\\\/]/, ''));
+                  
                             this.isValid =true ; 
-                            console.log(data)  ;
+                            //console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+                            //console.log(data)  ;
                             this.store.banner = this.banner ;  
                            // this.router.navigate([this.returnUrl]);
+                           this.saveloading = false ;
+                           this.storeService.putBannerName( this.storetitle , this.store.bannername)
+                            .subscribe( data =>{ console.log('done'); this.tempbannername= this.store.bannername} 
+                            ,error=>{ });
+         
+                                    
+                         });
                         },
                         error => {
                             
                             console.log(error) ; 
                            // this.alertService.error(error2);
-                          
+                           this.saveloading = false ;
+                        });
+                        
+                     
+                   
+                   },error=>{}
+               
+               ) 
+        }    else {
+           
+           
+     
+       this.picService.putBanner(this.store.bannername, this.banner, this.bannerExt)//postBanner(this.storetitle, this.banner)
+          .subscribe(
+                        data => {
+                         this.ngZone.run(() => {
+                         //this.images.push(path.replace(/^.*[\\\/]/, ''));
+                  
+                            this.isValid =true ; 
+                            console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+                            console.log(data)  ;
+                            this.store.banner = this.banner ;  
+                             this.tempbannername = this.store.bannername ; 
+                           // this.router.navigate([this.returnUrl]);
+                           this.saveloading = false ;
+                           this.storeService.putBannerName( this.storetitle , this.store.bannername)
+                            .subscribe( data =>{ console.log('done');} 
+                            ,error=>{ });
+         
+                                    
+                         });
+                        },
+                        error => {
+                            
+                            console.log(error) ; 
+                           // this.alertService.error(error2);
+                           this.saveloading = false ;
                         });
        /*this.storeService.postCover(this.storename, this.read)
        .then((result) => {
@@ -376,13 +457,19 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
         }, (error) => {
             console.error(error);
         });
-         */                          
+         */
+           
+           }
   }
     
     
    covremove(){
     this.isValid = true ; 
-    this.banner =  this.store.banner ;         
+    this.store.bannername =  this.tempbannername ; 
+    this.banner = this.store.banner ;   
+    
+   // this.imgbanner = <ImageSource> ImageSource.fromFileSync(this.banner);
+      
   }                   
 
 
@@ -435,7 +522,8 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                               for ( let i = 0; i < this.subarticles.length; i++) {
                                   // console.log(articles[i]) ; 
                                    this.disp[this.subarticles[i]._id ] = false ; 
-                                  this.storeService.getPic( this.subarticles[i]._id )
+                                  this.subarticles[i]._source.pic = this.picService.getPicLink(this.subarticles[i]._source.picname) ;
+                               /*   this.storeService.getPic( this.subarticles[i]._id )
                                   .subscribe(
                                       data2=> {
                                          
@@ -444,7 +532,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                                       ,error2=>{
                                           console.log(error2) ; 
                                           });
-                              
+                                */
                               }   
                           
                               this.articles = this.articles.concat(this.subarticles)  
@@ -516,9 +604,9 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     }, 500);
   }*/
  
-      display(a) {
+  display(a) {
          this.disp[a]= !this.disp[a];
-         }
+   }
 
     
     
@@ -560,7 +648,8 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     
     }
     
-       sBLoaded(args){
+   
+   sBLoaded(args){
         let searchbar:SearchBar = <SearchBar>args.object;
         
             
@@ -600,12 +689,20 @@ private startSelection(context) {
             let  extension = selection[0]._android.split('.').pop() ;
             if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
               this.alertimg = false ; 
-                const img:ImageSource = <ImageSource> fromFile(selection[0]._android);
-           
-                 this.store.banner = this.banner; 
-                 this.banner  =  "data:image/"+extension+";base64,"+img.toBase64String(extension );
-              //  console.log(this.banner) ; 
-                        this.isValid = false ; 
+                //const img:ImageSource = <ImageSource> ImageSource.fromFileSync(selection[0]._android);
+                //selection[0].options = {width:500, height:300, keepAspectRatio:true };
+                 this.banner = selection[0]._android ;
+                console.log("aaaaaaaaaaaaaaaaaaaaaa") ; 
+                console.log(this.banner) ;
+                this.store.bannername = this.storetitle+'.'+extension ;  
+           //    this.imgbanner = <ImageSource> ImageSource.fromFileSync(this.banner);
+
+               //  this.store.banner = this.banner; 
+                 this.bannerExt= extension;
+                 
+                 //this.banner  =selection[0]._android;// img; // "data:image/"+extension+";base64,"+img.toBase64String(extension );
+                 //  console.log(this.banner) ; 
+                 this.isValid = false ; 
 
             }else 
                 this.alertimg = true ; 
@@ -659,7 +756,13 @@ ontouch(args: TouchGestureEventData) {
     }
    
 }
+
     
+    loadBanner() {
+        this.loading0 = false ; 
+        }
+    
+
 } 
 
 

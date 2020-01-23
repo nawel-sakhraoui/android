@@ -1,8 +1,10 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import {AddressService} from '../_services/index'; 
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
- import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label';
+import * as utils from "utils/utils";
+
 
 @Component({
   selector: 'app-adress',
@@ -334,6 +336,13 @@ export class AdressComponent implements OnInit {
             break;
     }
     }
-
+ 
+     hide () {
+         utils.ad.dismissSoftInput() ;  
+         // 
+   
+   // this.view.nativeElement.dismissSoftInput();
+   // this.view.nativeElement.android.clearFocus();
+   }
 }
 

@@ -30,7 +30,8 @@ export class MessageComponent implements OnInit {
     loading1= false ;
     display1 = false ; 
     display2 = false ; 
-    model:any  = {"message":""};
+    model:any  ;
+    
     avatarFromMe = "";
     avatarTo=""; 
     fullname ="" ; 
@@ -52,7 +53,8 @@ export class MessageComponent implements OnInit {
           data  => {
               
                   
-                   this.model = data ; 
+                   this.model = data ;
+              this.model.message = '' ;  
                    if (Object.keys(data).length !== 0 ) {
                     console.log('model') ; 
                        console.log(data ) ; 
@@ -79,14 +81,14 @@ export class MessageComponent implements OnInit {
                   
                        
                        
-                       this.usersdetailsService.getFirebase(this.model.to)
-                       .subscribe(
-                           data=>{
-                               console.log(data) ; 
-                                this.firebaseToken = data['firebase']; 
-                           },error=>{
-                                console.log(error ) ; 
-                           }) ; 
+                   this.usersdetailsService.getFirebase(this.model.to)
+                   .subscribe(
+                       data=>{
+                           console.log(data) ; 
+                            this.firebaseToken = data['firebase']; 
+                       },error=>{
+                            console.log(error ) ; 
+                       }) ; 
                        
                       this.messagesService.getCountPrivateMessages(this.model.fromMe,this.model.to)
                        .subscribe(
@@ -112,7 +114,7 @@ export class MessageComponent implements OnInit {
                        
                
                        
-           let connection = this.messagesService.getPrivateMessage(this.model.fromMe,this.model.to)
+         this.messagesService.getPrivateMessage(this.model.fromMe,this.model.to)
                   .subscribe(
                    message => 
                    {
@@ -314,7 +316,8 @@ export class MessageComponent implements OnInit {
     
     sendMessage(){
         this.loading1 = true ; 
-        if (this.model.message.length ==0 ) {
+        console.log(this.model) ; 
+        if (this.model.message.length ==0 ||  !this.model.message ) {
            this.msgAlert = true  ;
            this.loading1= false ; 
            this.view.nativeElement.dismissSoftInput();
@@ -332,7 +335,7 @@ export class MessageComponent implements OnInit {
                              this.view.nativeElement.dismissSoftInput();
                              this.view.nativeElement.android.clearFocus();
                              this.loading1=false ; 
-                             this.firebaseService.messageNotif(this.firebaseToken, this.fullname) 
+                             this.firebaseService.messageNotif(this.firebaseToken, this.fullname, this.model.fromMe) 
                              .subscribe(
                                 data=>{
                                 console.log(data) ; 

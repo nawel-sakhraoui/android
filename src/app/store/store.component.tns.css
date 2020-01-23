@@ -126,7 +126,10 @@ Button {
 }
 .articlepic{
 	width:auto; 
-	height:auto ; 
+	height:200 ; 
+	background-color:#eeeeee; 
+	border-color: #ffffff  ; 
+    border-width:1;
 	
 }
 .up {

@@ -434,7 +434,7 @@ export class  PurchaseCommandComponent implements OnInit {
         
            //get store admin and creator 1, get tokens !  send notif ! 
          for (let firebase of this.model['firebases']) 
-               this.firebaseService.receiveNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle)
+               this.firebaseService.receiveNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle, this.commandid)
                 .subscribe(
                     data=>{},error=>{}) ; 
           
@@ -462,7 +462,7 @@ export class  PurchaseCommandComponent implements OnInit {
         
            //get store admin and creator 1, get tokens !  send notif ! 
         for (let firebase of this.model['firebases']) 
-               this.firebaseService.litigeNotif( firebase,this.fullnamelist[this.model.userid ]  , storetitle)
+               this.firebaseService.litigeNotif( firebase,this.fullnamelist[this.model.userid ]  , storetitle, this.commandid)
                 .subscribe(
                     data=>{},error=>{}) ; 
         
@@ -512,7 +512,7 @@ export class  PurchaseCommandComponent implements OnInit {
         
            //get store admin and creator 1, get tokens !  send notif ! 
          for (let firebase of this.model['firebases']) 
-               this.firebaseService.closeNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle)
+               this.firebaseService.closeNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle, this.commandid)
                 .subscribe(
                     data=>{},error=>{}) ; 
         
@@ -540,7 +540,7 @@ export class  PurchaseCommandComponent implements OnInit {
         
            //get store admin and creator 1, get tokens !  send notif ! 
           for (let firebase of this.model['firebases']) 
-               this.firebaseService.closelitigeNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle)
+               this.firebaseService.closelitigeNotif( firebase,this.fullnamelist[this.model.userid ] , storetitle, this.commandid)
                 .subscribe(
                     data=>{},error=>{}) ; 
         
@@ -602,7 +602,7 @@ export class  PurchaseCommandComponent implements OnInit {
         
            //get store admin and creator 1, get tokens !  send notif ! 
           for (let firebase of this.model['firebases']) 
-               this.firebaseService.usermessageNotif( firebase,this.fullnamelist[this.model.userid ]  , storetitle)
+               this.firebaseService.usermessageNotif( firebase,this.fullnamelist[this.model.userid ]  , storetitle,this.commandid)
                 .subscribe(
                     data=>{},error=>{}) ; 
      }
@@ -766,7 +766,7 @@ export class  PurchaseCommandComponent implements OnInit {
         
            //get store admin and creator 1, get tokens !  send notif ! 
           for (let firebase of this.model['firebases']) 
-               this.firebaseService.stopNotif( firebase, this.fullnamelist[this.model.userid ]  , this.model.storetitle)
+               this.firebaseService.stopNotif( firebase, this.fullnamelist[this.model.userid ]  , this.model.storetitle, this.commandid)
                 .subscribe(
                     data=>{},error=>{}) ; 
         
@@ -819,7 +819,7 @@ export class  PurchaseCommandComponent implements OnInit {
       
          this.isopen= !this.isopen   ;
          
-         if (this.isopen ) 
+         if (this.isopen) 
             
                   if ( this.model.messages.length > 2 && this.isopen==true ) {
              

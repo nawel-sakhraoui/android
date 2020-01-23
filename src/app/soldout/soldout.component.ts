@@ -1,6 +1,6 @@
 import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,AfterContentInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {StoreService, CartService, SearchService} from '../_services/index'; 
+import {PicService, StoreService, CartService, SearchService} from '../_services/index'; 
 import {Subscription} from 'rxjs';
 //import * as prettyMs from 'pretty-ms'; 
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
@@ -72,6 +72,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
             private searchService: SearchService, 
             private _changeDetectionRef: ChangeDetectorRef,
             private rolesService:  NgxRolesService , 
+            private picService : PicService,
             private permissionsService : NgxPermissionsService 
       ){}
  
@@ -79,7 +80,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
     ngOnInit() {
         this.loading0 = true ; 
         console.log('store') ; 
-        this.sub = this.route.parent.params.subscribe(params => {
+        this.sub = this.route.params.subscribe(params => {
         console.log (params) ;
         this.storetitle = params['store'];
             
@@ -143,7 +144,16 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                  
                                  
                              this.loading = true ;  
-                             this.storeService.getBanner(this.storetitle)
+                             
+                               if (this.store.hasOwnProperty('bannername')){                          
+                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
+                                    this.loading = false ;
+                               }else{
+                                  this.banner ="" ;       
+                                   this.loading = false ;                          
+                               }
+                             
+                           /*  this.storeService.getBanner(this.storetitle)
                                  .subscribe (
                                         data=>{
                                             try {
@@ -165,7 +175,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                         }
                                      ); 
                                  
-                            
+                            */
                             
                             
                         },error1 => {
@@ -183,15 +193,20 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                             this.totalArticles = data1['count'] ; 
                             this.maxpage = Math.ceil( this.totalArticles/this.size)  ; 
 
-                           
+                           if( this.totalArticles == 0 ) 
+                                this.nothing =true ; 
+                            else {
+                               this.nothing = false; 
+                               this.getPage(1);
+                            }
                             }
                         ,error1 =>{
                             console.log(error1) ; 
+                            this.nothing = true ; 
                            }
                         
                         )
-                    
-                    this.getPage(1);
+                 
 
            
                }
@@ -205,7 +220,14 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
              this.loading0 = false ;    
              this.display1 = true ;
              this.loading = true ; 
-             this.busy= this.storeService.getBanner(this.storetitle)
+            
+              if (this.store.hasOwnProperty('bannername')){                          
+                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
+               }else{
+                                  this.banner ="" ;                                
+               } 
+           
+           /*this.busy= this.storeService.getBanner(this.storetitle)
              .subscribe (
                                         data=>{
                                             try {
@@ -224,7 +246,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                             console.log(error) ;     
                                         }
                                      );    
-                
+                */
                 
             }}
        ,error0=>{
@@ -284,8 +306,9 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                  else 
                         this.nosearch = false ; 
                 for ( let i = 0; i <  this.selectArticles.length; i++) {
-                               
-                                  this.storeService.getPic(this.selectArticles[i]._id )
+                      this.selectArticles[i]._source.pic = this.picService.getPicLink(this.selectArticles[i]._source.picname) ;
+     
+                            /*      this.storeService.getPic(this.selectArticles[i]._id )
                                   .subscribe(
                                       data2=> {
                                          
@@ -295,7 +318,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                       ,error2=>{
                                           console.log(error2) ; 
                                           });
-                              
+                              */
                 }   
                //  this.query = '' ; 
              }, error =>{
@@ -383,7 +406,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
             
       
 }
-    
+    subarticles:any = []; 
  getPage (page){
             
      this.loading2 = true ; 
@@ -392,20 +415,22 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                           data=>{
                        
                              
-                              this.articles = data ;
+                              this.subarticles = data ;
                               this.display2= true ; 
-                              if (this.articles.length ===0 ) {
+                              if (this.subarticles.length ===0 ) {
                                   this.nothing = true ; 
                                   
                                   }
                               else 
                                   this.nothing = false ; 
                                this.display1 = true ; 
-                               for ( let i = 0; i < this.articles.length; i++) {
-                                   console.log(this.articles[i]) ; 
-                                   this.disp[this.articles[i]._id ] = false ; 
+                               for ( let i = 0; i < this.subarticles.length; i++) {
+                                   console.log(this.subarticles[i]) ; 
+                                   this.disp[this.subarticles[i]._id ] = false ; 
 
-                                  this.storeService.getPic( this.articles[i]._id )
+                                    this.subarticles[i]._source.pic = this.picService.getPicLink(this.subarticles[i]._source.picname) ;
+
+                                /*  this.storeService.getPic( this.articles[i]._id )
                                   .subscribe(
                                       data2=> {
                                          
@@ -415,17 +440,17 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                       ,error2=>{
                                           console.log(error2) ; 
                                           });
-                              
+                              */
                               }   
                                   
                               
-                               this.selectArticles =  this.articles ;
+                                this.selectArticles =  this.selectArticles.concat(this.subarticles) ; 
                                this.loading2 = false ;  
                         }, error=>{
                           console.log(error) ;   
                             this.loading2 = false ;   
                          } ) ; 
-             
+            
      
      }
     

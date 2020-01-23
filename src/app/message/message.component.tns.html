@@ -13,7 +13,7 @@
 						
 						<GridLayout margin='0,0,5,0'  columns="auto,*" [visibility]="message._source.fromMe? 'visible' : 'collapsed'" >
 						
-						<Image  backgroundColor="#D3D3D3" col="0" [src]='avatarFromMe' class="profilePic"  stretch="aspectFill"  ></Image>
+						<Image loadMode="async"  backgroundColor="#D3D3D3" col="0" [src]='avatarFromMe' class="profilePic"  stretch="aspectFill"  ></Image>
 					    <GridLayout col="1" rows="auto,auto"  >
 					   		 <StackLayout row="0" orientation=horizontal>
 					   		 	<Label width="75%" text="Moi" class="fname"></Label>
@@ -27,7 +27,7 @@
 						</GridLayout>
 						
 						<GridLayout  margin='0,0,5,0' columns="*,auto" [visibility]="!message._source.fromMe? 'visible' : 'collapsed'" >
-								<Image backgroundColor="#D3D3D3" col="1" [src]='avatarTo' class="profilePic"  stretch="aspectFill"  ></Image>
+								<Image loadMode="async"  backgroundColor="#D3D3D3" col="1" [src]='avatarTo' class="profilePic"  stretch="aspectFill"  ></Image>
 					       <GridLayout col="0" rows='auto,auto'  >
 					   		 <StackLayout row='0' orientation=horizontal horizontalAlignment="right"  >
 					   		     <Label class='fas' fontSize='10' width="55%"  text="&#xf017; {{message._source.date}}"></Label>
@@ -40,8 +40,7 @@
 						</GridLayout>
 						</StackLayout>
 						</ng-template>
-						
-						
+						<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
 						
       		       </RadListView>
       		    	<GridLayout margin="0,0,10,0" row="1" rows="auto,auto">

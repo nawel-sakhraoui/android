@@ -80,7 +80,7 @@
 					 <StackLayout  row='0' orientation="horizontal">
 					  
             					<Label margin="20,10,0,0" text="De: "  ></Label>
-            					 <Image [src]="avatarlist[m._source.userid]" class="resize" stretch="aspectFill" ></Image>
+            					 <Image loadMode="async"  [src]="avatarlist[m._source.userid]" class="resize" stretch="aspectFill" ></Image>
             					
          					    <Label textWrap='true' margin="20,0,0,10" verticalAlign='center'  text="{{fullnamelist[m._source.userid]}} " (touch)="ontouch($event)" class="fas link0 " (tap) ='gotoUser(m._source.userid)'  ></Label>
 		  						
@@ -130,7 +130,7 @@
 						<ng-template let-a="item"  >
 						<StackLayout  orientation="vertical">
 							 <GridLayout columns='*,*,auto'>
-							    <Image [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
+							    <Image loadMode="async"  [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
 
 							    <GridLayout col="1" rows="auto,*" >
 							    
@@ -312,7 +312,6 @@
       		    </StackLayout>
       		    </GridLayout>
      	  </ng-template>	
-     	  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 
 </RadListView>  
   	<StackLayout row="3">

@@ -1,7 +1,7 @@
 
 import {Component,ViewChild, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef  } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {CartService, StoreService, SearchService, MyhomeService, AuthenticationService} from '../_services/index'; 
+import {PicService, CartService, StoreService, SearchService, MyhomeService, AuthenticationService} from '../_services/index'; 
 import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import { RouterExtensions } from "nativescript-angular/router";
@@ -68,6 +68,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
   private searchService: SearchService, 
   private storeService : StoreService, 
   private cartService: CartService, 
+  private picService : PicService, 
   private _changeDetectionRef: ChangeDetectorRef
 
   ) {  this.filterAr="غير محدد"; }
@@ -206,12 +207,12 @@ export class ResultComponent implements OnInit,AfterViewInit {
     
      gotoArticle( id:string , storeid : string ) {
      
-         this.router.navigate(["./../../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+         this.router.navigate(["./../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
 
      }
     
     gotoStore(id){
-                 this.router.navigate(["./../../../stores/"+id], { relativeTo: this.route });
+                 this.router.navigate(["./../stores/"+id], { relativeTo: this.route });
 
        }
     
@@ -464,7 +465,11 @@ export class ResultComponent implements OnInit,AfterViewInit {
                         for (let i = 0 ; i < this.tempstores.length; i++){
                          this.storedisp[this.tempstores[i]._id ] = false ; 
 
-                        this.storeService.getBanner(this.tempstores[i]._id)
+                         if (this.tempstores[i]._source.hasOwnProperty("bannername"))
+                           this.tempstores[i]['banner'] = this.picService.getBannerLink(this.tempstores[i]._source.bannername); 
+                         else 
+                           this.tempstores[i]['banner'] = '' ; 
+                       /*this.storeService.getBanner(this.tempstores[i]._id)
                                  .subscribe (
                                         data1=>{
                                             try {
@@ -481,7 +486,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                                             this.tempstores[i]['banner'] = "";  
                                            console.log(error) ;     
                                         }
-                                     ); 
+                                     ); */
                        }
                                this.stores =  this.stores.concat(this.tempstores) ; 
 
@@ -502,7 +507,10 @@ export class ResultComponent implements OnInit,AfterViewInit {
                            this.notfound = false  ;  
                       for (let s of this.temparticles){
                                 this.disp[s._id ] = false ; 
-                           this.storeService.getPic(s._id)
+                        
+                            this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
+                          
+                          /*this.storeService.getPic(s._id)
                            .subscribe (
                                         data0=>{
                                             try {
@@ -516,7 +524,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                                         ,error=>{
                                          this.mainpics[s._id ] = "" ; 
                                          console.log(error) ;     
-                               }); 
+                               }); */
                         }
                       
       

@@ -1,6 +1,6 @@
 import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
 
-import { RatingModalService, OngoingService, StoreService, MessagesService, UserdetailsService} from '../_services/index';
+import {PicService, RatingModalService, OngoingService, StoreService, MessagesService, UserdetailsService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd   } from '@angular/router';
 
 import {Subscription} from 'rxjs';
@@ -69,6 +69,7 @@ opened = true ;
               private storeService: StoreService, 
               private ratingModalService : RatingModalService,
               private userdetailsService : UserdetailsService,
+              private picService : PicService, 
               private route : ActivatedRoute, 
               private router : Router ,
            //   private rolesService:  NgxRolesService , 
@@ -84,7 +85,7 @@ opened = true ;
   ngOnInit() {
       this.loading0 = true ; 
        console.log('store') ; 
-        let sub = this.route.parent.params.subscribe(params => {
+        let sub = this.route.params.subscribe(params => {
         console.log (params) ;
         this.storetitle = params['store'];
   
@@ -316,7 +317,7 @@ opened = true ;
                     data => {
                         console.log(data); 
                         
-                            this.ongoingService.putRatingUser(command._id, command.userrating, command._source.userfeedback)
+                this.ongoingService.putRatingUser(command._id, command.userrating, command._source.userfeedback)
                 .subscribe(
                     data => {
                         console.log(data) ; 
@@ -369,7 +370,9 @@ opened = true ;
                                    this.tempmodel[i].userrating ="" 
                                 //   this.tempmodel[i]._source.userfeedback = "" ;  
                                 this.loadingR[this.tempmodel[i]._id] = false ; 
-                       this.userdetailsService.getAvatar(this.tempmodel[i]._source.userid)
+                     
+                  
+                      this.userdetailsService.getAvatar(this.tempmodel[i]._source.userid)
                        .subscribe( 
                            datan => {
                                  this.avatarlist[this.tempmodel[i]._source.userid ] = datan['avatar'] ;  
@@ -498,7 +501,9 @@ opened = true ;
                  // console.log (connection ) ; 
                   
               for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
-                   this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
+                                  this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
+
+                  /* this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
                                           console.log( this.tempmodel[i][j] ) ; 
@@ -506,7 +511,7 @@ opened = true ;
                                     }, error4 =>{
                                           console.log(error4) ; 
                                     }) ; 
-                  
+                  */
               }
               }
               this.model = this.model.concat(this.tempmodel) ; 

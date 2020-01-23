@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 //import {RatingModalComponent} from './rating-modal.component';
-import {RatingModalService, MessagesService, OngoingService, StoreService, UserdetailsService} from '../_services/index';
+import {PicService, RatingModalService, MessagesService, OngoingService, StoreService, UserdetailsService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import * as  prettyMs from 'pretty-ms'  ;
 import * as utils from "utils/utils";
@@ -50,6 +50,7 @@ export class DoneComponent implements OnInit {
               private ratingModalService : RatingModalService,
               private userdetailsService : UserdetailsService,
               private route : ActivatedRoute, 
+              private picService: PicService, 
               private router : Router ) {
   
       
@@ -233,7 +234,10 @@ export class DoneComponent implements OnInit {
                   
               for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
                   console.log(this.tempmodel[i]._source.articles) ; 
-                   this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
+                  
+                                   this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
+
+                  /* this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
                                        //   console.log( this.model[i][j] ) ; 
@@ -241,7 +245,7 @@ export class DoneComponent implements OnInit {
                                     }, error4 =>{
                                           console.log(error4) ; 
                                     }) ; 
-                  
+                  */
               }
               }
                 this.model = this.model.concat(this.tempmodel); 

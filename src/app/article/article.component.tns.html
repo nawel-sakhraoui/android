@@ -57,12 +57,12 @@
    	
    
    	<StackLayout   *ngIf='!loading'   row="4">
-    <Carousel #carouseln debug="true" [items]="model.gallery" height="90%" width="100%" color="#000000" (pageChanged)="myChangePageEvent($event)" 
+    <Carousel #carouseln debug="true" [items]="gallery" height="90%" width="100%" color="#000000" (pageChanged)="myChangePageEvent($event)" 
                     indicatorAnimation="swap"  indicatorColor="#FFA500" indicatorOffset="0,-10" showIndicator="true" indicatorColorUnselected="#D0D0D0" >
-        <CarouselItem *ngFor="let item of model.gallery" >
+        <CarouselItem *ngFor="let item of gallery" >
             <GridLayout  >
           
-                <Image   [src]="item" class="pic" stretch="aspectFill"></Image>
+                <Image   loadMode="async"  src="{{item}}" class="pic" stretch="aspectFill"></Image>
      
            
             </GridLayout>
@@ -90,7 +90,7 @@
       			    <Label *ngIf='choosecolor!=a'  margin='0,0,5,0'  [backgroundColor]="a"  class="color"  (tap)="getColor(a)"   ></Label>
       				</GridLayout>
       		</ng-template>
-      		     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewStaggeredLayout>
+      		     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewGridLayout>
       		
     		</RadListView>
    </GridLayout>     				  
@@ -108,7 +108,7 @@
       			
       				</GridLayout>
       		</ng-template>
-      		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewStaggeredLayout>
+      		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewGridLayout>
       		
     </RadListView>
   </GridLayout>
@@ -117,8 +117,8 @@
   
   		<Label col="0"  text="Votre Adresse"></Label>
   		<GridLayout col="1" columns ='*,auto'  rows="auto,auto, auto,auto">
-       <Label col='1' row="0" text='&#xf078;'  class="fas dropdownLabel" (tap)="show=!show"  (touch)="ontouch($event)"   ></Label>
-       <Label col='0' row ="0" text ="{{choosenAddressTitle}}" color="#000"   (tap)="show=!show" (touch)='ontouch($event)'   ></Label>
+       <Label col='1' row="0" text='&#xf078;'  class="fas dropdownLabel" (tap)="chooseAddress()"  (touch)="ontouch($event)"   ></Label>
+       <Label col='0' row ="0" text ="{{choosenAddressTitle}}" color="#000"   (tap)="chooseAddress()" (touch)='ontouch($event)'   ></Label>
         <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
 		<StackLayout  row="1" [visibility]=" show? 'visible' : 'collapsed'" >
   			  <app-adress (getAddress)='getAddress($event) ; ' ></app-adress>
@@ -162,16 +162,16 @@
   </GridLayout>
 </GridLayout>
 
- <GridLayout row="2" columns='*,auto, auto,auto, auto'>
- <Button   [visibility]="model.available ?'visible':'collapse'"   text="Acheter"  col="1"   backgroundColor="#d9534f" color="#FFF"  (tap)='buyNow()'></Button> 
+ <GridLayout row="2" columns='*,auto,auto, auto'>
+ <Button  [isEnabled]="!loadingcart"  [visibility]="model.available ?'visible':'collapse'"   text="Acheter"  col="1"   backgroundColor="#d9534f" color="#FFF"  (tap)='buyNow()'></Button> 
   
- <Button text="&#xf218;Panier"  class="fas" col="2" backgroundColor="#FFA500" color="#FFF" (tap)="addToCart() ;  "></Button>
-<StackLayout col="3">
+ <Button [isEnabled]="!loadingcart" text="&#xf218;Panier"  class="fas" col="2" backgroundColor="#FFA500" color="#FFF" (tap)="addToCart() ;  "></Button>
+<StackLayout col="2">
    	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loadingcart' [busy]="loadingcart" ></ActivityIndicator>
    	</StackLayout> 
 <ng-template ngxPermissionsOnly="ADMINStore">
 
- <Button text="Paramètre" col="4"  backgroundColor="#00BFFF" color="#FFF" (tap)="updateArticle();" ></Button>
+ <Button [isEnabled]="!loading"  text="Paramètre" col="3"  backgroundColor="#00BFFF" color="#FFF" (tap)="updateArticle();" ></Button>
 </ng-template>
  </GridLayout>
   
@@ -200,14 +200,14 @@
 <Label row="0" text="Description" fontSize='12' color="#000"></Label>
  <TextView margin='0,15,0,15'row="1" editable ="false" class="input " text="{{model.description}}"></TextView>
  <Label margin='5,0,0,0' row="2" fontSize="12" color="#000" text="Disponible dans les villes suivante"></Label>
- <RadListView row="3" [items]='store.geo'>
+ <ListView row="3" [items]='store.geo'>
    <ng-template let-v='item'  >
    		<GridLayout  margin='2,0,0,15' columns='auto,auto'>
    		<Label col="0"  text="{{v.name}} "></Label> 
 		<Label col="1" color="#00BFFF" class="fas" text="&#xf00c;"></Label>
 		</GridLayout>
 	</ng-template>
- </RadListView>
+ </ListView>
  </GridLayout>
 </StackLayout>
  <StackLayout  row="7" [visibility]=" showeval ? 'visible' : 'collapsed'" >
@@ -221,7 +221,7 @@
  	<StackLayout margin='8,0,10,8'>
  	   	<GridLayout columns="auto,*"  >
 						
-						<Image col="0" [src]='avatarlist[m.userid]' class="pic2"  stretch="aspectFill"  ></Image>
+						<Image  loadMode="async" col="0" [src]='avatarlist[m.userid]' class="pic2"  stretch="aspectFill"  ></Image>
 					    <GridLayout col="1" rows='auto,auto'  >
 					   		 <GridLayout columns='auto,auto' row="0" orientation=horizontal>
 					   		 	<Label  col="0" text="{{fullnamelist[m.userid]}}" class="fname"></Label>
@@ -238,6 +238,8 @@
  	   
  	   </StackLayout>
  	</ng-template>
+ 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
+ 	
 </RadListView> 
 </StackLayout>
  <StackLayout  row="7" [visibility]=" showdel ? 'visible' : 'collapsed'" >
@@ -269,6 +271,8 @@
    		  			  
    		  			 </StackLayout>
    	 </ng-template>
+   	  	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
+   	 
 </RadListView>
 </StackLayout>
 </GridLayout>

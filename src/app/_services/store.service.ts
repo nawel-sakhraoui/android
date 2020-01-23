@@ -5,6 +5,11 @@ import { HttpClient } from '@angular/common/http';
 import { SocketIO } from "nativescript-socketio"; 
 
 
+import * as  BackgroundHttp from "nativescript-background-http";
+//import "rxjs/Rx";
+import * as FileSystem from "file-system";
+
+
 import {ConfigService} from './api-config.service'; 
 
 //import * as EmailValidator from 'email-validator';
@@ -24,8 +29,7 @@ export class StoreService {
     
          this.host = ConfigService.storeServer; 
            //  this.socket = SocketIO.connect(this.host) ; 
-
-        
+       
     } 
     
     //check storage name 
@@ -72,13 +76,14 @@ export class StoreService {
         }
     
     */
-    postArticle ( storeid :string,  article : any ){
-        return this.http.post(this.host+'/api/stores/articles/stores/'+storeid, article ); 
+    postArticle ( storetitle :string,  article : any ){
+       // storetitle= storetitle.replace(/ /g, "%20"); 
+        return this.http.post(this.host+'/api/stores/articles/stores/'+storetitle, article ); 
     }
     
+    
     getArticle (id : string ){
-        return this.http.get(this.host+'/api/stores/articles/'+id);   
-        
+        return this.http.get(this.host+'/api/stores/articles/'+id);       
     }
     
     getArticlesByStoreTitle(storetitle : string, froms, size){
@@ -116,9 +121,8 @@ export class StoreService {
     }
     
    
-      postPic (article : string , pic:any ) {
-        
-             return this.http.put(this.host+'/api/articles/'+article+'/pic',{'pic':pic}); 
+    postPic (article : string , pic:any ) {
+              return this.http.put(this.host+'/api/articles/'+article+'/pic',{'pic':pic}); 
      }
     
     getPic(article: string){
@@ -411,6 +415,21 @@ export class StoreService {
 
     }
     
+    putBannerName( storeid:string , name:string)  {
+          storeid= storeid.replace(/ /g, "%20");
+          return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/bannername', {'name': name})  ; 
+    
+    }
+    getBannerName (storeid:string ) {
+           storeid= storeid.replace(/ /g, "%20");
+           return this.http.get(this.host+'/api/stores/stores/'+storeid+'/bannername') ;
+    }
+    
+    
+
+
+    
+    
     getStoresCount() {
       // console.log(store) ; 
         return this.http.get(this.host+'/api/managerstores/stores/count');
@@ -432,12 +451,12 @@ export class StoreService {
     
      }
     
-        postLoanProof (storename : string ,date:string ,  loan:any ) {
+    postLoanProof (storename : string ,date:string ,  loan:any ) {
         //console.log(cover.toString());
           //this.covurl = resizeb64(this.covurl, 'auto', '800px');
              return this.http.put(this.host+'/api/stores/'+storename+'/loan/'+date, {'loan':loan}); 
      }
-     getLoanProof (storeid : string ,date:string ) {
+    getLoanProof (storeid : string ,date:string ) {
           storeid= storeid.replace(/ /g, "%20");
         //console.log(cover.toString());
           //this.covurl = resizeb64(this.covurl, 'auto', '800px');
@@ -449,10 +468,44 @@ export class StoreService {
         return this.http.get(this.host+'/api/managerstores/stores/admins/'+storeid) ; 
         }
     
+
+  
+    /* public uploadGallery(destination: string, filevar: string, filepath: string) {
+        return new Observable((observer: any) => {
+            let session = BackgroundHttp.session("file-upload");
+            let request = {
+                url: destination,
+                method: "POST"
+            };
+            let params = [{ "name": filevar, "filename": filepath, "mimeType": "image/png" }];
+            let task = session.multipartUpload(params, request);
+            task.on("complete", (event) => {
+                let file = FileSystem.File.fromPath(filepath);
+                file.remove().then(result => {
+                    observer.next("Uploaded `" + filepath + "`");
+                    observer.complete();
+                }, error => {
+                    observer.error("Could not delete `" + filepath + "`");
+                });
+            });
+            task.on("error", event => {
+                console.dump(event);
+                observer.error("Could not upload `" + filepath + "`. " + event.eventName);
+            });
+        });
+    }*/
     
+    
+
+     putPicName( storeid : string, articleid:string, picname:string ) {
+         storeid= storeid.replace(/ /g, "%20");
+          return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/picname', {'picname':picname})  ; 
+    
+     }  
+     putGalleryName( storeid : string, articleid:string, names) {
+         storeid= storeid.replace(/ /g, "%20");
+          return  this.http.put(this.host+'/api/articles/stores/'+storeid+'/articles/'+articleid+'/gallerynames', {'gallerynames':names})  ; 
+    
+     } 
 }
     
-
-/*
-
-*/

@@ -4,7 +4,6 @@
 <Label class="alert" *ngIf='!listmessage && !loading' text="Pas de messages privés"> </Label>
 
 <RadListView row="1"  class="list-group" [items]="model" 
-  				selectionBehavior="LongPress" (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" 
 				loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
 				
 				>
@@ -28,8 +27,11 @@
 		</GridLayout>
 		
      </ng-template>
+     
+     <ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
+     
 </RadListView>
-      <ActivityIndicator row="2" *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+      <ActivityIndicator row="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
 
 </GridLayout>
 </ScrollLayout>      

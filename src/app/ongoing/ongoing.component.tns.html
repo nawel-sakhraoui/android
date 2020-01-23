@@ -66,7 +66,7 @@
 						<ng-template let-a="item"  >
 						<StackLayout  orientation="vertical">
 							 <GridLayout columns='*,*,auto'>
-							    <Image  col="0" [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
+							    <Image loadMode="async"  col="0" [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
 
 							    <GridLayout col="1" rows="auto,*" >
 							    
@@ -250,7 +250,6 @@
 						</GridLayout>
 						</StackLayout>
 						</ng-template>	
-						<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 						
       		       </RadListView>
       		   		
@@ -273,7 +272,6 @@
       		    </StackLayout>
       		    
      	  </ng-template>	
-     	  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 
 </RadListView>  
     <StackLayout  row="5"   >

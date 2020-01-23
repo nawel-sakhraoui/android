@@ -1,4 +1,4 @@
-<ScrollView >
+
 <GridLayout  rows="auto,auto,auto,auto,*"> 
 
 <StackLayout  row='0' >
@@ -11,7 +11,7 @@
 </StackLayout-->
 
 <StackLayout  row='2' [visibility]="!loading && suspend ?'visible':'collapse'" >
-<Image backgroundColor='rgba(0,0,0, 0.3)'    [src]="banner"  class="pic"  stretch="aspectFill"></Image>
+<Image loadMode="async" backgroundColor='rgba(0,0,0, 0.3)'    [src]="banner"  class="pic"  stretch="aspectFill"></Image>
 <Label class=' alert' text=" Ce magasin est suspendu"></Label>
 </StackLayout>
 
@@ -52,29 +52,32 @@
          <Label (touch)='ontouch($event)' nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
        </ng-template>
     
-         <Label nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
-    
+         <!-- Label nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
+     -->
     
     </GridLayout>
    
+ <ScrollView tkMainContent  >
+    <GridLayout  rows='auto,auto , auto,auto,auto,auto,auto '>
+  <Image loadMode="async"   backgroundColor='rgba(0,0,0, 0.4)'  (touch) = 'displaybanner = true' row ="0"  src="{{banner}}"  class="pic"  stretch="aspectFill"></Image>
  
-    <GridLayout tkMainContent  rows='auto,auto , auto,auto,auto,auto,auto '>
-
- 	<StackLayout height="160" row="0" backgroundColor='rgba(0,0,0, 0.4)' >
-   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading0' [busy]="loading0" ></ActivityIndicator>
+ 	<StackLayout height="160" row="0" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading0" ></ActivityIndicator>
    	</StackLayout> 
  
-  <Image  *ngIf=' !loading0' backgroundColor='rgba(0,0,0, 0.4)'  (touch) = 'displaybanner = true' row ="0" [src]="banner"  class="pic"  stretch="aspectFill"></Image>
   
   <ng-template ngxPermissionsOnly="ADMINStore"> 
    
-   <GridLayout   [visibility]="!loading0 && displaybanner ?'visible':'collapse'"  row="0" columns="*,auto" rows='*,auto'>
+   <GridLayout   [visibility]="!loading0 ? 'visible':'collapse'"  row="0" columns="*,auto" rows='*,auto'>
    <StackLayout col="1" row="1"   >
    <Label (touch)='ontouch($event)'  *ngIf="isValid"    class="fas up"  text="&#xf03e;" (tap)='onSelectTap() '></Label>
    </StackLayout>
    <StackLayout  row="1" col="1" orientation="horizontal">
-   <Label (touch)='ontouch($event)'  *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="covsave()" ></Label>
-   <Label (touch)='ontouch($event)' *ngIf="!isValid" class="fas up " text="&#xf00d;" (tap)="this.covremove()"></Label>
+   <Label  [isEnabled]="!saveloading" (touch)='ontouch($event)'  *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="covsave()" ></Label>
+   
+   <Label [isEnabled]="!saveloading"  (touch)='ontouch($event)' *ngIf="!isValid" class="fas up " text="&#xf00d;" (tap)="this.covremove()"></Label>
+      <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="saveloading"></ActivityIndicator>
+   
    </StackLayout>
    
    </GridLayout>
@@ -120,7 +123,7 @@
       		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
       		 <GridLayout (touch)='ontouch2($event)' >
       		   
-      			<Image (longPress)="gotoArticle(a._id, a._source.storetitle )"  (touch)="display(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
+      			<Image loadMode="async"   (longPress)="gotoArticle(a._id, a._source.storetitle )"  (touch)="display(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
       			
  				<AbsoluteLayout  >
       			     <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="a.loadingcart==1"></ActivityIndicator>
@@ -166,25 +169,25 @@
      		 </ng-template>	
      
      		
-     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewStaggeredLayout>
+     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
       	
       	</RadListView>
       	
  	
          <ng-template ngxPermissionsOnly="ADMINStore"> 
   
-    <StackLayout row="5" [visibility]="boolNotif ?'visible':'collapse'" >
+    <StackLayout row="5" [visibility]="boolNotif && !loading2?'visible':'collapse'" >
      <app-store-menu [storetitle]="storetitle"     (notifCount)="OnNotifCount($event)" ></app-store-menu>
    	</StackLayout>
    	
    	
   </ng-template>    	
-  <StackLayout row="5">
-   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading2' [busy]="loading2" ></ActivityIndicator>
+  <StackLayout row="5"  *ngIf='loading2'  >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading2" ></ActivityIndicator>
    	</StackLayout> 
    </GridLayout>
-
+ </ScrollView> 
 </RadSideDrawer>
 
 </GridLayout>
- </ScrollView>
+

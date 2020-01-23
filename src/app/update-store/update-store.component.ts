@@ -74,7 +74,7 @@ export class UpdateStoreComponent implements OnInit {
 
   ngOnInit() {
        this.loading = true ; 
-       let sub = this.r.parent.params.subscribe(params => {
+       let sub = this.r.params.subscribe(params => {
             //this.parentRouteId = +params["id"];
            //console.log(params ) ; 
                 this.storetitle = params['store'];

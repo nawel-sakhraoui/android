@@ -25,15 +25,23 @@ export class FirebaseService {
     }
 
     //sendMsgNotification()
-    messageNotif( token:string, fullname:string ) {
+    messageNotif( token:string, fullname:string, userid:string ) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
                     "notification": {
                          "title": fullname,
                          "text":  "Vous à envoyé un nouveau message.",
+                         
                          "sound": "default"
                      },
+                     "data": {
+                         "notif":"message",
+                         "userid" : userid,
+                         "userfullname":fullname   
+                     
+                     },
+                     
                        "priority": "High",
                         "to": token
                  });
@@ -42,7 +50,7 @@ export class FirebaseService {
         }
      
      //storemessage notif 
-    storemessageNotif( token:string, storename:string ) {
+    storemessageNotif( token:string, storename:string, commandid:string ) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -51,6 +59,11 @@ export class FirebaseService {
                          "text":  "Vous avez un nouveau message.",
                          "sound": "default"
                      },
+                     'data': {
+                         'notif':"ongoing",
+                         "commandid":commandid,
+                         'fragment': 'message'
+                      },
                        "priority": "High",
                         "to": token
                  });
@@ -59,7 +72,7 @@ export class FirebaseService {
         }
     
         //storemessage notif 
-    prepareNotif( token:string, storename:string ) {
+    prepareNotif( token:string, storename:string, commandid:string ) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -68,6 +81,11 @@ export class FirebaseService {
                          "text":  "Votre commande est prête, en attente de livraison.",
                          "sound": "default"
                      },
+                     'data': {
+                         'notif':"ongoing",
+                         "commandid":commandid,
+                         'fragment': 'no'
+                      },
                        "priority": "High",
                         "to": token
                  });
@@ -76,7 +94,7 @@ export class FirebaseService {
         }
     
     
-    sendNotif( token:string, storename:string ) {
+    sendNotif( token:string, storename:string , commandid:string ) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -85,13 +103,18 @@ export class FirebaseService {
                          "text":  "Votre commande a été envoyée.",
                          "sound": "default"
                      },
+                     'data': {
+                         'notif':"ongoing", 
+                         "commandid":commandid,
+                         'fragment': 'no'
+                      },
                        "priority": "High",
                         "to": token
                  });
   
         
         }
-     ratingNotif( token:string, storename:string ) {
+     ratingNotif( token:string, storename:string, commandid:string ) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -100,6 +123,13 @@ export class FirebaseService {
                          "text":  "Noter les articles achetés",
                          "sound": "default"
                      },
+                     
+                     'data': {
+                         'notif':"ongoing", 
+                         "commandid":commandid,
+                         'fragment': 'rating'
+                      },
+                     
                        "priority": "High",
                         "to": token
                  });
@@ -108,7 +138,7 @@ export class FirebaseService {
         }
     
     
-     commandNotif( token:string, fullname:string , storename:string) {
+     commandNotif( token:string, fullname:string , storename:string, commandid:string) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -117,13 +147,19 @@ export class FirebaseService {
                          "text":  "Vous avez une nouvelle commande de "+ fullname,
                          "sound": "default"
                      },
+                     'data': {
+                         'notif':"store",
+                         'storeid':storename,
+                         "commandid":commandid,
+                         'fragment': 'no'
+                      },
                        "priority": "High",
                         "to": token
                  });
   
         
         }
-     receiveNotif( token:string, fullname:string , storename:string) {
+     receiveNotif( token:string, fullname:string , storename:string,commandid:string) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -132,6 +168,12 @@ export class FirebaseService {
                          "text":   fullname+" à reçu votre commande",
                          "sound": "default"
                      },
+                     'data': {
+                         'notif':"store",
+                         'storeid':storename,
+                         "commandid":commandid,
+                         'fragment': 'no'
+                      },
                        "priority": "High",
                         "to": token
                  });
@@ -139,7 +181,7 @@ export class FirebaseService {
         
         }
     
-       litigeNotif( token:string, fullname:string , storename:string) {
+     litigeNotif( token:string, fullname:string , storename:string, commandid:string) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -148,6 +190,12 @@ export class FirebaseService {
                          "text":   fullname+" à ouvert un litige",
                          "sound": "default"
                      },
+                     'data': {
+                         'notif':"store",
+                         'storeid':storename,
+                         "commandid":commandid,
+                         'fragment': 'no'
+                      },
                        "priority": "High",
                         "to": token
                  });
@@ -156,7 +204,7 @@ export class FirebaseService {
         }
     
     
-      closelitigeNotif( token:string, fullname:string , storename:string) {
+      closelitigeNotif( token:string, fullname:string , storename:string,commandid:string) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -165,13 +213,19 @@ export class FirebaseService {
                          "text":   fullname+" à fermée le litige",
                          "sound": "default"
                      },
+                       'data': {
+                         'notif':"store",
+                         'storeid':storename,
+                         "commandid":commandid,
+                         'fragment': 'no'
+                      },
                        "priority": "High",
                         "to": token
                  });
   
         
         }
-      usermessageNotif( token:string, fullname:string , storename:string) {
+      usermessageNotif( token:string, fullname:string , storename:string,commandid:string) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -180,6 +234,12 @@ export class FirebaseService {
                          "text":   fullname+" à envoyé un message",
                          "sound": "default"
                      },
+                     'data': {
+                         'notif':"store",
+                         'storeid':storename,
+                         "commandid":commandid,
+                         'fragment': 'message'
+                      },
                        "priority": "High",
                         "to": token
                  });
@@ -187,24 +247,30 @@ export class FirebaseService {
         
         }
     
-       closeNotif( token:string, fullname:string , storename:string) {
+       closeNotif( token:string, fullname:string , storename:string, commandid:string) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
                     "notification": {
                          "title": storename,
-                         "text":   fullname+" commande terminée",
+                         "text":   fullname+" commande complétées",
                          "sound": "default"
                      },
-                       "priority": "High",
-                        "to": token
+                     'data': {
+                         'notif':"store",
+                         'storeid':storename,
+                         "commandid":commandid,
+                         'fragment': 'rating'
+                      },
+                      "priority": "High",
+                      "to": token
                  });
   
         
         }
        
     
-    stopNotif( token:string, fullname:string , storename:string) {
+    stopNotif( token:string, fullname:string , storename:string, commandid:string) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
@@ -213,6 +279,13 @@ export class FirebaseService {
                          "text":   fullname+" à annulé  sa commande",
                          "sound": "default"
                      },
+                     
+                     'data': {
+                         'notif':"store",
+                         'storeid':storename,
+                         "commandid":commandid,
+                         'fragment': 'no'
+                      },
                        "priority": "High",
                         "to": token
                  });

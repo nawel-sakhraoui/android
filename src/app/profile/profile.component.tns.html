@@ -1,10 +1,10 @@
-<ScrollView >
+<ScrollView (tap)="hide()" >
     <GridLayout rows="*,auto">
         
       
         <GridLayout   [visibility]="!loading ?'visible':'collapse'"  row="0"  rows="auto,auto, auto, auto, auto, auto,auto,auto" columns="*">
            
-            <Image backgroundColor='rgba(0,0,0, 0.4)' (touch) = 'displayavatar = true'  row="0" col="0" [src]="avatar" stretch="aspectFill"
+            <Image backgroundColor='rgba(0,0,0, 0.4)' (touch) = 'displayavatar = true'  row="0" col="0" src="{{avatar}}" stretch="aspectFill"
                 class="profilePic"></Image>
    
            	<ng-template ngxPermissionsOnly="ADMINProfile">
@@ -13,9 +13,12 @@
     <StackLayout   margin="0,35,0,0"  row="0" col="1" orientation="horizontal">
    <Label (touch)="ontouch3($event)" *ngIf="isValid"     class="fas up"  text="&#xf03e;" (tap)='onSelectTap() '></Label>
    </StackLayout>
+   
    <StackLayout   margin="0,30,0,0"  row="0" col="1" orientation="horizontal">
-   <Label (touch)="ontouch3($event)" *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="avatarsave()" ></Label>
-   <Label (touch)="ontouch3($event)"  *ngIf="!isValid" class="fas up " text="&#xf00d;" (tap)="avatarremove()"></Label>
+   <Label  [isEnabled]="!loadingavatar" (touch)="ontouch3($event)" *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="avatarsave()" ></Label>
+    <ActivityIndicator *ngIf="loadingavatar" color='#FFA500' rowSpan="2" [busy]="loadingavatar"></ActivityIndicator>
+   
+   <Label  (touch)="ontouch3($event)"  *ngIf="!isValid && !loadingavatar" class="fas up " text="&#xf00d;" (tap)="avatarremove()"></Label>
    </StackLayout>   
                 </GridLayout>
 				<textView editable ="false" row="1" text="Le format de l'image est invalide" *ngIf='alertimg' class="alert"></textView>
@@ -101,7 +104,7 @@
 					<RadListView  row="1" [items]="stores">
    					 <ng-template let-s="item">
           				     
-    			    			    <Label (touch)="ontouch($event)" nsRouterLink="./../../../../stores/{{s._id}}" textWrap='true' fontSize="18"  color='#444444' [text]="s._id"  ></Label>
+    			    			    <Label (touch)="ontouch($event)" nsRouterLink="./../../stores/{{s._id}}" textWrap='true' fontSize="18"  color='#444444' [text]="s._id"  ></Label>
    							
    					 </ng-template>
 					</RadListView>

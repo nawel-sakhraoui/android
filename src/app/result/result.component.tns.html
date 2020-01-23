@@ -1,11 +1,10 @@
-<ScrollView>
+
 <RadSideDrawer tkExampleTitle tkToggleNavButton>
     <GridLayout tkDrawerContent rows="40, *" class="sideStackLayout">
-        <StackLayout class="sideTitleStackLayout">
-            <Label (touch)='ontouch($event)'   text="Catégories  &#xf104;" class='fas' (tap)="onCloseDrawerTap()"></Label>
-        </StackLayout>
-        <ScrollView row="1">
-        <RadListView row ="0" class="list-group" [items]="allCategories " style="height:auto" >
+        <Label row="0" (touch)='ontouch($event)'   text="Catégories  &#xf104;" class='fas sideTitleStackLayout' (tap)="onCloseDrawerTap()"></Label>
+        
+
+        <RadListView row ="1" class="list-group" [items]="allCategories " style="height:auto" >
   				  <ng-template let-k="item" let-i='index' >
             		<StackLayout  class="sideStackLayout ">
            		     <Label textWrap="true" (touch)='ontouch($event)'   editable="false"  *ngIf='k!=filter' text="{{k}}" class="sideLabel list-group-item" (tap)="selectFilter(k, orderby);onCloseDrawerTap();"></Label>
@@ -14,7 +13,6 @@
            		    </StackLayout> 
                   </ng-template>
         </RadListView>
-        </ScrollView>
     </GridLayout>
 <StackLayout tkMainContent>
     
@@ -60,20 +58,16 @@
 	androidSelectedTabHighlightColor="#FFA500"
 	textTransform="none"
  >
-    <StackLayout *tabItem="{title: 'Articles'}">
-  
- 		
-   <Label class="notfound" text="Pas d'articles disponibles"  [visibility]=" !loading &&  notfound? 'visible' : 'collapsed'">
-   
-   </Label>
+<StackLayout *tabItem="{title: 'Articles'}"> 		
+   <Label class="notfound" text="Pas d'articles disponibles"  [visibility]=" !loading &&  notfound? 'visible' : 'collapsed'"></Label>
   		<RadListView  [visibility]="!loading && !notfound? 'visible' : 'collapsed'"  [items]="articles"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedArticles($event)"
          (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" >
       		 <ng-template let-a="item" class="itemStackLayout" >
 
       		 
-      		 <GridLayout (touch)="ontouch2($event)"  rows='*,auto'  (tap)="gotoArticle(a._id, a._source.storetitle )" >
+      		 <GridLayout (touch)="ontouch2($event)"  rows='*,auto'  (longPress)="gotoArticle(a._id, a._source.storetitle )" >
       		   
-      			<Image row="0" [src]='mainpics[a._id]' class='articlepic' stretch="aspectFill"   (touch)="display(a._id)"   ></Image>
+      			<Image loadMode="async"  row="0" src='{{mainpics[a._id]}}' class='articlepic' stretch="aspectFill"   (touch)="display(a._id)"   ></Image>
       			
       			<AbsoluteLayout  >
 			      <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='a.loadingcart==1' [busy]="a.loadingcart==1" ></ActivityIndicator>
@@ -117,14 +111,14 @@
      		 </ng-template>	
      
      		
-     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewStaggeredLayout>
+     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
     
       </RadListView> 
        
     <StackLayout >
   <ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
  </StackLayout>  
-    </StackLayout>
+</StackLayout>
     
     <StackLayout *tabItem="{title: 'Magasins'}">
     <Label class=" notfound " text="Pas de magasin disponible"  [visibility]=" !loading && notfoundstore ? 'visible' : 'collapsed'">
@@ -137,7 +131,7 @@
       		 
       		 <GridLayout  (tap)="gotoStore(s._id )" (touch)="ontouch2($event)" rows='*,auto'>
       		   
-      			<Image row="0"[src]='s.banner' (touch)="storedisplay(s._id) "class='storepic' stretch="aspectFill" ></Image>
+      			<Image loadMode="async"  row="0"  src='{{s.banner}}' class='storepic' stretch="aspectFill" ></Image>
       			
       			<AbsoluteLayout  >
       			
@@ -168,7 +162,7 @@
      		 </ng-template>	
      
      		
-     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
+     		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
     
       </RadListView>
        
@@ -182,4 +176,3 @@
     
 
 </RadSideDrawer>
-</ScrollView>

@@ -55,6 +55,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
                  this.permissionsService.addPermission('readProfile', () => {
                     return true;
                 });
+            //store admin ! 
             
                  
            

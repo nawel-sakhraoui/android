@@ -273,10 +273,8 @@
 						</GridLayout>
 						</StackLayout>
 						</ng-template>
-						  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 						
-						
-						
+					
       		       </RadListView>
       		    	 <StackLayout  row="2" orientation="horizontal" [visibility]="model.steps.close==0  ? 'visible' : 'collapsed'"  >
       		    	 <textView  [isEnabled]="!loadingM"     width='80%' class="msg"  returnKeyType="done" text='{{textmessage}}' [(ngModel)]="textmessage" ></textView>
@@ -286,7 +284,7 @@
       		    			<ActivityIndicator    color='#FFA500' rowSpan="3" [busy]="loadingM"></ActivityIndicator>
 					  
       		    	 </StackLayout>
-      		    	<Label row='3' class="alert" text='taper votre message !' ></Label>
+      		    	<Label *ngIf='alertM' row='3' class="alert" text='taper votre message !' ></Label>
       		    		
       		    	
       		    </GridLayout>

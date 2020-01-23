@@ -1,6 +1,6 @@
 import { Component, OnInit,ViewChild,ViewContainerRef , ElementRef,AfterViewInit,   AfterViewChecked, AfterContentInit} from '@angular/core';
 //import {RatingModalComponent} from './rating-modal.component';
-import {FirebaseService, RatingModalService, MessagesService, OngoingService, StoreService, UserdetailsService} from '../_services/index';
+import {PicService, FirebaseService, RatingModalService, MessagesService, OngoingService, StoreService, UserdetailsService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd  } from '@angular/router';
 import {Subscription} from 'rxjs';
 import * as prettyMs from 'pretty-ms';
@@ -48,7 +48,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
   open = false ;
   fullname ="" ; 
   alertM = {} ; 
-    loadingM= {};
+  loadingM= {};
  
   constructor(private messagesService: MessagesService,
               private ongoingService :OngoingService, 
@@ -59,7 +59,8 @@ export class OngoingComponent implements OnInit , AfterViewInit{
               private router : Router, 
               private vcRef: ViewContainerRef, 
               private modal: ModalDialogService , 
-              private firebaseService: FirebaseService
+              private firebaseService: FirebaseService, 
+              private picService: PicService
               ) {
    //   let sub = this.route.fragment.pipe(filter(f => !!f)).subscribe(f => document.getElementById(f).scrollIntoView());
    //   console.log(sub) ; 
@@ -276,7 +277,9 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                   
               for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
                   console.log(this.tempmodel[i]._source.articles) ; 
-                   this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
+                 this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
+
+                   /*this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
                                        //   console.log( this.model[i][j] ) ; 
@@ -284,7 +287,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                                     }, error4 =>{
                                           console.log(error4) ; 
                                     }) ; 
-                  
+                  */
               }
                      this.tempmodel[i].firebases = [] ; 
            this.storeService.getAdmins(this.tempmodel[i]._source.storetitle)
@@ -419,7 +422,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                     }); 
         //get store admin and creator 1, get tokens !  send notif ! 
         for (let firebase of this.model[index].firebases) 
-               this.firebaseService.receiveNotif( firebase,this.fullname, storetitle)
+               this.firebaseService.receiveNotif( firebase,this.fullname, storetitle,id)
                 .subscribe(
                     data=>{},error=>{}) ; 
 
@@ -454,7 +457,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
         //get store admin and creator 1, get tokens !  send notif ! 
              //get store admin and creator 1, get tokens !  send notif ! 
         for (let firebase of this.model[index].firebases) 
-               this.firebaseService.litigeNotif( firebase,this.fullname, storetitle)
+               this.firebaseService.litigeNotif( firebase,this.fullname, storetitle,id)
                 .subscribe(
                     data=>{},error=>{}) ; 
 
@@ -512,7 +515,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
         
         //get store admin and creator 1, get tokens !  send notif ! 
           for (let firebase of this.model[index].firebases) 
-               this.firebaseService.closeNotif( firebase,this.fullname, storetitle)
+               this.firebaseService.closeNotif( firebase,this.fullname, storetitle,id)
                 .subscribe(
                     data=>{},error=>{}) ; 
     }
@@ -542,7 +545,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
         
         //get store admin and creator 1, get tokens !  send notif ! 
           for (let firebase of this.model[index].firebases) 
-               this.firebaseService.closelitigeNotif( firebase,this.fullname, storetitle)
+               this.firebaseService.closelitigeNotif( firebase,this.fullname, storetitle, id )
                 .subscribe(
                     data=>{},error=>{}) ; 
     }
@@ -595,7 +598,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
          
          //get store admin and creator 1, get tokens !  send notif ! 
          for (let firebase of this.model[i].firebases) 
-               this.firebaseService.usermessageNotif( firebase,this.fullname, storetitle)
+               this.firebaseService.usermessageNotif( firebase,this.fullname, storetitle,id)
                 .subscribe(
                     data=>{},error=>{}) ; 
      }
@@ -638,7 +641,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                 
             //get store admin and creator 1, get tokens !  send notif ! 
          for (let firebase of this.model[stop.index].firebases) 
-               this.firebaseService.stopNotif( firebase,this.fullname, stop.storetitle)
+               this.firebaseService.stopNotif( firebase,this.fullname, stop.storetitle,stop.id)
                 .subscribe(
                     data=>{},error=>{}) ; 
        
@@ -813,6 +816,8 @@ getLocalDateTime(date) {
    
      hide () {
          utils.ad.dismissSoftInput() ;  
+         //import * as utils from "utils/utils";
+
    // this.view.nativeElement.dismissSoftInput();
    // this.view.nativeElement.android.clearFocus();
    }

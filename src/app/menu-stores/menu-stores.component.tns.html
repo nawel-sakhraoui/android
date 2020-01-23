@@ -10,14 +10,12 @@
 	   
 <RadListView margin="0,10,0,10" row ="2" [items]="stores" >
     <ng-template let-k="item"  >
-        <GridLayout>
-     
-        <GridLayout (touch)='ontouch2($event)'   rows="*" columns='40, *'   class="border" nsRouterLink="/stores/{{k}}"  >
+
+        <GridLayout (touch)='ontouch2($event)'   rows="*" columns='40, *'   class="border" nsRouterLink="/home/{{myhome}}/stores/{{k}}/store"  >
             <Label col="0" row="0" text='&#xf54f;' class="fass icon "></Label>
             <Label textWrap='true' col="1" row="0" class="store" text=" {{k}}" ></Label>                     
         </GridLayout>
-        
-        </GridLayout>       
+           
     </ng-template>
 </RadListView>
 

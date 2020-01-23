@@ -71,7 +71,7 @@
 						<ng-template let-a="item"  >
 						<StackLayout  orientation="vertical">
 							 <GridLayout columns='*,*,auto'>
-							    <Image [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
+							    <Image  src="{{a.pic}}"	loadMode="async" class="pic"  stretch="aspectFill" ></Image>
 
 							    <GridLayout col="1" rows="auto,*" >
 							    
@@ -80,7 +80,7 @@
 							    	
 							    	<GridLayout row="1" rows="*,*,*,*,*,*" columns='*,auto'>
 							    	<Label *ngIf='a.hasOwnProperty("color")'  row='0' col="0"  text="Couleur: "></Label>
-							    	<Label *ngIf='a.hasOwnProperty("color")'  row="0" col="1" class="color" [backgroundColor]='a.color'></Label>
+							    	<Label *ngIf='a.has1OwnProperty("color")'  row="0" col="1" class="color" [backgroundColor]='a.color'></Label>
 							        <Label *ngIf='a.hasOwnProperty("size")' row="1" col="0" text='Taille: '></Label>
 							        <Label *ngIf='a.hasOwnProperty("size")'  row='1' col="1" class='size' text='{{a.size}}' > </Label>
 							        
@@ -287,7 +287,6 @@
 						</GridLayout>
 						</StackLayout>
 						</ng-template>	
-						<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
 						
       		       </RadListView>
       		    	
@@ -304,7 +303,6 @@
       		    </GridLayout>
       		   
      	  </ng-template>
-     	  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewStaggeredLayout>
      	  	
 
 </RadListView>  

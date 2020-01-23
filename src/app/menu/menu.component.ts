@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,  AfterViewInit } from '@angular/core';
 import * as localStorage from  "nativescript-localstorage" ; 
 import { RouterExtensions } from "nativescript-angular/router";  
-import {SearchService, UserService, StoreService,  AuthenticationService, UserdetailsService , AddressService} from '../_services/index'; 
+import {MessagesService, SearchService, UserService, StoreService,  AuthenticationService, UserdetailsService , AddressService} from '../_services/index'; 
 import { Router, ActivatedRoute, NavigationEnd, NavigationStart , NavigationError, Event } from '@angular/router';
 import { map } from 'rxjs/operators';
 //import * as prettyMs from 'pretty-ms';
@@ -16,6 +16,8 @@ import { Label } from 'tns-core-modules/ui/label';
 import * as geolocation from "nativescript-geolocation";
 import { Accuracy } from "tns-core-modules/ui/enums";
 
+import * as firebase from 'nativescript-plugin-firebase';
+
 
 @Component({
      moduleId: module.id,
@@ -23,12 +25,10 @@ import { Accuracy } from "tns-core-modules/ui/enums";
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, AfterViewInit {
 
 
-      me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
-
-               
+    me= JSON.parse(localStorage.getItem('currentUser')).userid ;               
     /*notifCount=0 ; 
     boolNotif= false ;*/ 
     loading = false ; 
@@ -47,9 +47,9 @@ export class MenuComponent implements OnInit {
     isopen = false ;  
     data3 :any={} ; 
     cities = [];
-    city:string="" ;
-    cityAr:string ='' ; 
-    selectedIndex = 0 ;   
+    city ='Toutes les villes' ; 
+    cityAr:string = 'كل الولايات' ; 
+    selectedIndex = 0;   
     langue :string ;
     langue2:string ;  
     hiddensearch :boolean=false; 
@@ -60,9 +60,7 @@ export class MenuComponent implements OnInit {
     
     gotoprofile(){
           console.log(this.myhome) ; 
-           this.router.navigateByUrl("/home/"+this.myhome+"/profile"); 
-      
-      
+           this.router.navigateByUrl("/home/"+this.myhome+"/profile");   
     }
     
     constructor(
@@ -77,6 +75,7 @@ export class MenuComponent implements OnInit {
         private userService: UserService, 
         private addressService: AddressService, 
         private searchService : SearchService,
+        private messagesService :MessagesService,
         private page : Page) {
        
         
@@ -106,8 +105,7 @@ export class MenuComponent implements OnInit {
               }
                });
         
-               this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
-
+     this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
      this.userdetailsService.getLocation(this.myhome)
      .subscribe(
          data=>{
@@ -153,29 +151,33 @@ export class MenuComponent implements OnInit {
               this.langue2='fr' ; 
                 this.langue='ar'; 
           }
-*/
+        */
+        
+       
+ 
+
      }
 
     
       
  
+      ngAfterViewInit() {
+           this.searchService.sendCity({
+                                   "city": this.city}) 
+          }
      
     
       ngOnInit() {
           
           this.loading = true ; 
-          this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
-          console.log(this.myhome) ; 
-          
-  
-          
-          this.addressService.getCities () 
+     
+            this.addressService.getCities () 
           .subscribe (
              data => {
                     //console.log(data) ; 
-                    this.cities = data['cities'];   
-                    this.cities.unshift({"id":0, "name": 'Toutes les villes', "nameAr": 'كل الولايات'});
-                   this.cities = this.cities.reduce((result, filter) => {
+               this.cities = [{"id":0, "name": 'Toutes les villes', "nameAr": 'كل الولايات'}].concat(data['cities']);   
+                   // this.cities.unshift({"id":0, "name": 'Toutes les villes', "nameAr": 'كل الولايات'});
+               this.cities = this.cities.reduce((result, filter) => {
                          result =result.concat([filter.name]) ;
                         return result;
                         },[]);
@@ -184,23 +186,18 @@ export class MenuComponent implements OnInit {
                  .subscribe(
                      data=>{
                       console.log(data) ; 
-                      if (data['location']) {
+                      if (data.hasOwnProperty('location')) {
                       this.city = data['location'];   
                       this.cityAr  = data['locationAr'] ; 
                       this.selectedIndex = this.cities.indexOf(this.city) ; 
-                    }
-                    else {
-                        this.city= 'Toutes les villes'; 
-                        this.cityAr='كل الولايات'; 
-                   }
-                       this.searchService.sendCity({
-                               "city": this.city}) ;
+                        
+                    }else 
+                         this.searchService.sendCity({
+                                   "city": this.city}) ;
+                    
                  },error=>{
                      console.log(error) ; 
-                    this.city= 'Toutes les villes'; 
-                    this.cityAr='كل الولايات';
-                        this.searchService.sendCity({
-                               "city": this.city}) 
+                  
                  });
                  
                  
@@ -208,36 +205,34 @@ export class MenuComponent implements OnInit {
                }, error => {
                     console.log(error);   
         
-                }); 
+                });
+          
+        
+             
           
               this.userdetailsService.getFullname (this.myhome)
               .subscribe(
                 data=>{
-                //   console.log(data) ; 
+                    //   console.log(data) ; 
                     this.name = data['fullname']; 
-                
-                     this.loading= false ; 
+                    this.loading= false ; 
 
         
           
-            this.userService.getStores(this.myhome)
-            .subscribe( 
-             data => {
-              //  console.log(data._source.store ) ; 
-               if (data['_source']['store'] ) {
-                   
-                  this.stores = data['_source']['store'].filter(x => x ).reverse() ; 
-                   
-                 
-                   console.log(this.stores) ; 
+                    this.userService.getStores(this.myhome)
+                    .subscribe( 
+                        data => {
+                                //  console.log(data._source.store ) ; 
+                               if (data['_source']['store'] ) {
+                                    this.stores = data['_source']['store'].filter(x => x ).reverse() ; 
+                                    console.log(this.stores) ; 
                   
                  
                
-              }}, error => {
-                 console.log( error) ; 
-                    
+                        }}, error => {
+                                console.log( error) ; 
                 
-               }); 
+                     }); 
           
           this.userdetailsService.getNotifications (this.myhome)
           .subscribe(
@@ -357,6 +352,8 @@ export class MenuComponent implements OnInit {
                   console.log(error3) ; 
                   
           });
+                    
+          
               
       }
                   
@@ -365,13 +362,13 @@ export class MenuComponent implements OnInit {
                         
                  //   this.logout () ; 
                
-                 });
+               });
                
           
           
      
     //    let searchbar:SearchBar = <SearchBar>this.page.getViewById("searchbarid");
-      //           searchbar.dismissSoftInput();
+    //           searchbar.dismissSoftInput();
  
           
     }
@@ -648,6 +645,7 @@ export class MenuComponent implements OnInit {
             break;
     }
    
-}
+   }
+  
 
 }

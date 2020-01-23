@@ -1,8 +1,8 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,NgZone } from '@angular/core';
 import * as utils from "tns-core-modules/utils/utils";
 
-import {AddressService, UserdetailsService, StoreService, MessagesService } from '../_services/index';
+import {PicService, AddressService, UserdetailsService, StoreService, MessagesService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs';
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
@@ -36,39 +36,41 @@ export class ProfileComponent implements OnInit {
     loadingavatar = false ; 
     loading = false ; 
     loading2= false ; 
-  avatar = '' ; 
-  tempavatar = '' ; 
-  userid ="";
-  isValid :boolean = true ;
-  read ; 
-  model : any= {} ; 
-  editPhone = false ; 
-  editLocation = false ;
-  fullnamelist = {}
+    avatar = '' ; 
+    tempavatar = '' ; 
+    userid ="";
+    isValid :boolean = true ;
+    read ; 
+    model : any= {} ; 
+    editPhone = false ; 
+    editLocation = false ;
+    fullnamelist = {}
     avatarlist = {} 
     alertimg=false; 
-     cities= [] ; 
+    cities= [] ; 
     newAddress = false ; 
-   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
-  phonemask = ["0",/[5-7]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," "]
-  stores :any =[]; 
-  locations = [];
+    me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
+    phonemask = ["0",/[5-7]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," "]
+    stores :any =[]; 
+    locations = [];
     location = [] ;
     locationAr= []; 
     displayavatar = false ; 
-  locationconfig = {
+    extension ='' ; 
+    tempprofilepicname ="" ; 
+    locationconfig = {
         "search":true, //true/false for the search functionlity defaults to false,
         "height": "200px", //height of the list so that if there are more no of items it can show a scroll defaults to auto. With auto height scroll will never appear
-      "placeholder":'...',// text to be displayed when no item is selected defaults to Select,
-    //    "customComparator": ()=>{}, // a custom function using which user wants to sort the items. default is undefined and Array.sort() will be used in that case,
+        "placeholder":'...',// text to be displayed when no item is selected defaults to Select,
+         //    "customComparator": ()=>{}, // a custom function using which user wants to sort the items. default is undefined and Array.sort() will be used in that case,
         //"limitTo": options.length // a number thats limits the no of options displayed in the UI similar to angular's limitTo pipe
-       'displayKey':'name'
+        'displayKey':'name'
         }; 
- locationconfigAr = {
+     locationconfigAr = {
         "search":true, //true/false for the search functionlity defaults to false,
         "height": "200px", //height of the list so that if there are more no of items it can show a scroll defaults to auto. With auto height scroll will never appear
-      "placeholder":'...',// text to be displayed when no item is selected defaults to Select,
-    //    "customComparator": ()=>{}, // a custom function using which user wants to sort the items. default is undefined and Array.sort() will be used in that case,
+        "placeholder":'...',// text to be displayed when no item is selected defaults to Select,
+        //    "customComparator": ()=>{}, // a custom function using which user wants to sort the items. default is undefined and Array.sort() will be used in that case,
         //"limitTo": options.length // a number thats limits the no of options displayed in the UI similar to angular's limitTo pipe
        'displayKey':'nameAr'
         }
@@ -79,7 +81,9 @@ export class ProfileComponent implements OnInit {
               private   router : Router, 
               private route : ActivatedRoute,
               private permissionsService : NgxPermissionsService, 
-              private rolesService: NgxRolesService  ) { }
+              private rolesService: NgxRolesService  , 
+              private picService : PicService, 
+              private ngZone : NgZone) { }
 
     
   ngOnInit() {
@@ -145,10 +149,21 @@ export class ProfileComponent implements OnInit {
                     this.selectedIndex = this.locations.indexOf(this.location[0]) ;  
    
                 }
-                  
-                 if (!this.model.stores ){
+            
+                 
+                  if (!this.model.stores ){
                     this.model.stores =["no stores "]; 
                     }
+                  
+                        // 
+                  if (this.model.hasOwnProperty('profilepicname') ) {
+                      this.avatar = this.picService.getProfileLink(this.model.profilepicname)
+                        this.tempprofilepicname = this.model.profilepicname ; 
+                  }else 
+                      this.avatar = "" ; 
+                  this.tempavatar = this.avatar;
+               //   console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') ; 
+                 console.log(this.avatar) ; 
                   this.loading = false ; 
               this.display1 = true ; 
                   
@@ -187,7 +202,7 @@ export class ProfileComponent implements OnInit {
               }
             ); 
      
-
+    /*
        this.loading2 = true ; 
      this.usersdetailsService.getAvatar(this.userid)
       .subscribe (
@@ -215,7 +230,7 @@ export class ProfileComponent implements OnInit {
                          this.tempavatar  
                    } ); 
   
-  
+   */
     this.storeService.getStoresByUserId( this.userid ) 
     .subscribe (
             data => {
@@ -230,7 +245,8 @@ export class ProfileComponent implements OnInit {
   }
     
   avatarsave() {
-          this.loadingavatar = true ; 
+      this.loadingavatar = true ; 
+         /* this.loadingavatar = true ; 
           console.log ('saving avatar') ; 
            this.usersdetailsService.postAvatar(this.userid, this.avatar)
            .subscribe(
@@ -246,8 +262,75 @@ export class ProfileComponent implements OnInit {
                             console.log(error) ; 
                            // this.alertService.error(error2);
                           
+                           });
+         */
+
+       if (this.tempprofilepicname !="" ) {
+         //remove before add 
+           this.picService.deleteProfile(this.tempprofilepicname) 
+           .subscribe (
+               data => {
+                     console.log(data ) ; 
+                       this.picService.putProfile( this.model.profilepicname, this.avatar, this.extension)//postBanner(this.storetitle, this.banner)
+                       .subscribe(
+                        data => {
+                         this.ngZone.run(() => {
+                         //this.images.push(path.replace(/^.*[\\\/]/, ''));
+                  
+                              this.loadingavatar = false ; 
+                            console.log(data)  ;
+                            this.tempavatar = this.avatar ;  
+                             this.isValid  = true ;
+                           // this.router.navigate([this.returnUrl]);
+                           this.usersdetailsService.putProfilePicName(this.userid, this.model.profilepicname)
+                            .subscribe( data =>{ console.log('done'); this.tempprofilepicname = this.model.profilepicname} 
+                            ,error=>{ });
+         
+                                    
+                         });
+                        },
+                        error => {
+                              this.loadingavatar = false ; 
+                            console.log(error) ; 
+                           // this.alertService.error(error2);
+                        //   this.saveloading = false ;
                         });
+                        
+                     
+                   
+                   },error=>{}
+               
+               ) 
+        }    else {
+           
+                  this.picService.putProfile( this.model.profilepicname, this.avatar, this.extension)//postBanner(this.storetitle, this.banner)
+                       .subscribe(
+                        data => {
+                         this.ngZone.run(() => {
+                         //this.images.push(path.replace(/^.*[\\\/]/, ''));
+                  
+                              this.loadingavatar = false ; 
+                            console.log(data)  ;
+                            this.tempavatar = this.avatar ;  
+                             this.isValid  = true ;
+                           // this.router.navigate([this.returnUrl]);
+                           this.usersdetailsService.putProfilePicName(this.userid, this.model.profilepicname)
+                            .subscribe( data =>{ console.log('done'); this.tempprofilepicname = this.model.profilepicname} 
+                            ,error=>{ });
+         
+                                    
+                         });
+                        },
+                        error => {
+                              this.loadingavatar = false ; 
+                            console.log(error) ; 
+                           // this.alertService.error(error2);
+                         //  this.saveloading = false ;
+                        });
+           
+           }
   }
+    
 
 
     
@@ -468,7 +551,7 @@ this.newAddress = true ;
             mode: "single"
         });
         this.startSelection(context);
-       util.ad.dismissSoftInput() ; 
+     
 
     }
 
@@ -490,26 +573,26 @@ private startSelection(context) {
             let  extension = selection[0]._android.split('.').pop() ;
             if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
               this.alertimg = false ; 
-                const img:ImageSource = <ImageSource> fromFile(selection[0]._android);
-           
-                 this.tempavatar  = this.avatar; 
-                 this.avatar  =  "data:image/"+extension+";base64,"+img.toBase64String(extension );
+                //const img:ImageSource = <ImageSource>ImageSource.fromFileSync(selection[0]._android);
+
+               // this.tempavatar  = this.avatar; 
+                 this.avatar  = selection[0]._android; // "data:image/"+extension+";base64,"+img.toBase64String(extension );
               //  console.log(this.banner) ; 
+                this.extension = extension ; 
                         this.isValid = false ; 
-                       util.ad.dismissSoftInput() ; 
+                this.model.profilepicname = this.userid+'.'+this.extension ; 
 
 
             }else 
                 this.alertimg = true ; 
-                       util.ad.dismissSoftInput() ; 
-
-
-            
+       
         }).catch(function (e) {
             console.log(e);
         });
     }
+    
     selectedIndex= 0 ; 
+    
     public onchange(event: SelectedIndexChangedEventData){
  
         this.location = [ this.locations[event.newIndex]] ;
@@ -531,7 +614,7 @@ private startSelection(context) {
    
 }
     
-       ontouch3(args: TouchGestureEventData) {
+    ontouch3(args: TouchGestureEventData) {
     const label = <Label>args.object
     switch (args.action) {
         case 'up':
@@ -543,4 +626,7 @@ private startSelection(context) {
     }
    
 }
+    hide(){
+          util.ad.dismissSoftInput() ;  
+        }
 }

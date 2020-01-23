@@ -47,6 +47,10 @@ export class UserdetailsService {
 
         }
     
+    
+    
+
+    
    postAvatar (userid : string , avatar :any){
       return this.http.put(this.host+'/api/users/'+userid+'/avatar',{'avatar':avatar}); 
 
@@ -255,8 +259,17 @@ export class UserdetailsService {
            //    latitude = "31.373";
         let url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude+"&key=" + this.apiKey;
         return this.http.get(url); 
+    
+    }
+    
+    putProfilePicName(userid, name ) {
+        return this.http.put(this.host+'/api/useraccount/'+userid+'/profilepicname', {'profilepicname':name});
+     }
+ 
+             
+   getProfilePicName(userid: string){
+               return this.http.get (this.host+'/api/useraccount/'+userid+'/profilepicname'); 
 
-        
         }
     
 }

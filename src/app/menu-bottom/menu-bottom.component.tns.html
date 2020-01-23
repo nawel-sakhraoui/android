@@ -1,0 +1,33 @@
+
+
+	<GridLayout   rows="43" columns="*,*,*,*,*,*" row="1"  class="footer bottom">
+
+			
+        <Button id="profile" row="0" col="0" text="&#xf007;" nsRouterLinkActive="icon-footer-active" 
+           [nsRouterLink]="['/home',myhome,'profile',myhome]" class="fass icon-footer Btn "    ></Button>
+        
+         <Button id="list-messages" row="0" col="1" text="&#xf0e0;" nsRouterLinkActive="icon-footer-active"
+            [nsRouterLink]="['/home',myhome,'messages']"  class="fass icon-footer Btn "></Button>   
+        <Label id="globeItemNavigation1" row="0" col="1" text="{{messagesnotif}}" class="globe1">
+        </Label> 
+        
+       
+        <Button id="transaction" row="0" col="2" text="&#xf362;" nsRouterLinkActive="icon-footer-active" 
+          [nsRouterLink]="['/home',myhome,'ongoing']" class="fass icon-footer Btn "></Button>
+		
+		
+        <Button id="stores" row="0" col="3" text="&#xf54f;" nsRouterLinkActive="icon-footer-active" 
+           [nsRouterLink]="['/home',myhome,'storesmenu']" class="fass icon-footer Btn "></Button>
+
+
+        <Button id="cart" row="0" col="4" text="&#xf07a;" nsRouterLinkActive="icon-footer-active" 
+            [nsRouterLink]="['/home',myhome,'cart']"   class="fass icon-footer Btn"></Button>
+    
+    	     
+       <Button id="notifications" row="0"  col="5" text="&#xf0f3;&#xf0de;"  nsRouterLinkActive="bellActive"   [nsRouterLink]="['/home',myhome,'not']"
+            class="bell fas Btn"></Button> 
+        <Label id="globeItemNavigation" row="0" col="5" text="{{notificationsCount}}" class="globe">
+        </Label> 
+ 
+     
+    </GridLayout>

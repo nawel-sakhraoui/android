@@ -119,6 +119,25 @@
        		 </textView>
        		</GridLayout>
     
+            <GridLayout row="0"  (touch)="ontouch2($event)"  [visibility]="n.value=='stop' ?'visible':'collapse'"  nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"  padding="5"  rows='auto,auto' >
+       		<GridLayout row='0' columns='*,auto'   >
+       		       		
+       		<Label   col="0"   >
+       		<FormattedString>
+       		  	<Span text='&#xf05e; ' class='fass icon' ></Span>
+       		  	
+       		    <Span text="{{n.fullname}}:" class="store"></Span>
+       		</FormattedString>
+       		</Label>
+       		
+       		
+       		<Label class="fass" col="1"  text="&#xf017; {{n.time}}">
+       		</Label>
+       		</GridLayout>
+       		  <textView editable="false" margin="-10,0,-5,0"  row="1"   class="Label"   text='commande annulée '>  
+       		 </textView>
+       		</GridLayout>
+    
        	   
        		<GridLayout row="0"  nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"   fragment="message"    [visibility]="n.value=='message' ?'visible':'collapse'"  (touch)="ontouch2($event)"   padding="5"  rows='auto,auto'>
        		   <GridLayout row="0" columns='*,auto'  >
@@ -141,24 +160,8 @@
        	
        		
        	
-       		<GridLayout row="0"  (touch)="ontouch2($event)" row="6"  [visibility]="n.value=='stop' ?'visible':'collapse'"  nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"  padding="5" rows='auto,auto'>
-       		<GridLayout row='0' columns='*,auto'   >
-       		       		
-       		<Label   col="0"   >
-       		<FormattedString>
-       		  	<Span text='&#xf05e; ' class='fass icon' ></Span>
-       		  	
-       		    <Span text="{{n.fullname}}:" class="store"></Span>
-       		</FormattedString>
-       		</Label>
+  
        		
-       		
-       		<Label class="fass" col="1"  text="&#xf017; {{n.time}}">
-       		</Label>
-       		</GridLayout>
-       		  <textView editable="false" margin="-10,0,-5,0"  row="1"   class=" Label"   text='commande annulée '>  
-       		 </textView>
-       		</GridLayout>
        	
        	
        		 <StackLayout  row="1" backgroundColor="#FFA500" height="2"></StackLayout>
@@ -167,6 +170,7 @@
    </GridLayout>
 
     </ng-template>
+    		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
     
 </RadListView>
 </GridLayout>

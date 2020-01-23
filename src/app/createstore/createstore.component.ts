@@ -6,6 +6,8 @@ import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label';
 import {StoreService, UserService, AddressService} from '../_services/index';
 import { SelectedIndexChangedEventData } from "nativescript-drop-down";
+import * as util from "utils/utils";
+
 @Component({
   selector: 'app-createstore',
   templateUrl: './createstore.component.html',
@@ -21,6 +23,7 @@ export class CreatestoreComponent implements OnInit {
     form = false ;
     send = false ;
     model: any = {};
+    geo:any= [] ; 
     sub: any ;
     keywords : any;     
     error = "" ;
@@ -158,11 +161,11 @@ existStore () {
     }
     
 newstore (){
-    this.existStore () 
+    this.existStore () ;
     this.send = true ; 
     
     if ( this.model.title.length >5 && this.model.title.length <30 &&!this.exist &&
-            this.model.selectedCat.length!=0 && this.model.geo.length!=0 &&
+            this.model.selectedCat.length!=0 && this.geo.length!=0 &&
         this.model.description.length < 300 && this.model.description.length !=0  ) 
       this.form = true ; 
     
@@ -173,14 +176,15 @@ newstore (){
     this.model.title = this.model.title.trim(); 
 
         this.loading = true ; 
-     if ( this.model.selectedCat.length==0 || this.model.geo.length==0) {
+     if ( this.model.selectedCat.length==0 || this.geo.length==0) {
          this.loading = false ; 
      }else {
     
-          for (let i = 0 ;i < this.model.geo.length ; i++ ) {
+         this.model.geo = [] ; 
+          for (let i = 0 ;i < this.geo.length ; i++ ) {
              for (let k of this.dictcities ) {
-                 if (this.model.geo[i]  == k.name ) {
-                    this.model.geo[i] = k ;   break ;   
+                 if (this.geo[i]  == k.name ) {
+                    this.model.geo.push( k) ;   break ;   
                  } 
             }
           }
@@ -224,7 +228,8 @@ newstore (){
 
    public onchange1(event: SelectedIndexChangedEventData ){
              //  console.log(`Drop Down selected index changed from ${args.oldIndex} to ${args.newIndex}`);; 
-        this.model.geo.push(this.cities[event.newIndex])
+        this.geo.push(this.cities[event.newIndex])
+       
        };
  
     
@@ -244,7 +249,7 @@ newstore (){
     }
     
     removeGeo(index){
-         this.model.geo.splice(index, 1);
+         this.geo.splice(index, 1);
 
      }
        
@@ -259,5 +264,8 @@ newstore (){
             break;
     }
     }
+    hide(){
+          util.ad.dismissSoftInput() ;  
+        }
     
 }

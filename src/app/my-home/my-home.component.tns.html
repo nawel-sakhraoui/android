@@ -1,11 +1,11 @@
 
 <app-menu ></app-menu>
-<GridLayout rows='39, *' cols="1">
+<GridLayout rows='*,43'>
 
-<GridLayout row='1'  > 
-<router-outlet>
 
+<router-outlet row='0'>
 </router-outlet>
-</GridLayout>
 
+
+ <app-menu-bottom row="1" ></app-menu-bottom>
 </GridLayout>

@@ -13,7 +13,8 @@ import { MaskedTextFieldModule } from "nativescript-masked-text-field/angular";
 
 // Uncomment and add to NgModule imports  if you need to use the HTTP wrapper
 
-import {  RatingModalService, OngoingService, JwtHttpInterceptor, AuthenticationService, UserService,UserdetailsService, 
+import {  PicService, RatingModalService, OngoingService, JwtHttpInterceptor,
+          AuthenticationService, UserService,UserdetailsService, 
           AddressService, StoreService, MessagesService, SearchService, 
           BuynowService, CartService, MyhomeService, DeliveryService} from './_services/index';
 
@@ -74,6 +75,8 @@ import { StopModal2Component} from './purchase-command/stop-modal2.component';
 import { RatingModal2Component} from './purchase-command/rating-modal2.component';
 import { SaleCommandComponent } from './sale-command/sale-command.component';
 import { StoreMenuComponent } from './store-menu/store-menu.component';
+import { Resolver} from './resolver'; 
+import { NativeScriptHttpModule } from "nativescript-angular/http";
 
 
 //import {StarRating} from './nativescript-star-ratings/star-ratings.android';
@@ -85,6 +88,7 @@ registerElement('CarouselItem', () => CarouselItem);
 //registerElement('StarRating', () => require('nativescript-star-ratings').StarRating);
 
 import { SocketIOModule } from "nativescript-socketio/angular";
+import { MenuBottomComponent } from './menu-bottom/menu-bottom.component';
 
 @NgModule({
   declarations: [
@@ -122,6 +126,7 @@ import { SocketIOModule } from "nativescript-socketio/angular";
       RatingModal2Component,
       SaleCommandComponent,
       StoreMenuComponent,
+      MenuBottomComponent,
   
   ],
      entryComponents: [
@@ -133,27 +138,28 @@ import { SocketIOModule } from "nativescript-socketio/angular";
          ModalComponent
       ],
   imports: [
-  NativeScriptFormsModule ,
+    NativeScriptFormsModule ,
     NativeScriptModule,
     AppRoutingModule,
     NativeScriptHttpClientModule,
     HttpClientModule,
     MaskedTextFieldModule,
     //SocketIOModule.forRoot(),
-   NgxPermissionsModule.forRoot(), 
- NativeScriptUISideDrawerModule,
-  DropDownModule,
-  // NativeScriptUIListViewModule 
-  NativeScriptUIListViewModule,
-//  NativeScriptUISideDrawerModule 
- //  AccordionModule 
-  TNSCheckBoxModule , 
-  //  StarRating
+    NgxPermissionsModule.forRoot(), 
+    NativeScriptUISideDrawerModule,
+    DropDownModule,
+    // NativeScriptUIListViewModule 
+    NativeScriptUIListViewModule,
+    //  NativeScriptUISideDrawerModule 
+    //  AccordionModule 
+    TNSCheckBoxModule , 
+    //  StarRating
+    NativeScriptHttpModule,
     SocketIOModule.forRoot(ConfigService.storeServer),
   ],
     providers: [
    //  getTranslationProviders ,loadTranslationFile,
-
+    Resolver, 
    { provide: HTTP_INTERCEPTORS, useClass: JwtHttpInterceptor, multi: true }, 
              
         OngoingService,   
@@ -171,8 +177,10 @@ import { SocketIOModule } from "nativescript-socketio/angular";
           MyhomeService, 
           DeliveryService,
           RatingModalService, 
-          ModalDialogService
+          ModalDialogService, 
+          PicService
     ],
+
   bootstrap: [AppComponent],
   schemas: [NO_ERRORS_SCHEMA]
 })

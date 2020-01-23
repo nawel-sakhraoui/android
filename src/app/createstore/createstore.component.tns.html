@@ -1,5 +1,5 @@
 
-  <ScrollView>
+  <ScrollView (tap)='hide()'>
     <GridLayout  margin='5,10, 5,10' rows="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,* " >
     <Label class="new" row ="0" text="Nouveau Magasin" ></Label>
 
@@ -60,7 +60,7 @@
 		</GridLayout>
 		<GridLayout rows="auto,auto" row='8'>
 		
-        <RadListView row='0' [items]="model.geo">
+        <RadListView row='0' [items]="geo">
             <ng-template let-c="item" let-i="index" let-odd="odd" let-even="even">
               <GridLayout columns ='auto,auto'>
                     <Label col="0" text='{{c}}' color="#000" class="border "></Label>
@@ -68,7 +68,7 @@
    		  		</GridLayout>
             </ng-template>
         </RadListView>
-        <Label  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="send && model.geo.length ==0 " class="alert"></Label>          
+        <Label  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="send && geo.length ==0 " class="alert"></Label>          
        </GridLayout>
  	 
  	  <Label row='9' text="Description" class="label"></Label>

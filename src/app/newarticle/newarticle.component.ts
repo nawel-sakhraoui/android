@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import {StoreService, DeliveryService, AddressService} from '../_services/index'; 
+import { Component, OnInit, NgZone   } from '@angular/core';
+import {PicService, StoreService, DeliveryService, AddressService} from '../_services/index'; 
+import * as util from "utils/utils";
 
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import * as imagepicker from "nativescript-imagepicker"; 
@@ -12,6 +13,8 @@ import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label';
 import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout"; 
 
+import * as  MD5 from "blueimp-md5";
+
 
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
 @Component({
@@ -21,7 +24,7 @@ import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/
 })
 export class NewarticleComponent implements OnInit {
   loading : boolean ; 
-  model = {'title':"", sizing:{}, 'price':"", 'quantity':'' , 'available':true, "storetitle":"", 
+  model = {'title':"", sizing:{}, 'price':"" ,'numbers':1,  'available':true, "storetitle":"", 
             'delivery':[],"color":[], 'selectedCat':[], 'geo':[], 'created':0 } ;
   storetitle ; 
   mainpic = 0 ; 
@@ -36,18 +39,20 @@ export class NewarticleComponent implements OnInit {
   suspend :boolean ; 
   selectdel= [] ; 
   delivery = []; 
- 
-  selectedIndex1 = 1 ; 
+  selectedIndex1 = 0 ; 
   sizing={};
-   send = false ; 
+  send = false ; 
   choosecom = [] ; 
   communes = [] ;
   boolsizing : boolean = false  ; 
- sub ; 
-Categories = []; 
-selectcats = [] ;
-    alertimg = false ;  
-comconfig = {
+  sub ; 
+  Categories = []; 
+  selectcats = [] ;
+  alertimg = false ;  
+    quantity:number ; 
+    extension= [] ;
+    galleryNames = [] ; 
+  comconfig = {
             displayKey:"name" ,//if objects array passed which key to be displayed defaults to description,
             search:true, //enables the search plugin to search in the list
             placeholder:'Selectionner', // text to be displayed when no item is selected defaults to Select,
@@ -89,11 +94,12 @@ deliveryconfig = {
                 ]; 
     
 constructor(    private route: ActivatedRoute,
-               
                 private router: Router,
                 private storeService:StoreService, 
                 private deliveryService:DeliveryService,
-                private addressService: AddressService) { 
+                private addressService: AddressService, 
+                private picService: PicService, 
+                private ngZone: NgZone) { 
           }
 
  
@@ -101,11 +107,7 @@ constructor(    private route: ActivatedRoute,
     
   ngOnInit() {
       this.loading = true ; 
-    
-      
-    
-      
-       this.sub = this.route.parent.params.subscribe(params => {
+      this.sub = this.route.params.subscribe(params => {
            console.log (params) ;
             this.storetitle = params['store']; 
           
@@ -256,12 +258,12 @@ constructor(    private route: ActivatedRoute,
         else{
         
             
-            for (let i = 0 ; i<this.gallery.length ; i++){
+          //  for (let i = 0 ; i<this.gallery.length ; i++){
             
-                console.log(this.gallery[i]) ;
-          //    this.gallery[i] =  android.util.Base64.encodeToString(this.gallery[i]._android, android.util.Base64.DEFAULT);  
+            //    console.log(this.gallery[i]) ;
+                //this.gallery[i] =  android.util.Base64.encodeToString(this.gallery[i]._android, android.util.Base64.DEFAULT);  
                 
-             }
+            // }
             
             
        // this.model.pic = this.gallery[this.mainpic]; 
@@ -276,6 +278,9 @@ constructor(    private route: ActivatedRoute,
         this.model.storetitle = this.storetitle ; 
         this.model.available = true ; 
         this.model.created = Date.now() ; 
+        
+        if(  this.quantity !=0 ) 
+              this.model['numbers'] = this.quantity ; 
         this.model.geo = this.store.geo ; 
         this.loading = true;
           if (this.boolsizing ) 
@@ -289,29 +294,50 @@ constructor(    private route: ActivatedRoute,
                  console.log(data) ; 
                     console.log(this.gallery[this.mainpic]) ; 
                   this.articleid = data['_id'] ; 
-                   this.storeService.postPic(this.articleid , this.gallery[this.mainpic] )
+                  this.picService.putPic(this.articleid+'.'+this.extension[this.mainpic] , this.gallery[this.mainpic], this.extension[this.mainpic] )
                      .subscribe(
                         data2=>{
-                           console.log(data2) ;  
-                           let temp = this.gallery.splice(this.mainpic, 1) ;   
-                            console.log(this.gallery.length) ; 
-                           this.storeService.postGallery( this.articleid, this.gallery )
-                            .subscribe(
-                             data3=>{
-                               console.log(data3) ;    
-                               this.loading = false ; 
-                               this.router.navigate(["../articles/"+this.articleid], { relativeTo: this.route });
-                    
-                              }
-                              ,error3=>{
-                                 console.log(error3) ; 
-                              }
-                             );  
-                          }
-                          ,error2=>{
+                            
+                         this.ngZone.run(() => {
+                         //this.images.push(path.replace(/^.*[\\\/]/, ''));
+                         
+                          this.storeService.putPicName( this.storetitle,this.articleid,  this.articleid+'.'+this.extension[this.mainpic] )
+                            .subscribe( data =>{ console.log('done');} 
+                                        ,error=>{  console.log(error) ; });
+         
+                                   
+                            if (this.gallery.length==1 )
+                                 this.router.navigate(["../articles/"+this.articleid], { relativeTo: this.route });
+ 
+                            else{ 
+                                this.gallery.splice(this.mainpic, 1) ;   
+                                this.extension.splice(this.mainpic,1)  ; 
+                                for (let i=0 ; i<this.gallery.length; i++) 
+                                    this.galleryNames.push(this.articleid+i+'.'+this.extension[i])
+                                this.picService.putGallery( this.galleryNames, this.gallery, this.extension )
+                                .subscribe(
+                                    data3=>{
+                                       this.ngZone.run(() => {
+                                            console.log(data3) ;    
+                                            this.loading = false ; 
+                                            this.storeService.putGalleryName( this.storetitle, this.articleid,this.galleryNames )
+                                            .subscribe( data =>{ console.log('done');} 
+                                             ,error=>{ });
+                                           
+                                            this.router.navigate(["../articles/"+this.articleid], { relativeTo: this.route });
+                             
+                                          
+                                      });
+                                     }
+                                     ,error3=>{
+                                         console.log(error3) ; 
+                                     }
+                               ); 
+                          }          
+                         });
+                        },error2=>{
                              console.log(error2) ;    
-                          }
-                       );
+                        });
                     
                     
                      }, 
@@ -437,13 +463,15 @@ constructor(    private route: ActivatedRoute,
             let  extension = element._android.split('.').pop() ;
             if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
               that.alertimg = false ; 
-                //console.log(element) ; 
-               let img:ImageSource = <ImageSource> fromFile(element._android);
+                console.log(element._android) ;
+                    element.options = {width:300, height:200, keepAspectRatio:true };
+               let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
                 console.log(img) ; 
                 console.log(extension) ; 
-                
-                that.gallery.push("data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
+                that.extension.push(extension) ; 
+                that.gallery.push(element._android)//;;"data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
               //  console.log(that.gallery ) ;
+               
                 
             }else 
                 that.alertimg = true ; 
@@ -487,13 +515,16 @@ constructor(    private route: ActivatedRoute,
          /*     if (this.selectcats.length !=0  ) 
               this.getDeliveryBy( this.selectcats, this.store.geo ) ; 
          else 
-             this.delivery = [] ; 
+             this.delivery = [] ;
+          
         */
-            for (let c of this.selectcats) {
-                c= c.trim() ; 
+         
+         this.boolsizing = false;
+         for (let c of this.selectcats) {
+                //c= c.trim() ; 
                 if( c == "Habillements-Femmes"||c=="Habillements-Hommes"|| c=="Habillements-Enfants" ){
-                   this.boolsizing = true ; 
-                                console.log(c) ; 
+                    this.boolsizing = true ; 
+                    console.log(c) ; 
                     }
               }
                     
@@ -502,17 +533,20 @@ constructor(    private route: ActivatedRoute,
     
      removeCat ( index) {
         this.selectcats.splice(index, 1);
-                  for (let c of this.selectcats) {
-                c= c.trim() ; 
-                if( c == "Habillements-Femmes"||c=="Habillements-Hommes"|| c=="Habillements-Enfants" ){
+         
+         
+                this.boolsizing = false ; 
+ 
+                for (let c of this.selectcats) {
+                 // c= c.trim() ; 
+                  if( c == "Habillements-Femmes"||c=="Habillements-Hommes"|| c=="Habillements-Enfants" ){
                    this.boolsizing = true ; 
                                 console.log(c) ; 
-                    }else {
-                    
-                    this.boolsizing = false ; 
                     }
                     
-              }
+                  }
+                  this.selectedIndex1 = 0;
+
     }
     
      addSizing(event, color , c) {
@@ -553,7 +587,10 @@ constructor(    private route: ActivatedRoute,
     }
    
 }
-
+    
+ hide(){
+          util.ad.dismissSoftInput() ;  
+        }
 
 }
     

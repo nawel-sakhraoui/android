@@ -35,6 +35,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { CartComponent } from './cart/cart.component';
 
 import { MenuComponent } from './menu/menu.component';
+import {MyHomeComponent } from './my-home/my-home.component' ; 
 
 import { CreatestoreComponent } from './createstore/createstore.component';
 
@@ -53,6 +54,8 @@ import { StoresManagerComponent } from './stores-manager/stores-manager.componen
 import {MenuTransactionsComponent} from './menu-transactions/menu-transactions.component';
 import {MenuStoresComponent} from './menu-stores/menu-stores.component'; 
 import {MenuNotificationsComponent} from './menu-notifications/menu-notifications.component'; 
+
+import { Resolver } from './resolver';
 
 
 export const routes: Routes = [
@@ -79,9 +82,9 @@ export const routes: Routes = [
             canActivateChild: [AuthGuard],
     },
     */
-    { path: 'home/:myhome', component: MenuComponent, 
+    { path: 'home/:myhome', component: MyHomeComponent, 
     
-     
+      resolve:{ data : Resolver },
       canActivate: [AuthGuard],
       canActivateChild: [AuthGuard],
       children:[
@@ -165,7 +168,7 @@ export const routes: Routes = [
         }},
         { path: 'ongoing/purchase/:commandid', component: PurchaseCommandComponent,  canActivate:[ NgxPermissionsGuard ], 
           data: {
-                              permissions: {
+               permissions: {
                 only: "ADMIN",
                 redirectTo : "/home"
              }
@@ -190,7 +193,7 @@ export const routes: Routes = [
           
          }},
                       
-        { path: 'stores', component:  MenuStoresComponent,  canActivate:   [ NgxPermissionsGuard ], 
+        { path: 'storesmenu', component:  MenuStoresComponent,  canActivate:   [ NgxPermissionsGuard ], 
           data: {
             permissions: {
                 only: "ADMIN",
@@ -201,9 +204,85 @@ export const routes: Routes = [
 
 
          { path: 'profile/:userid', component: ProfileComponent,  canActivate: [AuthGuard] },
-            { path: '**', redirectTo: '' },
+         
+         { path: 'stores/:store/store', component: StoreComponent,  canActivate:  [ AuthGuard ]},
+
+         //{ path: 'stores/:store/', redirectTo: 'stores/:store/store', pathMatch: 'full' ,  canActivate:  [ AuthGuard ] },
+         { path: 'stores/:store/soldout', component: SoldoutComponent,  canActivate: [AuthGuard], },
+         { path: 'stores/:store/sales', component: SalesComponent, canActivate: [ NgxPermissionsGuard ], 
+                     data: {
+                       permissions: {
+                            only: "ADMINStore",
+                            redirectTo : "/home"
+                         }
+                         } 
+                 },
+                   
+         { path: 'stores/:store/monthincome', component: MonthIncomeComponent ,canActivate: [AuthGuard],/*  canActivate: [ NgxPermissionsGuard ], 
+                     data: {
+                       permissions: {
+                            only: "ADMINStore",
+                            redirectTo : "../"
+                         }
+                         } */
+                 },
+                
+         { path: 'stores/:store/commands/:commandid', component: SaleCommandComponent, canActivate:[AuthGuard]}/*  canActivate:[ NgxPermissionsGuard ], 
+                     data: {
+                       permissions: {
+                            only: "ADMINStore",
+                            redirectTo : "home"
+                         }
+                         } 
+                 }*/,
+
+                  
+                
+                { path: 'stores/:store/update', component: UpdateStoreComponent,  canActivate:  [ NgxPermissionsGuard ], 
+                     data: {
+                       permissions: {
+                            only: "ADMINStore",
+                            redirectTo : "/home"
+                         }
+          
+                         }
+                },
+                { path: 'stores/:store/newarticle', component: NewarticleComponent,  canActivate: [ NgxPermissionsGuard ], 
+                     data: {
+                       permissions: {
+                            only: "ADMINStore",
+                            redirectTo : "/home"
+                         }
+          
+                         } 
+                },
+                { path: 'stores/:store/details', component: StoreDetailsComponent,  canActivate: [AuthGuard], },
+                { path: 'stores/:store/historic', component: HistoricSalesComponent,canActivate: [ NgxPermissionsGuard ], 
+                     data: {
+                       permissions: {
+                            only: "ADMINStore",
+                            redirectTo : "/home"
+                         }
+          
+                         } 
+                },
+  
+      
+                  { path : "stores/:store/articles/:article/update", component: UpArticleComponent,  canActivate:[ NgxPermissionsGuard ], 
+                    data: {
+                        permissions: {
+                        only: "ADMINStore",
+                        redirectTo : "/home"
+                        }
+          
+                    } },
+        
+                  { path:  'stores/:store/articles/:article', component: ArticleComponent,  canActivate: [AuthGuard] }, 
+        
+                  { path : "stores/:store/articles/buynow/article", component: BuynowComponent,  canActivate: [AuthGuard] },
+                  { path: '**', redirectTo: '' },
         ]
-       },
+       }
   
    // { path: 'mystores/updates', component: UpdateStoreComponent},// canActivate: [AuthGuard] },
     // later public stores components to create ! 
@@ -219,21 +298,22 @@ export const routes: Routes = [
 
             ]},*/
         
-        { path: 'stores/:store', component: MenuComponent,  
+    /*    { path: 'stores/:store', component: MyHomeComponent,  
           canActivate: [AuthGuard],
           canActivateChild: [AuthGuard],
+           resolve:{ data : Resolver },
           children: [
           
-                { path: '', redirectTo: 'store', pathMatch: 'full' ,  canActivate:  [ AuthGuard ] },
+          //      { path: '', redirectTo: 'store', pathMatch: 'full' ,  canActivate:  [ AuthGuard ] },
                 //{ path: '', component: StoreComponent,  canActivate:  [ AuthGuard ]},
 
-                { path: 'store', component: StoreComponent,  canActivate:  [ AuthGuard ]},
+          //      { path: 'stores/:store', component: StoreComponent,  canActivate:  [ AuthGuard ]},
                 { path: 'soldout', component: SoldoutComponent,  canActivate: [AuthGuard], },
                 { path: 'sales', component: SalesComponent, canActivate: [ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
-                            redirectTo : "../"
+                            redirectTo : "/home"
                          }
                          } 
                  },
@@ -245,24 +325,24 @@ export const routes: Routes = [
                             redirectTo : "../"
                          }
                          } */
-                 },
+            /*     },
                 
-                { path: 'commands/:commandid', component: SaleCommandComponent,  canActivate:[ NgxPermissionsGuard ], 
+                { path: 'commands/:commandid', component: SaleCommandComponent, canActivate:[AuthGuard]}/*  canActivate:[ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
-                            redirectTo : "../"
+                            redirectTo : "home"
                          }
                          } 
-                 },
+                 }*/,
 
                   
-                
+             /*   
                 { path: 'update', component: UpdateStoreComponent,  canActivate:  [ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
-                            redirectTo : "../"
+                            redirectTo : "/home"
                          }
           
                          }
@@ -271,7 +351,7 @@ export const routes: Routes = [
                      data: {
                        permissions: {
                             only: "ADMINStore",
-                            redirectTo : "../"
+                            redirectTo : "/home"
                          }
           
                          } 
@@ -281,7 +361,7 @@ export const routes: Routes = [
                      data: {
                        permissions: {
                             only: "ADMINStore",
-                            redirectTo : "../"
+                            redirectTo : "/home"
                          }
           
                          } 
@@ -292,7 +372,7 @@ export const routes: Routes = [
                     data: {
                         permissions: {
                         only: "ADMINStore",
-                        redirectTo : "../"
+                        redirectTo : "/home"
                         }
           
                     } },
@@ -305,7 +385,7 @@ export const routes: Routes = [
                     { path: '**', redirectTo: '' },
         ]},
     
-        
+         */
       
     { path:'home', redirectTo:'' , pathMatch: 'full'},
     { path: '', component: HomeComponent, canActivate: [AnAuthGuard]},
@@ -318,7 +398,7 @@ export const routes: Routes = [
     // otherwise redirect to home
     { path: '**', redirectTo: '' , pathMatch: 'full'} 
     
-    
+   
 
     ];
 

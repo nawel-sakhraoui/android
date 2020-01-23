@@ -85,7 +85,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
           this.loading0 =true ; 
        
        console.log('store') ; 
-        let sub = this.route.parent.params.subscribe(params => {
+        let sub = this.route.params.subscribe(params => {
         console.log (params) ;
         this.storetitle = params['store'];
         
@@ -208,7 +208,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
                     console.log(error) ; 
                     });  
             
-                     this.firebaseService.prepareNotif(this.model[index].firebase, this.storetitle )
+                     this.firebaseService.prepareNotif(this.model[index].firebase, this.storetitle, id )
                      .subscribe(
                          d=>{
                            console.log(d) ;    
@@ -252,7 +252,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
                     });    
           
          
-                     this.firebaseService.sendNotif(this.model[index].firebase, this.storetitle )
+                     this.firebaseService.sendNotif(this.model[index].firebase, this.storetitle, id )
                      .subscribe(
                          d=>{
                            console.log(d) ;    
@@ -316,7 +316,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
                     console.log(error) ; 
                     });  
           
-             this.firebaseService.storemessageNotif(this.model[i].firebase, this.storetitle )
+             this.firebaseService.storemessageNotif(this.model[i].firebase, this.storetitle, id )
                      .subscribe(
                          d=>{
                            console.log(d) ;    

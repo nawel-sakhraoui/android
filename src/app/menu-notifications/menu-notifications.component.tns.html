@@ -10,8 +10,8 @@
 <RadListView row="2"  [items]="notifications.notification"  [visibility]="!loading? 'visible':'collapse'"   >
     <ng-template let-n="item"  >
 			
-		<GridLayout rows="auto,auto">
-       	   <GridLayout row="0"  (touch)='ontouch2($event)'  [visibility]="n.value=='message' ?'visible':'collapse'" padding ="5" rows="auto,auto"   nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}'  fragment="message"   >
+		<StackLayout>
+       	   <GridLayout (touch)='ontouch2($event)'  [visibility]="n.value=='message' ?'visible':'collapse'" padding ="5" rows="auto,auto"   nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}'  fragment="message"   >
        	   <GridLayout row="0"  columns='*,auto'    >
        		<Label   col="0" >
        		<FormattedString>
@@ -31,7 +31,7 @@
        		</GridLayout>
        		
        		
-       		<GridLayout  row="0"   (touch)='ontouch2($event)' padding='5'  rows="auto,auto"   [visibility]="n.value=='send' ?'visible':'collapse'"   nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' >
+       		<GridLayout    (touch)='ontouch2($event)' padding='5'  rows="auto,auto"   [visibility]="n.value=='send' ?'visible':'collapse'"   nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' >
              <GridLayout row="0" columns='*,auto'  >
        		<Label    col="0" >
        		<FormattedString>
@@ -53,7 +53,7 @@
        		
        		
        		 
-       		<GridLayout  row="0" (touch)='ontouch2($event)' padding='5' rows="auto,auto"    [visibility]="n.value=='prepare' ?'visible':'collapse'"    nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' >
+       		<GridLayout (touch)='ontouch2($event)' padding='5' rows="auto,auto"    [visibility]="n.value=='prepare' ?'visible':'collapse'"    nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' >
        		<GridLayout row="0" columns='*,auto'  >
        		
        		<Label   col="0"   >
@@ -73,7 +73,7 @@
        		</GridLayout>
        		
        		
-       		<GridLayout row="0" (touch)='ontouch2($event)' [visibility]="n.value=='rating' ?'visible':'collapse'"  nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' fragment="rating"  padding="5" rows="auto,auto" >
+       		<GridLayout  (touch)='ontouch2($event)' [visibility]="n.value=='rating' ?'visible':'collapse'"  nsRouterLink='/home/{{myhome}}/ongoing/purchase/{{n.commandid}}' fragment="rating"  padding="5" rows="auto,auto" >
        		<GridLayout row='0' columns='*,auto'   >
        		       		
        		<Label   col="0"   >
@@ -92,12 +92,13 @@
        		 </textView>
        		</GridLayout>
        		
-       		 <StackLayout row='1' colSpan="2" backgroundColor="#00BFFF" height="2"></StackLayout>
+       		 <StackLayout colSpan="2" backgroundColor="#00BFFF" height="2"></StackLayout>
        		 
        		 
-   </GridLayout>
+  </StackLayout>
 	
     </ng-template>
+     	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
     
 </RadListView>
 </GridLayout>

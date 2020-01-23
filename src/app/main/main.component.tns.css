@@ -166,10 +166,14 @@ button {
 	
     height: 120;
 	width:auto ; 
+
 }
 .articlepic{
 	width:170;
 	height:200 ; 
+		background-color:#eeeeee; 
+		  Border-color: #ffffff  ; 
+    border-width:1;
 	
 }
 .titleLabel {
