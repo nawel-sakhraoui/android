@@ -13,7 +13,16 @@
    	 <ActivityIndicator color='#FFA500' rowSpan="3"  *ngIf="loading0" [busy]="loading0" ></ActivityIndicator>
 </StackLayout>  
 
-<GridLayout  [visibility]="!loading0 ?'visible':'collapse'"   row='2' rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
+
+ 
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading0 && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+<GridLayout  [visibility]="!reload && !loading0 ?'visible':'collapse'"   row='2' rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
 <Label class='head' col="0" row="0" text="Titre"></Label>
 <StackLayout class='head' col="1" row="0" orientation ="horizontal">
 <Label (touch)="ontouch3($event)" fontSize='20' [visibility]="!editTitle ?'visible':'collapse'"   (tap)='editingTitle()' text='&#xf14b;' class="fas"></Label>
@@ -44,20 +53,20 @@
 
 		  <RadListView row="0" [items]="model.gallery" >
    			     <ng-template let-image="item" let-i="index">
-        		    <GridLayout >
+        		    <GridLayout margin="0,0,4,0">
              		   
-              		   <Image    width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+              		   <Image   backgroundColor="#eeeeee"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
               		  
             		</GridLayout>
         		</ng-template>
-        		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewStaggeredLayout>
+        		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewGridLayout>
         	
           </RadListView>
     		
     	     		<StackLayout  row="1" >
 
     			<Label text="l'image principale: "></Label>
-    			  <Image horizontalAllignment="left"    width="80"  height="80"[src]="model.pic" stretch="aspectFill"></Image>
+    			  <Image   backgroundColor="#eeeeee"   horizontalAllignment="left"    width="80"  height="80"[src]="model.pic" stretch="aspectFill"></Image>
     			
     		</StackLayout>
     		    	    <StackLayout row="2" margin="15,0,0,0" backgroundColor="darkgray" colSpan="2"  height="1"></StackLayout>
@@ -66,25 +75,28 @@
 </GridLayout>
 <GridLayout [isEnabled]="!loadinggallery" rows="auto,*, auto,auto,auto" [visibility]="editGallery ?'visible':'collapse'"  col="1" row="3" >
 		
-			<Label margin-bottom="5" row="0" text="+ Gallerie d'image" (tap)="onSelectMultipleTap()" class='label'></Label>
+			<Label color="#FFA500" margin-bottom="5" row="0" text="+ Gallerie d'image" (touch)="ontouch($event)" (tap)="onSelectMultipleTap()" class='label'></Label>
+ 
+            <Label textWrap="true" row="1"  *ngIf="model.gallery.length==0"  class="alert" text="Ajouter au moins une image !"> </Label>
+  
  
   			  <RadListView row="1" [items]="model.gallery" >
    			     <ng-template let-image="item" let-i="index">
-        		    <GridLayout columns="auto, auto">
+        		    <GridLayout columns="auto, auto" margin="0,0,4,0">
              		   
-             		   <Image borderWidth="2" borderColor="red" *ngIf="mainpic ==i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
-              		   <Image  *ngIf="mainpic !=i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+             		   <Image backgroundColor='#eeeeee' borderWidth="2" borderColor="red" *ngIf="mainpic ==i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
+              		   <Image backgroundColor='#eeeeee'  *ngIf="mainpic !=i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"[src]="image" stretch="aspectFill"></Image>
               		  
               		  <Label  color="red"   col="1" class="fas" text="&#xf00d;" (tap)="removeObject(image)"></Label>
             		</GridLayout>
         		</ng-template>
-        		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewStaggeredLayout>
+        		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
         	
     		  </RadListView>
     		
     		<StackLayout   row="2" >
     			<Label text="l'image principale: "></Label>
-    			  <Image horizontalAllignment="left"    width="80"  height="80"[src]="model.pic" stretch="aspectFill"></Image>
+    			  <Image   backgroundColor='#eeeeee' horizontalAllignment="left"    width="80"  height="80"[src]="model.gallery[mainpic]" stretch="aspectFill"></Image>
     			
     		</StackLayout>
     		
@@ -159,16 +171,17 @@
   		  		<GridLayout rows="*,*">
   		  		
                     <Label horizontalAlligmnt="left" row="0" textAlign="left" borderWidth="1" borderColor="#000"  col="0" [backgroundColor]='c' height="25" width="40"></Label>
-                 
-   		  			<RadListView row="1" [items]="model.sizing[c]" [visibility]="boolsize?'visible':'collapse'">
+                   <GridLayout  row="1" [visibility]="boolsize?'visible':'collapse'" >
+   		  			<RadListView [items]="model.sizing[c]" >
    		  			 <ng-template let-s='item'> 
    		  			 <GridLayout>
    		  			
    		  			          	<Label   textAlign="center"   color="#000" fontSize="12"  text="{{s}}" height="20" width="50" margin="2,2,0,2" backgroundColor="#D0D0D0"></Label>
    		  			  </GridLayout>     
    		  			</ng-template>
-   		  			  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewStaggeredLayout>
+   		  			  <ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewGridLayout>
    		  			</RadListView>
+   		  			</GridLayout>
    		  		</GridLayout>
    		 		 </ng-template>
       		   </RadListView>
@@ -188,16 +201,18 @@
                     <Label borderWidth="1" borderColor="#000"  col="0" [backgroundColor]='c' height="25" width="40"></Label>
                     <Label col="1" text="&#xf057;" class="fas " (tap)='removeColor(c) '></Label>   
    		  			</GridLayout>
-   		  			<RadListView row="1" [items]="sizinglist" [visibility]="boolsize?'visible':'collapse'">
+   		  			<GridLayout row="1" *ngIf='boolsize'>
+   		  			<RadListView *ngIf='boolsize'  [items]="sizinglist" >
    		  			 <ng-template let-s='item'> 
-   		  			 <GridLayout>
+   		  			 <GridLayout  >
    		  			    		<Label *ngIf="model.sizing[c].includes(s)"   (tap)='addSize(c, s)'  borderWidth="2" borderColor="red"   color="#000" fontSize="10"  text="{{s}}" height="20" width="45" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
    		  			
-   		  			          	<Label *ngIf="!model.sizing[c].includes(s)"  (tap)='addSize( c, s)'     color="#000" fontSize="10"  text="{{s}}" height="20" width="45" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
+   		  			          	<Label *ngIf="!(model.sizing[c].includes(s))"  (tap)='addSize( c, s)'     color="#000" fontSize="10"  text="{{s}}" height="20" width="45" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
    		  			  </GridLayout>     
    		  			</ng-template>
-   		  			  <ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewStaggeredLayout>
+   		  			  <ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewGridLayout>
    		  			</RadListView>
+   		  			</GridLayout>
    		  		</GridLayout>
    		 		 </ng-template>
       		   </RadListView>
@@ -336,7 +351,7 @@
    		  	
    		  			  <GridLayout margin="0,0,0,10" columns='80,auto'>	  	
    		  			  	<Label col="0" text="Prix"></Label>
-   		  			  	<Label col="1" text="{{del._source.price}} D.A"></Label>
+   		  			  	<Label col="1" text="{{del.price}} D.A"></Label>
    		  			  </GridLayout>
    		  			   
    		  			  

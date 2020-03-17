@@ -1,10 +1,10 @@
 
-<ScrollView #scrollView>
+<ScrollView #scrollView (tap)='hide()'>
 <GridLayout rows="auto,auto,* ">
 
 <StackLayout  #top row="0"  [visibility]="!loading && nosale? 'visible' : 'collapsed'" >
 <Label class="alert" text='Commande introuvable' *ngIf="nosale"></Label>
-<Label (touch)="ontouch($event)" class="fas" fontSize="16" text='{{model.storetitle}}&#xf053;' [nsRouterLink]="['../']"  ></Label>
+<Label (touch)="ontouch($event)" class="fas" fontSize="16" text='{{model.storetitle}}&#xf053;' [nsRouterLink]="['../../store']"  ></Label>
 </StackLayout>
 
 <StackLayout row="1" >
@@ -44,7 +44,7 @@
 					 <StackLayout  row='0' orientation="horizontal">
 					  
             					<Label margin="20,10,0,0" text="De: "  ></Label>
-            					 <Image [src]="avatarlist[model.userid]" class="resize" stretch="aspectFill" ></Image>
+            					 <Image src="{{avatarlist[model.userid]}}" class="resize" stretch="aspectFill" ></Image>
             					
          					    <Label margin="20,0,0,10" verticalAlign='center'  text="{{fullnamelist[model.userid]}} " class="fas link0 "  (tap) ='gotoUser(model.userid)'  (touch)="ontouch($event)" (longPress)='selectText($event)' ></Label>
 		  						
@@ -91,7 +91,7 @@
 						<ng-template let-a="item"  >
 						<StackLayout >
 							 <GridLayout columns='*,*'>
-							    <Image col="0" [src]="a.pic"	class="pic"  stretch="aspectFill" ></Image>
+							    <Image col="0" src="{{a.pic}}"	class="pic"  stretch="aspectFill" ></Image>
 
 							    <GridLayout col="1" rows="auto,*" >
 							    
@@ -99,10 +99,10 @@
 							    	<TextView editable="false" row="0"  class="titlea" text="{{a.title}}"  (tap)="gotoArticle(a.articleid, model.storetitle)">
  					    			</TextView>
 							    	<GridLayout row="1" rows="*,*,*,*" columns='*,auto'>
-							    	<Label   *ngIf="a.hasOwnProperty('color')" row='0' col="0"  text="Couleur: "></Label>
-							    	<Label   *ngIf="a.hasOwnProperty('color')" row="0" col="1" class='color'  [backgroundColor]='a.color'></Label>
-							        <Label   *ngIf="a.hasOwnProperty('size')" row="1" col="0" text='Taille: '></Label>
-							        <Label   *ngIf="a.hasOwnProperty('size')" row='1' col="1" class='size' text='{{a.size}}' > </Label>
+							    	<Label   *ngIf="a.hasOwnProperty('color') && a.color!='' " row='0' col="0"  text="Couleur: "></Label>
+							    	<Label   *ngIf="a.hasOwnProperty('color') && a.color!='' " row="0" col="1" class='color'  [backgroundColor]='a.color'></Label>
+							        <Label   *ngIf="a.hasOwnProperty('size') && a.size!='' " row="1" col="0" text='Taille: '></Label>
+							        <Label   *ngIf="a.hasOwnProperty('size') && a.size !='' " row='1' col="1" class='size' text='{{a.size}}' > </Label>
 							       
 							    	 <Label row='2' col="0" text="Quantité: "></Label>
 							        <Label row='2' col="1" color="#000" text='{{a.quantity}} UNIT'></Label>
@@ -235,37 +235,37 @@
       		    		
       		   	</GridLayout>
       		    
-      		  	<StackLayout row="15">
+      		  	<StackLayout row="15" (tap)='hide()' >
       		    	<GridLayout  rows="auto,*,auto,auto" margin="5,0,5,0">
       		    	<StackLayout #message row="0" orientation='horizontal'>
       		    	 <Label  text="&#xf075; Messages " class='msgtitle fas ' width="90%"></Label>
       		    	 <Label text ='&#xf107;' class="msgtitle fas"  (tap)=" openMsgs()" (touch)='ontouch3($event)'  ></Label>
       		    	 </StackLayout>
-      		    	<RadListView #msgs height="200"  row="1" [items]="model.messages "    [visibility]="isopen? 'visible' : 'collapsed'" >
+      		    	<RadListView margin="0,10,0,10" #msgs height="200"  row="1" [items]="model.messages "    [visibility]="isopen? 'visible' : 'collapsed'" >
 						<ng-template let-message="item"  >
 						<StackLayout>
 						
 						<GridLayout columns="auto,*" [visibility]="!message.fromMe? 'visible' : 'collapsed'" >
 						
-						<!--  Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
-					    -->
+						<Image col="0" src='{{avatarlist[message.from]}}' class="pic2"  stretch="aspectFill"  ></Image>
+					    
 					    <GridLayout col="1" rows='auto,auto'  >
 					   		 <StackLayout  row="0" orientation=horizontal>
-					   		 	<Label width="80%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
-					   		 	<Label class="fas" fontSize='10' text="&#xf017;{{message.date}}"></Label>
+					   		 	<Label textWrap='true' width="75%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	<Label textWrap='true' class="fas" fontSize='10' text="&#xf017;{{message.date}}"></Label>
 					   		  </StackLayout>
 					  		 <TextView margin="0,25,5,25"  row="1" text='{{message.text}}' editable="false" class="msgs1"></TextView>
 						 </GridLayout> 
 						</GridLayout>
 						
 						<GridLayout  columns="*,auto" [visibility]="message.fromMe? 'visible' : 'collapsed'" >
-							<!-- Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
-					      -->
+							<Image col="1" src='{{avatarlist[message.from]}}' class="pic2"  stretch="aspectFill"  ></Image>
+					      
 					       <GridLayout col="0" rows="auto,auto" >
 					   		 <StackLayout row="0" orientation=horizontal horizontalAlignment="right"  >
-					   		     <Label width="60%" class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
+					   		     <Label textWrap='true' width="60%" class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
 					   		  
-					   		 	 <Label width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	 <Label textWrap='true'  width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
 					   		  </StackLayout>
 					  		 <TextView margin="0,25,5,25"   row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
 						 </GridLayout>

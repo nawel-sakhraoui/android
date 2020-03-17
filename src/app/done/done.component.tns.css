@@ -4,14 +4,16 @@
 	width: 80;
     height: 80;
 	margin-left:0;
-
+	background-color:#eeeeee; 
 	
 }
 .pic2{
-	width: 50;
-    height: 50;
+	width: 35;
+    height: 35;
 	margin-left:0;
-		 border-radius:50; 
+		 border-radius:35; 
+		 	background-color :#eeeeee;
+		 
 }
 .titlea {
 	  font-size: 12;
@@ -62,7 +64,7 @@
 	margin-left : 5 ;
 	font-size:12; 
 	padding:5 ; 
-	background-color : #00BFFF ;
+	background-color :#FFA500  ; 
 	color :#fff;  
 	  border-radius:8;
 	   horizontal-alignment: right;
@@ -199,4 +201,13 @@ Label:pressed {
 
 Label:pressed3 {
    color:darkgray;
+}
+
+
+.reload{
+	margin-top:80 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
 }

@@ -50,3 +50,19 @@ Label:pressed3 {
    color:#D0D0D0;
    
 }
+.alert {
+	padding :5 ; 
+	background-color: #FFA1A1; 
+	color :#444444; 
+	 border-width: 1 ;
+	 border-radius :2; 
+   border-color:#F27171;
+   font-size:12;  
+} 
+.reload{
+	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}

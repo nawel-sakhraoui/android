@@ -415,17 +415,7 @@ export class StoreService {
 
     }
     
-    putBannerName( storeid:string , name:string)  {
-          storeid= storeid.replace(/ /g, "%20");
-          return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/bannername', {'name': name})  ; 
-    
-    }
-    getBannerName (storeid:string ) {
-           storeid= storeid.replace(/ /g, "%20");
-           return this.http.get(this.host+'/api/stores/stores/'+storeid+'/bannername') ;
-    }
-    
-    
+   
 
 
     
@@ -463,11 +453,7 @@ export class StoreService {
              return this.http.get(this.host+'/api/stores/'+storeid+'/loan/'+date); 
      }
     
-    getAdmins(storeid){
-         storeid= storeid.replace(/ /g, "%20");
-        return this.http.get(this.host+'/api/managerstores/stores/admins/'+storeid) ; 
-        }
-    
+
 
   
     /* public uploadGallery(destination: string, filevar: string, filepath: string) {
@@ -494,6 +480,21 @@ export class StoreService {
             });
         });
     }*/
+    
+    getAdmins(storeid){
+         storeid= storeid.replace(/ /g, "%20");
+        return this.http.get(this.host+'/api/managerstores/stores/admins/'+storeid) ; 
+    }
+    
+     putBannerName( storeid:string , name:string)  {
+          storeid= storeid.replace(/ /g, "%20");
+          return  this.http.put(this.host+'/api/stores/stores/'+storeid+'/bannername', {'name': name})  ; 
+    
+    }
+    getBannerName (storeid:string ) {
+           storeid= storeid.replace(/ /g, "%20");
+           return this.http.get(this.host+'/api/stores/stores/'+storeid+'/bannername') ;
+    }
     
     
 

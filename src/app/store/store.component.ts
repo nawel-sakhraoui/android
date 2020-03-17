@@ -14,6 +14,9 @@ import * as imagepicker from "nativescript-imagepicker";
 import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
+import {Folder, path, knownFolders} from "tns-core-modules/file-system"; 
+import * as BitmapFactory from "nativescript-bitmap-factory"; 
+
 
 @Component({
   selector: 'app-store',
@@ -64,6 +67,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     imgbanner :ImageSource ;  
     private notif:any= {} ;
     private opened: boolean = true ;
+    reload = false ; 
   constructor(
             private route: ActivatedRoute,
             private router: Router,
@@ -74,12 +78,20 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
             private permissionsService : NgxPermissionsService,
             private _changeDetectionRef: ChangeDetectorRef, 
             private ngZone : NgZone, 
-            private picService :PicService ){}
+            private picService :PicService ){
+      
+            }
  
    
      
     ngOnInit() {
-       this.loading0 = true;
+     this.init() 
+ 
+  }
+    
+    init(){
+        
+           this.loading0 = true;
         this.loading = true ;  
         this.loading2 = true ;
         
@@ -90,18 +102,19 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
         this.storetitle = params['store']; // (+) converts string 'id' to a number
          
        // this.storetitle= this.storetitle.replace(/ /g, "%20");
-        }); 
+     
         
         
-        //this.storeService.getSuspend(this.storetitle )
-        //.subscribe(     
-       // data0 =>{
+        this.storeService.getSuspend(this.storetitle )
+        .subscribe(     
+           data0 =>{
+               this.reload= false ; 
            // console.log(data0) ; 
-            //this.nostore = false ; 
-          //  this.suspend = data0['suspend']; 
-            //console.log(this.suspend) ; 
-          //  if (!this.suspend) {         
-            this.storeService.getStoreStatus( this.storetitle.replace(/ /g, "%20") )
+            this.nostore = false ; 
+              this.suspend = data0['suspend']; 
+            console.log(this.suspend) ; 
+            if (!this.suspend) {         
+            this.storeService.getStoreStatus( this.storetitle )
             .subscribe(
                 data0 =>{
                      console.log(data0 ) ; 
@@ -122,6 +135,25 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                          data1=> {
                           
                              this.store = data1 ;
+                             
+                                   console.log(this.store) ;   
+                              if (this.store.hasOwnProperty('bannername')){
+                              
+                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
+                                    this.store.banner = this.banner ; 
+                                    this.tempbannername = this.store.bannername ;
+                                    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); 
+                                    console.log(this.banner) ;
+                                  this.loading0 = false ;  
+
+    
+                               }else{
+                                  
+                                   this.store.banner = "" ;
+                                  this.banner ="" ; 
+                                  this.loading0 = false ;
+                               }
+                             
                              this.loading=false ;  
                              console.log(this.store) ; 
                              //check if i'm the store admin
@@ -151,23 +183,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                                 this.permissionsService.removePermission('writeStore');
 
                                  
-                                  
-                              if (this.store.hasOwnProperty('bannername')){
-                              
-                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
-                                    this.store.banner = this.banner ; 
-                                    this.tempbannername = this.store.bannername ;
-                                    // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); 
-                                    //console.log(this.banner) ;
-                                  this.loading0 = false ;  
-
-    
-                               }else{
-                                  
-                                   this.store.banner = "" ;
-                                  this.banner ="" ; 
-                                  this.loading0 = false ;
-                               }
+                          
                       /*        this.picService.getBanner(this.storetitle)
                                  .subscribe (
                                         data=>{
@@ -245,7 +261,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
            
        
         
-     /*  }else {
+       }else {
            
         this.loading = false ;  
         this.loading2 = false; 
@@ -270,17 +286,21 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                                      );    
                 
                 
-            }//}
-    /*   ,error0=>{
+            }}
+       ,error0=>{
                 console.log(error0 ) ;    
                 this.loading0 = false  ; 
          //  this.nostore= true ; 
                 this.loading= false ; 
+           this.reload = true ; 
                 this.loading2= false ; 
                 }
-         ) */
- 
-  }
+         ) 
+               }); 
+        
+        
+        }
+    
     addToCart(article){
          article.loadingcart = 1  ;
 
@@ -688,22 +708,46 @@ private startSelection(context) {
 
             let  extension = selection[0]._android.split('.').pop() ;
             if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
-              this.alertimg = false ; 
-                //const img:ImageSource = <ImageSource> ImageSource.fromFileSync(selection[0]._android);
-                //selection[0].options = {width:500, height:300, keepAspectRatio:true };
-                 this.banner = selection[0]._android ;
+              this.alertimg = false ;
+              //selection[0].options = {width:600, height:500, keepAspectRatio:true };
+
+           
+                const img:ImageSource = <ImageSource> ImageSource.fromFileSync(selection[0]._android);
+                // selection[0].options = {width:500, height:300, keepAspectRatio:true };
+              //  let base =img.toBase64String(extension ); 
+               
+               console.log(img) ; 
+                this.resizeImageSource(img, 1600).then((resizedImageSrc: ImageSource) => {
+                   
+               console.log(img) ; 
+            
+                const folderDest = knownFolders.temp();
+                const pathDest = path.join(folderDest.path, selection[0]._android.split('/').pop()) ;
+                const saved: boolean = resizedImageSrc.saveToFile(pathDest, extension);
+                if (saved) {
+                    console.log("Image saved successfully!");
+                }
+
+                     
+                     
+     
+
+                
+                 this.banner = pathDest ;
+                
+                
                 console.log("aaaaaaaaaaaaaaaaaaaaaa") ; 
                 console.log(this.banner) ;
                 this.store.bannername = this.storetitle+'.'+extension ;  
-           //    this.imgbanner = <ImageSource> ImageSource.fromFileSync(this.banner);
+                //    this.imgbanner = <ImageSource> ImageSource.fromFileSync(this.banner);
 
                //  this.store.banner = this.banner; 
                  this.bannerExt= extension;
                  
-                 //this.banner  =selection[0]._android;// img; // "data:image/"+extension+";base64,"+img.toBase64String(extension );
+               
                  //  console.log(this.banner) ; 
                  this.isValid = false ; 
-
+            })
             }else 
                 this.alertimg = true ; 
                 
@@ -760,9 +804,28 @@ ontouch(args: TouchGestureEventData) {
     
     loadBanner() {
         this.loading0 = false ; 
-        }
+     }
     
-
+  private resizeImageSource(imageSrc:ImageSource, maxSize) : Promise<ImageSource> {
+    return new Promise((resolve, reject) => {
+      const bitmap = BitmapFactory.create(imageSrc.width, imageSrc.height);
+      bitmap.dispose((imageBitmap) => {
+        imageBitmap.insert(BitmapFactory.makeMutable(imageSrc));
+        const resizedBitmap = imageBitmap.resizeMax(maxSize);
+        resolve(resizedBitmap.toImageSource());
+      }, (error) => { reject(error); });
+    });
+  }
+    
+    
+      reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }    
 } 
 
 

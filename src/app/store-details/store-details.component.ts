@@ -1,6 +1,6 @@
 import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {StoreService, UserdetailsService, MessagesService} from '../_services/index'; 
+import {PicService, StoreService, UserdetailsService, MessagesService} from '../_services/index'; 
 import {Subscription} from 'rxjs';
 //import * as prettyMs from 'pretty-ms';
 //import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
@@ -37,7 +37,8 @@ export class StoreDetailsComponent implements OnInit {
   banner = ""; 
   query = ""; 
     avatars={}; 
-    owner = {}; 
+    owner:any = {}; 
+    reload = false ; 
   private notif:any= {} ;
   
   constructor(
@@ -45,14 +46,21 @@ export class StoreDetailsComponent implements OnInit {
             private router: Router,
             private storeService: StoreService, 
             private userdetailsService :UserdetailsService, 
-            private messagesService : MessagesService
+            private messagesService : MessagesService, 
+            private picService :PicService
         //    private permissionsService : NgxPermissionsService, 
         //    private rolesService : NgxRolesService
       ){}
  
     
     ngOnInit() {
-        this.loading = true ; 
+        
+        this.init() ;
+       }
+    
+    
+    init(){
+      this.loading = true ; 
         console.log('store') ; 
         this.sub = this.route.params.subscribe(params => {
         console.log (params) 
@@ -62,6 +70,8 @@ export class StoreDetailsComponent implements OnInit {
         this.storeService.getStoreStatus( this.storetitle  )
         .subscribe(
                 data0 =>{
+   
+                    this.reload = false ; 
                     console.log(data0 ) ; 
                     this.open = data0['open']; 
                   /*   this.permissionsService.addPermission('readStore', () => {
@@ -116,15 +126,19 @@ export class StoreDetailsComponent implements OnInit {
                              this.userdetailsService.getUserAccount(this.store.userid)
                              .subscribe(
                                  data2 => {
+                                     console.log('xxxxxxxxxxxxxxxxxxxxxx');
                                      this.owner = data2 ; 
+                                     this.avatars[this.store.userid] = this.picService.getProfileLink(this.owner.profilepicname) ; 
+
                                     console.log(data2) ;     
                                  }
                                  ,error2=> {
                                      console.log(error2) ; 
                                  }
-                                 ) 
+                                 )
+                             
                              //get avatars 
-                             this.userdetailsService.getAvatar(this.store.userid)
+                             /*this.userdetailsService.getAvatar(this.store.userid)
                              .subscribe(
                                  data3 => {
                                   try {
@@ -137,11 +151,19 @@ export class StoreDetailsComponent implements OnInit {
                                  }
   
                   
-                                 )
+                                 )*/
                              if (this.store.hasOwnProperty('administrators'))
                              for (let d of this.store.administrators) {
+                                
+                               this.avatars[d.userid] ='' ; 
+                       this.userdetailsService.getProfilePicName(d.userid)
+                       .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                                this.avatars[d.userid] = this.picService.getProfileLink (data['profilepicname']) 
+                           },error=>{}) ; 
                                  
-                              this.userdetailsService.getAvatar(d.userid)
+                              /*this.userdetailsService.getAvatar(d.userid)
                              .subscribe(
                                  data3 => {
                                   try {
@@ -155,7 +177,7 @@ export class StoreDetailsComponent implements OnInit {
                                  ,error3=> {
                                      console.log(error3) ; 
                                  }
-                                 )
+                                 )*/
                                  
                                  }
                               
@@ -164,6 +186,7 @@ export class StoreDetailsComponent implements OnInit {
                               console.log(error); 
                             this.loading = false ; 
                             this.show = false ;    
+                            this.reload = true ; 
                              
                         });
       
@@ -207,13 +230,16 @@ export class StoreDetailsComponent implements OnInit {
                 
              
             
-           });}
+           });   
+        
+        
+     }
 
      sendMessage(userid, fullname, avatar) {
        
        this.messagesService.upMessageTo({"fromMe":this.me,"to":userid, "fullname": fullname, 'avatar' : avatar});
            
-       this.router.navigate(["../../../home/"+this.me+"/messages/tosend"], { relativeTo: this.route });
+       this.router.navigate(["../../../messages/tosend"], { relativeTo: this.route });
 
     }
 
@@ -221,7 +247,7 @@ export class StoreDetailsComponent implements OnInit {
  
     
    profile(userid ) {
-              this.router.navigate(["../../../home/"+this.me+"/profile/"+userid], { relativeTo: this.route });
+              this.router.navigate(["../../../profile/"+userid], { relativeTo: this.route });
 
        }
     
@@ -234,10 +260,9 @@ export class StoreDetailsComponent implements OnInit {
 
  
  
-    backToStore () {
-                         this.router.navigate(["../"], { relativeTo: this.route });
-
-        }
+   backToStore () {
+        this.router.navigate(["../store"], { relativeTo: this.route });
+   }
     
    ontouch(args: TouchGestureEventData) {
     const label = <Label>args.object
@@ -249,8 +274,7 @@ export class StoreDetailsComponent implements OnInit {
             label.addPseudoClass("pressed");
             break;
     }
-   
-} 
+  } 
    
   ontouch2(args: TouchGestureEventData) {
     const label = <GridLayout>args.object
@@ -262,10 +286,16 @@ export class StoreDetailsComponent implements OnInit {
             label.addPseudoClass("pressed");
             break;
     }
-   
-}
+   }
 
-
+      reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }    
       
 }
 

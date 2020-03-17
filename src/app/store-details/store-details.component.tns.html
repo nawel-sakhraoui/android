@@ -4,7 +4,11 @@
    	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
    	</StackLayout>  
 
-   <GridLayout row="1" *ngIf='!loading' rows='auto, auto,* '>
+
+
+
+      
+   <GridLayout row="1" rows='auto, auto,* '>
 
 
  
@@ -16,7 +20,15 @@
     
     <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
     
-	<GridLayout   margin="15,0,15,0" row="2" columns="120,*" rows="auto,auto,auto,auto,auto,auto,auto,auto">
+     
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+    
+	<GridLayout *ngIf='!loading && !reload '     margin="15,0,15,0" row="2" columns="120,*" rows="auto,auto,auto,auto,auto,auto,auto,auto">
 
 	<Label textWrap='true'  text="{{storetitle}}" class=" border "row='0' col="0"></Label>
 

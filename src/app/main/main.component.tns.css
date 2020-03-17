@@ -164,13 +164,13 @@ button {
 }
 .pic {
 	
-    height: 120;
+    height: 210;
 	width:auto ; 
 
 }
 .articlepic{
 	width:170;
-	height:200 ; 
+	height:240 ; 
 		background-color:#eeeeee; 
 		  Border-color: #ffffff  ; 
     border-width:1;
@@ -277,5 +277,12 @@ GridLayout:pressed {
    background-color:#eeeeee ; 
    /* color:#d9534f ;*/
    border-width:3; 
-   border-color:#eeeeee  ;  
+   border-color:#ffffff ;  
 }  
+.reload{
+	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}

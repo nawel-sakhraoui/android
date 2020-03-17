@@ -14,7 +14,7 @@ import { Label } from 'tns-core-modules/ui/label';
 //import * as prettyMs from 'pretty-ms';
 
 import { Carousel } from "nativescript-carousel"; 
-
+import * as util from "utils/utils";
 
 @Component({
      moduleId: module.id, 
@@ -69,6 +69,7 @@ export class ArticleComponent implements OnInit {
     gallery = [] ; 
     send = false ; 
     boolrating = false ; 
+    reload = false ; 
     deliveryconfig = {
         "search":false, //true/false for the search functionlity defaults to false,
         "height": "auto", //height of the list so that if there are more no of items it can show a scroll defaults to auto. With auto height scroll will never appear
@@ -93,19 +94,23 @@ export class ArticleComponent implements OnInit {
 
    
   ngOnInit() {
-      console.log('xxxxx');
-      //this.selectedIndex=0 ;
+            this.init() ;
+        }
+
+  init(){
+        
         this.loading0 = true ; 
         console.log('article') ; 
         this.loading = true ; 
-          this.route.params.subscribe(params => {
+        this.route.params.subscribe(params => {
           
-            this.storetitle= params.store ; 
-            console.log(params ) ;
-            
-            this.storeService.getStoreStatus( this.storetitle  )
+        this.storetitle= params.store ; 
+        this.articletitle = params.article ;  
+               
+        this.storeService.getStoreStatus( this.storetitle  )
             .subscribe(
                 data0 =>{
+                    this.reload = false ; 
                      console.log(data0 ) ; 
                      this.open = data0['open']; 
                      this.permissionsService.addPermission('readStore', () => {
@@ -174,13 +179,10 @@ export class ArticleComponent implements OnInit {
           }, error0 => {
                     console.log(error0 ) ; 
                      this.loading = false ; 
+              this.reload = true; 
           }); 
-        });
-      
-       this.route.params.subscribe(params => {
-          
-            this.articletitle = params.article ; 
-            console.log(params ) ;
+     
+   
            
          
         
@@ -188,45 +190,51 @@ export class ArticleComponent implements OnInit {
              .subscribe(
                 data => {
                     console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') ;
-                    console.log(data["gallerynames"]) ; 
+                    console.log(data['sizing']) ;
+                    console.log(data['color']) ;  
                     this.model = data ;
  
-                      this.model.gallery  = []; 
+                    //this.model.gallery  = []; 
                     this.model.pic = '' ; 
                      //        window.scroll(0,300 )  ; 
-                    if ( !this.model.delivery ) 
+                    if ( !this.model.hasOwnProperty('delivery') ) 
                             this.model.delivery = [] ; 
                 
 
-                    console.log(this.model.color) ; 
-                    if (!this.model.color ) 
-                             this.model.color =[] ; 
+                    //console.log(this.model.color) ; 
+                   if (!this.model.hasOwnProperty('color') ) 
+                            this.model.color =[] ; 
+                    
                     
                     this.delTitle = this.model.delivery.reduce((result, filter) => {
                          result =result.concat([filter.title]) ;
                         return result;
                         },[]);
             //        this.model.created = prettyMs( new Date().getTime() -  this.model.created );
+                    
                     this.art = true ; 
                     //if (this.model.delivery.length !=0 ) 
                      //   this.choosedelivery.push(this.model.delivery[0]); 
                    // else
-                        this.choosedelivery = [] ; 
+                    this.choosedelivery = [] ; 
                      
-                    this.choosecolor = this.model.color[0];
-                    //if (this.choosedelivery.length!=0 ) 
+                    if (this.model.color.length!=0 ) 
+                    this.choosecolor = this.model["color"][0];
+                    //   if (this.choosedelivery.length!=0 ) 
                      // this.total = (this.model.price *this.quantity )   +this.choosedelivery[0]['price']; 
                     //else 
-                       this.total = (this.model.price *this.quantity );
+                 
+                    this.total = (this.model.price *this.quantity );
                     this.model.tempdelivery = this.model.delivery ; 
-                     this.delivery = this.model.delivery ; 
-                     this.loading0 = false ;
+                    this.delivery = this.model.delivery ; 
+                    this.loading0 = false ;
                     this.display = true ; 
                     
                     this.model.pic = this.picService.getPicLink(this.model.picname)
-                   this.gallery.push( this.model.pic) ; 
+                    this.gallery.push( this.model.pic) ;
+                     
                     if( this.model.hasOwnProperty('gallerynames') )
-                        for (let m of this.model.gallerynames ) 
+                    for (let m of this.model.gallerynames ) 
                            this.gallery.push( this.picService.getGalleryLink(m)) ; 
 
                     
@@ -259,10 +267,11 @@ export class ArticleComponent implements OnInit {
                           }) ;*/
                     
                            
-                             if('sizing' in this.model) {
+                             if(this.model.hasOwnProperty('sizing'))
+                             if (Object.keys(this.model.sizing).length!=0) {
                                          this.boolsize =true ; 
-                                           this.choosesize = this.model.sizing[this.choosecolor][0] ; 
-                                
+                                         this.choosesize = this.model.sizing[this.choosecolor][0] ; 
+                               
                                          this.size = [].concat.apply([], Object.values(this.model['sizing'] )).filter((v, i, a) => a.indexOf(v) === i); ; 
                              
                                          //this.size = Object.values(this.model.sizing ).filter((item, index)=> Object.values(this.model.sizing ).indexOf(item)===index) ; 
@@ -271,21 +280,36 @@ export class ArticleComponent implements OnInit {
                                          this.boolsize = false ; 
                               
                     //get users feedback  
-                    if (this.model.rating.length ==0 )
-                            this.boolrating = false ; 
-                    else 
+                   if (!this.model.rating )
+                         this.boolrating = false ; 
+                   
+                   else {
                         this.boolrating = true ; 
-                    for (let m of this.model.rating  ) {
+                        for (let m of this.model['rating']  ) {
                         this.userdetailsService.getFullname (m.userid) 
                         .subscribe (
                             data => {
+                                
                                 this.fullnamelist[m.userid] = data["fullname"]; 
+                                console.log(this.fullnamelist) ; 
                            },error => {
                                console.log(error) ; 
                            }
                             ); 
                         
-                           this.userdetailsService.getAvatar(m.userid) 
+                        
+                           this.avatarlist[m.userid] = ''; 
+                           this.userdetailsService.getProfilePicName(m.userid)
+                           .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                                this.avatarlist[m.userid] = this.picService.getProfileLink (data['profilepicname']) 
+                          },error=>{}) ; 
+                            
+                            console.log(this.avatarlist ) ;
+                            console.log(this.fullnamelist) ;  
+                        
+                         /*  this.userdetailsService.getAvatar(m.userid) 
                         .subscribe (
                             data => {
                                  try {
@@ -298,18 +322,22 @@ export class ArticleComponent implements OnInit {
                                this.avatarlist[m.userid] = '';  
                                console.log(error) ; 
                            }
-                            );  
-                        }
+                            );  */
+                      }}
                  }, 
                  error =>{
-                     console.log("xxxxxxxxxxxxxxxxxxxx") ; 
+                    // console.log("xxxxxxxxxxxxxxxxxxxx") ; 
                      this.loading0 = false ; 
-                 console.log(error) ;  
+                     console.log(error) ;  
                      this.nostore = false ;    
                 }) ; 
              
-      });
-  }
+      });   
+
+
+
+    }
+
     
     
     goTo (img ) {
@@ -322,7 +350,8 @@ export class ArticleComponent implements OnInit {
               this.row2 = false ; 
                this.row = true ; 
         }
-  loadingcart  = false ; 
+  
+    loadingcart  = false ; 
     addToCart(){
       /*  this.articleCart  = {"articleid":this.articletitle,
                                         // "storeid": this.model.storetitle, 
@@ -385,7 +414,8 @@ export class ArticleComponent implements OnInit {
                           'title':article._source.title, 
                           'quantity':article.choosequantity, 
                           'color': article.choosecolor, 
-                           'size': this.choosesize 
+                           'size': this.choosesize , 
+                           'picname': article._source.picname, 
                 }
             
             buynow['articles']=[A];
@@ -417,7 +447,8 @@ export class ArticleComponent implements OnInit {
                           'title':this.model.title, 
                           'quantity':this.quantity, 
                           'color': this.choosecolor, 
-                          'size': this.choosesize 
+                          'size': this.choosesize ,
+                          'picname': this.model.picname,
                 }
             
             buynow['articles']=[A];
@@ -493,14 +524,14 @@ export class ArticleComponent implements OnInit {
                 break ; 
             }
         this.model.delivery = ad ; 
-        
+        /*
         if (this.model.delivery.length!=0 ) {
             this.selectedIndex=0;
             this.choosedelivery = [this.model.delivery[0]] ;
         }else 
-            this.choosedelivery=[];
+       */     this.choosedelivery=[];
         
-        
+       
         //if( this.model.delivery.length >0 )
          //      this.choosedelivery = [this.model.delivery[0]]  ;
         //else  
@@ -599,4 +630,15 @@ export class ArticleComponent implements OnInit {
  chooseAddress(){
      this.show = !this.show; 
      }
+
+hide(){
+          util.ad.dismissSoftInput() ;  
+        }
+    
+    reloading(){   
+        console.log('reloading') ; 
+        this.init() ; 
+  
+     }
+
 }

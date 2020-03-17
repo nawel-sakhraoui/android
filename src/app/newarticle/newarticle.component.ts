@@ -13,8 +13,9 @@ import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label';
 import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout"; 
 
-import * as  MD5 from "blueimp-md5";
-
+//import * as  MD5 from "blueimp-md5";
+import {Folder, path, knownFolders} from "tns-core-modules/file-system"; 
+ import * as BitmapFactory from "nativescript-bitmap-factory"; 
 
 import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
 @Component({
@@ -51,7 +52,9 @@ export class NewarticleComponent implements OnInit {
   alertimg = false ;  
     quantity:number ; 
     extension= [] ;
-    galleryNames = [] ; 
+    galleryNames = [] ;
+    reload= false ;  
+    loading0 = false ; 
   comconfig = {
             displayKey:"name" ,//if objects array passed which key to be displayed defaults to description,
             search:true, //enables the search plugin to search in the list
@@ -86,9 +89,9 @@ deliveryconfig = {
 
 //
     sizinglist = [ "xs", "s", "l", "xl", "xxl", "3xl","4xl", "5xl", 
-                   "34", "36", "38", "40","42", "44", "46", "48", "50", "52", "54", "56", "58", "60", "62", 
-                   "16", "17", "18" , "19", "20", "21", "22", "23", "24", "25", "26", "27", "28" ,"29" ,"30", "31", "32", "33" ,"34", "35", "36", 
-                   "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"  ,
+                   "t34", "t36", "t38", "t40","t42", "t44", "t46", "t48", "t50", "t52", "t54", "t56", "t58", "t60", "t62", 
+                   "p16", "p17", "p18" , "p19", "p20", "p21", "p22", "p23", "p24", "p25", "p26", "p27", "p28" ,"p29" ,"p30", "p31", "p32", "p33" ,"p34", "p35", "p36", 
+                   "p37", "p38", "p39", "p40", "p41", "p42", "p43", "p44", "p45", "p46", "p47", "p48"  ,
                     "0-3mois", "3-6mois", "6-9mois", "9-12mois", "12-18mois", "18-24mois", "T2", "T3", "T4", "T5", "6ans", "7ans", "8ans", "9ans", "10-12ans", "12-14ans", "14-16ans"    
         
                 ]; 
@@ -106,7 +109,12 @@ constructor(    private route: ActivatedRoute,
 
     
   ngOnInit() {
-      this.loading = true ; 
+  this.init();
+           
+  }
+    
+    init(){
+              this.loading0 = true ; 
       this.sub = this.route.params.subscribe(params => {
            console.log (params) ;
             this.storetitle = params['store']; 
@@ -114,6 +122,7 @@ constructor(    private route: ActivatedRoute,
            this.storeService.getSuspend (this.storetitle )
             .subscribe(     
              data0 =>{
+                 this.reload = false ; 
              this.suspend = data0['suspend']; 
            
              if (!this.suspend) { 
@@ -154,7 +163,7 @@ constructor(    private route: ActivatedRoute,
                              this.store = data1 ; 
                              console.log(this.store) ; 
                              //check if i'm the store admin
-                            this.loading = false ;
+                            this.loading0 = false ;
                              this.show = true ; 
                              //
                                   this.getDeliveryBy (this.store.selectedCat, this.store.geo);
@@ -170,18 +179,23 @@ constructor(    private route: ActivatedRoute,
                     });
               
                }else {
-             this.loading = false ;    
+             this.loading0 = false ;    
              this.show = true ;
            }
        },error0=>{
-                console.log(error0 ) ;    
+                console.log(error0 ) ; 
+           this.loading0 = false ; 
+           this.reload = true ;    
                 
                 }
          ) 
               
     });  
-           
-  }
+        
+        
+        
+        }
+    
    //  urls = [];
   /* onSelectFiles(event) {
     if (event.target.files ) {
@@ -314,18 +328,24 @@ constructor(    private route: ActivatedRoute,
                                 this.extension.splice(this.mainpic,1)  ; 
                                 for (let i=0 ; i<this.gallery.length; i++) 
                                     this.galleryNames.push(this.articleid+i+'.'+this.extension[i])
+                                console.log(this.galleryNames) ; 
                                 this.picService.putGallery( this.galleryNames, this.gallery, this.extension )
                                 .subscribe(
                                     data3=>{
                                        this.ngZone.run(() => {
+                                           console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz") ; 
                                             console.log(data3) ;    
                                             this.loading = false ; 
                                             this.storeService.putGalleryName( this.storetitle, this.articleid,this.galleryNames )
-                                            .subscribe( data =>{ console.log('done');} 
+                                            .subscribe( 
+                                                data =>{ 
+                                                   console.log('done');
+                                                   
+                                                   this.router.navigate(["../articles/"+this.articleid], { relativeTo: this.route });
+                             
+                                             } 
                                              ,error=>{ });
                                            
-                                            this.router.navigate(["../articles/"+this.articleid], { relativeTo: this.route });
-                             
                                           
                                       });
                                      }
@@ -456,7 +476,7 @@ constructor(    private route: ActivatedRoute,
         .then((selection) => {
            // console.log("Selection done: " + JSON.stringify(selection));
            // that.imageSrc = that.isSingleMode && selection.length > 0 ? selection[0] : null;
-
+            
             // set the images to be loaded from the assets with optimal sizes (optimize memory usage)
           selection.forEach(function (element) {
                 
@@ -464,15 +484,31 @@ constructor(    private route: ActivatedRoute,
             if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
               that.alertimg = false ; 
                 console.log(element._android) ;
-                    element.options = {width:300, height:200, keepAspectRatio:true };
+                //element.options = {width:300, height:200, keepAspectRatio:true };
+               //let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
+               console.log(element._android.split('/').pop() ) ;
                let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
-                console.log(img) ; 
-                console.log(extension) ; 
+                // selection[0].options = {width:500, height:300, keepAspectRatio:true };
+              //  let base =img.toBase64String(extension ); 
+               
+                 that.resizeImageSource(img, 500).then((resizedImageSrc: ImageSource) => {
+                   
+               
+                 
+                let folderDest = knownFolders.documents();
+                let pathDest = path.join(folderDest.path, element._android.split('/').pop()) ;
+                 let saved: boolean = resizedImageSrc.saveToFile(pathDest, extension);
+                if (saved) {
+                    console.log("Image saved successfully!");
+                }
+
+                that.gallery.push(pathDest); 
+                     console.log(that.gallery) ; 
                 that.extension.push(extension) ; 
-                that.gallery.push(element._android)//;;"data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
+               //;;"data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
               //  console.log(that.gallery ) ;
                
-                
+                })
             }else 
                 that.alertimg = true ; 
                 
@@ -592,6 +628,28 @@ constructor(    private route: ActivatedRoute,
           util.ad.dismissSoftInput() ;  
         }
 
+            
+    private resizeImageSource(imageSrc:ImageSource, maxSize) : Promise<ImageSource> {
+    return new Promise((resolve, reject) => {
+      const bitmap = BitmapFactory.create(imageSrc.width, imageSrc.height);
+      bitmap.dispose((imageBitmap) => {
+        imageBitmap.insert(BitmapFactory.makeMutable(imageSrc));
+        const resizedBitmap = imageBitmap.resizeMax(maxSize);
+        resolve(resizedBitmap.toImageSource());
+      }, (error) => { reject(error); });
+    });
+  }
+    
+    
+     
+    reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }
 }
     
     

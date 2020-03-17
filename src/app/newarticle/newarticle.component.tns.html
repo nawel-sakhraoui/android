@@ -8,8 +8,14 @@
     </GridLayout> 
     
     <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+<Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading0 && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>  
 
-      <GridLayout class='main' row='2'rows="auto,auto, auto, auto, auto, auto,auto,auto,auto, auto, 
+      <GridLayout *ngIf='!loading0 && !reload' class='main' row='2'rows="auto,auto, auto, auto, auto, auto,auto,auto,auto, auto, 
       auto, auto,auto,auto,auto, *, auto, auto,auto,auto, auto,auto, *">
 		
 			<Label margin='10,0,0,0' row='0' text="Nouveau Article" class="title" ></Label>

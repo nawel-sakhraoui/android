@@ -107,6 +107,7 @@
   text-align: center;
    width:45;
    height: 20;
+   
    border-width: 1 ;
    border-color:#000;
    background-color:#D3D3D3;
@@ -147,4 +148,12 @@ Label:pressed {
 
 Label:pressed3 {
    color:darkgray;
+}
+
+.reload{
+	margin-top:80 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
 }

@@ -9,6 +9,10 @@ import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label';
 import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+import * as util from "utils/utils";
+
+
+
 
 @Component({
   selector: 'app-cart',
@@ -57,10 +61,22 @@ export class CartComponent implements OnInit {
    choosestoredelivery = [];
    buyall= {} ; 
     send = [] ; 
-    displaystores= [] ; 
+    displaystores= [] ;
+    reload:boolean = false ;  
    ngOnInit( ) {
     
-       this.loading = true ; 
+     this.init() ; 
+      
+       
+
+                
+  }
+    
+    
+    
+    init(){
+        
+          this.loading = true ; 
        console.log('cart ') ; 
         this.cartService.getCart( )
          .subscribe(
@@ -69,7 +85,7 @@ export class CartComponent implements OnInit {
                      console.log(data ) ;  
                     this.cart =  data['articlecart'].reverse();
               
-                    
+                    this.reload = false ; 
                     
                     this.storeService.getArticlesForCart(this.cart)
                     .subscribe(
@@ -126,14 +142,13 @@ export class CartComponent implements OnInit {
                 }, 
                 error =>{
                  console.log(error) ;     
-                    this.loading = false ; 
+                 this.loading = false ;
+                 this.reload = true ;    
+                    
                 }) ; 
-      
-       
-
-                
-  }
-    
+        
+        
+        }
 
        getPage(page) {
            
@@ -203,15 +218,25 @@ export class CartComponent implements OnInit {
                                       }
                                 }
  
-                                 del = [ ...del,...this.model[i][j]._source.delivery];
+                                console.log("wwwwwwwwwwwwwwwwwwwwwwwwww") ; 
+                                console.log(del) ;
+                                for (let  d of this.model[i][j]._source.delivery ) {
+                                    let flag = false ; 
+                                    for (let del0 of del) 
+                                    if ( d.title == del0.title ){
+                                    flag = true ; break ;  
+                                     } 
+                                    if (!flag ) 
+                                     del.push(d) ; 
                                 }
-                                    this.storedelivery[i] =del.filter((v,i)=>del.indexOf(v)===i); 
+                                }
+                                    this.storedelivery[i] =del.filter(n=> n ) ;
                                    // console.log(this.storedelivery[i]); 
                                     this.tempstoredelivery[i] = this.storedelivery[i].filter(n=>n) ;
-                              //  if (this.storedelivery[i].length>  0   ) 
-                              //  this.choosestoredelivery[i] =[ this.storedelivery[i][0]];
+                                if (this.storedelivery[i].length>  0   ) 
+                                      this.choosestoredelivery[i] =[ this.storedelivery[i][0]];
                                 this.titlestoreDel[i] = this.storedelivery[i].reduce((result, filter) => {
-                                    result =result.concat([filter.title]) ;
+                                result =result.concat([filter.title]) ;
                                    return result;
                               },[]);
                               //  else
@@ -266,13 +291,13 @@ export class CartComponent implements OnInit {
     
     
     gotoStore (storeid ) {
-         this.router.navigate(["../../../stores/"+storeid+"/store"], { relativeTo: this.route });
+         this.router.navigate(["../stores/"+storeid+"/store"], { relativeTo: this.route });
 
         }
     
     gotoArticle (articleid , storeid) {
         console.log(storeid) ; 
-       this.router.navigate(["../../../stores/"+storeid+"/articles/"+articleid], { relativeTo: this.route });
+       this.router.navigate(["../stores/"+storeid+"/articles/"+articleid], { relativeTo: this.route });
 
         }
     deleteArticle (  storeid, article) {
@@ -393,6 +418,7 @@ export class CartComponent implements OnInit {
                           'quantity':article.choosequantity, 
                           'color': article.choosecolor, 
                           "size":article.choosesize , 
+                          "picname": article._source.picname
                           
                           
                 }
@@ -406,12 +432,12 @@ export class CartComponent implements OnInit {
            
         
              this.buynowService.upArticle(buynow);
-             this.router.navigate(["../../../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
+             this.router.navigate(["../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
 
           this.model[storeid][index].loading =false; 
-            }else {
-                article.selectedAddress.warning = true ; 
-            }
+          }//else {
+             //   article.selectedAddress.warning = true ; 
+          //  }
         }
     
     
@@ -432,6 +458,8 @@ export class CartComponent implements OnInit {
                           'quantity':article.choosequantity, 
                           'color': article.choosecolor,
                           'size': article.choosesize, 
+                          "picname": article._source.picname
+
 
                 }
             buynow['articles'].push(A) ; 
@@ -444,7 +472,7 @@ export class CartComponent implements OnInit {
  
            console.log(buynow) ;
         this.buynowService.upArticle(buynow);
-             this.router.navigate(["../../../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
+             this.router.navigate(["../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
       }
     }
         
@@ -661,6 +689,13 @@ ontouch(args: TouchGestureEventData) {
     
 
 }
+     hide(){
+          util.ad.dismissSoftInput() ;  
+        }
     
- 
+    reloading(){   
+        console.log('reloading') ; 
+        this.init() ; 
+  
+     }
 }

@@ -218,13 +218,13 @@ export const routes: Routes = [
                          } 
                  },
                    
-         { path: 'stores/:store/monthincome', component: MonthIncomeComponent ,canActivate: [AuthGuard],/*  canActivate: [ NgxPermissionsGuard ], 
+         { path: 'stores/:store/monthincome', component: MonthIncomeComponent ,  canActivate: [ NgxPermissionsGuard ], 
                      data: {
                        permissions: {
                             only: "ADMINStore",
                             redirectTo : "../"
                          }
-                         } */
+                         } 
                  },
                 
          { path: 'stores/:store/commands/:commandid', component: SaleCommandComponent, canActivate:[AuthGuard]}/*  canActivate:[ NgxPermissionsGuard ], 
@@ -396,7 +396,7 @@ export const routes: Routes = [
        
 
     // otherwise redirect to home
-    { path: '**', redirectTo: '' , pathMatch: 'full'} 
+    { path: '**', redirectTo: '' , pathMatch: 'full'  } 
     
    
 

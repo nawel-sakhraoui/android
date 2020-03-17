@@ -2,12 +2,16 @@
 import { Component, OnInit,NgZone } from '@angular/core';
 import * as utils from "tns-core-modules/utils/utils";
 
+import {Frame}  from "ui/frame" ;
+
+
 import {PicService, AddressService, UserdetailsService, StoreService, MessagesService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs';
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
  import { SelectedIndexChangedEventData } from "nativescript-drop-down";
- 
+import {Folder, path, knownFolders} from "tns-core-modules/file-system"; 
+ import * as BitmapFactory from "nativescript-bitmap-factory"; 
 
 //geolocalisation ici !! 
 import * as geolocation from "nativescript-geolocation";
@@ -21,16 +25,20 @@ import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/
  
 import * as util from "utils/utils";
   
+import { RouterExtensions } from "nativescript-angular/router";
+
+
 //                util.ad.dismissSoftInput() ; 
 import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label'; 
 @Component({
+    moduleId: module.id,
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
-
+    reload :boolean = false ; 
     display1 = false ; 
     display2 = false ; 
     loadingavatar = false ; 
@@ -83,17 +91,22 @@ export class ProfileComponent implements OnInit {
               private permissionsService : NgxPermissionsService, 
               private rolesService: NgxRolesService  , 
               private picService : PicService, 
-              private ngZone : NgZone) { }
+              private ngZone : NgZone, 
+              private routerE: RouterExtensions) { }
 
     
   ngOnInit() {
-      this.loading = true ;  
-        
+     this.init();
+  }
+    
+    
+  init(){
+     this.loading = true ;  
        console.log('profile') ; 
         let sub = this.route.params.subscribe(params => {
         console.log (params);
         this.userid = params['userid'];
-         });
+ 
        this.addressService.getCities () 
       .subscribe (
         data => {
@@ -136,6 +149,16 @@ export class ProfileComponent implements OnInit {
               {
                 console.log(data) ; 
                 this.model = data ;    
+                          this.reload = false ;
+
+                if (this.model.hasOwnProperty('profilepicname') ) {
+                      this.avatar = this.picService.getProfileLink(this.model.profilepicname)
+                      this.tempprofilepicname = this.model.profilepicname ; 
+                }else 
+                      this.avatar = "" ; 
+                this.tempavatar = this.avatar;
+               //   console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') ; 
+                 console.log(this.avatar) ; 
                 this.model.joined =new Date(this.model.joined).toLocaleDateString("fr-FR").replace("à","-");
                 if (!this.model.phone){
                     this.model.phone ="non renseigné"   
@@ -156,14 +179,7 @@ export class ProfileComponent implements OnInit {
                     }
                   
                         // 
-                  if (this.model.hasOwnProperty('profilepicname') ) {
-                      this.avatar = this.picService.getProfileLink(this.model.profilepicname)
-                        this.tempprofilepicname = this.model.profilepicname ; 
-                  }else 
-                      this.avatar = "" ; 
-                  this.tempavatar = this.avatar;
-               //   console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') ; 
-                 console.log(this.avatar) ; 
+        
                   this.loading = false ; 
               this.display1 = true ; 
                   
@@ -198,6 +214,7 @@ export class ProfileComponent implements OnInit {
              {
               console.log(error )  ; 
                      this.loading = false ; 
+                     this.reload = true ; 
           
               }
             ); 
@@ -241,7 +258,9 @@ export class ProfileComponent implements OnInit {
             ,error =>{
                 console.log(error ) ; 
             }
-        )
+        )    
+              });
+      
   }
     
   avatarsave() {
@@ -437,10 +456,12 @@ export class ProfileComponent implements OnInit {
     
     
 
-newAdd () {
-this.newAddress = true ;     
-}
-  onItemTap(args) {
+    newAdd () {
+        this.newAddress = true ;     
+    }
+
+    
+    onItemTap(args) {
         console.log("Item Tapped at cell index......: " + args.index);
     }
 
@@ -448,15 +469,16 @@ this.newAddress = true ;
         utils.openUrl(url);
     }
     
-        logout() {
+    logout() {
    
-    //    this.permissionsService.flushPermissions();
-       // this.rolesService.flushRoles();
-     //   this.authenticationService.logout();
+           this.permissionsService.flushPermissions();
+         this.rolesService.flushRoles();
+       //  this.authenticationService.logout();
         localStorage.removeItem('currentUser');
-       //         localStorage.removeItem('Language');
+         localStorage.removeItem('Language');
 
-        this.router.navigateByUrl('/');// || '/home/'+this.userid;
+        //this.router.navigateByUrl('/');// || '/home/'+this.userid;
+         this.routerE.navigate(['/'], {clearHistory: true});
 
     }
     
@@ -575,20 +597,50 @@ private startSelection(context) {
               this.alertimg = false ; 
                 //const img:ImageSource = <ImageSource>ImageSource.fromFileSync(selection[0]._android);
 
+                 //selection[0].options = {width:600, height:500, keepAspectRatio:true };
+                //console.log(selection[0]) ;
+           
+                const img:ImageSource = <ImageSource> ImageSource.fromFileSync(selection[0]._android);
+                // selection[0].options = {width:500, height:300, keepAspectRatio:true };
+              //  let base =img.toBase64String(extension ); 
+               
+                 this.resizeImageSource(img, 500).then((resizedImageSrc: ImageSource) => {
+                   
+               console.log(img) ; 
+            
+                const folderDest = knownFolders.temp();
+                const pathDest = path.join(folderDest.path, selection[0]._android.split('/').pop()) ;
+                const saved: boolean = resizedImageSrc.saveToFile(pathDest, extension);
+                if (saved) {
+                    console.log("Image saved successfully!");
+                }
+
+                     
+                     
+     
+                
+             
+                
+                 this.avatar = pathDest ;
+                console.log(this.avatar) ; 
                // this.tempavatar  = this.avatar; 
-                 this.avatar  = selection[0]._android; // "data:image/"+extension+";base64,"+img.toBase64String(extension );
+               //  this.avatar  = selection[0]._android; // "data:image/"+extension+";base64,"+img.toBase64String(extension );
               //  console.log(this.banner) ; 
                 this.extension = extension ; 
-                        this.isValid = false ; 
+                 this.isValid = false ; 
                 this.model.profilepicname = this.userid+'.'+this.extension ; 
 
-
+             });
+                
+                
             }else 
                 this.alertimg = true ; 
        
         }).catch(function (e) {
             console.log(e);
         });
+    
+    
     }
     
     selectedIndex= 0 ; 
@@ -629,4 +681,22 @@ private startSelection(context) {
     hide(){
           util.ad.dismissSoftInput() ;  
         }
+    reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }
+    private resizeImageSource(imageSrc:ImageSource, maxSize) : Promise<ImageSource> {
+    return new Promise((resolve, reject) => {
+      const bitmap = BitmapFactory.create(imageSrc.width, imageSrc.height);
+      bitmap.dispose((imageBitmap) => {
+        imageBitmap.insert(BitmapFactory.makeMutable(imageSrc));
+        const resizedBitmap = imageBitmap.resizeMax(maxSize);
+        resolve(resizedBitmap.toImageSource());
+      }, (error) => { reject(error); });
+    });
+  }
 }

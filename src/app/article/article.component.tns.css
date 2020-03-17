@@ -7,9 +7,9 @@
 }
 .pic {
     
-    height:auto;
+    height:100%;
    width:auto;
-   background-color:#D0D0D0; 
+   background-color:#fff;
    /* border-color: #4db8ff;
     border-width: 1;*/
 }
@@ -54,7 +54,7 @@ border-color: transparent;
 .size {
   text-align: center;
    width:45;
-   height: 25;
+   height: 20;
    border-width: 1 ;
    border-color:#000;
    background-color:#D3D3D3;
@@ -72,7 +72,7 @@ border-color: transparent;
 }
 .sizeActive {
   text-align: center;
-   width:40;
+   width:45;
    height: 25;
    border-width: 2 ;
    border-color:#FFA500;
@@ -152,12 +152,21 @@ border-color: transparent;
 	width: 50;
     height: 50;
 	margin-left:0;
-		 border-radius:50; 
-		  border-color: #4db8ff;
+	border-radius:50; 
+	border-color: #4db8ff;
     border-width: 1;
+    background-color:#eeeeee; 
 } 
 Label:pressed {
     background-color:#eeeeee; 
 
 } 
+
+.reload{
+	margin-top:80 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}
 

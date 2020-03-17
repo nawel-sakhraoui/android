@@ -41,8 +41,10 @@ export class BuynowComponent implements OnInit {
     this.buynowService.currentArticle
       .subscribe (
          article => {
-                   if (Object.keys(article).length !== 0 ) {
-                      this.model= article; 
+             
+                      this.model= article;
+                   if (this.model ) {
+                     
                        console.log(this.model ) ; 
                        this.display1 = true ; 
                        this.display2 = false ; 
@@ -50,7 +52,7 @@ export class BuynowComponent implements OnInit {
                         x.style.display = "block";
                         var x2 = document.getElementById("nobuynow");
                         x2.style.display = "none"; */
-                        }
+                    }
                     else  {
                        this.display2 = true ; 
                        this.display1= false ; 
@@ -58,8 +60,8 @@ export class BuynowComponent implements OnInit {
                         x.style.display = "none";
                         var x2 = document.getElementById("nobuynow");
                         x2.style.display = "block";  
-                */      
-          }
+                    */      
+                    }
                 }) ;
       
         
@@ -118,7 +120,8 @@ export class BuynowComponent implements OnInit {
                                             'color': a.color,
                                             'quantity':a.quantity,
                                             'price': a.price,
-                                            'size': a.size}) 
+                                            'size': a.size,
+                                            'picname':a.picname}) 
         }
         
         this.ongoingService.postArticle ({ 
@@ -173,12 +176,12 @@ export class BuynowComponent implements OnInit {
         
                     
                     }
-                          
+                    setTimeout(()=>{
      
-                        this.router.navigate(["../../../../../home/"+this.me+"/ongoing"], { relativeTo: this.route });
+                        this.router.navigate(["../../../../../ongoing"], { relativeTo: this.route });
                            this.loading = false ; 
                           
-                          
+                         },1200); 
              
             
                   

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {StoreService, AddressService, DeliveryService} from '../_services/index';
+import { Component, OnInit, NgZone } from '@angular/core';
+import {PicService, StoreService, AddressService, DeliveryService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs'
 import * as imagepicker from "nativescript-imagepicker"; 
@@ -11,8 +11,9 @@ import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/
 import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label'
 
-    import * as utils from "utils/utils";
- 
+import * as utils from "utils/utils";
+import {Folder, path, knownFolders} from "tns-core-modules/file-system"; 
+import * as BitmapFactory from "nativescript-bitmap-factory";  
 
 @Component({
   selector: 'app-up-article',
@@ -21,20 +22,24 @@ import { Label } from 'tns-core-modules/ui/label'
 })
 export class UpArticleComponent implements OnInit {
       
-loading0 :boolean ; 
+  loading0 :boolean ; 
   articletitle =""; 
-  model :any = {}; 
-    alertimg= false ; 
+  model :any = {"gallery":[], "price":0}; 
+  alertimg= false ; 
   mainpic = 0 ; 
-    tempmainpic = 0 ; 
+  tempmainpic = 0 ; 
   gallery = [];
   color = [];  
-    boolsizing =false; 
-   loading:boolean ; 
-
+  boolsizing =false; 
+  loading:boolean ; 
+   extension = [] ; 
   display:boolean ;
-    Categories = [] ;  
-    config = {
+  Categories = [] ;  
+    galleryNames =[];
+    temppicname = ""; 
+    tempgallerynames = [] ; 
+       loadinggallery = false ;
+  config = {
             displayKey:"description" ,//if objects array passed which key to be displayed defaults to description,
             search:true, //enables the search plugin to search in the list
            placeholder:'Select', // text to be displayed when no item is selected defaults to Select,
@@ -45,12 +50,12 @@ loading0 :boolean ;
               };
 
     
-    selectdel= [] ; 
-    delivery:any = []; 
+   selectdel= [] ; 
+   delivery:any = []; 
  
     
  
-    comconfig = {
+   comconfig = {
             displayKey:"name" ,//if objects array passed which key to be displayed defaults to description,
             search:true, //enables the search plugin to search in the list
             placeholder:'Select', // text to be displayed when no item is selected defaults to Select,
@@ -100,25 +105,34 @@ loading0 :boolean ;
     
     boolsize = false ; 
     size :any ; 
+    reload = false ; 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private storeService: StoreService, 
         private addressService : AddressService,
-        private deliveryService : DeliveryService) { }
+        private deliveryService : DeliveryService, 
+        private picService : PicService,
+        private ngZone: NgZone) { }
       
+    
     ngOnInit() {
-       this.loading0 = true ; 
+     this.init() ; 
+    
+    }
+    
+    
+    
+    init(){
+            this.loading0 = true ; 
         let s = this.route.params.subscribe(params =>
         {
           
             this.storetitle = params.store ; 
-            });
-        let sub = this.route.params.subscribe(params => {
-          
+           
             this.articletitle = params.article ; 
           
-            this.storeService.getStoreCategories (this.storetitle)  
+            this.storeService.getStoreCategories(this.storetitle)  
             .subscribe(
                 data => {
                      this.Categories = data['selectedCat'] ; 
@@ -132,8 +146,8 @@ loading0 :boolean ;
             
             
                     
-                    this.storeService.getStore( this.storetitle)
-                     .subscribe(
+                 this.storeService.getStore( this.storetitle)
+                 .subscribe(
                          data1=> {
                           //   this.nostore = false ; 
                              this.store = data1 ; 
@@ -149,15 +163,31 @@ loading0 :boolean ;
                            })
      
          console.log(this.articletitle) ; 
-       this.storeService.getArticle(this.articletitle )
-             .subscribe(
+         this.storeService.getArticle(this.articletitle )
+         .subscribe(
                 data => {
+                    this.reload = false ; 
                  console.log(data) ; 
                  this.model = data ;
-                     this.loading0 = false ; 
-                
-                       this.display = true ; 
-                 this.storeService.getGallery(this.articletitle )
+                   
+                 this.display = true ;
+                 this.model.pic = this.picService.getPicLink(this.model.picname); 
+                 this.mainpic = 0 ; 
+                 this.model['gallery'] = [this.model.pic] ; 
+                  let temp = this.model.picname ;
+                  this.extension = [temp.split('.').pop()]
+                  if (this.model.hasOwnProperty('gallerynames') ) 
+                        for (let g of this.model.gallerynames) {
+                             let temp = g; 
+                             this.model['gallery'].push(this.picService.getGalleryLink(g))  ;
+                             this.extension = [temp.split('.').pop()]
+
+                        }
+                                   this.loading0 = false ; 
+
+
+                    
+                    /*this.storeService.getGallery(this.articletitle )
                      .subscribe(
                           data3=> {
                     
@@ -183,27 +213,43 @@ loading0 :boolean ;
                            },
                           error3 =>{
                              console.log(error3) ; 
-                     ; 
+                     
                           }) ; 
                     
-                    
-                             if('sizing' in this.model) {
+                    */
+                          if(this.model.hasOwnProperty('sizing'))  
                                          this.boolsize =true ; 
 
-                                         this.size =new Set([].concat.apply([], Object.values(this.model.sizing ))); 
-                             }else 
-                                         this.boolsize = false ; 
+                          else  
+                            for (let c of this.model.selectedCat) 
+                                  if( c == "Habillements-Femmes"||c=="Habillements-Hommes"|| c=="Habillements-Enfants" ){
+                                          this.boolsize= true ; 
+                                       
+                                         this.model.sizing= {};  
+                                   }else 
+                                      this.boolsize = false ; 
+                                     
+                            if (this.boolsize) 
+                                  this.size =new Set([].concat.apply([], Object.values(this.model.sizing ))); 
+
+                    
                                
                  
                  }, 
                  error =>{
                  console.log(error) ;  
                      this.loading0 = false ; 
+                     this.reload = true ;
                      this.display = false ;    
                 }) ; 
              
-          });
-  }
+     
+            
+       }); 
+        
+        
+     }
+    
     
      //  urls = [];
    onSelectFiles(event) {
@@ -236,7 +282,10 @@ loading0 :boolean ;
          var index = this.model.gallery.indexOf(url, 0);
         if (index > -1) {
             this.model.gallery.splice(index, 1);
+            this.extension.splice(index,1) ; 
         }
+
+          
         
      }
     
@@ -276,10 +325,7 @@ loading0 :boolean ;
             this.model.sizing[color].push(c) ;  
          else 
             this.model.sizing[color].splice( this.model.sizing[color].indexOf(c) , 1); 
-        
-        ; 
-        
-        
+      
         }
    
      addDelivery(event) {
@@ -289,19 +335,22 @@ loading0 :boolean ;
             this.model.delivery.push(event) ; 
             
     }
-     getDeliveryMethod(event){
+    
+    getDeliveryMethod(event){
         console.log(event ) ;  
      //  this.total = (this.model.price *this.quantity )   +this.choosedelivery[0]['price'] ; 
     }
     
- editingTitle (){
+    editingTitle (){
         this.editTitle= true; 
         this.model.tempTitle =  this.model.title;
-      }
+    }
+    
     removeTitle(){
         this.editTitle = false ; 
             this.model.title =      this.model.tempTitle ;
-      }
+    }
+    
     loadingtitle = false ; 
     saveTitle(){
         //save to database ! 
@@ -332,23 +381,60 @@ loading0 :boolean ;
      editingGallery (){
         this.editGallery= true; 
          
-        this.tempGallery=  this.model.galler.map(x => x); 
-        this.tempPic = this.model.pic;
+        this.tempGallery=  this.model.gallery.map(x => x); 
+
+        let that = this ; 
+      
+         let i = 0 ; 
+         for (let g of this.model.gallery){ 
+                this.loadinggallery =  true ; 
+                //  let img:ImageSource = <ImageSource>ImageSource.fromFileSync(g);
+                let temp = g ;
+                let folderDest = knownFolders.temp();
+                let pathDest = path.join(folderDest.path, temp.split('/').pop()) ;
+                      console.log(g) ; 
+                      console.log(pathDest) ; 
+                ImageSource.fromUrl(g).then(function (res) { 
+                      console.log("xxxxxxxxxxxxxxxxxxxxxx");
+                      console.log(res.android) ;
+                   temp = g ;  
+                      res.saveToFile(pathDest,temp.split('.').pop());
+              
+                      console.log("Image saved successfully!");
+                      that.model.gallery[i]= pathDest;
+                      that.loadinggallery =  false  ; 
+                      i=i+1;        
+                });
+           
+             //;;"data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
+             //  console.log(that.gallery ) ;
+             
+         }
+         this.tempPic = this.model.pic;
+         this.temppicname = this.model.picname ; 
+         this.tempgallerynames = this.model.gallerynames; 
          this.tempmainpic = this.mainpic   ; 
       }
+    
+    
+    
     removingGallery(){
+        this.loadinggallery =  false  ;
         this.editGallery = false ;
         this.mainpic = this.tempmainpic ; 
-            this.model.gallery =      this.tempGallery.map(x => x); ;
-           this.model.pic = this.tempPic ; 
+        this.model.gallery = this.tempGallery.map(x => x); ;
+        this.model.pic = this.tempPic ; 
+        this.model.picname = this.temppicname; 
+        this.model.gallerynames = this.tempgallerynames.map(x => x); ;
       }
     
-    loadinggallery = false ;
+    
+ 
     saveGallery(){
         //save to database ! 
      //if (this.model.gallery.length !=0 ) {
-           this.loadinggallery =  true ; 
-              this.storeService.postPic(this.articletitle , this.model.gallery[this.mainpic] )
+         
+          /*    this.storeService.postPic(this.articletitle , this.model.gallery[this.mainpic] )
                      .subscribe(
                         data2=>{
                            console.log(data2) ;  
@@ -373,7 +459,7 @@ loading0 :boolean ;
                                this.loadinggallery =  false ; 
                           }
                        );
-                  
+                 */ 
         /* this.editGallery = false ;
         this.mainpic = this.tempmainpic ; 
             this.model.gallery =      this.tempGallery.map(x => x); ;
@@ -381,7 +467,120 @@ loading0 :boolean ;
 
         
         }*/
-      }  
+          this.loadinggallery =  true ; 
+        if (this.model.gallery.length !=0 ) {
+            this.picService.deletePic(this.temppicname) 
+           .subscribe (
+              data => {
+              this.picService.putPic(this.articletitle+'.'+this.extension[this.mainpic] , this.model.gallery[this.mainpic], this.extension[this.mainpic] )
+                     .subscribe(
+                        data2=>{
+                            
+                       
+                         //this.images.push(path.replace(/^.*[\\\/]/, ''));
+                         
+                          this.storeService.putPicName( this.storetitle,this.articletitle,  this.articletitle+'.'+this.extension[this.mainpic] )
+                            .subscribe( 
+                                
+                            data =>{ 
+                                    console.log('done save pic name ')
+                                    let g = [this.picService.getPicLink(this.articletitle+'.'+this.extension[this.mainpic] )];
+                                   this.picService.deleteGallery(this.tempgallerynames) 
+                                   .subscribe(
+                                     data=>{
+                                         if (this.model.gallery.length>1 ){
+                              
+                                             
+                                            // let gallery = this.model.gallery.map(x => x); 
+                                             
+                                            this.model.gallery.splice(this.mainpic, 1) ;   
+                                            this.extension.splice(this.mainpic,1)  ;
+                                            this.galleryNames = [] ;  
+                                            for (let i=0 ; i<this.model.gallery.length; i++) 
+                                                this.galleryNames.push(this.articletitle+i+'.'+this.extension[i])
+                               
+                                                this.picService.putGallery( this.galleryNames, this.model.gallery, this.extension )
+                                                .subscribe(
+                                                    data3=>{
+                                                            
+                                                                 this.storeService.putGalleryName( this.storetitle, this.articletitle,this.galleryNames )
+                                                                 .subscribe( 
+                                                                     data =>{ 
+                                                                            console.log('done');  
+                                                                            this.loadinggallery = false; 
+                                                                            this.editGallery = false 
+                                                                         // 
+                                                                        //  this.model.gallerynames=   this.tempgallerynames.map(x => x);
+                                                                         
+                                                                         for (let gg of this.galleryNames)     
+                                                                         g.push(this.picService.getGalleryLink(gg))  ;
+                                                                     this.model.gallery=g.map(x => x); 
+                                                                         
+                                                                     },error=>{ 
+                                                                            this.loadinggallery = false; 
+                                                                               this.editGallery = false   
+                                                                     });
+                                           
+                             
+                                          
+                                                                
+                                                    }
+                                                    ,error3=>{
+                                                             console.log(error3) ; 
+                                                             this.loadinggallery = false;  
+                                                              this.editGallery = false 
+                                                   }); 
+                                    
+                                           }else{
+                                                this.storeService.putGalleryName( this.storetitle, this.articletitle,[] )
+                                                .subscribe( 
+                                                        data =>{ 
+                                                                console.log('done');  
+                                                                 this.loadinggallery = false;
+                                                                  this.editGallery = false   ;
+                                                        } ,error=>{ 
+                                                                 this.loadinggallery = false;  
+                                                                  this.editGallery = false 
+                                                        });
+                              
+                                            }
+                              
+                                    },err=>{ 
+                                      console.log(err) ; 
+                                      this.loadinggallery = false; 
+                                              this.editGallery = false 
+                                    });
+                             
+                            },error=>{  
+                                console.log(error) ; 
+                                  this.loadinggallery = false;  
+                                      this.editGallery = false 
+                            }
+                                       
+                                       );    
+                                
+                       
+                        
+                      },error2=>{
+                            console.log(error2) ;   
+                            this.loadinggallery = false;   
+                                this.editGallery = false 
+                       });
+        
+                },err=>{
+                        console.log(err) ; 
+                        this.loadinggallery = false;   
+                        this.editGallery = false     
+                });
+            
+        }else{
+            
+              this.loadinggallery =  false ;
+             
+            
+        }
+      }
+                 
 
       editingPrice (){
         this.editPrice= true; 
@@ -393,6 +592,7 @@ loading0 :boolean ;
       }
     
     loadingprice = false ; 
+    
     savePrice(){
         //save to database 
         this.loadingprice = true ; 
@@ -440,7 +640,7 @@ loading0 :boolean ;
     
      editingColor (){
         this.editColor= true; 
-        this.tempColor =  this.model.color.map(x => x);
+        this.tempColor =  this.model.color;
         if(this.boolsize) 
          
          this.tempsizing = this.model.sizing;
@@ -484,7 +684,7 @@ loading0 :boolean ;
       }
     
     
-      editingDelivery (){
+    editingDelivery (){
         this.editDelivery= true; 
         this.model.tempDelivery =  this.model.delivery.map(x => x);
       }
@@ -526,6 +726,7 @@ loading0 :boolean ;
             this.model.description =      this.model.tempDesc;
       }
     loadingdesc = false  ;
+    
     saveDesc(){
         this.loadingdesc = true  ;
         //save to database ! 
@@ -543,14 +744,17 @@ loading0 :boolean ;
             )
       }
     
-       editingAvailable (){
+    
+    editingAvailable (){
         this.editAvailable= true; 
         this.model.tempAvailable =  this.model.available;
       }
+    
     removeAvailable(){
         this.editAvailable = false ; 
             this.model.available =      this.model.tempAvailable;
       }
+    
     loadingavailable = false ; 
     saveAvailable(){
         //save to database ! 
@@ -609,7 +813,7 @@ loading0 :boolean ;
       } 
     
     
-       getDeliveryBy (selectedCat, villes){
+   getDeliveryBy (selectedCat, villes){
                
             let f = []; 
           for (let v of villes ) 
@@ -651,7 +855,6 @@ loading0 :boolean ;
     }
 
   
-
     private startSelection(context) {
         let that = this;
 
@@ -672,15 +875,32 @@ loading0 :boolean ;
             let  extension = element._android.split('.').pop() ;
             if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
               that.alertimg = false ; 
-                //console.log(element) ; 
-                element.options = {width:300, height:200, keepAspectRatio:true };
-
-               let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
-                console.log(img) ; 
-                console.log(extension) ; 
+             //  console.log(element._android) ;
+             //       element.options = {width:300, height:200, keepAspectRatio:true };
+             //  let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
+             //  console.log(img) ; 
+             //  console.log(extension) ; 
                 
-                that.model.gallery.push("data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
-              //  console.log(that.gallery ) ;
+             
+               let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
+                // selection[0].options = {width:500, height:300, keepAspectRatio:true };
+              //  let base =img.toBase64String(extension ); 
+               
+                 that.resizeImageSource(img, 500).then((resizedImageSrc: ImageSource) => {
+                   
+               
+                 
+                let folderDest = knownFolders.documents();
+                let pathDest = path.join(folderDest.path, element._android.split('/').pop()) ;
+                 let saved: boolean = resizedImageSrc.saveToFile(pathDest, extension);
+                if (saved) {
+                    console.log("Image saved successfully!");
+                } 
+                
+                that.extension.push(extension) ; 
+                that.model.gallery.push(pathDest)//;;"data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
+             //  console.log(that.gallery ) ;
+               })
                 
             }else 
                 that.alertimg = true ; 
@@ -734,7 +954,8 @@ loading0 :boolean ;
                 if( c == "Habillements-Femmes"||c=="Habillements-Hommes"|| c=="Habillements-Enfants" ){
                    this.boolsize= true ; 
                                 console.log(c) ; 
-                    }
+                    }else 
+                    this.boolsize=false ;
               }
                     
 
@@ -758,7 +979,7 @@ loading0 :boolean ;
     addSize(color , c) {
       
         
-        if(!this.model.sizing[color].includes(c) ) 
+        if(! (c in this.model.sizing[color]) ) 
             this.model.sizing[color].push(c) ;  
          else 
             this.model.sizing[color].splice( this.model.sizing[color].indexOf(c) , 1); 
@@ -781,7 +1002,7 @@ loading0 :boolean ;
             
  
         }         
-        console.log(del) ; 
+        console.log(del) ; ;
 //        console.log(this.selectdel) ; 
         
     }
@@ -815,6 +1036,26 @@ loading0 :boolean ;
                      utils.ad.dismissSoftInput() ; 
 
    }
-
+  private resizeImageSource(imageSrc:ImageSource, maxSize) : Promise<ImageSource> {
+    return new Promise((resolve, reject) => {
+      const bitmap = BitmapFactory.create(imageSrc.width, imageSrc.height);
+      bitmap.dispose((imageBitmap) => {
+        imageBitmap.insert(BitmapFactory.makeMutable(imageSrc));
+        const resizedBitmap = imageBitmap.resizeMax(maxSize);
+        resolve(resizedBitmap.toImageSource());
+      }, (error) => { reject(error); });
+    });
+  }
+    
+    
+      
+      reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }    
     
 }

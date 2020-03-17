@@ -16,7 +16,15 @@
    	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf="loading" [busy]="loading" ></ActivityIndicator>
 </StackLayout>  
 
-<GridLayout [visibility]="!loading ?'visible':'collapse'"   row="2" rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+       
+<GridLayout [visibility]="!reload && !loading ?'visible':'collapse'"   row="2" rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
 
 <Label class='head' textWrap='true' col="0" row="0" text="Catégories"></Label>
 <StackLayout class='head' col="1" row="0" orientation ="horizontal">
@@ -198,13 +206,15 @@
   <Label class="border" *ngIf= "!model.open" text="Fermé"></Label>
 
 </GridLayout>
-<GridLayout   [isEnabled]='!loadingstatus' margin='0,0,15,0' rows ='*,*'[visibility]="editStatus ?'visible':'collapse'"  col="1" row="9" > 
- 	<stackLayout row="0" orientation="horizontal">
+<GridLayout   [isEnabled]='!loadingstatus' margin='0,0,15,0' rows ='auto,*,*'[visibility]="editStatus ?'visible':'collapse'"  col="1" row="9" > 
+   <Label row="0" class="alert" textWrap='true'  text ='Avant de fermer le magasin assurez vous de mettre tout vos articles en indisponibilité !'></Label>
+ 	
+ 	<stackLayout row="1" orientation="horizontal">
  	<Label (touch)="ontouch3($event)"   (tap)=" model.open= true "  class="select" text='Ouvert'></Label> 
  	<Label (touch)="ontouch3($event)"    (tap)=" model.open= true " fontSize="20" color="#00BFFF" *ngIf="!model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
    	<Label (touch)="ontouch3($event)"    (tap)=" model.open= true " fontSize="20" color="#FFA500" *ngIf="model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
    </stackLayout>
-   <stackLayout row="1" orientation="horizontal">
+   <stackLayout row="2" orientation="horizontal">
  	<Label (touch)="ontouch3($event)"   (tap)=" model.open= false "  class="select" text='Fermé'></Label> 
  	<Label (touch)="ontouch3($event)"    (tap)=" model.open= false " fontSize="20" color="#00BFFF" *ngIf="model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
    	<Label (touch)="ontouch3($event)"    (tap)=" model.open= false " fontSize="20" color="#FFA500" *ngIf="!model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>

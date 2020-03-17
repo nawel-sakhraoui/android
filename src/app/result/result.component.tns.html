@@ -1,6 +1,6 @@
 
 <RadSideDrawer tkExampleTitle tkToggleNavButton>
-    <GridLayout tkDrawerContent rows="40, *" class="sideStackLayout">
+    <GridLayout (tap)='hide()'   tkDrawerContent rows="40, *" class="sideStackLayout">
         <Label row="0" (touch)='ontouch($event)'   text="Catégories  &#xf104;" class='fas sideTitleStackLayout' (tap)="onCloseDrawerTap()"></Label>
         
 
@@ -14,12 +14,12 @@
                   </ng-template>
         </RadListView>
     </GridLayout>
-<StackLayout tkMainContent>
+
     
- <GridLayout rows="auto, auto,auto,*">
+ <GridLayout rows="auto,auto,auto,*" tkMainContent (tap)='hide()'  >
  <StackLayout row="0" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
   
- <GridLayout    row="1" columns="auto,*,auto" rows='35,35,*' >
+ <GridLayout    row="1" columns="auto,*,auto" rows='35,35,*'  (tap)='hide()' >
        <Label (touch)='ontouch($event)' row='0'  margin="7,0,0,5" text="Catégories &#xf02b;" col='0'  (tap)="openDrawer()" class=" fas cat"></Label>
         <StackLayout row='0' margin='5,0,0,5' col="1" orientation='horizontal'>    
             
@@ -58,14 +58,24 @@
 	androidSelectedTabHighlightColor="#FFA500"
 	textTransform="none"
  >
-<StackLayout *tabItem="{title: 'Articles'}"> 		
-   <Label class="notfound" text="Pas d'articles disponibles"  [visibility]=" !loading &&  notfound? 'visible' : 'collapsed'"></Label>
-  		<RadListView  [visibility]="!loading && !notfound? 'visible' : 'collapsed'"  [items]="articles"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedArticles($event)"
+<StackLayout *tabItem="{title: 'Articles'}" (tap)='hide()' > 		
+
+ 
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"   *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+      
+   <Label class="notfound" text="Pas d'articles disponibles"  [visibility]=" !reload && !loading &&  notfound? 'visible' : 'collapsed'"></Label>
+  		<RadListView  (tap)='hide()' [visibility]="!reload && !loading && !notfound? 'visible' : 'collapsed'"  [items]="articles"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedArticles($event)"
          (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" >
       		 <ng-template let-a="item" class="itemStackLayout" >
 
       		 
-      		 <GridLayout (touch)="ontouch2($event)"  rows='*,auto'  (longPress)="gotoArticle(a._id, a._source.storetitle )" >
+      		 <GridLayout (touch)="ontouch2($event)"  rows='*,auto'  (doubleTap)="gotoArticle(a._id, a._source.storetitle )" >
       		   
       			<Image loadMode="async"  row="0" src='{{mainpics[a._id]}}' class='articlepic' stretch="aspectFill"   (touch)="display(a._id)"   ></Image>
       			
@@ -120,11 +130,20 @@
  </StackLayout>  
 </StackLayout>
     
-    <StackLayout *tabItem="{title: 'Magasins'}">
-    <Label class=" notfound " text="Pas de magasin disponible"  [visibility]=" !loading && notfoundstore ? 'visible' : 'collapsed'">
+    <StackLayout *tabItem="{title: 'Magasins'}" (tap)='hide()'>
+    <Label class=" notfound " text="Pas de magasin disponible"  [visibility]=" !reload && !loading && notfoundstore ? 'visible' : 'collapsed'">
    
    </Label>
-       <RadListView [visibility]="!loading && !notfoundstore ? 'visible' : 'collapsed'"  [items]="stores"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedStores($event)" >
+    
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+       
+       <RadListView (tap)='hide()' [visibility]="!reload && !loading && !notfoundstore ? 'visible' : 'collapsed'"  [items]="stores"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedStores($event)" >
       		 <ng-template let-s="item" class="itemStackLayout"  >
       	
 
@@ -172,7 +191,7 @@
     </StackLayout>
 </TabView>
 </GridLayout>
- </StackLayout>
+
     
 
 </RadSideDrawer>

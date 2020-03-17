@@ -1,3 +1,41 @@
-<p>
-  month-income works!
-</p>
+
+<ngx-loading  [show]="loading0" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+
+   <div  class='container '> 
+   <br><br>
+  
+   
+  <table *ngIf='data.length!=0' class="table table-sm  table-striped table-responsive-sm">
+   <thead>
+     <tr class="table-active" >
+       <th>Date </th>
+       <th>Ventes</th>
+       <th>Recettes</th>
+	   <th>3% </th>
+		
+     </tr>
+  </thead>
+  <tbody>
+  
+   
+    <tr  *ngFor='let d of data' >
+  		<th>{{d.month+1}}/{{d.year}}  </th>
+  		<td>{{d.total}}</td>
+  		<td> {{d.price }} DA</td>
+  		<td>{{(d.price*0.03).toFixed(2)}} DA <i class="fa fa-check text-danger strong "></i> </td>
+		<td >  envoyer votre reçu  </td>
+		<td></td>
+    </tr>
+  
+
+    
+  </tbody>
+</table>
+   
+   
+      <div *ngIf='!loading0 && data.length==0' class="alert alert-warning " > 
+  	  
+  	   Aucune vente n'a été établie 
+  	  </div>
+   
+   </div>

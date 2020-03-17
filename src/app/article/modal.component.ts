@@ -60,21 +60,16 @@ export class ModalComponent {
  
   public hide(): void {
      
-    //        this.visible = false;
-            //this.visibleAnimate = false;
-      
+            //this.visible = false;
+            //this.visibleAnimate = false; 
             this.params.closeCallback();
             //setTimeout(() => this.visible = false, 10);
   }
-    public gotocart (){
+    
+   public gotocart (){
      
-         this.router.navigateByUrl("/home/"+this.me+'/cart');
+         this.router.navigateByUrl('./../../../../cart');
+         this.params.closeCallback();
+   }
 
-     this.params.closeCallback();
- 
-        
-       }
-
-
-        
 }

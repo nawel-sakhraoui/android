@@ -11,6 +11,8 @@ import { View } from "ui/core/view";
 import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label';
 import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+import * as util from "utils/utils";
+
 @Component({
   moduleId: module.id,   
   selector: 'app-main',
@@ -64,34 +66,83 @@ export class MainComponent implements OnInit,  AfterViewInit{
     selectcatAr = [] ; 
     articlescats = {} ; 
     fullcartwarning  :boolean ; 
-    city :string ; 
-  private sub :any ; 
+     city ='Toutes les villes' ;  
+    private sub :any ; 
     value=1 ; 
-
+    reload = false ; 
      private _mainContentText: string;
     setScore(e){
         console.log(e.object.get('value')) ; 
            this.value = Number(e.object.get('value'));
        }
     ngOnInit() {
+      this.init() ; 
+    }
     
-      this.loading2 = true ; 
+    
+    init(){
+              this.loading2 = true ; 
        
        this.loading = true ; 
        this.loading3 = true ;
             
           
                   
-        this.searchService.sendcity.subscribe(
-        (data00)=>{
-            this.loading2 = true ; 
-            this.loading3= true ; 
-            this.loading = true ; 
-            this.city = data00['city'] ; 
-     
-       
+      //  this.searchService.sendcity.subscribe(
+      //  (data00)=>{
+       this.userdetailsService.getLocation(this.me)
+       .subscribe(
+            data=>{
+                this.reload = false ; 
+                  console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") ; 
+                  console.log(data) ; 
+                  if (Object.keys(data).length !== 0) 
+                      this.city = data['location'];   
+                  else 
+                       this.city ='Toutes les villes';
+                        
+                  this.main0() ; 
+                         
+    
         
-       this.storeService.getCategories()
+           // @ViewChild('stack') scrollView: ElementRef;
+          //  const stackView  = this.scrollView.nativeElement;
+           //     stackView._nativeView.requestDisallowInterceptTouchEvent(false);
+  
+    
+            
+                 },error=>{
+                     console.log(error) ; 
+                    this.reload = true ;
+                     this.loading = false ;  
+                     this.loading2=false ; 
+                     this.loading3=false ; 
+                 });   
+    
+    
+        this.searchService.sendcity.subscribe(
+       (data00)=>{
+           
+           console.log(this.city) ; 
+           this.city = data00['city'] ; 
+           if (this.city) 
+            this.main0() ; 
+       }) ; 
+    
+    
+    
+    
+    
+        
+        
+        }
+    
+    main0(){
+         this.loading2 = true ; 
+       
+       this.loading = true ; 
+       this.loading3 = true ; 
+          this.storeService.getCategories()
        .subscribe (
            
            d0 => {
@@ -114,15 +165,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                     tempcat.splice(index, 1);
                                     tempcatAr.splice(index,1) ; 
                                   }
-                             
-                                 
-              
-                             
-                     
-                                for (let cat of this.selectcat  ){ 
-                                  
-                   
-                    
+                           for (let cat of this.selectcat  ){ 
                                  this.myhomeService.getArticlesByCat(this.sizearticles, cat, this.city )
                                .subscribe (
                                    data => {
@@ -183,7 +226,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
          .subscribe (
          
              data => {
-        
+            this.reload = false ; 
                  this.main = true ; 
                 if (data['hits']['hits'].length !=0 ) {
                 /*  this.store = data['hits']['hits'][0] ;
@@ -244,7 +287,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                         }
                                      ); */
                   }
-                              this.loading = false ; 
+                    this.loading = false ; 
                   }/* } else {
                      this.store= {'_source' : {}} ;
                       
@@ -253,6 +296,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
              },error =>{
                      this.loading =false ; 
                  console.log(error) ; 
+                 this.reload = true ; ; 
                  
              }
          ) ;
@@ -296,16 +340,14 @@ export class MainComponent implements OnInit,  AfterViewInit{
               });
             
             
-      }); 
+ 
 
-    
-          //   });
-           // @ViewChild('stack') scrollView: ElementRef;
-          //  const stackView  = this.scrollView.nativeElement;
-           //     stackView._nativeView.requestDisallowInterceptTouchEvent(false);
-     }
-    
-    
+                  
+        
+        
+        
+        
+        }
     
   
      gotoArticle( id:string , storeid : string ) {
@@ -446,11 +488,12 @@ export class MainComponent implements OnInit,  AfterViewInit{
     
    sort(val ) {
        this.orderby=val ; 
-       }
+    
+   }
     @ViewChild("myCarousel", { static: false }) carouselView: ElementRef<Carousel>;
 
      myTapPageEvent(args) {
-    console.log('Tapped page index: ' + (this.carouselView.nativeElement.selectedPage));
+         console.log('Tapped page index: ' + (this.carouselView.nativeElement.selectedPage));
     }
 
     myChangePageEvent(args) {
@@ -501,7 +544,15 @@ export class MainComponent implements OnInit,  AfterViewInit{
     }
    
 } 
-    
+     
+    reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }
     
 }
 

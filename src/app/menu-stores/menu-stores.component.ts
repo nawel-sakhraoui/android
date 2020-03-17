@@ -21,6 +21,8 @@ export class MenuStoresComponent  implements OnInit {
     storeModel: any = {};
     stores:any = [] ;
     checkStores:boolean =false ; 
+    reload :boolean = false ; 
+    
     myhome; // = JSON.parse(localStorage.getItem('currentUser')).userid ; 
     loading :boolean ; 
     constructor(
@@ -35,14 +37,18 @@ export class MenuStoresComponent  implements OnInit {
     
     ngOnInit() {
           
-          this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
+       this.init()
+    }
+
+    
+    init(){
+           this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
         this.loading = true; 
-        
-          
-            this.userService.getStores(this.myhome)
+        this.userService.getStores(this.myhome)
             .subscribe( 
              data => {
-              //  console.log(data._source.store ) ; 
+                this.reload= false ; 
+                 //  console.log(data._source.store ) ; 
                if (data['_source']['store'] ) {
                    
                   this.stores = data['_source']['store'].filter(x => x ).reverse() ; 
@@ -53,12 +59,13 @@ export class MenuStoresComponent  implements OnInit {
                  
                
               }}, error => {
+                  this.reload= true ;
                  console.log( error) ; 
-                    this.loading = false ; 
+             this.loading = false ; 
                 
-               }); 
-    }
-
+               });  
+        
+        }
     createStore(){
         
     }
@@ -87,5 +94,14 @@ export class MenuStoresComponent  implements OnInit {
     }
    
 }
+       reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }  
+ 
 
 }

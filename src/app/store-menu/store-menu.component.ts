@@ -168,7 +168,7 @@ export class StoreMenuComponent implements OnInit{
                 }
               ,error =>{
                   console.log(error) ; 
-                  this.loading = false ; 
+              //    this.loading = false ; 
                  
                }) ; 
           
@@ -210,7 +210,7 @@ export class StoreMenuComponent implements OnInit{
                                      
                                this.notif.notification.splice(index, 1);
                                 this.notif.notificationcount -=1 ; 
-                                                   this.notifCount.emit(this.notif.notificationcount);
+                              this.notifCount.emit(this.notif.notificationcount);
  
 
                         }else {

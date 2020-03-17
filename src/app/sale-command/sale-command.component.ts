@@ -1,5 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef,AfterViewChecked } from '@angular/core';
-import { FirebaseService,OngoingService, UserdetailsService, MessagesService  , StoreService } from '../_services/index';
+import { Component, OnInit, AfterContentInit,AfterViewInit, ViewChild, ElementRef,AfterViewChecked } from '@angular/core';
+import { PicService,  FirebaseService,OngoingService, UserdetailsService, MessagesService  , StoreService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd  } from '@angular/router';
 import * as prettyMs from 'pretty-ms';
 import * as utils from "utils/utils";
@@ -9,7 +9,8 @@ import { Label } from 'tns-core-modules/ui/label';
 
 import * as  clipboard from "nativescript-clipboard" ;
 
- 
+import { ScrollView} from 'tns-core-modules/ui/scroll-view';
+import { Page } from "ui/page"; 
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
 
 @Component({
@@ -17,7 +18,7 @@ import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';
   templateUrl: './sale-command.component.html',
   styleUrls: ['./sale-command.component.css']
 })
-export class SaleCommandComponent implements OnInit, AfterViewChecked {
+export class SaleCommandComponent implements OnInit, AfterViewInit {
         
    
         @ViewChild("scrollView", { static: true }) scrollView :ElementRef;
@@ -39,7 +40,7 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
     ongoing :boolean =false  ; 
     isopen =false ;
     message :any = {};
-    fragment :string ;
+    fragment :string ='';
     nosale= false ; 
     opened = true ;
     menuhide = false ;  
@@ -53,7 +54,7 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
     loadingM=false ; 
     flag= false ; 
     admins :any[] = [] ; 
-     me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
+    me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
     constructor(private ongoingService:OngoingService, 
               private router :Router, 
@@ -63,7 +64,9 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
               private storeService : StoreService, 
               private firebaseService : FirebaseService, 
               private rolesService:  NgxRolesService , 
-              private permissionsService : NgxPermissionsService) {
+              private permissionsService : NgxPermissionsService,
+              private picService : PicService, 
+              private page : Page ) {
       
    this.router.events.subscribe(s => {
        console.log(s) ; 
@@ -88,22 +91,21 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
         
         console.log (params) ;
         this.commandid = params['commandid'];
-            this.route.parent.params.subscribe(parent =>{
-                console.log(parent) ; 
-                this.storetitle = parent["store"]
-            });
+          
+        this.storetitle = params["store"]
+         
         
       this.router.events.subscribe(s => {
            // console.log(s) ; 
       if (s instanceof NavigationEnd) {
          // console.log(s) ; 
-        let tree = this.router.parseUrl(this.router.url);
+         let tree = this.router.parseUrl(this.router.url);
           console.log(tree) ; 
           this.fragment = tree.fragment ; 
-           // console.log(this.fragment) ; 
+           console.log(this.fragment) ; 
           //  if (this.fragment) {
            //   this.isopen = true ;
-                    //  this.ngxAutoScroll.forceScrollDown(); 
+          //  this.ngxAutoScroll.forceScrollDown(); 
            //   let element = document.getElementById(this.fragment);
              // console.log(element ) ; 
              // if (element) { element.scrollIntoView(); }
@@ -112,15 +114,17 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
         //} 
    
        
-      }
-             });
+      }});
+             
         this.storeService.getAdmins(this.storetitle)
             .subscribe(
                 data0=>{
+                    console.log(data0 ); 
                     this.admins =[ data0['userid'] ] ; 
                        for (let x of data0['administrators']) 
                             this.admins.push (x.userid);  
-                         if ( this.admins.includes(this.me ) ) {
+                    
+                         if ( this.me in this.admins ) {
                                   this.flag = true ; 
                                     this.permissionsService.addPermission('writeStore', () => {
                                           return true;
@@ -128,10 +132,18 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                     
                                   
                                     this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
-                             
+                                                         
+                        }else
+                                                this.permissionsService.removePermission('writeStore');
+
+                              
+                             },error=>{
+                                                    console.log(error) ;    
+                                         })
+   
                              
                                        
-      this.ongoingService.getOngoingById(this.commandid)
+                this.ongoingService.getOngoingById(this.commandid)
                 .subscribe(
                     _source =>{
                         this.model = _source ; 
@@ -145,28 +157,9 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                         this.sales= true; 
                         //_source= JSON.parse(_source) ; 
                        // console.log(_source['userid']);
-                       let val="other" ;  
-                        if (this.fragment=="message")
-                          val = "message"; 
-                       else 
-                            if (this.fragment =='rating') 
-                                val='rating' ;  
-                        
-                        console.log(val) ; 
-                        //remove store notif 
-                       this.storeService.removeNotificationByCommandid(this.model.storetitle, this.commandid , val )
-                        .subscribe(
-                            datas =>{
-                                console.log(datas) ; 
-                                }
-                            ,errors =>{
-                                console.log(errors);
-                                }
-                           );
-                       
-                
+               
                       
-                       this.userdetailsService.getAvatar(this.model.userid)
+                     /*  this.userdetailsService.getAvatar(this.model.userid)
                        .subscribe( 
                            datan => {
                                  this.avatarlist[this.model.userid ] = datan['avatar'] ;  
@@ -175,9 +168,20 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                            ,errorn=> {
                                  console.log (errorn) ;    
                            }
-                           );
+                           );*/
                   
-                            this.userdetailsService.getFullname(this.model.userid)
+               
+                         this.avatarlist[this.model.userid ] ="";   
+                        this.userdetailsService.getProfilePicName(this.model.userid)
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.model.userid] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                       
+                       
+                        
+                        this.userdetailsService.getFullname(this.model.userid)
                        .subscribe( 
                            datan => {
                                  this.fullnamelist[this.model.userid ] = datan['fullname'] ;  
@@ -194,8 +198,6 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                                data=>{
                                  this.firebase = data['firebase']; 
                   
-                         
-                     
                                },error=>{
                                     console.log(error ) ; 
                                  }) ; 
@@ -220,8 +222,19 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                            );
                       }*/
                            
-                           
-                            if (! this.fullnamelist[this.model.messages[j].from ]) {
+                             if (!this.avatarlist[this.model.messages[j].from]) {
+                         this.avatarlist[this.model.messages[j].from ] ="";   
+                        this.userdetailsService.getProfilePicName(this.model.messages[j].from)
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.model.messages[j].from ] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                       }  
+                        
+                    
+                    
+                      if (! this.fullnamelist[this.model.messages[j].from ]) {
                            
                          this.userdetailsService.getFullname(this.model.messages[j].from)
                          .subscribe( 
@@ -280,7 +293,7 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                   .subscribe(
                    message => 
                    {
-                      // console.log(message) ;
+                                  // console.log(message) ;
                     this.message =message ;  
                      this.message = JSON.parse(this.message ) ;
                     this.message.date = prettyMs( new Date().getTime() - this.message.date, {compact: true}  );
@@ -290,8 +303,43 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                        else 
                            this.message.fromMe= false ;  
                             this.message.new = true ; 
-                   //   console.log(message.text ) ; 
-                     this.model.messages.push(this.message);
+            
+                           this.model.messages.push(this.message);
+                  this.msgsView.nativeElement.scrollToIndex(this.model.messages.length-1, false, ListViewItemSnapMode.Auto);
+
+                     
+                       if (!this.avatarlist[this.message.from]) {
+                         this.avatarlist[this.message.from ] ="";   
+                        this.userdetailsService.getProfilePicName(this.message.from)
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.message.from ] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                       }  
+                       
+                      if (!this.fullnamelist[this.message.from]) {
+                       this.userdetailsService.getFullname(this.message.from)
+                       .subscribe( 
+                           data => {
+                                this.fullnamelist[this.message.from]= data['fullname'] ;  
+                               
+                               
+ 
+                           }
+                           ,error=> {
+                                 console.log (error ) ;    
+                           }
+                           );
+                          
+                         }  
+                       
+                     //   console.log(message.text ) ; 
+
+           
+                       
+                       
+                       
                      /*if (!this.avatarlist[this.message.from]) {
                        this.userdetailsService.getAvatar(this.message.from)
                        .subscribe( 
@@ -316,7 +364,11 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                   
                   
               for( let j = 0 ;j < this.model.articles.length; j++ ) {
-                   this.storeService.getPic(this.model.articles[j].articleid )
+                   
+                  
+                     this.model.articles[j].pic = this.picService.getPicLink( this.model.articles[j].picname);
+
+                  /*this.storeService.getPic(this.model.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
                                        //   console.log( this.model[i][j] ) ; 
@@ -324,16 +376,36 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                                     }, error4 =>{
                                           console.log(error4) ; 
                                     }) ; 
-                  
+                  */
               }
               this.loading = false ;
               
+                        
+                        
+                            let val="other" ;  
+                        if (this.fragment=="message")
+                            val = "message"; 
+                       else 
+                            if (this.fragment =='rating') 
+                                val='rating' ;  
+                        
+                        console.log(val) ; 
+                        //remove store notif 
+                       this.storeService.removeNotificationByCommandid(this.model.storetitle, this.commandid , val )
+                        .subscribe(
+                            datas =>{
+                                console.log(datas) ; 
+                                }
+                            ,errors =>{
+                                console.log(errors);
+                                }
+                           );
             }
           
             ,error7=> {
                         this.nosale = true ; 
                         console.log(error7) ; 
-                this.loading = false ; 
+                       this.loading = false ; 
                     }) ; 
                              
                              
@@ -347,23 +419,15 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                              
                              
                              
-                                 
-                             }else
-                                this.permissionsService.removePermission('writeStore');
-
-                              
-                },error=>{
-                 console.log(error) ;    
-                })
-  
+     
 
   });
 }
    
-      ngAfterViewChecked() {
+   ngAfterViewInit() {
    
        let interval = setInterval(()=> {
-     
+      /*
            if ( this.fragment=="message") {
                          this.isopen = true ;
                          this.scrollView.nativeElement.scrollToVerticalOffset(this.messageView.nativeElement.getLocationRelativeTo(this.topView.nativeElement)['y'], false);
@@ -378,8 +442,12 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
                 }   
                
             }
+           
+               */
+                       
+                
              
-      }, 500);  
+      }, 1000);  
           
    }
  
@@ -391,8 +459,8 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
         }
 
     
-    gotoUser(id ) {
-                this.router.navigate(["../../../../home/"+this.me+"/profile/"+id], { relativeTo: this.route });
+        gotoUser(id ) {
+                this.router.navigate(["../../../../profile/"+id], { relativeTo: this.route });
 
         }
 
@@ -592,11 +660,11 @@ export class SaleCommandComponent implements OnInit, AfterViewChecked {
          if (this.isopen ) 
             setTimeout(()=>{
                 
-                      this.scrollView.nativeElement.scrollToVerticalOffset(this.messageView.nativeElement.getLocationRelativeTo(this.topView.nativeElement).y, false);
+                      this.scrollView.nativeElement.scrollToVerticalOffset(this.messageView.nativeElement.getLocationRelativeTo(this.topView.nativeElement)['y'], false);
                       this.msgsView.nativeElement.scrollToIndex(this.model.messages.length - 1, false, ListViewItemSnapMode.Auto);
 
 //                this.msgsView.nativeElement.scrollToVerticalOffset(this.msgsView.nativeElement.scrollableHeight, false);
-             },150); 
+             },1500); 
         
      
     } 
@@ -613,11 +681,11 @@ getLocalDateTime(date) {
 
   //let timeOfDay = hours < 12 ? 'AM' : 'PM';
 
-  return date.getMonth() + '/' + date.getDate() + '/' +
-         date.getFullYear() + ', ' + hours + ':' + minutes 
+  return date.getDate() + '/' +  (parseInt(date.getMonth())+1) + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes  
 }
     
-     ontouch(args: TouchGestureEventData) {
+ ontouch(args: TouchGestureEventData) {
     const label = <Label>args.object
     switch (args.action) {
         case 'up':
@@ -630,7 +698,7 @@ getLocalDateTime(date) {
    
 }
     
-        ontouch3(args: TouchGestureEventData) {
+  ontouch3(args: TouchGestureEventData) {
     const label = <Label>args.object
     switch (args.action) {
         case 'up':
@@ -662,5 +730,7 @@ getLocalDateTime(date) {
          
          }
    
+     hide () {
+         utils.ad.dismissSoftInput() ;  }
     
 }

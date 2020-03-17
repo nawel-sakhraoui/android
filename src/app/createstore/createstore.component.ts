@@ -205,7 +205,7 @@ newstore (){
                        data0=> {
                            console.log(data0);
                            this.loading = false ; 
-                            this.router.navigate(["../../../stores/"+data["_id"]], { relativeTo: this.route });
+                            this.router.navigateByUrl("/home/"+this.myhome+"/stores/"+data["_id"]+'/store');
                       console.log("done") ;
                    
                            

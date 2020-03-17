@@ -46,11 +46,11 @@ export class Resolver implements Resolve<Observable<string>> {
                                 let storeid= message['storeid'].replace(/ /g, "%20");
                               if (message["fragment"]=="no") 
                                 //setTimeout(()=>{
-                                     this.router.navigate(["/stores/"+storeid+"/commands/"+message["commandid"]]);
+                                     this.router.navigate(["/home/"+this.user+"/stores/"+storeid+"/commands/"+message["commandid"]]);
                                 //  },1000); 
                                 else 
                                 //setTimeout(()=>{
-                                     this.router.navigate(["/stores/"+storeid+"/commands/"+message["commandid"]], {fragment: message["fragment"]});
+                                     this.router.navigate(["/home/"+this.user+"/stores/"+storeid+"/commands/"+message["commandid"]], {fragment: message["fragment"]});
                                 // },1000);
                                    
                            }else{
@@ -73,9 +73,5 @@ export class Resolver implements Resolve<Observable<string>> {
                 
             });
       
-                        
-  
           }     
-
-
 }

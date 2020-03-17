@@ -5,10 +5,10 @@
    	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
 </StackLayout>  
 
-<Label row="1" *ngIf='!loading &&  nostore' class='alert 'text="Aucun magasin n'est disponible sur ce lien.">
+<Label row="1" *ngIf='!loading &&  nostore && !reload  ' class='alert 'text="Aucun magasin n'est disponible sur ce lien.">
 </Label>
 
-<StackLayout row='2' [visibility]="!loading && suspend ?'visible':'collapse'" >
+<StackLayout row='2' [visibility]="!loading && suspend && !reload    ?'visible':'collapse'" >
 
 <Image  [src]="banner"  class="pic"  stretch="aspectFill"></Image>
 
@@ -49,6 +49,8 @@
          <Label (touch)="ontouch($event)" nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item' row='7' text='Historique des ventes'  [nsRouterLink]="['../historic']"  ></Label>
          <Label (touch)="ontouch($event)" nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
          <Label (touch)="ontouch($event)"  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
+   	
+   
     </ng-template>
         </GridLayout>       
     
@@ -88,11 +90,20 @@
     </GridLayout>
        <StackLayout row="2"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 
-		<Label row="3" *ngIf='!loading &&  !nostore && !open && !suspend'  class="alert" text="Ce magasin est fermé ! "  >
+ 
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='3'  *ngIf='!loading0 && !loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+
+		<Label row="3" *ngIf='!loading0 && !reload  &&  !nostore && !open && !suspend'  class="alert" text="Ce magasin est fermé ! "  >
 
 			</Label> 
-		    <Label row="5" *ngIf ='!loading2 && nothing' class="alert" text="Pas d'articles épuisés "></Label> 
-    		<Label row="4" *ngIf =' !loading2 && nosearch' class='alert' text="Recherche introuvable."></Label> 
+		    <Label row="5" *ngIf ='!loading2 && nothing && !reload   ' class="alert" text="Pas d'articles épuisés "></Label> 
+    		<Label row="4" *ngIf =' !loading2 && nosearch && !reload  ' class='alert' text="Recherche introuvable."></Label> 
     
 		
 
@@ -102,7 +113,7 @@
       		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
       		 <GridLayout (touch)="ontouch2($event)" >
       		   
-      			<Image (tap)="gotoArticle(a._id, a._source.storetitle )"  (touch)="displ(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
+      			<Image (doubleTap)="gotoArticle(a._id, a._source.storetitle )"  (touch)="displ(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
       			
  				<AbsoluteLayout  >
       			     <!-- ActivityIndicator color='#FFA500' rowSpan="3" [busy]="a.loadingcart==1"></ActivityIndicator>
@@ -143,7 +154,8 @@
      		 </ng-template>	
      
      		
-     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewStaggeredLayout>
+			     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
+			
       	
       	</RadListView>
       	<StackLayout row="7">

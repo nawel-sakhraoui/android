@@ -4,8 +4,12 @@
        
    
     <StackLayout  *ngIf="login" class="form">
+        
+	<StackLayout >
+			<Label *ngIf="noConnexion" textWrap=true  text="Connexion Indisponible. "  class="alert0"></Label>
+	</StackLayout>
         <!-- Image class="logo" src=""></Image> -->
-            <Label class="header" text="SIM SIM"></Label>
+            <Label class="header" text="CEEN.dz"></Label>
 
 			<StackLayout *ngIf="suspended">
 			  <TextView editable= "false"  class="warning" text ="Utilisateur suspendu contacter le support technique pour plus d'info ">
@@ -16,7 +20,9 @@
 			 <TextView editable='false' class="warning" text="Ce téléphone est déjà enregistré, veuiller vous connecter ">
 			 </TextView>
 			</StackLayout>
-			
+			<StackLayout *ngIf="response.length!=0">
+			 <TextView editable='false' class="warning" text="{{response}} "></TextView>
+			</StackLayout>
         <PreviousNextView>
       
        <GridLayout rows='auto'>
@@ -52,6 +58,8 @@
         </FormattedString>
     	</Label>
     	
+    	
+    	
     </StackLayout>
     
     <StackLayout *ngIf='!login ' class="form">
@@ -64,7 +72,9 @@
 			<StackLayout *ngIf="pleaseRegister">
 			 <TextView editable="false" class="warning" text=" Ce téléphone n'est pas enregister, enregistrer le "></TextView>
 			 </StackLayout>
-
+			<StackLayout *ngIf="response.length!=0">
+			 <TextView editable='false' class="warning" text="{{response}} "></TextView>
+			</StackLayout>
         <PreviousNextView>
            
            

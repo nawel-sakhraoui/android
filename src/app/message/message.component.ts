@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import {UserdetailsService, StoreService, MessagesService , FirebaseService} from '../_services/index';
+import {PicService, UserdetailsService, StoreService, MessagesService , FirebaseService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs';
 import * as  prettyMs from 'pretty-ms';
@@ -24,7 +24,8 @@ export class MessageComponent implements OnInit {
               private messagesService : MessagesService,
               private   router : Router, 
               private route : ActivatedRoute, 
-              private firebaseService: FirebaseService
+              private firebaseService: FirebaseService, 
+              private picService : PicService 
       ) { }
     loading = false ;
     loading1= false ;
@@ -59,7 +60,14 @@ export class MessageComponent implements OnInit {
                     console.log('model') ; 
                        console.log(data ) ; 
                        this.avatarTo = data['avatar'];
-                          this.usersdetailsService.getAvatar(this.model.fromMe)
+                        this.avatarFromMe ='' ; 
+                       this.usersdetailsService.getProfilePicName(this.model.fromMe)
+                       .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                                this.avatarFromMe = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ; 
+                       /*  this.usersdetailsService.getAvatar(this.model.fromMe)
                        .subscribe( 
                            data => {
                                  this.avatarFromMe = data['avatar'] ;  
@@ -68,7 +76,7 @@ export class MessageComponent implements OnInit {
                            ,error=> {
                                  console.log (error ) ;    
                            }
-                           );
+                           );*/
                        
                    this.usersdetailsService.getFullname (this.me)
               .subscribe(

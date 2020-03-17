@@ -48,7 +48,7 @@
 }
 .pic {
     
-    height: 160;
+    height: 190;;
     width:100%;
    background-color:#D0D0D0; 
    /* border-color: #4db8ff;
@@ -126,7 +126,7 @@ Button {
 }
 .articlepic{
 	width:auto; 
-	height:200 ; 
+	height:240 ; 
 	background-color:#eeeeee; 
 	border-color: #ffffff  ; 
     border-width:1;
@@ -211,7 +211,7 @@ GridLayout:pressed {
    background-color:#eeeeee;  
    /* color:#d9534f ;*/
    border-width:2; 
-   border-color:#eeeeee;   
+   border-color:#ffffff;   
 }    
 
 .alert {
@@ -227,3 +227,10 @@ Label:pressed3 {
    color:darkgray;
 }
 
+.reload{
+	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}

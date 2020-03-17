@@ -179,21 +179,23 @@ border-color: transparent;
 
 	width: 50;
     height: 50;
-	
+	background-color:#eeeeee; 
 }
 
 .pic {
 	width: 80;
     height: 80;
 	margin-left:0;
-
+  background-color:#eeeeee; 
 	
 }
 .pic2{
-	width: 50;
-    height: 50;
+	width: 35;
+    height: 35;
 	margin-left:0;
-		 border-radius:50; 
+	border-radius:35; 
+	background-color :#eeeeee;
+		 
 }
 .titlea {
 	  font-size: 12;
@@ -214,7 +216,7 @@ border-color: transparent;
 	size:12;
      text-align: center;
   	 vertical-align: center;
-	background-color: #00BFFF ; 
+	background-color: #FFA500 ;
     border-radius:5; 
 	color:#fff; 
 	
@@ -244,7 +246,7 @@ border-color: transparent;
 	margin-left : 5 ;
 	font-size:12; 
 	padding:5 ; 
-	background-color : #00BFFF ;
+	background-color :  #FFA500 ;
 	color :#fff;  
 	  border-radius:8;
 	   horizontal-alignment: right;
@@ -261,7 +263,7 @@ border-color: transparent;
 .msgtitle{
 	font-size :14 ; 
 	padding:8 ; 
-	background-color :  #00BFFF ; 
+	background-color :  #FFA500 ;
 	color :#FFF ;
 		  border-radius:4;
 	  
@@ -318,7 +320,7 @@ padding : 5 ;
 }
 .link{
 	padding :5 ; 
-	background-color : #00BFFF ; 
+	background-color : #FFA500 ;
 	color : #FFF; 
 	margin : 5, 5, 0, 0;  
 	border-radius: 5; 
@@ -361,7 +363,7 @@ padding : 5 ;
 
 .link0{
 	
-	color: #00BFFF;
+	color: #FFA500 ;
 }
 Label:pressed {
     /*padding:2; */

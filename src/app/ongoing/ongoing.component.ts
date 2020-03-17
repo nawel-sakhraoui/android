@@ -26,7 +26,7 @@ import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview";
   templateUrl: './ongoing.component.html',
   styleUrls: ['./ongoing.component.css']
 })
-export class OngoingComponent implements OnInit , AfterViewInit{
+export class OngoingComponent implements OnInit{
   
  msgsViews:ElementRef[] ; 
  loading :boolean  ; 
@@ -49,6 +49,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
   fullname ="" ; 
   alertM = {} ; 
   loadingM= {};
+  reload :boolean = false ; 
  
   constructor(private messagesService: MessagesService,
               private ongoingService :OngoingService, 
@@ -76,8 +77,14 @@ export class OngoingComponent implements OnInit , AfterViewInit{
   
   
   ngOnInit() {
-     
-     this.loading = true ; 
+     this.init() ; 
+ 
+      }
+    
+    
+   init(){
+       
+       this.loading = true ; 
    /*    this.router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
         let tree = this.router.parseUrl(this.router.url);
@@ -109,6 +116,7 @@ export class OngoingComponent implements OnInit , AfterViewInit{
           this.ongoingService.getCountArticlesByUserId (this.me)
         .subscribe(
             data =>{
+                this.reload = false ; 
                 console.log(data) ; 
                 this.totalcommand= data['count'] ;
                  this.maxpage = Math.ceil( this.totalcommand/this.size)  ; 
@@ -125,8 +133,11 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                 }}
             ,error =>{
                 console.log(error) ; 
+                this.loading=false ; 
+                this.ongoing= false ; 
+                  this.reload = true ; 
             }) ; 
-      }
+   }
     
     
     
@@ -135,28 +146,31 @@ export class OngoingComponent implements OnInit , AfterViewInit{
         this.page = page ;
          this.ongoingService.getArticlesByUserId (this.me, (this.page-1)*this.size, this.size )
          .subscribe (
-          
             data =>{
                  this.open = true ;
                  this.tempmodel = data ; 
-                // this.model= this.model.concat(data) ; 
-                    //  this.page = page ; 
-                     //window.scrollTo(0, 0);
-                this.loading = false ; 
-              for( let i  = 0 ; i < this.tempmodel.length ; i++ ) {
-                  this.tempmodel[i].message = ""; 
-                  if (! this.tempmodel[i]._source.choosenAddress ) 
-              
-                   this.tempmodel[i]._source.choosenAddress = {} ; 
-                 // console.log();
-                  this.isopen["message"+this.tempmodel[i]._id] = false ;
-                          this.loadingM[this.tempmodel[i]._id ]= false  ; 
-                   for( let j = 0 ; j < this.tempmodel[i]._source.messages.length; j++ ) {
-             //    console.log( JSON.parse(this.tempmodel[i]._source.messages[j]) );
-                 
-                       this.tempmodel[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.tempmodel[i]._source.messages[j].date, {compact: true}   );
+                console.log("mmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+                 console.log(data) ; 
+                        // this.model= this.model.concat(data) ; 
+                       //  this.page = page ; 
+                      //window.scrollTo(0, 0);
+                 this.loading = false ; 
+                 for( let i  = 0 ; i < this.tempmodel.length ; i++ ) {
+                    this.tempmodel[i].message = ""; 
+                    if (! this.tempmodel[i]._source.choosenAddress ) 
+                         this.tempmodel[i]._source.choosenAddress = {} ; 
+                    // console.log();
+                    this.isopen["message"+this.tempmodel[i]._id] = false ;
+                    this.loadingM[this.tempmodel[i]._id ]= false  ; 
+                     console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") ; 
+                     console.log(this.tempmodel[i]._source.messages) ; 
+                    for( let j = 0 ; j < this.tempmodel[i]._source.messages.length; j++ ) {
+                        
+                        
+                    // console.log( JSON.parse(this.tempmodel[i]._source.messages[j]) );
+                    this.tempmodel[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.tempmodel[i]._source.messages[j].date, {compact: true}   );
 
-                      // this.tempmodel[i]._source.messages[j] = JSON.parse(this.tempmodel[i]._source.messages[j]); 
+                    // this.tempmodel[i]._source.messages[j] = JSON.parse(this.tempmodel[i]._source.messages[j]); 
                       /*  console.log(this.tempmodel[i]._source.messages[j].from) ; 
                        if (! this.avatarlist[this.tempmodel[i]._source.messages[j].from ]) {
                            
@@ -171,6 +185,17 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                            }
                            );
                       }*/
+                   
+                     if (! this.avatarlist[this.tempmodel[i]._source.messages[j].from ]) {
+
+                     this.avatarlist[this.tempmodel[i]._source.messages[j].from ]  =""
+                     this.userdetailsService.getProfilePicName(this.tempmodel[i]._source.messages[j].from)
+                     .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                                this.avatarlist[this.tempmodel[i]._source.messages[j].from ] = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ; 
+                       }
                        
                         if (! this.fullnamelist[this.tempmodel[i]._source.messages[j].from ]) {
                            
@@ -253,6 +278,22 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                            );
                           
                          }*/
+                       
+                       if (!this.avatarlist[this.message.from]) {
+                         this.avatarlist[this.message.from] ="";   
+                        this.userdetailsService.getProfilePicName(this.message.from)
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.message.from] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                       }  
+                           
+
+                           
+                       
+                       
+                       
                        if (!this.fullnamelist[this.message.from]) {
                        this.userdetailsService.getFullname(this.message.from)
                        .subscribe( 
@@ -276,8 +317,9 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                   //console.log (connection ) ; 
                   
               for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
-                  console.log(this.tempmodel[i]._source.articles) ; 
-                 this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
+                 console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                  console.log(this.tempmodel[i]._source.articles[j]) ; 
+                 this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j]['picname']);
 
                    /*this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
@@ -289,16 +331,15 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                                     }) ; 
                   */
               }
-                     this.tempmodel[i].firebases = [] ; 
-           this.storeService.getAdmins(this.tempmodel[i]._source.storetitle)
-        .subscribe(
-            data0=>{
+              this.tempmodel[i].firebases = [] ; 
+              this.storeService.getAdmins(this.tempmodel[i]._source.storetitle)
+              .subscribe(
+                   data0=>{
               
                         let  admins =[ data0['userid'] ] ; 
-                       for (let x of data0['administrators']) 
+                        for (let x of data0['administrators']) 
                             admins.push (x.userid);  
-      
-                    for (let admin of admins){
+                        for (let admin of admins){
                          
                             this.userdetailsService.getFirebase(admin)
                             .subscribe(
@@ -314,8 +355,9 @@ export class OngoingComponent implements OnInit , AfterViewInit{
                         
                         }
                 
-                  }
-            ,error0=> {console.log(error0);}  )  
+                  },error0=> {
+                      console.log(error0);
+                  })  
               }
              
                 
@@ -386,17 +428,17 @@ export class OngoingComponent implements OnInit , AfterViewInit{
    
     
     gotoArticle(id, storeid ) {
-            this.router.navigate(["../../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+            this.router.navigate(["../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
 
         }
     
     gotoStore(id ) {
-                this.router.navigate(["../../../stores/"+id+'/store'], { relativeTo: this.route });
+                this.router.navigate(["../stores/"+id+'/store'], { relativeTo: this.route });
 
         }
 
         gotoPurchase(id){
-                            this.router.navigate(["../purchase/"+id], { relativeTo: this.route });
+                            this.router.navigate(["purchase/"+id], { relativeTo: this.route });
 
            }
         
@@ -469,10 +511,8 @@ export class OngoingComponent implements OnInit , AfterViewInit{
             this.ratingModalService.stop({"id":id, "index":index, "storetitle": storetitle});
               
     }
+    
     closeDone(id , index, storetitle ){
-         
-        
-   
         this.model[index]._source.closeloading = true ; 
             //this.ratingModalService.rating(this.model[index]);
           //  let modal = document.getElementById("modal" ) ;
@@ -753,7 +793,7 @@ getLocalDateTime(date) {
 
   //let timeOfDay = hours < 12 ? 'AM' : 'PM';
 
-  return date.getMonth() + '/' + date.getDate() + '/' +
+  return date.getDate() + '/' +  (parseInt(date.getMonth())+1) + '/' +
          date.getFullYear() + ', ' + hours + ':' + minutes 
 }
     
@@ -821,4 +861,12 @@ getLocalDateTime(date) {
    // this.view.nativeElement.dismissSoftInput();
    // this.view.nativeElement.android.clearFocus();
    }
+      reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }  
 }

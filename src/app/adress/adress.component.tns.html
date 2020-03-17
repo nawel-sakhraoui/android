@@ -7,21 +7,21 @@
 	<GridLayout rows='auto,*'  >
     <GridLayout row="0" columns='*,auto,auto,auto' class="btn">
     
-    <Label  textWrap='true'  (touch)='ontouch($event)'  fontSize='14' col="0" text='{{m._source.title}}' (tap)="onSelectionChange(m)"></Label>
-    <Label (touch)='ontouch($event)'  margin="0,10,0,0" fontSize="16" padding="3" col='1' text='&#xf078;' (tap)='showingAddress(m)' *ngIf='!editAddress[m._id]'class='fas'></Label>
-    <Label (touch)='ontouch($event)'  margin="0,10,0,0" fontSize="16" padding="3" col='2' text='&#xf044;' (tap)='editingAddress(m)' class='fas'></Label>
+    <Label  textWrap='true'  (touch)='ontouch($event)'  fontSize='12' col="0" text='{{m._source.title}}' (tap)="onSelectionChange(m)"></Label>
+    <Label (touch)='ontouch($event)'  margin="0,8,0,0" fontSize="16" padding="3" col='1' text='&#xf078;' (tap)='showingAddress(m)' *ngIf='!editAddress[m._id]'class='fas'></Label>
+    <Label (touch)='ontouch($event)'  margin="0,8,0,0" fontSize="16" padding="3" col='2' text='&#xf044;' (tap)='editingAddress(m)' class='fas'></Label>
     <Label  (touch)='ontouch($event)'   fontSize="18" padding="3" col='3' text='&#xf00d;' (tap)='removeAddress(m)' *ngIf='!editAddress[m._id]' class='fas'></Label>
     
     </GridLayout>
    
     	<GridLayout padding="5" [visibility]="showAddress[m._id] ? 'visible' : 'collapsed'"   row="1" backgroundColor="#fff"  rows="*,*,*,*,*,*,*" columns="*,*" >
 					
-						<Label textWrap='true' class='add' row="0" col="0" text="à M.Mme" ></Label> 
+						<Label textWrap='true'  class='add' row="0" col="0" text="à M.Mme" ></Label> 
   						<Label textWrap='true'  class='add'row="0" col="1" text="{{m._source.to}}"></Label>
   		     			<Label textWrap='true'  class='add'row="1" col="0" text="Téléphone" ></Label> 
   						<Label textWrap='true'  class='add' row="1" col="1" text="{{m._source.phone}}"></Label>
   		     			<Label textWrap='true'  class='add'row="2" col="0" text="Ville" ></Label> 
-  						<Label textWrap='true'  textWrap='true'  class='add'row="2" col="1" text="{{m._source.city}}"></Label>
+  						<Label textWrap='true'  class='add'row="2" col="1" text="{{m._source.city}}"></Label>
   		   			    <Label textWrap='true'  class='add'row="3" col="0" text="Commune" ></Label> 
   						<Label textWrap='true'  class='add'row="3" col="1" text="{{m._source.commune}}"></Label>
   		   			    <Label textWrap='true'  class='add'row="4" col="0" text="Codepostal" ></Label> 
@@ -82,7 +82,6 @@
         
         <DropDown  #dd
                   [items]="communes"
-                  
                   [(ngModel)]="selectedIndex1"
                   (selectedIndexChanged)="onchanges1($event,i)"
                   colSpan="2"

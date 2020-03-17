@@ -14,10 +14,10 @@
 <RadListView row="2"  [items]="notif.notification"   [visibility]="!loading? 'visible':'collapse'" >
     <ng-template let-n="item" >
 
-       	   <GridLayout rows="*,auto">
+       	   <GridLayout rows="auto,auto">
        	   
        	   
-       	   <GridLayout row="0" (touch)="ontouch2($event)"  nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"     [visibility]="n.value=='receive' ?'visible':'collapse'" rows="auto,auto">
+       	   <GridLayout row="0" (touch)="ontouch2($event)"  nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"     [visibility]="n.value=='receive' ?'visible':'collapse'" rows="auto,auto">
        	   <GridLayout row="0" columns='*,auto'   >
        		<Label   col="0" >
        		<FormattedString>
@@ -37,7 +37,7 @@
        		</textView>
        		</GridLayout>
        		
-       		<GridLayout row="0" [visibility]="n.value=='solvedlitige' ?'visible':'collapse'" nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"   padding="5"  rows="auto,auto">
+       		<GridLayout row="0" [visibility]="n.value=='solvedlitige' ?'visible':'collapse'" nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"   padding="5"  rows="auto,auto">
              <GridLayout row="0" columns='*,auto'   >
        		<Label    col="0" >
        		<FormattedString>
@@ -58,7 +58,7 @@
        		</GridLayout>
 
        		
-       	    <GridLayout row='0' (touch)="ontouch2($event)"  padding="5" rows="auto,auto" nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"   [visibility]="n.value=='command' ?'visible':'collapse'">
+       	    <GridLayout row='0' (touch)="ontouch2($event)"  padding="5" rows="auto,auto" nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"   [visibility]="n.value=='command' ?'visible':'collapse'">
        		<GridLayout row="0" columns='*,auto'  >
        		
        		<Label   col="0"   >
@@ -78,7 +78,7 @@
        		</GridLayout>
        		
        		
-       		<GridLayout row="0"  (touch)="ontouch2($event)" nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"   [visibility]="n.value=='litige' ?'visible':'collapse'"   padding="5"  rows='auto,auto' >
+       		<GridLayout row="0"  (touch)="ontouch2($event)" nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"   [visibility]="n.value=='litige' ?'visible':'collapse'"   padding="5"  rows='auto,auto' >
        		
        		<GridLayout row="0" columns='*,auto'   >
        		
@@ -100,7 +100,7 @@
        	
        	
        		
-       		<GridLayout row="0" (touch)='ontouch2($event)'   nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"    [visibility]="n.value=='closed' ?'visible':'collapse'"     padding="5" rows="auto,auto">
+       		<GridLayout row="0" (touch)='ontouch2($event)'   nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"    [visibility]="n.value=='closed' ?'visible':'collapse'"     padding="5" rows="auto,auto">
        		<GridLayout row="0" columns='*,auto'    >
        		
        		<Label   col="0"   >
@@ -119,7 +119,7 @@
        		 </textView>
        		</GridLayout>
     
-            <GridLayout row="0"  (touch)="ontouch2($event)"  [visibility]="n.value=='stop' ?'visible':'collapse'"  nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"  padding="5"  rows='auto,auto' >
+            <GridLayout row="0"  (touch)="ontouch2($event)"  [visibility]="n.value=='stop' ?'visible':'collapse'"  nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"  padding="5"  rows='auto,auto' >
        		<GridLayout row='0' columns='*,auto'   >
        		       		
        		<Label   col="0"   >
@@ -139,7 +139,7 @@
        		</GridLayout>
     
        	   
-       		<GridLayout row="0"  nsRouterLink="/stores/{{storetitle}}/commands/{{n.commandid}}"   fragment="message"    [visibility]="n.value=='message' ?'visible':'collapse'"  (touch)="ontouch2($event)"   padding="5"  rows='auto,auto'>
+       		<GridLayout row="0"  nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"   fragment="message"    [visibility]="n.value=='message' ?'visible':'collapse'"  (touch)="ontouch2($event)"   padding="5"  rows='auto,auto'>
        		   <GridLayout row="0" columns='*,auto'  >
        		<Label   col="0" >
        		<FormattedString>

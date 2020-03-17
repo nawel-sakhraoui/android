@@ -55,11 +55,13 @@
 Label:pressed {
   
    background-color:#eeeeee;
+   padding:2;
     
 }  
 GridLayout:pressed {
    background-color:#eeeeee;
      border-color: #eeeeee;
     border-width: 2;
+    padding:2;
    /* color:#d9534f ;*/
 }

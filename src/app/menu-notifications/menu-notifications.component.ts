@@ -31,7 +31,7 @@ export class MenuNotificationsComponent implements OnInit  {
      data3 :any ; 
      @Output() notifCount = new EventEmitter<string>();
  
-   
+    reload = false ; 
     constructor(
         private router: Router,
         private userdetailsService : UserdetailsService,  
@@ -48,6 +48,12 @@ export class MenuNotificationsComponent implements OnInit  {
     
       ngOnInit() {
           
+       this.init() ; 
+              
+      }
+              
+      init(){
+          
           this.loading = true ; 
           this.myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
           console.log(this.myhome) ; 
@@ -57,6 +63,7 @@ export class MenuNotificationsComponent implements OnInit  {
           this.userdetailsService.getNotifications (this.myhome)
           .subscribe(
               data =>{
+                  this.reload = false ; 
                   this.notifications = data ; 
                    console.log(data ) ; 
                    for (let i= 0 ; i<  this.notifications.notification.length ; i++ ) {   
@@ -71,6 +78,7 @@ export class MenuNotificationsComponent implements OnInit  {
               ,error =>{
                   console.log(error) ; 
                   this.loading = false ; 
+                  this.reload = true ; 
                   }) ;
           
           
@@ -113,10 +121,10 @@ export class MenuNotificationsComponent implements OnInit  {
                        if(n.commandid.localeCompare(this.data3['commandid'])==0  &&  this.data3['value'].localeCompare( n.value) ==0) {
                                     
                               let index = this.notifications.notification.indexOf(n);
-                             console.log(index) ;     
+                              console.log(index) ;     
                                      
                                this.notifications.notification.splice(index,1);
-                                this.notifications.notificationcount -=1 ; 
+                               this.notifications.notificationcount -=1 ; 
                               this.notifCount.emit(this.notifications.notificationcount);
 
 
@@ -137,11 +145,9 @@ export class MenuNotificationsComponent implements OnInit  {
               },error3 =>{
                   console.log(error3) ; 
                   
-          });
-              
-      }
-              
-               
+          });    
+          
+       }
           
           
      
@@ -231,7 +237,12 @@ export class MenuNotificationsComponent implements OnInit  {
 }
         
 
-       
+reloading(){
+        
+      console.log('reloading') ; 
+      this.init() ; 
+   }  
+
 
 }
     

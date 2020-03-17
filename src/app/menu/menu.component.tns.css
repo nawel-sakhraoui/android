@@ -226,3 +226,15 @@ Label:pressed {
     background-color:#eeeeee; 
        /* color:#00BFFF  ;*/ 
 }
+
+.alert {
+	
+	padding :5 ; 
+  background-color:#eeeeee; 
+  
+	 margin:2,22,-2,2;
+   color:#F27171;
+   font-size:14; 
+   text-alignment: center ;  
+ 
+}

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserdetailsService} from '../_services/index'; 
+import { UserService, UserdetailsService} from '../_services/index'; 
 
 @Component({
+     moduleId: module.id,
   selector: 'app-menu-bottom',
   templateUrl: './menu-bottom.component.html',
   styleUrls: ['./menu-bottom.component.css']
@@ -28,12 +29,28 @@ export class MenuBottomComponent implements OnInit {
  
     
     
-  constructor(private userdetailsService :UserdetailsService ) { }
+  constructor(private userdetailsService :UserdetailsService,
+              private userService : UserService ) { }
 
   ngOnInit() {
- 
-
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    
+           /*   
+                    this.userService.getStores(this.myhome)
+                    .subscribe( 
+                        data => {
+                                //  console.log(data._source.store ) ; 
+                               if (data['_source']['store'] ) {
+                                    this.stores = data['_source']['store'].filter(x => x ).reverse() ; 
+                                    console.log(this.stores) ; 
                   
+                 
+               
+                        }}, error => {
+                                console.log( error) ; 
+                
+                     }); */
+          
           this.userdetailsService.getNotifications (this.myhome)
           .subscribe(
               data =>{
@@ -66,7 +83,7 @@ export class MenuBottomComponent implements OnInit {
           
           
               
-            let connect =  this.userdetailsService.getNotif(this.myhome)
+             this.userdetailsService.getNotif(this.myhome)
             .subscribe(
                 data2=> {
                    this.notif= data2 ;
@@ -84,7 +101,7 @@ export class MenuBottomComponent implements OnInit {
                 }) ;
            
           
-            let connect2 =  this.userdetailsService.getMessagesNotif(this.myhome)
+            this.userdetailsService.getMessagesNotif(this.myhome)
             .subscribe(
                 data2=> {
                     this.mnotif = data2 ; 
@@ -101,7 +118,7 @@ export class MenuBottomComponent implements OnInit {
                 }) ;
           
           
-           let connect3 =  this.userdetailsService.getMessagesNotifDown(this.myhome)
+             this.userdetailsService.getMessagesNotifDown(this.myhome)
             .subscribe(
                 data2=> {
                     this.mnotif = data2 ; 
@@ -125,6 +142,7 @@ export class MenuBottomComponent implements OnInit {
                   this.data3 = datan  ;
                   this.data3 = JSON.parse(this.data3) ;  
                   //console.log(this.notifications.notification) ; 
+                  console.log("wwwwwwwwwwwwwwwwwwwwwwwww");
                    console.log(this.data3) ;
                    for (let n of  this.notifications.notification) { 
                         console.log(n.commandid) ; 
@@ -134,6 +152,8 @@ export class MenuBottomComponent implements OnInit {
                             // console.log(index) ;     
                                      
                             //   this.notifications.notification.splice(index,1);
+                           if ( this.notificationsCount >0 ) 
+
                                this.notificationsCount -=1 ; 
 
                         }else {
@@ -142,7 +162,9 @@ export class MenuBottomComponent implements OnInit {
                               //   console.log(index) ;     
 
                             //  this.notifications.notification.splice(index,1);
-                                 this.notificationsCount -=1 ; 
+                           if ( this.notificationsCount >0 ) 
+
+                                this.notificationsCount -=1 ; 
 
                             }
                             }
@@ -157,6 +179,15 @@ export class MenuBottomComponent implements OnInit {
               
       }
                   
+              
+               
+          
+          
+     
+    //    let searchbar:SearchBar = <SearchBar>this.page.getViewById("searchbarid");
+    //           searchbar.dismissSoftInput();
+ 
+                
              
                
             

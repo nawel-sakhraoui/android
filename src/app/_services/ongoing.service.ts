@@ -17,7 +17,8 @@ export class OngoingService {
     } 
    
     postArticle(article:any ) {
-        
+                console.log("article") ; 
+                console.log(article) ; 
                 return this.http.post(this.host+'/api/ongoing', article);
 
         };

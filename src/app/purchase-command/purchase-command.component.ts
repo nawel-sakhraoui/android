@@ -1,6 +1,6 @@
 
 import { Component, OnInit, AfterViewInit,ViewContainerRef , ViewChild, ElementRef} from '@angular/core';
-import { FirebaseService, OngoingService, UserdetailsService, MessagesService  , StoreService } from '../_services/index';
+import { PicService, FirebaseService, OngoingService, UserdetailsService, MessagesService  , StoreService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd  } from '@angular/router';
 import {Subscription} from 'rxjs';
 import * as prettyMs from 'pretty-ms';
@@ -24,7 +24,7 @@ import { Page } from "ui/page";
   templateUrl: './purchase-command.component.html',
   styleUrls: ['./purchase-command.component.css']
 })
-export class  PurchaseCommandComponent implements OnInit {
+export class  PurchaseCommandComponent implements OnInit , AfterViewInit{
      
     query :string=""; 
     alert :boolean;
@@ -63,9 +63,10 @@ export class  PurchaseCommandComponent implements OnInit {
               private userdetailsService : UserdetailsService,
               private messagesService : MessagesService, 
               private storeService : StoreService,
-               private vcRef: ViewContainerRef, 
+              private vcRef: ViewContainerRef, 
               private modal: ModalDialogService, 
-              private firebaseService: FirebaseService , 
+              private firebaseService: FirebaseService ,
+              private picService : PicService,  
               private Page :Page) {
   
   
@@ -74,7 +75,7 @@ export class  PurchaseCommandComponent implements OnInit {
       if (s instanceof NavigationEnd) {
         console.log(s) ; 
         let tree = this.router.parseUrl(this.router.url);
-          console.log(tree) ; 
+         console.log(tree) ; 
           this.fragment = tree.fragment ; 
           
        
@@ -101,8 +102,8 @@ export class  PurchaseCommandComponent implements OnInit {
           console.log(tree) ; 
           this.fragment = tree.fragment ; 
           }
-         });
-         
+      
+          });
          this.userdetailsService.getFullname(this.me)
          .subscribe(
                 data=>{
@@ -114,8 +115,8 @@ export class  PurchaseCommandComponent implements OnInit {
          .subscribe(
                     _source =>{
                         this.model = _source ; 
-                        //console.log("aaaaaaaaaaaaaaaaaaaaaaa") ; 
-                        //console.log(this.model) ; 
+                        console.log("aaaaaaaaaaaaaaaaaaaaaaa") ; 
+                        console.log(this.model) ; 
                         
                         this.steps = this.model.steps 
                         this.delivery = this.model.delivery; 
@@ -136,20 +137,7 @@ export class  PurchaseCommandComponent implements OnInit {
                       // if ( this.fragment=="message") {
                       // this.isopen = true ;
                
-                      if (this.fragment !="rating") {
-                        console.log(this.fragment) ; 
-                        //remove store notif 
-                        this.userdetailsService.removeNotifByCommandId(this.me, this.commandid , this.fragment )
-                        .subscribe(
-                            datas =>{
-                                console.log(datas) ; 
-                                }
-                            ,errors =>{
-                                console.log(errors);
-                                }
-                           );
-                       
-                        }
+         
                       //    }     
                    /*   this.userdetailsService.getAvatar(this.model.userid)
                        .subscribe( 
@@ -162,6 +150,18 @@ export class  PurchaseCommandComponent implements OnInit {
                            }
                            );
                         */
+                             
+                         this.avatarlist[this.model.userid ] ="";   
+                        this.userdetailsService.getProfilePicName(this.model.userid )
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.model.userid] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                      
+                        
+                        
+                        
                          this.userdetailsService.getFullname(this.model.userid)
                        .subscribe( 
                            datan => {
@@ -173,7 +173,7 @@ export class  PurchaseCommandComponent implements OnInit {
                            }
                            );
                   
-                    for( let j = 0 ;j < this.model.messages.length; j++ ) {
+                         for( let j = 0 ;j < this.model.messages.length; j++ ) {
                         //    console.log( JSON.parse(this.model.messages[j]) );
                                 
                      //  try{
@@ -191,6 +191,17 @@ export class  PurchaseCommandComponent implements OnInit {
                            }
                            );
                          }*/
+                        
+                        
+                          if (!this.avatarlist[this.model.messages[j].from ]) {
+                         this.avatarlist[this.model.messages[j].from ] ="";   
+                        this.userdetailsService.getProfilePicName(this.model.messages[j].from )
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.model.messages[j].from ] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                       }  
                            
                          if (! this.fullnamelist[this.model.messages[j].from ]) {
                            
@@ -278,6 +289,16 @@ export class  PurchaseCommandComponent implements OnInit {
                           
                          }*/
                        
+                          if (!this.avatarlist[this.message.from]) {
+                         this.avatarlist[this.message.from ] ="";   
+                        this.userdetailsService.getProfilePicName(this.message.from)
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.message.from ] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                       }  
+                       
                       if (!this.fullnamelist[this.message.from]) {
                        this.userdetailsService.getFullname(this.message.from)
                        .subscribe( 
@@ -299,20 +320,39 @@ export class  PurchaseCommandComponent implements OnInit {
                        console.log(errors) ; 
                     }
                    );  
+                  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")  ; 
+                  console.log(this.model.articles) ; 
+                  for( let j = 0 ;j < this.model.articles.length; j++ ) {
+                    this.model.articles[j].pic = this.picService.getPicLink( this.model.articles[j].picname);
+
                   
-                 // console.log(this.model.articles) ; 
-              for( let j = 0 ;j < this.model.articles.length; j++ ) {
-                   this.storeService.getPic(this.model.articles[j].articleid )
+                  /*this.storeService.getPic(this.model.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
                                        //   console.log( this.model[i][j] ) ; 
                                         this.model.articles[j].pic = data4['pic'];
                                     }, error4 =>{
                                           console.log(error4) ; 
-                                    }) ; 
+                                    }) ; */
                   
               }
-                             this.model.firebases = [] ; 
+                        
+                        
+                           if (this.fragment !="rating") {
+                        console.log(this.fragment) ; 
+                        //remove store notif 
+                        this.userdetailsService.removeNotifByCommandId(this.me, this.commandid , this.fragment )
+                        .subscribe(
+                            datas =>{
+                                console.log(datas) ; 
+                                }
+                            ,errors =>{
+                                console.log(errors);
+                                }
+                           );
+                       
+                        }
+           this.model.firebases = [] ; 
            this.storeService.getAdmins(this.model.storetitle)
         .subscribe(
             data0=>{
@@ -349,15 +389,16 @@ export class  PurchaseCommandComponent implements OnInit {
                         console.log(error7) ; 
                     }) ; 
 
-  });
+ 
+           });
 }
   
     ngAfterViewInit() {
-   
-         if (this.first ) {
-                     this.first = false ;   
+   console.log('ici') ;
+         //if (this.first ) {
+          //           this.first = false ;   
 
-       let interval = setInterval(()=> {
+     let interval = setInterval(()=> {
      
            if ( this.fragment=="message") {
                          this.isopen = true ;
@@ -372,7 +413,7 @@ export class  PurchaseCommandComponent implements OnInit {
                             setTimeout(()=>{
               
                                 listView.scrollToIndex( this.model.messages.length-1, false, ListViewItemSnapMode.Auto);
-                             },1000); 
+                             },500); 
                          }     
                
                
@@ -384,27 +425,28 @@ export class  PurchaseCommandComponent implements OnInit {
 
                         let topView :any= this.Page.getViewById('top');
                         let ratingView :any = this.Page.getViewById('rating') ; 
+                       
+
                         scrollView.scrollToVerticalOffset(ratingView.getLocationRelativeTo(topView)['y'], true);
                         
-                }   
                
             }
-             
+       }       
       }, 1000);
-        }
+       
    }
  
        
     
     
    gotoArticle(id , storeid) {
-                 this.router.navigate(["../../../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+                 this.router.navigate(["../../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
 
         }
 
     
     gotoStore(id ) {
-                this.router.navigate(["../../../../stores/"+id], { relativeTo: this.route });
+                this.router.navigate(["../../../stores/"+id+"/store"], { relativeTo: this.route });
 
         }
 
@@ -843,7 +885,7 @@ export class  PurchaseCommandComponent implements OnInit {
 
   //let timeOfDay = hours < 12 ? 'AM' : 'PM';
 
-  return date.getMonth() + '/' + date.getDate() + '/' +
+    return date.getDate() + '/' +  (parseInt(date.getMonth())+1) + '/' +
          date.getFullYear() + ', ' + hours + ':' + minutes 
 }
     

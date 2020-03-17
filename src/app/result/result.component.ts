@@ -8,6 +8,7 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { Label } from 'tns-core-modules/ui/label'; 
 import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+import * as util from "utils/utils";
 
 @Component({
   selector: 'app-result',
@@ -58,6 +59,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
     articlepage = 1 ;
     maxarticlepage ; 
     maxstorepage ;
+    reload = false ; 
     //size= 12;   
     context = ""; //"filter"; //"query"
     city : string ; 
@@ -71,11 +73,20 @@ export class ResultComponent implements OnInit,AfterViewInit {
   private picService : PicService, 
   private _changeDetectionRef: ChangeDetectorRef
 
-  ) {  this.filterAr="غير محدد"; }
+  ) {   }
   
  
   ngOnInit() {
+      this.init() ; 
+      
+      
+     }
+    
+    
+    init(){
         
+          this.loading = true ; 
+        this
        this.storeService.getCategories()
        .subscribe (
            d0 => {
@@ -86,25 +97,21 @@ export class ResultComponent implements OnInit,AfterViewInit {
                console.log(e0 ) ; 
               }
            ) 
-           this.storeService.getCategoriesAr()
-                    .subscribe (
-                         d1 => {
-                             console.log(d1) ; 
-                                 this.categoriesAr = d1['categories']; 
+         
                              
                         
          
     this.searchService.sendcity.subscribe((data00)=>{
              //    this.loading = true ; 
 
-         this.city = data00['city'] ; 
+        this.city = data00['city'] ; 
         console.log(this.city) ; 
      
              
      this.searchService.sendFilters.subscribe((data1)=> {
                    //    window.scroll(0,0);
 
-                 console.log(data1)  ; 
+          console.log(data1)  ; 
           if (Object.keys(data1).length === 0 ) 
             this.nothing1 = true ; 
              if ( 'filter' in data1 && "orderby" in data1 ) {
@@ -119,6 +126,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                  this.searchService.getCountStores(this.filter, this.city)
                   .subscribe(
                    d3  => {
+                       this.reload = false ; 
                        console.log(d3) ; 
                        this.countstore = d3['count'];
                        console.log(this.countstore) ; 
@@ -126,6 +134,8 @@ export class ResultComponent implements OnInit,AfterViewInit {
 
                        this.getStorePage(1);  
                        },e3 =>{
+                           this.reload = true ; 
+                           this.loading = false ; 
                        console.log(e3) ; 
                      });
                  
@@ -133,7 +143,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                          .subscribe(
                            d4  => {
                              //  console.log(d4) ; 
-                               this.countarticle = d4['count'];
+                              this.countarticle = d4['count'];
                               this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
 
                                this.getArticlePage(1); 
@@ -149,9 +159,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
             }
                });
              
-                              },e1=>{
-                                    console.log(e1) ; 
-                             } );
+                           
        this.searchService.sendSearchs.subscribe((data) =>{
              console.log(data) ; 
          
@@ -167,13 +175,15 @@ export class ResultComponent implements OnInit,AfterViewInit {
                  this.searchService.getCountStores2(this.filter, this.query, this.city)
                   .subscribe(
                    d3  => {
+                       this.reload = false ; 
                        console.log(d3) ; 
                        this.countstore = d3['count'];
                      this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
 
                        this.getStorePage(1 ) ; 
                   },e3 =>{
-                 
+                       this.reload = true ; 
+                      this.loading = false ; 
                        console.log(e3) ; 
                      });
                   
@@ -202,8 +212,11 @@ export class ResultComponent implements OnInit,AfterViewInit {
              }); 
              if (this.nothing1 && this.nothing2)  
                                this.router.navigate(["../"], { relativeTo: this.route });
- 
-     }
+
+        
+        
+        
+        }
     
      gotoArticle( id:string , storeid : string ) {
      
@@ -212,15 +225,15 @@ export class ResultComponent implements OnInit,AfterViewInit {
      }
     
     gotoStore(id){
-                 this.router.navigate(["./../stores/"+id], { relativeTo: this.route });
+        
+         this.router.navigate(["./../stores/"+id+"/store"], { relativeTo: this.route });
 
        }
     
     
     
     addToCart(article){
-         article.loadingcart = 1  ;
-
+          article.loadingcart = 1  ;
           this.cartService.getCountCart ()
           .subscribe( 
                data0 => {
@@ -248,11 +261,12 @@ export class ResultComponent implements OnInit,AfterViewInit {
         });
         }
     
-      updateArticle( id:string, storeid :string ) {
+  updateArticle( id:string, storeid :string ) {
       this.router.navigate(["../../stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
 
   } 
-        mouseEnter(a){
+  
+  mouseEnter(a){
    // console.log(a ); 
       this.disp[a] = true ; 
    }
@@ -381,7 +395,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                   this.search = true ;
             },error2 =>{
                console.log(error2) ; 
-                this.loading = false ; 
+               // this.loading = false ; 
             }) ;   
     
        }}else {
@@ -399,7 +413,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                 this.search  = true  ;  
             },error2 =>{
                console.log(error2) ; 
-                this.loading = false ; 
+                //this.loading = false ; 
             }) ;  
        
                 
@@ -428,7 +442,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                 
             },error =>{
                 console.log(error) ; 
-                this.loading = false ; 
+             //  this.loading = false ; 
             }) ;   
             }
          }else{
@@ -445,7 +459,7 @@ export class ResultComponent implements OnInit,AfterViewInit {
                 this.search = true ;  
             },error =>{
                 console.log(error) ; 
-                this.loading = false ; 
+             //   this.loading = false ; 
             }) ;  
         
          }
@@ -775,11 +789,9 @@ export class ResultComponent implements OnInit,AfterViewInit {
         }
   
    
-  //  if (this.sizemsg *this.page < this.countmsg ) 
-    
-    
+        //  if (this.sizemsg *this.page < this.countmsg ) 
 
-}
+       }
     
        ontouch(args: TouchGestureEventData) {
     const label = <Label>args.object
@@ -807,6 +819,17 @@ export class ResultComponent implements OnInit,AfterViewInit {
     }
    
 }
+        hide(){
+          util.ad.dismissSoftInput() ;  
+        }
+      reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }
     
 }
 

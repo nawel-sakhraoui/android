@@ -62,6 +62,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
     disp = [] ;
     alertimg = false ; 
     displaybanner = false ; 
+    reload = false ; 
   private notif:any= {} ;
   
   constructor(
@@ -78,7 +79,13 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
  
     
     ngOnInit() {
-        this.loading0 = true ; 
+       this.init() ; 
+        
+      
+  }
+    
+    init(){
+         this.loading0 = true ; 
         console.log('store') ; 
         this.sub = this.route.params.subscribe(params => {
         console.log (params) ;
@@ -88,7 +95,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
         .subscribe(     
         data0 =>{
         this.suspend = data0['suspend']; 
-           
+           this.reload = false ; 
        if (!this.suspend) {     
             
         this.storeService.getStoreStatus( this.storetitle  )
@@ -251,13 +258,13 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
             }}
        ,error0=>{
                 console.log(error0 ) ;    
-                
+                this.loading0 = false ; 
+           this.reload = true ; 
         }
        )}) ; 
               
         
-      
-  }
+        }
 
        addToCart(article){
          article.loadingcart = 1  ;
@@ -611,7 +618,14 @@ ontouch(args: TouchGestureEventData) {
 }
 
   
-    
+      reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }
     
     
 } 

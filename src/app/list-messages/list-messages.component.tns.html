@@ -1,7 +1,15 @@
 <ScrollLayout >		
-<GridLayout rows='auto,auto,auto'>   
+<GridLayout rows='auto,auto,auto' (tap)="hide()">   
 
-<Label class="alert" *ngIf='!listmessage && !loading' text="Pas de messages privés"> </Label>
+
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>
+
+<Label class="alert" *ngIf='!listmessage && !loading && !reload' text="Pas de messages privés"> </Label>
 
 <RadListView row="1"  class="list-group" [items]="model" 
 				loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
@@ -12,7 +20,7 @@
     	<GridLayout (touch)="ontouch2($event)" columns="auto,*" rows="*, auto"   (tap)= "goToMessage(me,  m.to, m.tofullname, m._source.last.avatar, m._source.unread)" > 
     
 
-    	<Image backgroundColor='rgba(0,0,0, 0.3)'  col="0" class="site-template-image thumb-with-background" stretch="aspectFill" [src]="m && m._source.last.avatar ? m._source.last.avatar : null"></Image>
+    	<Image loadMode="async"  backgroundColor='#eeeeee'  col="0" class="site-template-image" stretch="aspectFill" src="{{m._source.last.avatar}} "></Image>
     																
        	<GridLayout col="1" rows="*, auto, auto" columns=" *,auto">
 

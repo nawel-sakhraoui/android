@@ -14,8 +14,9 @@
         </ListView>
      
     </GridLayout>
-<ScrollView  tkMainContent >
- <GridLayout  rows="auto,auto,auto,235,auto,*,*">
+ 
+    <ScrollView  tkMainContent    >
+ <GridLayout rows="auto,auto,auto,335,auto,*,*">
            <!-- StackLayout android:cursorVisible="false" row="0" margin="5,0,0,0"  colSpan="2" 	backgroundColor="rgba(0,0,0, 0.4)">
             
               <!-- StarRating  isindicator="false" (valueChange)="setScore($event)"   android:scaleX=".3" android:scaleY=".3"
@@ -45,19 +46,29 @@
 
    <StackLayout row="1" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="3"></StackLayout>
  
+ 
+ 
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>
+ 
+ 
  <StackLayout row ="2">
   <ActivityIndicator  	 *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
  </StackLayout>
      		
- <StackLayout   [visibility]="!loading ?'visible':'collapse'" row='3'  >
+ <StackLayout   [visibility]="!reload && !loading ?'visible':'collapse'" row='3'  >
     <Carousel #myCarousel debug="true" [items]="stores" height="90%" width="100%" color="#fff"(pageChanged)="myChangePageEvent($event)" 
-                    indicatorAnimation="swap"  indicatorColor="#FFA500" indicatorOffset="0,-10" showIndicator="true" indicatorColorUnselected="#D0D0D0" >
+                    indicatorAnimation="swap"  indicatorColor="#FFA500" indicatorOffset="0,-10" showIndicator="true" indicatorColorUnselected="#eeeeee" >
    
         <CarouselItem *ngFor="let item of stores"  >
             <GridLayout (touch)='ontouch2($event)'  rows="auto,auto,auto" (tap)="gotoStore(item._id)" >
     		             
     		
-                <Image row="0" 	 backgroundColor='rgba(0,0,0, 0.4)'  src="{{item.banner}}" class="pic" stretch="aspectFill"></Image>
+                <Image loadMode="async"   row="0" 	 backgroundColor='rgba(0,0,0, 0.3)'  src="{{item.banner}}" class="pic" stretch="aspectFill"></Image>
                 <Label   color='#333333' row='1' [text]="item._id" fontSize="14" margin="5,0,0,5" ></Label>
                 <AbsoluteLayout row="2"  >
                     <StackLayout left="-70" top="-10"  android:cursorVisible="false"  >
@@ -84,14 +95,14 @@
   <ActivityIndicator  	 color='#FFA500' rowSpan="2" [busy]="loading3 && !loading2"></ActivityIndicator>
  </StackLayout> 
     
-      <RadListView   [visibility]="!loading3 ?'visible':'collapse'"  row="6" [items]="articlescats | keyvalue ">
+      <RadListView   [visibility]="!reload && !loading3 ?'visible':'collapse'"  row="6" [items]="articlescats | keyvalue ">
       <ng-template let-c="item"   >
       	<GridLayout rows='auto,*,auto'  >
       	<Label margin='5,12,0,12' row="0"[text]="c.key" class="sideLabel2" ></Label>
       	<GridLayout row="1" >
       	<RadListView   [items]="c.value"  >
       		 <ng-template   let-a="item" >
-      			<GridLayout  (touch)='ontouch2($event)'     (longPress)="gotoArticle(a._id, a._source.storetitle )">
+      			<GridLayout  (touch)='ontouch2($event)'     (doubleTap)="gotoArticle(a._id, a._source.storetitle )">
       			<Image loadMode="async"   [src]='mainpics[a._id]' class='articlepic' stretch="aspectFill" (touch)="display(a._id)"  ></Image>
       			
       			<AbsoluteLayout width="170"  >
@@ -149,7 +160,7 @@
   <ActivityIndicator  	  color='#FFA500' rowSpan="2" [busy]="loading2"></ActivityIndicator>
  </StackLayout> 
       
- <GridLayout [visibility]="!loading2 ?'visible':'collapse'"   row ="5" rows="auto, auto, *">
+ <GridLayout [visibility]="!reload && !loading2 ?'visible':'collapse'"   row ="5" rows="auto, auto, *">
        
       <Label margin='5,12,0,12' row="0" text="Nouveauté" class="sideLabel2" ></Label>
        
@@ -159,7 +170,7 @@
       
       		 <ng-template  tkListItemTemplate let-a="item" class="itemStackLayout" >
       		
-      		    <GridLayout  (touch)='ontouch2($event)'    (longPress)="gotoArticle(a._id, a._source.storetitle )"     >
+      		    <GridLayout  (touch)='ontouch2($event)'    (doubleTap)="gotoArticle(a._id, a._source.storetitle )"     >
       			<Image  loadMode="async"  [src]='mainpics[a._id]' class='articlepic' stretch="aspectFill" (touch)="display(a._id)"  ></Image>
       			
       			<AbsoluteLayout  width="170" >
@@ -193,7 +204,7 @@
 				
                 
                 </AbsoluteLayout>
-               <Label (touch)="ontouch3($event); gotoStore(a._source.storetitle);"= class='storetitle' row="2" text='Magasin: {{a._source.storetitle}}'></Label>
+               <Label  textWrap="true"   (touch)="ontouch3($event); gotoStore(a._source.storetitle);" class='storetitle' row="2" text='Magasin: {{a._source.storetitle}}'></Label>
       			<Label class='price' row="3"   text=' {{a._source.price}} D.A'  ></Label>
 			   </GridLayout>
       			</AbsoluteLayout>
@@ -209,9 +220,6 @@
       	
    </GridLayout>
    </GridLayout> 
-       
-       
-    </ScrollView>
-    
+           </ScrollView>
 
 </RadSideDrawer>

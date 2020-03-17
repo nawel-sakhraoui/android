@@ -43,7 +43,7 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
   alert :any ={};
   alert2 :any =[];
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
- storetitle ="";
+  storetitle ="";
     busy:Subscription; 
     totalcommand:number; 
     sales :boolean ; 
@@ -53,13 +53,14 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
     size = 4; 
     maxpage =1 ;
     
-open:boolean; 
-opened = true ; 
+    open:boolean; 
+    opened = true ; 
     menuhide = false ; 
     loading0 :boolean ; 
     historic :boolean ; 
     isopen = {} ; 
     loadingR :any = {};
+    reload = false ; 
     
     @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
     private drawer: RadSideDrawer;
@@ -83,47 +84,20 @@ opened = true ;
   
 
   ngOnInit() {
-      this.loading0 = true ; 
+
+      this.init() ;
+  }
+    
+    
+    init(){
+              this.loading0 = true ; 
        console.log('store') ; 
         let sub = this.route.params.subscribe(params => {
         console.log (params) ;
         this.storetitle = params['store'];
   
       
-       /*this.storeService.getStore( this.storetitle)
-                      .subscribe(
-                         data => {
-                          this.store = data ;
-                            this.permissionsService.addPermission('readStore', () => {
-                            return true;
-                           }) 
-                    
-                        
-                            console.log(this.store) ; 
-                            let admin = false ; 
-                             for (let a of this.store['admins']  ){
-                               if( a.userid == this.me ) {
-                                   admin = true ; 
-                                   break ; 
-                                   }
-                               
-                               }
-       
-                             if (this.me == this.store['userid'] ||  admin ) {
-                                 
-                                    this.permissionsService.addPermission('writeStore', () => {
-                                          return true;
-                                    })
-                    
-                                  
-                                    this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
-                                 
-                             } 
-                           console.log(this.store) ; 
-                        },error => {
-                              console.log(error);    
-                             
-                        });*/
+     
        this.storeService.getStoreStatus( this.storetitle  )
             .subscribe(
                 data0 =>{
@@ -138,6 +112,7 @@ opened = true ;
         .subscribe(
             
        data6=>{
+           this.reload = false ; 
                 console.log(data6['count']); 
                 this.totalcommand= data6['count'] ; 
            
@@ -155,6 +130,7 @@ opened = true ;
                       this.historic = true ;
 
        },error6 =>{
+           this.reload = true ; 
                     console.log(error6) ;
                      this.ongoing = false ;  
                     this.loading0 = false ; 
@@ -163,9 +139,8 @@ opened = true ;
        });
       
       
-      
-  }
-    
+        
+        }
     
  
  /*   rating(commandidx) {
@@ -188,7 +163,7 @@ opened = true ;
         }
 
     gotoUser(id ) {
-                this.router.navigate(["../../../home/"+this.me+"/profile/"+id], { relativeTo: this.route });
+                this.router.navigate(["../../../profile/"+id], { relativeTo: this.route });
 
         }
 
@@ -353,9 +328,9 @@ opened = true ;
                 this.loading=false ; 
                 this.loading0 = false ; 
                 this.historic = true ;
-                        this.page = page ; 
-                        this.sales = true ;
-                     //   window.scrollTo(0, 0);
+                this.page = page ; 
+                this.sales = true ;
+               //   window.scrollTo(0, 0);
 
               
               if(Object.keys( this.tempmodel).length != 0 ) 
@@ -372,7 +347,14 @@ opened = true ;
                                 this.loadingR[this.tempmodel[i]._id] = false ; 
                      
                   
-                      this.userdetailsService.getAvatar(this.tempmodel[i]._source.userid)
+                     this.avatarlist[this.tempmodel[i]._source.userid ] =""
+                     this.userdetailsService.getProfilePicName(this.tempmodel[i]._source.userid)
+                     .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.tempmodel[i]._source.userid] = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ;
+                      /*this.userdetailsService.getAvatar(this.tempmodel[i]._source.userid)
                        .subscribe( 
                            datan => {
                                  this.avatarlist[this.tempmodel[i]._source.userid ] = datan['avatar'] ;  
@@ -381,7 +363,7 @@ opened = true ;
                            ,errorn=> {
                                  console.log (errorn ) ;    
                            }
-                           );
+                           );*/
                        this.userdetailsService.getFullname(this.tempmodel[i]._source.userid)
                        .subscribe( 
                            datan => {
@@ -415,7 +397,16 @@ opened = true ;
                            }
                            );
                       }*/
+                       if (!this.avatarlist[this.tempmodel[i]._source.messages[j].from]) {
+                     this.avatarlist[this.tempmodel[i]._source.messages[j].from] =""
+                     this.userdetailsService.getProfilePicName(this.tempmodel[i]._source.messages[j].from)
+                     .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.tempmodel[i]._source.messages[j].from] = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ;
                        
+                       }
                          if (! this.fullnamelist[this.tempmodel[i]._source.messages[j].from ]) {
                            
                        this.userdetailsService.getFullname(this.tempmodel[i]._source.messages[j].from)
@@ -501,7 +492,7 @@ opened = true ;
                  // console.log (connection ) ; 
                   
               for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
-                                  this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
+                   this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
 
                   /* this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
@@ -619,8 +610,8 @@ getLocalDateTime(date) {
 
   //let timeOfDay = hours < 12 ? 'AM' : 'PM';
 
-  return date.getMonth() + '/' + date.getDate() + '/' +
-         date.getFullYear() + ', ' + hours + ':' + minutes 
+  return date.getDate() + '/' +  (parseInt(date.getMonth())+1) + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes  
 }
     
 ontouch(args: TouchGestureEventData) {
@@ -636,7 +627,7 @@ ontouch(args: TouchGestureEventData) {
    
 }
     
-        getQuery2(event){
+getQuery2(event){
             let searchBar = <SearchBar>event.object;
             let query = searchBar.text ; 
         
@@ -650,7 +641,7 @@ ontouch(args: TouchGestureEventData) {
   
       }
     
-     selectText(args) {
+selectText(args) {
           const label = <Label>args.object
     switch (args.action) {
         case 'up':
@@ -667,7 +658,7 @@ ontouch(args: TouchGestureEventData) {
          
          }
     
-      ontouch3(args: TouchGestureEventData) {
+ ontouch3(args: TouchGestureEventData) {
     const label = <Label>args.object
     switch (args.action) {
         case 'up':
@@ -698,4 +689,11 @@ ontouch(args: TouchGestureEventData) {
        }
      
     }
+    
+      
+    reloading(){   
+        console.log('reloading') ; 
+        this.init() ; 
+  
+     } 
 }

@@ -53,10 +53,19 @@
 Label:pressed {
     
    background-color:#eeeeee; 
+   padding:4;
    /* color:#d9534f ;*/
 }  
 GridLayout:pressed {
     
    background-color:#eeeeee; 
+   padding:2;
    /* color:#d9534f ;*/
+}
+.reload{
+	margin-top:80 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
 }

@@ -9,10 +9,12 @@
 	
 }
 .pic2{
-	width: 50;
-    height: 50;
+	width: 35;
+    height: 35;
 	margin-left:0;
-		 border-radius:50; 
+		 border-radius:35; 
+		 	background-color :#eeeeee;
+		 
 }
 .titlea {
 	  font-size: 12;
@@ -34,7 +36,7 @@
 	size:12;
      text-align: center;
 	 vertical-align: center;
-	background-color: #FFA500 ; 
+	background-color:   #00BFFF ; 
 	    border-radius:5; 
 	    color:#fff; 
 	
@@ -64,7 +66,7 @@
 	margin-left : 5 ;
 	font-size:12; 
 	padding:5 ; 
-	background-color : #00BFFF ;
+	background-color :  #00BFFF ;  
 	color :#fff;  
 	  border-radius:8;
 	   horizontal-alignment: right;
@@ -81,7 +83,7 @@
 .msgtitle{
 	font-size :14 ; 
 	padding:8 ; 
-	background-color :  #FFA500 ; 
+	background-color :  #00BFFF ; 
 	color :#FFF ;
 		  border-radius:4;
 	  
@@ -205,3 +207,12 @@ Label:pressed3 {
    width:40; 
    height:40;
 }
+
+.reload{
+	margin-top:30 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}
+  

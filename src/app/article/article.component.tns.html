@@ -20,23 +20,32 @@
    	</StackLayout>  
 
 
-<Label  row="3" class="alert" [visibility]="!loading0 && nostore  ? 'visible' : 'collapsed'" text="pas de magasin dans ce lien ! "></Label>
-<Label row="4" class="alert" [visibility]="(!loading0 && nostore && !open)  ? 'visible' : 'collapsed'" text="Le magasin est fermé ! "></Label>
+<Label  row="3" class="alert" [visibility]="!loading0 && nostore && !reload ? 'visible' : 'collapsed'" text="pas de magasin dans ce lien ! "></Label>
+<Label row="4" class="alert" [visibility]="(!loading0 && nostore && !open && !reload)  ? 'visible' : 'collapsed'" text="Le magasin est fermé ! "></Label>
+
+    <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='5'  *ngIf='!loading0  && reload' class="reload">
+        <FormattedString>
+
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    </Label> 
 
 
-<GridLayout rows="auto,*" row="5" [visibility]="!loading0 && !nostore ? 'visible' : 'collapsed'"  orientation="vertical">
+
+<GridLayout rows="auto,*" row="5" [visibility]=" !loading0 && !nostore && !reload ? 'visible' : 'collapsed'"  orientation="vertical">
     
-    <Label row="0"  [visibility]="model.suspend? 'visible' : 'collapsed'" class="alert" text="L'article est suspendu "></Label>
-<GridLayout  row="1"  [visibility]="!model.suspend? 'visible' : 'collapsed'" rows='auto,auto,auto,auto,260,*,auto,*'>
+    <Label row="0"  [visibility]="model.suspend && !reload? 'visible' : 'collapsed'" class="alert" text="L'article est suspendu "></Label>
+<GridLayout  row="1"  [visibility]="!model.suspend? 'visible' : 'collapsed'" rows='auto,auto,auto,auto,340,*,auto,*'>
 
 
   <!-- Image row ="0" [src]="banner" class="pic"  stretch="aspectFill"></Image-->
  
 
-  <Label margin='10,5,0,5' row="2" [visibility]="!loading0 && !model.available? 'visible' : 'collapsed'"  class="alert" text="Article épuisé"></Label>
+  <Label margin='10,5,0,5' row="2" [visibility]="!loading0 && !reload && !model.available? 'visible' : 'collapsed'"  class="alert" text="Article épuisé"></Label>
   
  
-  <GridLayout row="3" class="title " rows="*,*,*">
+  <GridLayout   *ngIf='!loading && !reload '    row="3" class="title " rows="*,*,*">
   
   
     <textView  row ="0" editable="false" class='titlea' >
@@ -53,16 +62,20 @@
            </StackLayout>
      <Label class='price' row ="2"   text=' {{model.price}} D.A'  ></Label>
    
+   
+     
+    	
+   
   </GridLayout>
    	
    
    	<StackLayout   *ngIf='!loading'   row="4">
-    <Carousel #carouseln debug="true" [items]="gallery" height="90%" width="100%" color="#000000" (pageChanged)="myChangePageEvent($event)" 
+    <Carousel #carouseln debug="false" [items]="gallery" height="90%" width="100%" color="#fff" (pageChanged)="myChangePageEvent($event)" 
                     indicatorAnimation="swap"  indicatorColor="#FFA500" indicatorOffset="0,-10" showIndicator="true" indicatorColorUnselected="#D0D0D0" >
         <CarouselItem *ngFor="let item of gallery" >
-            <GridLayout  >
+            <GridLayout rows="auto" >
           
-                <Image   loadMode="async"  src="{{item}}" class="pic" stretch="aspectFill"></Image>
+                <Image  row="0" loadMode="async"  src="{{item}}" class="pic" ></Image>
      
            
             </GridLayout>
@@ -216,12 +229,12 @@
  	    <TextView *ngIf='!boolrating '  margin="0,0,30,0" editable ="false" class="input  "  text="Pas d'évaluation disponible"></TextView>
  	    
  
- <RadListView [items]="model.rating" >
+ <RadListView [visibility]="boolrating? 'visible' : 'collapsed'" [items]="model.rating" >
  	<ng-template let-m="item">
  	<StackLayout margin='8,0,10,8'>
  	   	<GridLayout columns="auto,*"  >
 						
-						<Image  loadMode="async" col="0" [src]='avatarlist[m.userid]' class="pic2"  stretch="aspectFill"  ></Image>
+						<Image  loadMode="async" col="0" src='{{avatarlist[m.userid]}}' class="pic2"  stretch="aspectFill"  ></Image>
 					    <GridLayout col="1" rows='auto,auto'  >
 					   		 <GridLayout columns='auto,auto' row="0" orientation=horizontal>
 					   		 	<Label  col="0" text="{{fullnamelist[m.userid]}}" class="fname"></Label>

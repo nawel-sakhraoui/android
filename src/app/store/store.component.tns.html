@@ -1,4 +1,4 @@
-
+<ScrollView>
 <GridLayout  rows="auto,auto,auto,auto,*"> 
 
 <StackLayout  row='0' >
@@ -111,11 +111,21 @@
     </GridLayout>
        <StackLayout row="2"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 
-		    <Label row="3" *ngIf ='!boolNotif && !loading2 && nothing' class="alert" text="Pas d'articles disponible dans ce magasin"></Label> 
-    		<Label row="4" *ngIf ='!boolNotif && !loading2 && nosearch' class='alert' text="Recherche introuvable."></Label> 
+		    <Label row="3" *ngIf ='!reload && !boolNotif && !loading2 && nothing' class="alert" text="Pas d'articles disponible dans ce magasin"></Label> 
+    		<Label row="4" *ngIf ='!reload && !boolNotif && !loading2 && nosearch' class='alert' text="Recherche introuvable."></Label> 
     
 		
 		
+
+        
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='3'  *ngIf='!loading && !loading2 && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+      
 
         <RadListView   [visibility]=" !loading2 && !boolNotif? 'visible':'collapse'"    row="5" [items]="selectArticles"  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
          >
@@ -123,7 +133,7 @@
       		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
       		 <GridLayout (touch)='ontouch2($event)' >
       		   
-      			<Image loadMode="async"   (longPress)="gotoArticle(a._id, a._source.storetitle )"  (touch)="display(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
+      			<Image loadMode="async"   (Tap)="gotoArticle(a._id, a._source.storetitle )"  (touch)="display(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
       			
  				<AbsoluteLayout  >
       			     <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="a.loadingcart==1"></ActivityIndicator>
@@ -159,7 +169,7 @@
                
       			<Label class='price' row="2"   text=' {{a._source.price}} D.A'  ></Label>
 			   </GridLayout>
-			   
+			 
 			   
       			</AbsoluteLayout>
  
@@ -191,3 +201,4 @@
 
 </GridLayout>
 
+</ScrollView>

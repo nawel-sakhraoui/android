@@ -225,3 +225,10 @@ GridLayout:pressed {
    background-color:#eeeeee; 
    /* color:#d9534f ;*/
 }   
+.reload{
+	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}

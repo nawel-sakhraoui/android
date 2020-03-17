@@ -1,4 +1,4 @@
-import { Component, OnInit,  AfterViewInit } from '@angular/core';
+import { Component, OnInit,  AfterViewInit, NgZone } from '@angular/core';
 import * as localStorage from  "nativescript-localstorage" ; 
 import { RouterExtensions } from "nativescript-angular/router";  
 import {MessagesService, SearchService, UserService, StoreService,  AuthenticationService, UserdetailsService , AddressService} from '../_services/index'; 
@@ -17,6 +17,9 @@ import * as geolocation from "nativescript-geolocation";
 import { Accuracy } from "tns-core-modules/ui/enums";
 
 import * as firebase from 'nativescript-plugin-firebase';
+import { getConnectionType } from "tns-core-modules/connectivity"; 
+import * as Connectivity from "tns-core-modules/connectivity"; 
+
 
 
 @Component({
@@ -25,7 +28,7 @@ import * as firebase from 'nativescript-plugin-firebase';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
-export class MenuComponent implements OnInit, AfterViewInit {
+export class MenuComponent implements OnInit {
 
 
     me= JSON.parse(localStorage.getItem('currentUser')).userid ;               
@@ -45,6 +48,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
     mnotif :any ;  
     name :string ="";
     isopen = false ;  
+    noConnexion:boolean= false ; 
     data3 :any={} ; 
     cities = [];
     city ='Toutes les villes' ; 
@@ -53,7 +57,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
     langue :string ;
     langue2:string ;  
     hiddensearch :boolean=false; 
-   
+    connection:any ; 
     myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
   
@@ -76,7 +80,8 @@ export class MenuComponent implements OnInit, AfterViewInit {
         private addressService: AddressService, 
         private searchService : SearchService,
         private messagesService :MessagesService,
-        private page : Page) {
+        private page : Page, 
+        private ngZone : NgZone) {
        
         
      /*  router.events.subscribe( (event: Event) => {
@@ -161,10 +166,10 @@ export class MenuComponent implements OnInit, AfterViewInit {
     
       
  
-      ngAfterViewInit() {
+      /*ngAfterViewInit() {
            this.searchService.sendCity({
                                    "city": this.city}) 
-          }
+          }*/
      
     
       ngOnInit() {
@@ -186,13 +191,19 @@ export class MenuComponent implements OnInit, AfterViewInit {
                  .subscribe(
                      data=>{
                       console.log(data) ; 
-                      if (data.hasOwnProperty('location')) {
+                      if (Object.keys(data).length !== 0) {
                       this.city = data['location'];   
                       this.cityAr  = data['locationAr'] ; 
                       this.selectedIndex = this.cities.indexOf(this.city) ; 
                         
-                    }else 
-                         this.searchService.sendCity({
+                    }
+                         else {
+                       this.city ='Toutes les villes' ; 
+                       this.cityAr = 'كل الولايات' ; 
+                       this.selectedIndex = 0;      
+                          
+                          }
+                    this.searchService.sendCity({
                                    "city": this.city}) ;
                     
                  },error=>{
@@ -204,176 +215,48 @@ export class MenuComponent implements OnInit, AfterViewInit {
                  
                }, error => {
                     console.log(error);   
+                
+                    
+                    
+                      
         
                 });
           
-        
-             
-          
-              this.userdetailsService.getFullname (this.myhome)
-              .subscribe(
-                data=>{
-                    //   console.log(data) ; 
-                    this.name = data['fullname']; 
-                    this.loading= false ; 
-
-        
-          
-                    this.userService.getStores(this.myhome)
-                    .subscribe( 
-                        data => {
-                                //  console.log(data._source.store ) ; 
-                               if (data['_source']['store'] ) {
-                                    this.stores = data['_source']['store'].filter(x => x ).reverse() ; 
-                                    console.log(this.stores) ; 
+      /*this.connection = getConnectionType() ; 
+      console.log("lllllllllllllllllllllllllllllllllllllllllllllllllllllllllll") ; 
+      console.log(this.connection) ; 
+     if ( this.connection == connectivityModule.connectionType.none )  
+               this.noConnexion = true ; 
+      else 
                   
-                 
-               
-                        }}, error => {
-                                console.log( error) ; 
-                
-                     }); 
-          
-          this.userdetailsService.getNotifications (this.myhome)
-          .subscribe(
-              data =>{
-                  this.notificationsCount  = data['notificationcount'] ; 
-                  this.notifications =data ;
-              
-              },error =>{
-                  console.log(error) ; 
-                  }) ;
+                 this.noConnexion =false; 
+        */
           
           
-             
-            this.userdetailsService.getMessagesNotifications (this.myhome)
-            .subscribe(
-              data =>{
-                 if (data['messagesnotificationcount'] <0 ) 
-                       this.messagesnotif= 0 
-                  else 
-                        this.messagesnotif = data['messagesnotificationcount'] ; 
-                   /*for (let i= 0 ; i<  this.messagesnotif.notification.length ; i++ ) 
-                   {    this.temptime [i] =  prettyMs( new Date().getTime() - this.notifications.notification[i].time);
-              
-                    }*/
-                   
-              } ,error =>{
+          
+           this.connection = getConnectionType();
+            if ( this.connection == Connectivity.connectionType.none )  
+               this.noConnexion = true ; 
+            else 
                   
-                   
-                  console.log(error) ; 
-              }) ;
+                 this.noConnexion =false; 
           
-          
-              
-            let connect =  this.userdetailsService.getNotif(this.myhome)
-            .subscribe(
-                data2=> {
-                   this.notif= data2 ;
-                    this.notif = JSON.parse (this.notif ) ;  
-                   // console.log(data2);
-                   
-                   //  this.notif['time'] =prettyMs( new Date().getTime() -this.notif['time'],  {compact: true} ) ;  
-                       
-                    //this.notifications.notification.unshift(this.notif ) ; 
-                   this.notificationsCount +=1;
-                
-                }
-                ,error2 =>{
-                 console.log(error2 )     ;
-                }) ;
-           
-          
-            let connect2 =  this.userdetailsService.getMessagesNotif(this.myhome)
-            .subscribe(
-                data2=> {
-                    this.mnotif = data2 ; 
-                    this.mnotif = JSON.parse(this.mnotif) ;
-                   // console.log(data2 ) ; 
-                 //data2.time = prettyMs( new Date().getTime() - data2.time);
+        Connectivity.startMonitoring(connectionType => {
+            this.ngZone.run(() => {
+                this.connection =  getConnectionType();
+                 if ( this.connection == Connectivity.connectionType.none )  
+               this.noConnexion = true ; 
+            else 
                   
-              
-                     this.messagesnotif+=  this.mnotif['unread']; 
-               
-                }
-                ,error2 =>{
-                 console.log(error2)     ;
-                }) ;
+                 this.noConnexion =false;  
+            });
+        });
           
-          
-           let connect3 =  this.userdetailsService.getMessagesNotifDown(this.myhome)
-            .subscribe(
-                data2=> {
-                    this.mnotif = data2 ; 
-                    this.mnotif = JSON.parse(this.mnotif) ;
-                    //console.log(data2 ) ; 
-                  // // data2.time = prettyMs( new Date().getTime() - data2.time);
-                  
-                    if (this.messagesnotif >0 ) 
-                     this.messagesnotif -=  this.mnotif['read']; 
-               
-                }
-                ,error2 =>{
-                 console.log(error2)     ;
-                }) ;
-             
-          
-                   
-          this.userdetailsService.getRemoveNotif(this.myhome). 
-          subscribe (
-              datan=> {
-                  this.data3 = datan  ;
-                  this.data3 = JSON.parse(this.data3) ;  
-                  //console.log(this.notifications.notification) ; 
-                   console.log(this.data3) ;
-                   for (let n of  this.notifications.notification) { 
-                        console.log(n.commandid) ; 
-                       if( n.commandid== this.data3['commandid'] &&  this.data3['value']==n.value) {
-                                    
-                             // let index = this.notifications.notification.indexOf(n);
-                            // console.log(index) ;     
-                                     
-                            //   this.notifications.notification.splice(index,1);
-                               this.notificationsCount -=1 ; 
-
-                        }else {
-                            if(n.commandid == this.data3['commandid'] )  {
-                             //   let index = this.notifications.notification.indexOf(n);
-                              //   console.log(index) ;     
-
-                            //  this.notifications.notification.splice(index,1);
-                                 this.notificationsCount -=1 ; 
-
-                            }
-                            }
-                            
-                      }
-              },error3 =>{
-                  console.log(error3) ; 
-                  
-          });
-                    
-          
-              
-      }
-                  
-               ,error=>{
-                 
-                        
-                 //   this.logout () ; 
-               
-               });
-               
-          
-          
-     
-    //    let searchbar:SearchBar = <SearchBar>this.page.getViewById("searchbarid");
-    //           searchbar.dismissSoftInput();
- 
+      
           
     }
    
-    logout() {
+  /*  logout() {
    
         this.permissionsService.flushPermissions();
         this.rolesService.flushRoles();
@@ -385,7 +268,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
 
     }
     
-      
+      */
     
     goToLink(commandid , notif ){
         console.log(notif) ; 
@@ -530,6 +413,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
       searchBar.text = "" ; 
      searchBar.dismissSoftInput();
         if (this.query !="" ){
+             searchBar.dismissSoftInput(); 
                                 this.searchService.sendSearch({
                                    "query": this.query});
                                

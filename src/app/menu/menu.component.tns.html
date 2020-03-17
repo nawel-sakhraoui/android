@@ -1,7 +1,13 @@
 
- 
 <ActionBar margin='-5,0,0,0' title="SIMSIM" >
-    <GridLayout columns="90,*" >
+
+    <GridLayout  rows="auto,*" >
+
+<StackLayout row="0">
+<Label *ngIf="noConnexion" textWrap=true  text="Connexion Indisponible. "  class="alert"></Label>
+</StackLayout>
+
+    <GridLayout  row="1" columns="90,*" >
     <GridLayout rows='auto,auto' col='0'>
          <!-- Ripple row="0"   rippleColor="#000" backgroundColor="#fff"  borderRadius="15"  >	</Ripple-->
         <Label (touch)="ontouch($event)" row="0" margin="10,0,-12,0"  text="SIMSIM"  [nsRouterLink]="['/home',myhome]" 
@@ -32,8 +38,8 @@
        
        <!-- Button col="2" class="fas search " text='&#xf002;'></Button-->
     </GridLayout>
+     </GridLayout>
 </ActionBar>
-
 <!-- GridLayout rows='*,43'>
 
 <router-outlet row="0">

@@ -16,10 +16,10 @@
 }
 .header {
   horizontal-align: center;
-  font-size: 25;
+  font-size: 28;
   font-weight: 600;
   margin-bottom: 70;
-  text-align: center;
+  text-alignment: center;
   color:  #d9534f;
 }
 
@@ -66,4 +66,15 @@
 }
 :disabled {
   opacity: 0.5;
+}
+.alert0 {
+	
+	padding :5 ; 
+  background-color:#eeeeee; 
+  
+	 margin:2,2,2,2;
+   color:#F27171;
+   font-size:12; 
+   text-alignment: center ;  
+ 
 }

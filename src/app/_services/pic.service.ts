@@ -27,13 +27,16 @@ export class PicService {
 
     
    putBanner(bannername: string, banner: string, extension:string) {
-        bannername = bannername.replace(/ /g, "%20");
+        //bannername = bannername.replace(/ /g, "%20");
+       console.log(bannername) ; 
         return new Observable((observer: any) => {
             let session = BackgroundHttp.session("upload");
             let request = {
                 url: this.host+'/upload/banner/'+bannername,
                 method: "POST", 
                 description:"",
+                androidAutoClearNotification:true, 
+                androidAutoDeleteAfterUpload : true ,
      
             };
            let params = [{"name":'uploadbanner', "filename": banner, "mimeType":"image/"+extension }];
@@ -54,8 +57,8 @@ export class PicService {
    }
     
     deleteBanner (bannername) {
-                bannername = bannername.replace(/ /g, "%20");
-
+             //   bannername = bannername.replace(/ /g, "%20");
+                console.log(bannername) ; 
        return  this.http.put(this.host+'/delete/banner/'+bannername, {});
             
     }
@@ -69,7 +72,7 @@ export class PicService {
     }*/
     
     getBannerLink(storetitle ) {
-           storetitle= storetitle.replace(/ /g, "%20");
+        //   storetitle= storetitle.replace(/ /g, "%20");
            return this.host+'/download/banner/'+storetitle ; 
         }
     
@@ -82,6 +85,8 @@ export class PicService {
                 url: this.host+'/upload/pic/'+picname,
                 method: "POST", 
                 description:"",
+                androidAutoClearNotification:true,
+                androidAutoDeleteAfterUpload: true
      
             };
            let params = [{"name":'uploadpic', "filename": pic, "mimeType":"image/"+extension }];
@@ -108,7 +113,8 @@ export class PicService {
    }
     
    deletePic (articlename ) {
-       
+       console.log("wwwwwwwwwwwwwww") ; 
+        console.log(articlename) ; 
           return  this.http.put(this.host+'/delete/pic/'+articlename, {});
             
     }
@@ -122,7 +128,8 @@ export class PicService {
                 url: this.host+'/upload/gallery/'+names,
                 method: "POST", 
                 description:"",
-                
+                androidAutoClearNotification:true, 
+                androidAutoDeleteAfterUpload: true,
                 
             };
             let params = [] ; 
@@ -166,6 +173,8 @@ export class PicService {
                 url: this.host+'/upload/profile/'+name,
                 method: "POST", 
                 description:"",
+                androidAutoClearNotification :true, 
+                androidAutoDeleteAfterUpload: true,
      
             };
            let params = [{"name":'uploadprofile', "filename": profile, "mimeType":"image/"+extension }];

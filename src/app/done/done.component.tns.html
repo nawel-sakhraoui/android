@@ -23,7 +23,12 @@
 
 <StackLayout row="3" margin="0,0,5,0"  colSpan="2" backgroundColor="#D3D3D3" height="3"></StackLayout>
 
-
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='4'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>
 
  
 <RadListView  row="4" [items]="model" loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
@@ -79,10 +84,10 @@
 							    	
 							    	
 							    	<GridLayout row="1" rows="*,*,*,*,*,*" columns='*,auto'>
-							    	<Label *ngIf='a.hasOwnProperty("color")'  row='0' col="0"  text="Couleur: "></Label>
-							    	<Label *ngIf='a.has1OwnProperty("color")'  row="0" col="1" class="color" [backgroundColor]='a.color'></Label>
-							        <Label *ngIf='a.hasOwnProperty("size")' row="1" col="0" text='Taille: '></Label>
-							        <Label *ngIf='a.hasOwnProperty("size")'  row='1' col="1" class='size' text='{{a.size}}' > </Label>
+							    	<Label *ngIf='a.hasOwnProperty("color") && a.color!="" '  row='0' col="0"  text="Couleur: "></Label>
+							    	<Label *ngIf='a.hasOwnProperty("color") && a.color!="" '  row="0" col="1" class="color" [backgroundColor]='a.color'></Label>
+							        <Label *ngIf='a.hasOwnProperty("size") && a.size!="" ' row="1" col="0" text='Taille: '></Label>
+							        <Label *ngIf='a.hasOwnProperty("size") && a.size!="" '  row='1' col="1" class='size' text='{{a.size}}' > </Label>
 							        
 							        <Label row='2' col="0" text="Quantité: "></Label>
 							        <Label row='2' col="1" color="#000" text='{{a.quantity}} UNIT'></Label>
@@ -255,29 +260,29 @@
       		    	 </StackLayout>
       		    	
       		    	
-      		    		<RadListView row="1" id={{m._id}} margin='0,5,0,5' [items]="m._source.messages "  height="200"   [visibility]="isopen['message'+m._id] ? 'visible' : 'collapsed'" >
+      		    		<RadListView row="1" id={{m._id}} margin="0,10,0,10" [items]="m._source.messages "  height="200"   [visibility]="isopen['message'+m._id] ? 'visible' : 'collapsed'" >
 						<ng-template let-message="item"  >
 						<StackLayout>
 						
 						<GridLayout columns="auto,*" [visibility]="!message.fromMe? 'visible' : 'collapsed'" >
 						
-						<!-- Image col="0" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
-					    -->
+						<Image loadMode="async" col="0" src='{{avatarlist[message.from]}}' class="pic2"  stretch="aspectFill"  ></Image>
+					    
 					    <GridLayout col="1" rows='auto,auto'  >
 					   		 <StackLayout  row="0" orientation=horizontal>
 					   		 	<Label textWrap='true' width="75%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
-					   		 	<Label class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
+					   		 	<Label textWrap='true'  class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
 					   		  </StackLayout>
 					  		 <textView margin="0,25,5,25"row="1" text='{{message.text}}' editable="false" class="msgs1"></textView>
 						 </GridLayout> 
 						</GridLayout>
 						
 						<GridLayout  columns="*,auto" [visibility]="message.fromMe? 'visible' : 'collapsed'" >
-								<!-- Image col="1" [src]='avatarlist[message.from]' class="pic2"  stretch="aspectFill"  ></Image>
-					       		 -->
+						   <Image col="1" src='{{avatarlist[message.from]}}' loadMode="async"  class="pic2"  stretch="aspectFill"  ></Image>
+					       		 
 					       <GridLayout col="0" rows="auto,auto" >
 					   		 <StackLayout row="0" orientation=horizontal horizontalAlignment="right"  >
-					   		     <Label width="60%" fontSize="10" class="fas" text="&#xf017; {{message.date}}"></Label>
+					   		     <Label textWrap='true' width="60%" fontSize="10" class="fas" text="&#xf017; {{message.date}}"></Label>
 					   		  
 					   		 	 <Label textWrap='true' width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
 					   		  </StackLayout>

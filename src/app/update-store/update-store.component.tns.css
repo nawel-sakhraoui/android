@@ -71,6 +71,14 @@ Label:pressed3 {
    color:#D0D0D0;
    
 }
+.reload{
+	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+} 
+
 .alert {
 	padding :5 ; 
 	background-color: #FFA1A1; 

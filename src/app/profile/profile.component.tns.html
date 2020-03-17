@@ -1,8 +1,15 @@
 <ScrollView (tap)="hide()" >
     <GridLayout rows="*,auto">
-        
+    
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
       
-        <GridLayout   [visibility]="!loading ?'visible':'collapse'"  row="0"  rows="auto,auto, auto, auto, auto, auto,auto,auto" columns="*">
+        <GridLayout   [visibility]="!loading  && !reload ?'visible':'collapse'"  row="0"  rows="auto,auto, auto, auto, auto, auto,auto,auto" columns="*">
            
             <Image backgroundColor='rgba(0,0,0, 0.4)' (touch) = 'displayavatar = true'  row="0" col="0" src="{{avatar}}" stretch="aspectFill"
                 class="profilePic"></Image>
@@ -18,7 +25,7 @@
    <Label  [isEnabled]="!loadingavatar" (touch)="ontouch3($event)" *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="avatarsave()" ></Label>
     <ActivityIndicator *ngIf="loadingavatar" color='#FFA500' rowSpan="2" [busy]="loadingavatar"></ActivityIndicator>
    
-   <Label  (touch)="ontouch3($event)"  *ngIf="!isValid && !loadingavatar" class="fas up " text="&#xf00d;" (tap)="avatarremove()"></Label>
+   <Label  (touch)="ontouch3($event)"   (touch)="ontouch3($event)"   *ngIf="!isValid && !loadingavatar" class="fas up " text="&#xf00d;" (tap)="avatarremove()"></Label>
    </StackLayout>   
                 </GridLayout>
 				<textView editable ="false" row="1" text="Le format de l'image est invalide" *ngIf='alertimg' class="alert"></textView>
@@ -104,7 +111,7 @@
 					<RadListView  row="1" [items]="stores">
    					 <ng-template let-s="item">
           				     
-    			    			    <Label (touch)="ontouch($event)" nsRouterLink="./../../stores/{{s._id}}" textWrap='true' fontSize="18"  color='#444444' [text]="s._id"  ></Label>
+    			    			    <Label (touch)="ontouch($event)" nsRouterLink="../../stores/{{s._id}}/store" textWrap='true' fontSize="18"  color='#444444' [text]="s._id"  ></Label>
    							
    					 </ng-template>
 					</RadListView>

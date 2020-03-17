@@ -43,7 +43,7 @@ export class DoneComponent implements OnInit {
   maxpage = 1 ; 
   page = 1; 
   open = false;
-    
+   reload = false ; 
   constructor(private messagesService: MessagesService,
               private ongoingService :OngoingService, 
               private storeService: StoreService, 
@@ -59,12 +59,18 @@ export class DoneComponent implements OnInit {
   
 
   ngOnInit() {
-      this.me= JSON.parse(localStorage.getItem('currentUser'))['userid'] ; 
- 
-      this.loading = true ; 
+  
+      this.init() ; 
+              
+      }
+    
+ init() {
+         this.me= JSON.parse(localStorage.getItem('currentUser'))['userid'] ; 
+          this.loading = true ; 
       this.ongoingService.getCountArticlesByUserIdClose(this.me)
         .subscribe(
             data =>{
+                this.reload = false ; 
                 console.log(data) ; 
                 this.totalcommand= data['count'] ;
                 this.maxpage = Math.ceil( this.totalcommand/this.size)  ; 
@@ -76,17 +82,16 @@ export class DoneComponent implements OnInit {
                     
                       this.ongoing = true  ; 
                       this.getPage(1)   ;           
-                 this.loading = false ;  
+                      this.loading = false ;  
                 }}
             ,error =>{
+                this.reload = true ; 
                 console.log(error) ; 
                 this.loading = false ; 
             }) ;
-      
-              
-      }
-    
-    
+       
+     
+     }
     getPage (page ) {
         this.loading = true ; 
         this.page = page ;
@@ -96,63 +101,19 @@ export class DoneComponent implements OnInit {
             data =>{
                  this.open = true ;
                  this.tempmodel = data ; 
-                // this.model= this.model.concat(data) ; 
+                 // this.model= this.model.concat(data) ; 
                     //  this.page = page ; 
                      //window.scrollTo(0, 0);
-                this.loading = false ; 
-              for( let i  = 0 ; i < this.tempmodel.length ; i++ ) {
+                 this.loading = false ; 
+                 for( let i  = 0 ; i < this.tempmodel.length ; i++ ) {
                  
-                  this.tempmodel[i].articlesrating = {} ; 
-                  if (! this.tempmodel[i]._source.choosenAddress ) 
+                   this.tempmodel[i].articlesrating = {} ; 
+                   if (! this.tempmodel[i]._source.choosenAddress ) 
                    this.tempmodel[i]._source.choosenAddress = {} ; 
-                 // console.log();
-                  this.isopen["message"+this.tempmodel[i]._id] = false ;
+                   // console.log();
+                   this.isopen["message"+this.tempmodel[i]._id] = false ;
                 
-                   for( let j = 0 ;j < this.tempmodel[i]._source.messages.length; j++ ) {
-             //    console.log( JSON.parse(this.tempmodel[i]._source.messages[j]) );
-                 
-                       this.tempmodel[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.tempmodel[i]._source.messages[j].date, {compact: true}   );
-
-                      // this.tempmodel[i]._source.messages[j] = JSON.parse(this.tempmodel[i]._source.messages[j]); 
-                   /*     console.log(this.tempmodel[i]._source.messages[j].from) ; 
-                       if (! this.avatarlist[this.tempmodel[i]._source.messages[j].from ]) {
-                           
-                       this.userdetailsService.getAvatar(this.tempmodel[i]._source.messages[j].from)
-                       .subscribe( 
-                           data => {
-                                 this.avatarlist[this.tempmodel[i]._source.messages[j].from ] = data['avatar'] ;  
-                        //       console.log(data) ;    
-                           }
-                           ,error=> {
-                                 console.log (error ) ;    
-                           }
-                           );
-                      }*/
-                       
-                      /*  if (! this.fullnamelist[this.tempmodel[i]._source.messages[j].from ]) {
-                           
-                       this.userdetailsService.getFullname(this.tempmodel[i]._source.messages[j].from)
-                       .subscribe( 
-                           data => {
-                                 this.fullnamelist[this.tempmodel[i]._source.messages[j].from ] = data['fullname'] ;  
-                        //       console.log(data) ;    
-                           }
-                           ,error=> {
-                                 console.log (error ) ;    
-                           }
-                           );
-                      }*/
-                        
-
-                      //  console.log(JSON.parse(localStorage.getItem('currentUser')).userid) ; 
-                       if (this.tempmodel[i]._source.messages[j].from == JSON.parse(localStorage.getItem('currentUser')).userid) 
-                            this.tempmodel[i]._source.messages[j].fromMe = true ; 
-                       else 
-                            this.tempmodel[i]._source.messages[j].fromMe = false ; 
-                       
-                       
-                 
-                  }
+                  
                   
                  // let  options =  {   day: 'numeric', month: 'numeric', year: 'numeric', hour:'2-digit', minute:'2-digit'};
 
@@ -177,65 +138,72 @@ export class DoneComponent implements OnInit {
                    if (this.tempmodel[i]._source.steps.close!=0)
                        this.tempmodel[i]._source.steps.close = this.getLocalDateTime(this.tempmodel[i]._source.steps.close);//"fr-FR").replace("à","-"); 
 
-                this.messagesService.getOngoingMessages(this.tempmodel[i]._id)
-                  .subscribe(
-                   message0 => 
-                   {
-                        console.log(message0) ;
-                        this.message =message0 ; 
-                        this.message = JSON.parse(this.message ) ;
-                        if(JSON.parse(localStorage.getItem('currentUser')).userid== this.message.from ) 
-                           this.message.fromMe= true ; 
-                        else 
-                           this.message.fromMe= false ;  
-                       
-                        this.message.new = true ; 
-                        // console.log(message.text ) ; 
-                       this.message.date =prettyMs( new Date().getTime() - this.message.date,  {compact: true}  );
+            
+                        for( let j = 0 ; j < this.tempmodel[i]._source.messages.length; j++ ) {
+                    // console.log( JSON.parse(this.tempmodel[i]._source.messages[j]) );
+                    this.tempmodel[i]._source.messages[j].date =prettyMs( new Date().getTime() -  this.tempmodel[i]._source.messages[j].date, {compact: true}   );
 
-                       
-                     this.tempmodel[i]._source.messages.push(this.message);
-                     /*if (!this.avatarlist[this.message.from]) {
-                       this.userdetailsService.getAvatar(this.message.from)
+                    // this.tempmodel[i]._source.messages[j] = JSON.parse(this.tempmodel[i]._source.messages[j]); 
+                      /*  console.log(this.tempmodel[i]._source.messages[j].from) ; 
+                       if (! this.avatarlist[this.tempmodel[i]._source.messages[j].from ]) {
+                           
+                       this.userdetailsService.getAvatar(this.tempmodel[i]._source.messages[j].from)
                        .subscribe( 
                            data => {
-                                this.avatarlist[this.message.from]= data['avatar'] ;  
-                               
-                               
- 
+                                 this.avatarlist[this.tempmodel[i]._source.messages[j].from ] = data['avatar'] ;  
+                        //       console.log(data) ;    
                            }
                            ,error=> {
                                  console.log (error ) ;    
                            }
                            );
-                          
-                         }*/
-                             if (!this.fullnamelist[this.message.from]) {
-                       this.userdetailsService.getFullname(this.message.from)
+                      }*/
+                   
+                     if (! this.avatarlist[this.tempmodel[i]._source.messages[j].from ]) {
+
+                     this.avatarlist[this.tempmodel[i]._source.messages[j].from ]  =""
+                     this.userdetailsService.getProfilePicName(this.tempmodel[i]._source.messages[j].from)
+                     .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                                this.avatarlist[this.tempmodel[i]._source.messages[j].from ] = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ; 
+                       }
+                       
+                        if (! this.fullnamelist[this.tempmodel[i]._source.messages[j].from ]) {
+                           
+                       this.userdetailsService.getFullname(this.tempmodel[i]._source.messages[j].from)
                        .subscribe( 
                            data => {
-                                this.fullnamelist[this.message.from]= data['fullname'] ;  
-                               
-                               
- 
+                                 this.fullnamelist[this.tempmodel[i]._source.messages[j].from ] = data['fullname'] ;  
+                        //       console.log(data) ;    
                            }
                            ,error=> {
                                  console.log (error ) ;    
                            }
-                           );}
+                           );
+                      }
+                        
+
+                      //  console.log(JSON.parse(localStorage.getItem('currentUser')).userid) ; 
+                       if (this.tempmodel[i]._source.messages[j].from == JSON.parse(localStorage.getItem('currentUser')).userid) 
+                            this.tempmodel[i]._source.messages[j].fromMe = true ; 
+                       else 
+                            this.tempmodel[i]._source.messages[j].fromMe = false ; 
                        
-                   }
-                   ,errors =>
-                    {
-                       console.log(errors) ; 
-                    }
-                   );
+                       
+                 
+                  }
+                  
+                     
+                     
+                     
                   //console.log (connection ) ; 
                   
               for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
                   console.log(this.tempmodel[i]._source.articles) ; 
                   
-                                   this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
+                  this.tempmodel[i]._source.articles[j].pic  = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
 
                   /* this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
@@ -287,12 +255,12 @@ export class DoneComponent implements OnInit {
    
     
     gotoArticle(id, storeid ) {
-            this.router.navigate(["../../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+            this.router.navigate(["../../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
 
         }
     
     gotoStore(id ) {
-                this.router.navigate(["../../../stores/"+id], { relativeTo: this.route });
+                this.router.navigate(["../../stores/"+id], { relativeTo: this.route });
 
         }
 
@@ -539,8 +507,8 @@ export class DoneComponent implements OnInit {
 
   //let timeOfDay = hours < 12 ? 'AM' : 'PM';
 
-  return date.getMonth() + '/' + date.getDate() + '/' +
-         date.getFullYear() + ', ' + hours + ':' + minutes 
+  return date.getDate() + '/' +  (parseInt(date.getMonth())+1) + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes   
 }
     
      ontouch(args: TouchGestureEventData) {
@@ -606,4 +574,11 @@ export class DoneComponent implements OnInit {
        }
      
     }
+
+    
+    reloading(){   
+        console.log('reloading') ; 
+        this.init() ; 
+  
+     } 
 }

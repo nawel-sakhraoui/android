@@ -64,7 +64,7 @@
        		      	
        		          	<input type="radio" name="radiogroup2" [checked]="s===m._source.sizing[m.choosecolor][0]"   id="radio2"  [value]="s"  [disabled]="!checkSizing(s, k.key, m)" (change)="chooseSizing($event, s, k.key, m)"  >
        	
-                       	<div  [ngClass]="{'text-secondary': checkSizing(s, k.key, m ) , 'text-light': !checkSizing(s, k.key, m) }"  for="radio2" style ='width:25px; height:25px;  background-color:#D0D0D0;   text-align: center; vertical-align: middle; ' > {{s}}	</div>
+                       	<div  [ngClass]="{'text-secondary': checkSizing(s, k.key, m ) , 'text-light': !checkSizing(s, k.key, m) }"  for="radio2" style ='width:55px; height:20px; font-size:10px ; background-color:#D0D0D0;   text-align: center; vertical-align: middle; ' > {{s}}	</div>
        		        
        		        
        		        

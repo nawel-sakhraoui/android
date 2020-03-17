@@ -1,6 +1,6 @@
 import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
 
-import { FirebaseService, OngoingService, StoreService, MessagesService, UserdetailsService} from '../_services/index';
+import { PicService, FirebaseService, OngoingService, StoreService, MessagesService, UserdetailsService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap, NavigationEnd   } from '@angular/router';
     import * as utils from "utils/utils";
 
@@ -62,6 +62,8 @@ export class SalesComponent implements OnInit, AfterViewInit {
     loadingsale = false ;
     alertM:any={};
     loadingM :any={}; 
+    reload = false ; 
+    
     @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
     private drawer: RadSideDrawer;
   constructor(private ongoingService :OngoingService, 
@@ -71,6 +73,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
               private messagesService: MessagesService ,
               private userdetailsService : UserdetailsService,
               private firebaseService: FirebaseService,
+              private picService : PicService, 
        //       private rolesService:  NgxRolesService , 
         //      private permissionsService : NgxPermissionsService, 
               private _changeDetectionRef: ChangeDetectorRef) {
@@ -82,7 +85,12 @@ export class SalesComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
       
-          this.loading0 =true ; 
+      this.init() ; 
+  }
+    
+    
+    init(){
+            this.loading0 =true ; 
        
        console.log('store') ; 
         let sub = this.route.params.subscribe(params => {
@@ -90,47 +98,14 @@ export class SalesComponent implements OnInit, AfterViewInit {
         this.storetitle = params['store'];
         
           
-             this.storeService.getStore( this.storetitle)
-                      .subscribe(
-                         data => {
-                        //        this.permissionsService.addPermission('readStore', () => {
-                       //     return true;
-                         //  }) 
-                    
-                        /*  this.store = data ; 
-                            console.log(this.store) ; 
-                            let admin = false ; 
-                             for (let a of this.store.admins  ){
-                               if( a.userid == this.me ) {
-                                   admin = true ; 
-                                   break ; 
-                                   }
-                               
-                               }*/
-       
-                      /*       if (this.me == this.store.userid ||  admin ) {
-                                 
-                                    this.permissionsService.addPermission('writeStore', () => {
-                                          return true;
-                                    })
-                    
-                                  
-                                    this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
-                                 
-                             }*/
-                             
-                             
-                        //   console.log(this.store) ; 
-                        },error => {
-                              console.log(error);    
-                             
-                        });
+          
       
             this.storeService.getStoreStatus( this.storetitle  )
             .subscribe(
                 data0 =>{
                     //console.log(data0 ) ; 
                     this.open = data0['open']; 
+                    
                     }
                 , error0=>{
                     console.log(error0); 
@@ -141,14 +116,14 @@ export class SalesComponent implements OnInit, AfterViewInit {
         .subscribe(
             
          data6=>{
-             
+                this.reload = false ; 
                 this.totalcommand= data6['count'] ; 
-                             this.ongoing = true ; 
+                this.ongoing = true ; 
  
-                                 this.maxpage = Math.ceil( this.totalcommand/this.size)  ; 
+               this.maxpage = Math.ceil( this.totalcommand/this.size)  ; 
 
-            console.log(data6);
-                this.loading0 = false ;  
+               console.log(data6);
+               this.loading0 = false ;  
          if( this.totalcommand != 0 ) {
                   this.getPage(1)   ;               
                  this.sales=true  ;
@@ -157,6 +132,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
                    this.sales = false ; 
     
           },error6 =>{
+              this.reload = true ; 
               this.loading0 = false ; 
                     console.log(error6) ;
                      this.ongoing = false ;  
@@ -167,7 +143,8 @@ export class SalesComponent implements OnInit, AfterViewInit {
 
       
        });
-  }
+        
+        }
     
     gotoArticle(id ) {
                  this.router.navigate(["../articles/", id], { relativeTo: this.route });
@@ -180,7 +157,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
         }
     
     gotoUser(id ) {
-                this.router.navigate(["../../../home/"+this.me+"/profile/"+id], { relativeTo: this.route });
+                this.router.navigate(["../../../profile/"+id], { relativeTo: this.route });
 
         }
 
@@ -371,7 +348,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
                        this.isopen["message"+this.tempmodel[i]._id] = false ;
                        this.alertM[this.tempmodel[i]._id] = false; 
                        this.loadingM[this.tempmodel[i]._id] = false; 
-                         this.userdetailsService.getAvatar(this.tempmodel[i]._source.userid)
+                       /*  this.userdetailsService.getAvatar(this.tempmodel[i]._source.userid)
                        .subscribe( 
                            datan => {
                                  this.avatarlist[this.tempmodel[i]._source.userid ] = datan['avatar'] ;  
@@ -380,9 +357,17 @@ export class SalesComponent implements OnInit, AfterViewInit {
                            ,errorn=> {
                                  console.log (errorn ) ;    
                            }
-                           );
+                           );*/
                          
-                         
+                       
+                         this.avatarlist[this.tempmodel[i]._source.userid] ="";   
+                        this.userdetailsService.getProfilePicName(this.tempmodel[i]._source.userid)
+                        .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.tempmodel[i]._source.userid] = this.picService.getProfileLink (data['profilepicname']) 
+                        },error=>{}) ; 
+                       
                        this.userdetailsService.getFullname(this.tempmodel[i]._source.userid)
                        .subscribe( 
                            datan => {
@@ -412,6 +397,16 @@ export class SalesComponent implements OnInit, AfterViewInit {
                            }
                            );
                       }*/
+                          if (!this.avatarlist[this.tempmodel[i]._source.messages[j].from]) {
+                     this.avatarlist[this.tempmodel[i]._source.messages[j].from] =""
+                     this.userdetailsService.getProfilePicName(this.tempmodel[i]._source.messages[j].from)
+                     .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.tempmodel[i]._source.messages[j].from] = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ;
+                       
+                       }
                            
                        if (! this.fullnamelist[this.tempmodel[i]._source.messages[j].from ]) {
                            
@@ -511,6 +506,16 @@ export class SalesComponent implements OnInit, AfterViewInit {
                            );
                           
                          }*/
+                         if (!this.avatarlist[this.message.from]) {
+                     this.avatarlist[this.message.from] =""
+                     this.userdetailsService.getProfilePicName(this.message.from)
+                     .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                               this.avatarlist[this.message.from] = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ;
+                       
+                       }
                        
                            if (!this.fullnamelist[this.message.from]) {
                        this.userdetailsService.getFullname(this.message.from)
@@ -536,7 +541,10 @@ export class SalesComponent implements OnInit, AfterViewInit {
                   
                   
               for( let j = 0 ;j < this.tempmodel[i]._source.articles.length; j++ ) {
-                   this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
+                   
+                   this.tempmodel[i]._source.articles[j].pic = this.picService.getPicLink( this.tempmodel[i]._source.articles[j].picname);
+
+                  /*this.storeService.getPic(this.tempmodel[i]._source.articles[j].articleid )
                                     .subscribe(
                                      data4=> {
                                        //   console.log( this.tempmodel[i][j] ) ; 
@@ -544,6 +552,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
                                     }, error4 =>{
                                           console.log(error4) ; 
                                     }) ; 
+                  */
                   
               }
               }
@@ -645,8 +654,9 @@ getLocalDateTime(date) {
 
   //let timeOfDay = hours < 12 ? 'AM' : 'PM';
 
-  return date.getMonth() + '/' + date.getDate() + '/' +
-         date.getFullYear() + ', ' + hours + ':' + minutes 
+ 
+  return date.getDate() + '/' +  (parseInt(date.getMonth())+1) + '/' +
+         date.getFullYear() + ', ' + hours + ':' + minutes  
 }
     
 ontouch(args: TouchGestureEventData) {
@@ -729,4 +739,14 @@ hide(){
        }
      
     }
+  reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }
+
+
 }

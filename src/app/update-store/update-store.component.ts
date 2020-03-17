@@ -41,6 +41,7 @@ export class UpdateStoreComponent implements OnInit {
     searchNothing = false ; 
     catlength= false  ; 
     geolength= false ; 
+    reload = false ; 
    me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
   config = {
             displayKey:"description" ,//if objects array passed which key to be displayed defaults to description,
@@ -73,12 +74,17 @@ export class UpdateStoreComponent implements OnInit {
    
 
   ngOnInit() {
-       this.loading = true ; 
+        this.init() ; 
+  }
+    
+    init(){
+        
+               this.loading = true ; 
        let sub = this.r.params.subscribe(params => {
             //this.parentRouteId = +params["id"];
            //console.log(params ) ; 
                 this.storetitle = params['store'];
-        });
+  
       
         this.storeService.getCategories()
             .subscribe(
@@ -124,7 +130,7 @@ export class UpdateStoreComponent implements OnInit {
       .subscribe (
           data =>{
               this.model = data ; 
-       
+        this.reload = false ; 
                  
               
               if (!this.model.hasOwnProperty('administrators') )
@@ -160,6 +166,7 @@ export class UpdateStoreComponent implements OnInit {
             console.log(error ) ;     
               this.loading = false ; 
               this.show = true  ; 
+              this.reload = true ;
           }
           )
       
@@ -205,8 +212,11 @@ export class UpdateStoreComponent implements OnInit {
             this.catlength= true ; 
       else 
           this.catlength = false ; 
-  }
-    
+           
+           
+          });
+        
+        }
     
     editingCat (){
         this.editCat = true; 
@@ -491,4 +501,13 @@ export class UpdateStoreComponent implements OnInit {
     }
    
 }
+    
+        reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }    
 }

@@ -1,13 +1,23 @@
 <ScrollView>
-<GridLayout rows="auto,auto,auto">		
-   <Label  row="0" *ngIf="empty &&!loading" class="alert"  text="Aucun article sélectionné"></Label>
+<GridLayout rows="auto,auto,auto" (tap)='hide()'>		
+ 
+ 
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>
+  
+   <Label  row="0" *ngIf="empty && !loading && !reload" class="alert"  text="Aucun article sélectionné"></Label>
+ 
    <StackLayout row="2">
    	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading" ></ActivityIndicator>
    	</StackLayout>  
    	 
 <RadListView row ="1" class="list-group" [items]="displaystores"  
 				 [visibility]="!loading? 'visible' : 'collapsed'"
-				  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
+				  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
     <ng-template let-k="item"  >
     
         <GridLayout class="list-group-item" rows="*, *,auto"  >
@@ -29,7 +39,7 @@
    			 	       </GridLayout>  
    			 	     
    			         
-   			         <TextView editable="false" row="1"  class="titlea"text="{{m._source.title}}">
+   			         <TextView editable="false" row="1"  class="titlea" text="{{m._source.title}}">
 					</TextView>
    			 	        <!-- Label row="0" col="0" [text]="m._source.title" class=" titlea " ></Label>
              	  	      -->
@@ -55,8 +65,9 @@
       						    <Label *ngIf='m.choosecolor!=a'  margin='0,0,5,0'  [backgroundColor]="a"  class="color"  (tap)="getColor(a,k,m)"   ></Label>
       							</GridLayout>
       							</ng-template>
-      					     		<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewStaggeredLayout>
-      		
+
+																 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewLinearLayout>
+								      		
     							</RadListView>
   						 </GridLayout>     				  
   						 <GridLayout  margin="10,15,0,15" row="1"  columns="100,auto" [visibility]="m.boolsize? 'visible' : 'collapsed'"  >
@@ -70,7 +81,9 @@
       			 				<Label *ngIf=' a!=m.choosesize && m._source.sizing[m.choosecolor].includes(a)'  margin='0,0,5,0' text='{{a}}' class="size" (tap)="chooseSizing(e, a,k,m)" ></Label>
       							</GridLayout>
       						</ng-template>
-      							<ListViewStaggeredLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewStaggeredLayout>
+								 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewLinearLayout>
+								
+	
       						 </RadListView>
  						 </GridLayout>
   
@@ -88,7 +101,7 @@
   						<Label col="0" class="titlea"  text="Votre Adresse"></Label>
   						<GridLayout col="1"   rows="auto,auto,auto,auto">
  					      <Label  (touch)='ontouch($event)' row="0" text='&#xf078;'  class="fas titlea dropdownLabel" (tap)="m.show=!m.show"    ></Label>
-   					    <Label (touch)='ontouch($event)'  row ="0" text ="{{m.selectedAddress.title}} " color="#000"   (tap)="m.show=!m.show"  ></Label>
+   					    <Label textWrap='true'  (touch)='ontouch($event)'  row ="0" text ="{{m.selectedAddress.title}} " color="#000"   (tap)="m.show=!m.show"  ></Label>
    					     <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
 						<StackLayout  row="1" [visibility]=" m.show? 'visible' : 'collapsed'" >
   					  <app-adress (getAddress)='getAddress($event,k, i) ; ' ></app-adress>
@@ -98,7 +111,7 @@
   
   				<GridLayout margin="10,15,0,15"  row="4"  columns="100,*" >
   
- 					<Label class="titlea" col="0" text="Livraison"></Label>
+ 					<Label textWrap='true' class="titlea" col="0" text="Livraison"></Label>
   					<GridLayout col="1" rows="auto,auto,auto">
         
        				 <DropDown  #dd
