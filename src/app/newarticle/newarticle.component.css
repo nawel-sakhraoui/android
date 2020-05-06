@@ -1,0 +1,59 @@
+
+
+li.borderless { border-top: 0 none; }
+
+ 
+
+.labl {
+    display : block;
+   
+}
+.labl > input{ /* HIDE RADIO */
+    visibility: hidden; /* Makes input not-clickable */
+    position: absolute; /* Remove input from document flow */
+}
+.labl > input + div{ /* DIV STYLES */
+    cursor:pointer;
+    border:4px solid transparent;
+   
+}
+.labl > input:checked + div{ /* (RADIO CHECKED) DIV STYLES */
+    background-color: #ffd6bb;
+    border: 1px solid #ff6600;
+}
+
+.img-selector{
+	align: right ; 
+	background-color: #2196F3;
+    color: white ;
+      border:  1px solid #ccc;  
+  
+	 padding: 6px 10px;
+}
+.input-icon {
+  position: relative;
+}
+
+.input-icon > i {
+  position: absolute;
+  display: block;
+  transform: translate(0, -50%);
+  top: 50%;
+  pointer-events: none;
+  width: 25px;
+  text-align: center;
+  font-style: normal;
+}
+.navnav {
+	background-color: #FFF; 
+	z-index :999; 
+	    box-shadow: 0 2px 2px -2px rgba(0,0,0,0.5); 
+
+	 
+}
+.scroll2{
+	height: 90vh;
+   overflow-y:  scroll ; 
+   background-color : #F5F5F7 ;
+
+}  

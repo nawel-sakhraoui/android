@@ -1,12 +1,16 @@
 <ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<div *ngIf =' display1'  i18n-class class='text-left scroll2'>
+
+
+<div *ngIf =' display1'  i18n-class class='text-left '>
 <div i18n="@@nostore"*ngIf='nostore' i18n-class class='alert alert-info text-left '>
 Aucun magasin n'est disponible sur ce lien.
 </div>
+<ng-template [ngxPermissionsOnly]="['ADMINStore','GUEST','USER']">
+
 <div *ngIf='suspend' >
 
 <div class='crop'>
-<img [src]="banner"   class="img" />
+<img alt="" src="{{banner}}"   class="img" />
 </div>
 
 <div i18n-class class=' container alert alert-info text-left ' >
@@ -17,7 +21,7 @@ Aucun magasin n'est disponible sur ce lien.
 
 <div *ngIf="!suspend">
 
-<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']">
+
 
 
 <div *ngIf='!nostore && !open'>
@@ -29,7 +33,8 @@ Aucun magasin n'est disponible sur ce lien.
   
 <div class = "crop">
 
-<img [src]="banner"   class="img" />
+<img alt=""  src="{{banner}}"   class="img" />
+<div  *ngIf="alertimg" class="alert alert-warning  strong "> Format image invalide! </div>
 
      
 
@@ -37,12 +42,12 @@ Aucun magasin n'est disponible sur ce lien.
  <div align="right" class="selector">
 
 
-<label class ='img-selector btn btn-outline-info' *ngIf="isValid" for="file"><i placement="bottom" tooltip="Ajouter une bannière" class="fa fa-file-image-o" ></i> </label>
+<label class ='img-selector btn btn-outline-info' *ngIf="isValid" for="file"><i placement="bottom" tooltip="Ajouter une bannière" class="fa fa-file-image-o" ></i>  </label>
 
 <input type='file' id="file" name="file" (change)="readUrl($event)" style="display: none;" >
 
 
-<button  placement="bottom"  tooltip="Sauvegarder" class ='img-selector btn btn-outline-info'   *ngIf="!isValid" (click)="this.covsave()"><i class='fa fa-save'></i></button>
+<button  placement="bottom"  tooltip="Sauvegarder" class ='img-selector btn btn-outline-info'   *ngIf="!isValid" (click)="this.covsave()"><i class='fa fa-save'></i><span *ngIf="saveloading"class= "fa fa-refresh fa-spin "></span></button>
 <button  placement="bottom"  tooltip="Annuler Les modifications"  class ='img-selector btn btn-outline-info' *ngIf="!isValid" (click)="this.covremove()"><i class='fa fa-close'></i></button>
 </div> 
 </ng-template>
@@ -76,7 +81,7 @@ Aucun magasin n'est disponible sur ce lien.
 
     
     
-<ng-sidebar-container  showBackdrop="false" sidebarClass ="container" style=" background-color: #F5F5F7 ;  z-index:2 ;  height: 82vh;  ">
+<ng-sidebar-container  showBackdrop="false" sidebarClass ="container" style=" background-color: #F5F5F7 ;  z-index:2 ;  height: 87vh;  ">
  
       <!-- A sidebar -->
 <ng-sidebar  i18n-position="@@sidebarpos"  position='left' #sidebar [class]="ng-sidebar" [opened]="!opened"  [mode]="'slide'" autoCollapseWidth="100" keyClose='true' closeOnClickOutside ='true'  (onCloseStart)= 'onclose(event)' (onOpenStart)='onopen(event)'>
@@ -144,10 +149,10 @@ Aucun magasin n'est disponible sur ce lien.
     <div *ngIf ='nothing' class='alert alert-warning' i18n='@@noarticle'>Pas d'articles disponible dans ce magasin </div> 
     <div *ngIf ='nosearch' class='alert alert-warning'i18n="@@norecherche">Recherche introuvable. </div> 
     
-    <div style="position: relative; " class="btn col-sm-6 col-6 col-md-3 " *ngFor="let a  of selectArticles |paginate: { id: 'server', itemsPerPage: size, currentPage: page, totalItems: totalArticles } " >
+    <div style="position: relative; " class="btn col-sm-6 col-6 col-md-4 col-xl-3 "  *ngFor="let a  of selectArticles |paginate: { id: 'server', itemsPerPage: size, currentPage: page, totalItems: totalArticles } " >
   
       <div class="card "     >
-        <img [src]="a._source.pic" class="resize img-responsive card-img-top" style="width:100%; " (click)="gotoArticle(a._id, a._source.storetitle )"   alt="Image">
+        <img alt="" src="{{a._source.pic}}" class="resize  card-img-top" style="width:100%; " (click)="gotoArticle(a._id, a._source.storetitle )"   >
           <div class ="card-block ">
           <div (click)="gotoArticle(a._id, a._source.storetitle )"  >
              <h6 class="card-title "  > {{a._source.title}} </h6>
@@ -156,13 +161,13 @@ Aucun magasin n'est disponible sur ce lien.
        	     </p>
        	 </div> 
        	 	<div>
+       	 	<ng-template [ngxPermissionsOnly]="['ADMINStore', 'USER']">
+               <button  class="card-link btn text-light   btn-warning" (click)="addToCart(a)"> <i class="fa fa-shopping-cart" ></i><i i18n="@@panier3">Panier</i><span *ngIf=" a.loadingcart==1" class= "fa fa-refresh fa-spin "></span>  <span *ngIf=" a.loadingcart==2" class= "fa fa-check"></span> <span *ngIf=" a.loadingcart==3" class= "fa fa-ban"></span> </button> 
+       	 	</ng-template>
        	 	
-       	 	
-       	 	
-       	     <button  class="card-link btn  btn-warning" (click)="addToCart(a)"> <i class="fa fa-shopping-cart" ></i><i i18n="@@panier3">Panier</i><span *ngIf=" a.loadingcart==1" class= "fa fa-refresh fa-spin "></span>  <span *ngIf=" a.loadingcart==2" class= "fa fa-check"></span> <span *ngIf=" a.loadingcart==3" class= "fa fa-ban"></span> </button> 
        	 	</div>
        	 	 <ng-template ngxPermissionsOnly="ADMINStore">
-       		 <button class="card-link btn btn-info"  (click)="updateArticle(a._id)" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i><i i18n="@@param">Paramètres</i> </button>
+       		 <button class="card-link btn btn-info text-light "  (click)="updateArticle(a._id)" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i><i i18n="@@param">Paramètres</i> </button>
          	 </ng-template> 		
        				
        	 </div> 
@@ -200,8 +205,8 @@ Aucun magasin n'est disponible sur ce lien.
 </div>
 </ng-sidebar-container>
 </div>
-</ng-template>
+
     </div>
- 
+  </ng-template>
      
  </div>

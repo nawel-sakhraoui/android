@@ -1,0 +1,19 @@
+.main{
+	
+
+  width: 100vw;
+/*	min-width:500px*/
+
+
+
+}
+.main2{
+	
+
+  	height: 100vh;
+   overflow-y:  scroll ; 
+   background-color : #F5F5F7 ;
+  
+/*	min-width:500px;*/
+
+}

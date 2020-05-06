@@ -18,7 +18,7 @@ Ce magasin n'existe pas
 </div>
 
 <div *ngIf='!nostore'>
-<div class='scroll2'>
+<div >
 <nav class="navbar navbar-default  navnav sticky-top" >
   
     
@@ -43,7 +43,7 @@ Ce magasin n'existe pas
 
 
 
-<div class="container col-md-6 col-md-offset-3 card"  >
+<div class="container col-md-6 col-md-offset-3 "  >
     <h2 i18n="@@nouveauarticle" >  Nouveau Article </h2>
    
    
@@ -68,15 +68,16 @@ Ce magasin n'existe pas
        
       <div class=" card">
       
+      <ngx-loading [show]="waitimg" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
       
       <ul >
-       <li  *ngFor = 'let url of gallery; let  i=index ' style="list-style: none; display:inline;"> 
+       <li  *ngFor = 'let url of gallery; let  i=index '  style="list-style: none; display:inline-block;"> 
        <label class="labl"  >
-           
+             
        	        <input type="radio" name="radiogroup"  [checked]="i===0" 
                 [value]="i" (change)="onSelectionChange(i)" id ='radio' />
                        	
-		          	<div><img [src]="url" height="50" > </div>
+		          	<div><img src="{{url}}" height="50" backgroundColor='#eeeeee'> </div>
 		</label>
 		<button type="button" (click)="removeObject(url)" class='btn btn-info' > <i class="fa fa-close"></i></button>
 		   
@@ -84,11 +85,12 @@ Ce magasin n'existe pas
 
       </li>
       </ul>
+      <div  *ngIf="alertimg" class="alert alert-warning  strong "> Format image invalide! </div>
       
       <div *ngIf= "gallery[mainpic]" >
       <label i18n="@@mainpic" >Choisissez l'image principale:</label>
       <br/>
-      <img [src]="gallery[mainpic]" height="100"  > 
+      <img src="{{gallery[mainpic]}}" height="100"  backgroundColor='#eeeeee'  > 
       </div>
        <br/>
        
@@ -129,7 +131,7 @@ Ce magasin n'existe pas
 	    <br>
 	    <br>
 	    
-	      
+	
 	    
 	    <!-- div class="form-group">
 	     <label for="sel1">Choose delivery method:</label>
@@ -162,16 +164,15 @@ Ce magasin n'existe pas
       			   <div i18n="@@categoriesalert" *ngIf="f.submitted && selectcats.length==0" class="help-block alert alert-danger">Ajouter au moins une catégorie</div>
        </div>
        
+      
+   
        
-       <div   class="form-group text-info " *ngIf='boolsizing'>
-       <div class='col-sm-10 col-10 col-md-10 '>
-        <span *ngFor='let s of sizinglist' ><input   type="checkbox"  value="v"> v </span>
-       		</div>	
-       </div>
-       
-       
-       <div class="form-group text-info " >
-	       <label class='btn btn-link' for="color"> <i class="fa fa-plus"></i> <i i18n="@@couleur">Couleurs </i></label>
+            
+            <!-- ngx-select-dropdown (change)="addDelivery($event)" [multiple]="true" [(value)]="selectdeliveries" [config]="deliveryconfig" [options]="delivery" required ></ngx-select-dropdown>
+			 -->
+    
+            <div class="form-group text-info " >
+	       <label class='btn btn-link' for="color"> <i class="fa fa-plus"></i> <i i18n="@@couleur">Couleurs et Autres</i></label>
 	       
 	      <input type="color" (change)= "addColor($event)" id='color'  >
 	      
@@ -184,11 +185,31 @@ Ce magasin n'existe pas
 		          	<span  style =' display: block;  width:50px; height:20px; border:1px  solid ; display: inline-block;' [style.background]='c' > </span>
 		          	
 		          			<button type="button" (click)="removeColor(c)" class='btn btn-info'> <i class='fa fa-close'></i></button>  
-
+					
+					<div class="form-group text-info " *ngIf='boolsizing'>
+					 
+	      	       <label class='btn btn-link' for="sizing"> <i class="fa fa-plus"></i> <i i18n="@@tailles" >Tailles </i></label>
+	      
+	      
+	      			<div class="col-sm-12 col-12 col-md-12">
+	       			 <span *ngFor="let s of sizinglist" style='padding:2px; 'class=" form-check form-check-inline">
+	       				   <input  class="form-check-input" type="checkbox" id="{{s}}" value="{{s}}" (change)="addSizing($event, c, s)">
+   					 <label class="form-check-label" for="{{s}}">{{s}} </label>
+	      
+	       
+	         
+	       </span>
+	      </div> 
+	      </div>
+		
      		 </li>
      		 </ul>
           </div>
 	      </div>
+	      
+	      
+    
+    
        <div class="form-group text-info" >
        <br/> <br/>
             <label for="description" i18n="@@description" >Description </label>
@@ -196,13 +217,7 @@ Ce magasin n'existe pas
 			 <div i18n="@@descriptionalert" *ngIf="f.submitted && !model.description" class="help-block alert alert-danger">Ajouter une description</div>
 			
       	    
-      </div> 
-   
-       
-            
-            <!-- ngx-select-dropdown (change)="addDelivery($event)" [multiple]="true" [(value)]="selectdeliveries" [config]="deliveryconfig" [options]="delivery" required ></ngx-select-dropdown>
-			 -->
-    
+      </div>  
 	    
        <h5 i18n="@@livraison" class='text-info '>Choisir vos livraisons  </h5>
     		<div style='border-top :2px solid #D0D0D0 ; padding-top:  10px ; '>

@@ -1,0 +1,241 @@
+
+.crop {
+  
+/*clip: rect(0px,50px,100px,50px);*/
+
+    width: auto;
+    height: 50px;
+    overflow: hidden;
+    	 position: relative;
+    
+    	 display:inline-block;
+    	 margin-right:10px;
+    	 background-color:#eeeeee;
+}
+.wizard {
+	
+width : 600px; 
+ 	
+}
+.message {
+    overflow-y: scroll;
+    height: 100px;
+    width:100%;
+    resize: none; /* Remove this if you want the user to resize the textarea */
+}
+
+.date {
+	
+	    	 position: relative; 
+	    	 display:inline-block; 
+}
+.text {
+	
+         display:inline-block; 
+       	 position: relative;
+       	 margin-top :5px ; 
+       	 margin-left : 10px ; 
+       	 margin-right : 10px ; 
+       	 margin-bottom : 20px;  
+       	 
+    
+}
+.profile-picture {
+    border: 2px solid #CCC;
+     background-color:#eeeeee;
+   /* padding: 4px;*/
+    display: inline-block;
+    height :70px;
+    width : 60px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, .15); 
+   /*    overflow: hidden;*/
+       	 position: relative;
+       	 margin-top :5px ; 
+       	 margin-left : 10px ; 
+       	 margin-right : 10px ; 
+       	 margin-bottom : 20px;  
+       	
+       	 
+}
+img.resize {
+ /*margin-bottom: 0;*/
+/* min-width:200px; min-height:220px;
+ max-width : 200px; max-height : 220px;*/
+   object-fit: cover;
+  height:68px;
+  width :58px; 
+   background-color:#eeeeee;
+  
+}
+
+.chat
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.chat li
+{
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #B3A9A9;
+}
+
+.chat li.left .chat-body
+{
+    margin-left: 60px;
+}
+
+.chat li.right .chat-body
+{
+    margin-right: 60px;
+}
+
+
+.chat li .chat-body p
+{
+    margin: 0;
+    color: #777777;
+}
+
+.card .slidedown .fa, .chat .fa
+{
+    margin-right: 5px;
+}
+
+.card-body
+{
+    overflow-y: scroll;
+    height: 250px;
+}
+
+::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar
+{
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+}
+
+.ongoingul {
+  background:   #ffffff;
+  padding: 5px;
+    list-style:none;  
+}
+
+.ongoingli {
+  padding: 5px;
+  margin :5px ; 
+  margin-left:10px; 
+   background: #D3D3D3;
+}
+
+.card> .card-header {
+  background-color:  #D3D3D3;
+  color:#000000;
+   border-color:  #D3D3D3;
+
+}
+
+
+.notif{
+   max-height:400px;
+   overflow-y: scroll;
+}
+
+
+.jumbotron {
+    /*background-image: url("/img/your-image.jpg");*/
+    background-color: #17234E;
+    margin-bottom: 0;
+    min-height: 20%;
+    max-height: 20%;
+    min-width: 100%;
+    /*background-repeat: no-repeat;
+    background-position: center;
+    -webkit-background-size: cover;
+    background-size: cover;*/
+    height: 400px;
+}
+
+.crop {
+  background-color: #17234E;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    	 position: relative;
+    	 object-fit : cover; 
+    	 object-position: 100% 0; 
+    /*position: absolute;*/
+
+/*clip: rect(0px,50px,100px,50px);*/
+}
+
+
+
+
+
+* {box-sizing: border-box;}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #e9e9e9;
+}
+
+.topnav a {
+  float: left;
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #2196F3;
+  color: white;
+}
+.add{
+		
+	background-color:#D0D0D0;  
+	margin-left:12px ;
+	padding:5px; 
+	border:1px solid #D0D0D0;
+	cursor :pointer ; 
+} 
+.listing{
+	
+	background-color:#D3D3D3;  
+
+}
+.scroll2{
+	height: 90vh;
+   overflow-y:  scroll ; 
+   background-color : #F5F5F7 ;
+
+}  

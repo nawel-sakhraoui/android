@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable}  from 'rxjs/Observable';
+import { Article , Store } from '../_models/index';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigService}    from './api-config.service'; 
 
@@ -44,8 +45,7 @@ export class SearchService {
   }
     
    sendFilter(data) {
-       console.log('ici') ; 
-          console.log(data); // I have data! Let's return it so subscribers can use it!
+   //     console.log(data); // I have data! Let's return it so subscribers can use it!
         // we can do stuff with data if we want
         
        try {
@@ -70,34 +70,31 @@ export class SearchService {
     
     // create a new storage 
     search(query: string) {
-          query= query.replace(/ /g, "%20");   
+  
         return this.http.get(this.host+'/api/stores/search/'+query );
     }
   
     searchStores (query : string ) {
-          query= query.replace(/ /g, "%20"); 
+        
         return this.http.get( this.host+'/api/stores/stores/search/'+query) ; 
         
     }
-    searchArticlesStore(storeid : string , query: string, available :boolean) {
-        query= query.replace(/ /g, "%20"); 
-        storeid= storeid.replace(/ /g, "%20");
-        return this.http.get(this.host+'/api/stores/search/store/'+storeid+'/'+query +"/available/"+available);
+    searchArticlesStore(store : string , query: string, available :boolean) {
+  
+        return this.http.get(this.host+'/api/stores/search/store/'+store+'/'+query +"/available/"+available);
     }
     
     
-     getCountStores (filter, city){
-             city=city.replace(/ /g, "%20"); 
-            filter =filter.replace(/ /g, "%20"); 
+       getCountStores (filter, city){
           if (filter !="Indefinie") 
-          return this.http.get (this.host+'/api/myhome/count/stores/filter/'+filter+'/city/'+city) ; 
-     }
+          return this.http.get (this.host+ '/api/myhome/count/stores/filter/'+filter+'/city/'+city) ; 
+ 
+ 
+       }
     
        getCountArticles(filter, city){
-            city =city.replace(/ /g, "%20"); 
-            filter =filter.replace(/ /g, "%20"); 
             if (filter !="Indefinie") 
-          return this.http.get (this.host+'/api/myhome/count/articles/filter/'+filter+'/city/'+city) ; 
+          return this.http.get (this.host+ '/api/myhome/count/articles/filter/'+filter+'/city/'+city) ; 
           
        } 
     
@@ -105,9 +102,6 @@ export class SearchService {
         
     
        getCountStores2 (filter, query, city){
-             query= query.replace(/ /g, "%20"); 
-             city =city.replace(/ /g, "%20"); 
-            filter =filter.replace(/ /g, "%20");
           if (filter !="Indefinie") 
                return this.http.get (this.host+ '/api/myhome/count/stores/filter/'+filter+"/query/"+query+'/city/'+city) ; 
            else 
@@ -116,9 +110,6 @@ export class SearchService {
        }
     
        getCountArticles2(filter, query, city){
-            query= query.replace(/ /g, "%20"); 
-            city =city.replace(/ /g, "%20"); 
-            filter =filter.replace(/ /g, "%20");
             if (filter !="Indefinie") 
                 return this.http.get (this.host+ '/api/myhome/count/articles/filter/'+filter+"/query/"+query+'/city/'+city) ; 
             else 
@@ -140,19 +131,12 @@ export class SearchService {
     
               
          getArticles (size ,froms,  filter, orderby, city) {
-           //  orderby =orderby.replace(/ /g, "%20"); 
-             city =city.replace(/ /g, "%20"); 
-            filter =filter.replace(/ /g, "%20");
-         
                return this.http.get (this.host+'/api/myhome/articles/filter/'+filter+"/orderby/"+orderby+"/from/"+froms+"/size/"+size+'/city/'+city); 
 
            
            } 
     
          getStores (size, froms, filter, orderby,city){
-             filter =filter.replace(/ /g, "%20");
-              city =city.replace(/ /g, "%20");
-           //  orderby = orderby.replace(/ /g, "%20");
                 if (orderby=="price") 
                    orderby ="newest"; 
              
@@ -161,11 +145,6 @@ export class SearchService {
     
     
           getQueryArticles (size ,froms,  filter, orderby, query, city) {
-    
-                filter =filter.replace(/ /g, "%20");
-                //orderby=orderby.replace(/ /g, "%20");
-                query =query.replace(/ /g, "%20");
-                city = city.replace(/ /g, "%20");
               if (filter !='Indefinie')
                return this.http.get (this.host+'/api/myhome/articles/filter/'+filter+"/orderby/"+orderby+"/from/"+froms+"/size/"+size+"/query/"+query+'/city/'+city); 
               else
@@ -174,11 +153,6 @@ export class SearchService {
            } 
     
          getQueryStores (size, froms, filter, orderby, query, city){
-             
-                filter =filter.replace(/ /g, "%20");
-              // orderby=orderby.replace(/ /g, "%20");
-                query =query.replace(/ /g, "%20");
-                city = city.replace(/ /g, "%20");
               if (orderby=="price") 
                    orderby ="newest";  
              

@@ -1,18 +1,10 @@
 
 import { Component, OnInit } from '@angular/core';
-import {PicService, CartService , StoreService,BuynowService} from '../_services/index';
+import {CartService , StoreService,BuynowService,PicService,} from '../_services/index';
 import {Subscription} from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions'; 
  
- import { SelectedIndexChangedEventData } from "nativescript-drop-down";
-import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
-import { Label } from 'tns-core-modules/ui/label';
-import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
-import * as util from "utils/utils";
-
-
-
 
 @Component({
   selector: 'app-cart',
@@ -32,20 +24,15 @@ export class CartComponent implements OnInit {
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
   
   
-  page =1; 
-  maxpage =1; 
-  size =1; 
-    
-  loading = false ; 
+  busy : Subscription;
+  busy3: Subscription ; 
+    loading = false ; 
   model :any ; 
   choosenAddressTitle = {} ;//= "select My Address " ; 
   cart=false ;
   empty = false ; 
   show ={} ; 
-  detailshow = false ;   
-  titlestoreDel = [] ;
-   storeshow = []; 
-    stores = [] ; 
+    
    deliveryconfig = {
         "search":false, //true/false for the search functionlity defaults to false,
        "height": "auto",  //height of the list so that if there are more no of items it can show a scroll defaults to auto. With auto height scroll will never appear
@@ -57,58 +44,32 @@ export class CartComponent implements OnInit {
    totalprices ={}; 
    totaldelivery = {}
    storedelivery = [] ;
-    tempstoredelivery = {}
-   choosestoredelivery = [];
+   tempstoredelivery = {}
+   choosestoredelivery = {}
    buyall= {} ; 
-    send = [] ; 
-    displaystores= [] ;
-    reload:boolean = false ;  
    ngOnInit( ) {
     
-     this.init() ; 
-      
-       
-
-                
-  }
-    
-    
-    
-    init(){
-        
-          this.loading = true ; 
+       this.loading = true ; 
        console.log('cart ') ; 
-        this.cartService.getCart( )
+         this.busy= this.cartService.getCart( )
          .subscribe(
                  
                 data => {
                      console.log(data ) ;  
                     this.cart =  data['articlecart'].reverse();
               
-                    this.reload = false ; 
+                    
                     
                     this.storeService.getArticlesForCart(this.cart)
                     .subscribe(
                         data2=>{ 
                         
-                           this.model = data2; 
-                          for ( let i = 0 ; i < this.model.length ; i++ ) 
-                               this.model[i]._source._id = i ; 
-                            
-                            
-                             this.stores = this.model.map((x)=>x._source.storetitle); 
-                          console.log(this.stores) ; 
-                         //  this.stores= [...new Set(this.stores)]; 
-                       this.stores = this.stores.filter((value, index, self)=>{
-                          return self.indexOf(value) == index ; 
-                         });
-   
-                           // console.log("icii");
-                           //console.log(this.stores) ;
-                            
-                           this.maxpage = Math.ceil( this.stores.length/this.size)  ; 
-
-                           this.model =this.groupBy ( this.model,"_source", "storetitle") ; 
+                            this.model = data2; 
+                            for ( let i = 0 ; i < this.model.length ; i++ ) 
+                                this.model[i]._source._id = i ; 
+                             
+                            console.log(this.model) ; 
+                            this.model =this.groupBy ( this.model,"_source", "storetitle") ; 
                            
                            /* var items = Object.keys(this.model).map(function(key) {
                                  return [key, this.model[key]];
@@ -117,17 +78,103 @@ export class CartComponent implements OnInit {
                                 return second._source._id - first.source_id;
                                 });
                             */
-                            //console.log(this.model) ; 
-                         
-                          //  console.log(this.model) ; 
-                            if (this.stores.length !==0) {
+                            
+                            this.loading = false ;
+                            console.log(this.model) ; 
+                            if (Object.keys(this.model).length !==0) {
                                  this.cart = true ; this.empty = false ; 
-                                 this.getPage(1);
                             }else { 
                                  this.cart =false ; this.empty = true ; 
                             }
                          
-                            
+                             
+                            console.log(this.model ) ; 
+                            for( let i of Object.keys(this.model)) {
+                                this.show[i] = false ; 
+                                let del =[];
+                                this.buyall[i] = true ;
+                                 this.model[i].selectedAddress = {"title":"...", "to":"", 'warning':false };  
+                                for (let j= 0; j <this.model[i].length; j++ ) {
+                                  
+                                    this.model[i][j].selectedAddress ={'title': "..." , "to":"" , 'warning':false }; 
+
+                                    if (!this.model[i][j]._source.available ) {
+                                      this.buyall[i]=false ; 
+                                   }
+                                  
+                                      this.model[i][j].pic = this.picService.getPicLink( this.model[i][j]._source.picname);
+                                    
+                                    /*this.storeService.getPic(this.model[i][j]._id )
+                                  .subscribe(
+                                     data4=> {
+                                         // console.log( this.model[i][j] ) ; 
+                                         this.model[i][j].pic = data4['pic'];
+    
+                                     }, error4 =>{
+                                          console.log(error4) ; 
+                                    }) ; */
+                                  this.model[i][j].show = false; 
+                                    this.model[i][j]._source.tempdelivery = this.model[i][j]._source.delivery.filter(x=>x) ;
+                                if (this.model[i][j]._source.delivery.length!=0 )   
+                                    this.model[i][j].choosedelivery=[this.model[i][j]._source.delivery[0]]; 
+                                else     
+                                     this.model[i][j].choosedelivery = [] ; 
+                                    
+                                 this.model[i][j].choosecolor = this.model[i][j]._source.color[0];
+                                 this.model[i][j].choosequantity = 1;
+                                 this.model[i][j].loading=  false;
+                                 this.model[i][j].boolsize = false ; 
+                                    
+                              if( this.model[i][j]._source.selectedCat == "Habillements-Femmes"||
+                                  this.model[i][j]._source.selectedCat=="Habillements-Hommes"|| 
+                                  this.model[i][j]._source.selectedCat=="Habillements-Enfants" ){
+                                      if('sizing' in this.model[i][j]._source) {
+                                          this.model[i][j].boolsize =true ; 
+                                          this.model[i][j].choosesize= this.model[i][j]._source.sizing[ this.model[i][j].choosecolor][0] ; 
+
+                                         this.model[i][j].size =new Set([].concat.apply([], Object.values(this.model[i][j]._source.sizing ))); 
+                                       }
+                                }
+                                console.log("wwwwwwwwwwwwwwwwwwwwwwwwww") ; 
+                                console.log(del) ;
+                                for (let  d of this.model[i][j]._source.delivery ) {
+                                    let flag = false ; 
+                                    for (let del0 of del) 
+                                    if ( d.title == del0.title ){
+                                    flag = true ; break ;  
+                                     } 
+                                    if (!flag ) 
+                                     del.push(d) ; 
+                                }
+                                }
+                                    this.storedelivery[i] =del.filter(n=> n ) ;//.filter((v,i,a)=>a.indexOf(v)==i); 
+                                    console.log(this.storedelivery[i]); 
+                                this.tempstoredelivery[i] = this.storedelivery[i].filter(n=>n) ;
+                              // this.tempstoredelivery[i] = [...new Set( this.tempstoredelivery[i])];
+                                if (this.storedelivery[i].length>  0   ) 
+                                this.choosestoredelivery[i] =[ this.storedelivery[i][0]];
+                                else
+                                this.choosestoredelivery[i] = [] ;  
+                                    //console.log(this.choosestoredelivery[i]) ; 
+                                    // console.log( this.totalprices[i]) ; 
+                                    //  this.totaldelivery[i] = this.totalprices[i]+ this.choosestoredelivery[i].price ; 
+
+                              }
+                         
+                              for( let i of Object.keys(this.model)) {
+
+                                 
+                             
+                                    const sum = this.model[i].reduce(this.add, 0);// => a['_source']['price']+ b['_source']['price'], 0) ; 
+                                  
+                                    this.totalprices[i]=sum 
+                                  if (this.choosestoredelivery[i].length !=0 )
+                                    this.totaldelivery[i] = this.totalprices[i]+ this.choosestoredelivery[i][0].price ; 
+                                  else 
+                                       this.totaldelivery[i] = this.totalprices[i] ; 
+                              } 
+                        
+                        
                   
                          
                      },
@@ -142,133 +189,15 @@ export class CartComponent implements OnInit {
                 }, 
                 error =>{
                  console.log(error) ;     
-                 this.loading = false ;
-                 this.reload = true ;    
-                    
                 }) ; 
-        
-        
-        }
+      
+       
 
-       getPage(page) {
-           
-                            this.loading = true ; 
-           
-                            this.page = page ; 
-                            console.log("lalalalal" ) ; 
-                             let max = this.size+((this.page-1)*this.size)  ; 
-                                if (max > this.stores.length) 
-                                        max= this.stores.length ; 
-                                 
-                            for( let index = (this.page-1)*this.size; index < max ; index++) {
-                                this.displaystores.push(this.stores[index]) ; 
-                                let i = this.stores[index];
-                                this.show[i] = false ; 
-                                let del =[];
-                                this.buyall[i] = true ;
-                                 this.model[i].selectedAddress =""; 
-                                for (let j= 0; j <this.model[i].length; j++ ) {
-                                  
-                                    this.model[i][j].selectedAddress =""; 
-                                            
-                                    if (!this.model[i][j]._source.available ) {
-                                      this.buyall[i]=false ; 
-                                   }
-                                    
-                                     this.model[i][j].pic = this.picService.getPicLink( this.model[i][j]._source.picname);
-                                 /* this.storeService.getPic(this.model[i][j]._id )
-                                  .subscribe(
-                                     data4=> {
-                                         // console.log( this.model[i][j] ) ; 
-                                         this.model[i][j].pic = data4['pic'];
+                
+  }
     
-                                     }, error4 =>{
-                                          console.log(error4) ; 
-                                    }) ; */
-                                  this.model[i][j].show = false; 
-                                    this.model[i][j]._source.tempdelivery = this.model[i][j]._source.delivery.filter(x=>x) ;
-                              //  if (this.model[i][j]._source.delivery.length!=0 )   
-                               //     this.model[i][j].choosedelivery=[this.model[i][j]._source.delivery[0]]; 
-                              //  else     
-                                     this.model[i][j].choosedelivery = [] ; 
-                                      this.model[i][j]._source.titleDel = this.model[i][j]._source.tempdelivery.reduce((result, filter) => {
-                                             result =result.concat([filter.title]) ;
-                                                         return result;
-                                         },[]);
-                                     this.model[i][j]._source.selectedIndex=0;
-                                    
-                                 this.model[i][j].choosecolor = this.model[i][j]._source.color[0];
-                                 this.model[i][j].choosequantity = 1;
-                                 this.model[i][j].loading=  false;
-                                 this.model[i][j].boolsize = false ; 
-                                 this.model[i][j].details = false ; 
-                                  this.model[i][j].send = false ; 
 
-                              if( this.model[i][j]._source.selectedCat == "Habillements-Femmes"||
-                                  this.model[i][j]._source.selectedCat=="Habillements-Hommes"|| 
-                                  this.model[i][j]._source.selectedCat=="Habillements-Enfants" ){
-                                      if('sizing' in this.model[i][j]._source) {
-                                          this.model[i][j].boolsize =true ; 
-                                          this.model[i][j].choosesize= this.model[i][j]._source.sizing[ this.model[i][j].choosecolor][0] ; 
-
-                                       //  this.model[i][j].size =new Set([].concat.apply([], Object.values(this.model[i][j]._source.sizing ))); 
-                                         this.model[i][j].size = [].concat.apply([], Object.values(this.model[i][j]._source['sizing'] )).filter((v, i, a) => a.indexOf(v) === i); ; 
-
-                                      
-                                      }
-                                }
- 
-                                console.log("wwwwwwwwwwwwwwwwwwwwwwwwww") ; 
-                                console.log(del) ;
-                                for (let  d of this.model[i][j]._source.delivery ) {
-                                    let flag = false ; 
-                                    for (let del0 of del) 
-                                    if ( d.title == del0.title ){
-                                    flag = true ; break ;  
-                                     } 
-                                    if (!flag ) 
-                                     del.push(d) ; 
-                                }
-                                }
-                                    this.storedelivery[i] =del.filter(n=> n ) ;
-                                   // console.log(this.storedelivery[i]); 
-                                    this.tempstoredelivery[i] = this.storedelivery[i].filter(n=>n) ;
-                                if (this.storedelivery[i].length>  0   ) 
-                                      this.choosestoredelivery[i] =[ this.storedelivery[i][0]];
-                                this.titlestoreDel[i] = this.storedelivery[i].reduce((result, filter) => {
-                                result =result.concat([filter.title]) ;
-                                   return result;
-                              },[]);
-                              //  else
-                                this.send [i] = false ;
-                                this.choosestoredelivery[i] = [] ;  
-                                this.storeshow [i] = false ;
-                                    //console.log(this.choosestoredelivery[i]) ; 
-                                    // console.log( this.totalprices[i]) ; 
-                                    //  this.totaldelivery[i] = this.totalprices[i]+ this.choosestoredelivery[i].price ; 
-
-                              }
-                         
-                           for( let index = (this.page-1)*this.size; index < max ; index++) {
-
-                                   let i= this.stores[index] ; 
-                             
-                                    const sum = this.model[i].reduce(this.add, 0);// => a['_source']['price']+ b['_source']['price'], 0) ; 
-                                  
-                                    this.totalprices[i]=sum 
-                                  if (this.choosestoredelivery[i].length !=0 )
-                                    this.totaldelivery[i] = this.totalprices[i]+ this.choosestoredelivery[i][0].price ; 
-                                  else 
-                                       this.totaldelivery[i] = this.totalprices[i] ; 
-                              }
-                        
-                           this.loading = false 
-           
-                   
-           
-           
-           
-           }
+          
           
   groupBy (xs,s, key) {
   return xs.reduce(function(rv, x) {
@@ -291,13 +220,13 @@ export class CartComponent implements OnInit {
     
     
     gotoStore (storeid ) {
-         this.router.navigate(["../stores/"+storeid+"/store"], { relativeTo: this.route });
+         this.router.navigate(["../../../stores/"+storeid+"/store"], { relativeTo: this.route });
 
         }
     
     gotoArticle (articleid , storeid) {
         console.log(storeid) ; 
-       this.router.navigate(["../stores/"+storeid+"/articles/"+articleid], { relativeTo: this.route });
+       this.router.navigate(["../../../stores/"+storeid+"/articles/"+articleid], { relativeTo: this.route });
 
         }
     deleteArticle (  storeid, article) {
@@ -344,7 +273,6 @@ export class CartComponent implements OnInit {
 
          const sum = this.model[storeid].reduce(this.add, 0);// => a['_source']['price']+ b['_source']['price'], 0) ; 
                              console.log(sum)  ; 
-        
                              this.totalprices[storeid]=sum 
         if (this.choosestoredelivery[storeid].length !=0 )
             this.totaldelivery[storeid] = this.totalprices[storeid]+ this.choosestoredelivery[storeid][0].price ; 
@@ -401,13 +329,10 @@ export class CartComponent implements OnInit {
     
     
     buynow(storeid, article) {
-             var index = this.model[storeid].indexOf(article, 0);
-        this.model[storeid][index].send = true; 
-        if (article.selectedAddress!="" &&  article.choosedelivery.length!=0){
-      
+        if (article.selectedAddress.to!='' ){
+        var index = this.model[storeid].indexOf(article, 0);
 
         this.model[storeid][index].loading = true; 
-         
         console.log(article) ; 
         let  buynow = {};
          let A = {
@@ -418,7 +343,7 @@ export class CartComponent implements OnInit {
                           'quantity':article.choosequantity, 
                           'color': article.choosecolor, 
                           "size":article.choosesize , 
-                          "picname": article._source.picname
+                           "picname": article.picname
                           
                           
                 }
@@ -432,20 +357,17 @@ export class CartComponent implements OnInit {
            
         
              this.buynowService.upArticle(buynow);
-             this.router.navigate(["../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
+             this.router.navigate(["../../../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
 
           this.model[storeid][index].loading =false; 
-          }//else {
-             //   article.selectedAddress.warning = true ; 
-          //  }
+            }else {
+                article.selectedAddress.warning = true ; 
+            }
         }
     
     
     multiplebuynow(storeid){
-          
-        this.send[storeid] = true ; 
-         
-        if (this.model[storeid].selectedAddress!="" && this.choosestoredelivery[storeid].length!=0  ) { 
+           if (this.model[storeid].selectedAddress.to!='' ){
         let buynow = {}; 
          buynow['articles']=[];
         for (let article of this.model[storeid] ) 
@@ -458,8 +380,7 @@ export class CartComponent implements OnInit {
                           'quantity':article.choosequantity, 
                           'color': article.choosecolor,
                           'size': article.choosesize, 
-                          "picname": article._source.picname
-
+                           "picname": article._source.picname
 
                 }
             buynow['articles'].push(A) ; 
@@ -472,8 +393,11 @@ export class CartComponent implements OnInit {
  
            console.log(buynow) ;
         this.buynowService.upArticle(buynow);
-             this.router.navigate(["../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
-      }
+             this.router.navigate(["../../../stores/"+storeid+"/articles/buynow/article"], { relativeTo: this.route });
+        }else{
+                 this.model[storeid].selectedAddress.warning = true ; 
+
+               }
     }
         
     
@@ -512,18 +436,10 @@ export class CartComponent implements OnInit {
         }
                 }
         this.model[k][i]._source.delivery = ad ; 
-       if(  this.model[k][i]._source.delivery.length !=0 )
+        if(  this.model[k][i]._source.delivery.length >0 )
                this.model[k][i].choosedelivery = [this.model[k][i]._source.delivery[0]]  ;
         else  
-        this.model[k][i].choosedelivery = [] ; 
-        
-        if(  this.model[k][i]._source.delivery.length ==0  )
-                this.model[k][i]._source.titleDel = [] ; 
-         else 
-        this.model[k][i]._source.titleDel = this.model[k][i]._source.delivery.reduce((result, filter) => {
-                                             result =result.concat([filter.title]) ;
-                                                         return result;
-                                         },[])
+                 this.model[k][i].choosedelivery = [] ; 
         },error=>{
                  console.log(error ) ; 
                  }
@@ -545,8 +461,9 @@ export class CartComponent implements OnInit {
         //console.log(this.storedelivery[k]) ; 
         this.storedelivery[k] = this.tempstoredelivery[k].filter(n=>n) ; ; 
         console.log(this.storedelivery[k]) ; 
-            this.storeshow[k] = false ; 
+            this.show[k] = false ; 
             this.model[k].selectedAddress = event._source ;  
+        
             let  ad = [] ;
         for (let geo of geolist) 
         if (geo.name == this.model[k].selectedAddress['city'] ) {
@@ -563,19 +480,11 @@ export class CartComponent implements OnInit {
         }
         }
         this.storedelivery[k] = ad  ; 
-       // console.log(this.storedelivery[k]  ) ; 
+        console.log(this.storedelivery[k]  ) ; 
         if(  this.storedelivery[k].length >0 )
-              this.choosestoredelivery[k] = [this.storedelivery[k][0] ] ;
+               this.choosestoredelivery[k] = [this.storedelivery[k][0] ] ;
         else  
-         this.choosestoredelivery[k] = [] ; 
-         const sum = this.model[k].reduce(this.add, 0);// => a['_source']['price']+ b['_source']['price'], 0) ; 
-         this.totalprices[k]=sum ;
-         this.titlestoreDel[k] = this.storedelivery[k].reduce((result, filter) => {
-                         result =result.concat([filter.title]) ;
-                        return result;
-                        },[]);
-      
-                
+                 this.choosestoredelivery[k] = [] ; 
         },error=>{
                  console.log(error ) ; 
                  }
@@ -583,119 +492,4 @@ export class CartComponent implements OnInit {
                 
         }
     
-    templateSelector(item: any, index: number, items: any): string {
-      return item.expanded ? "expanded" : "default";
-    }
-    
-        onItemTap(event) {
-      const listView = event.object,
-          rowIndex = event.index,
-          dataItem = event.view.bindingContext;
-
-      dataItem.expanded = !dataItem.expanded;
-     
-          listView.androidListView.getAdapter().notifyItemChanged(rowIndex);
-      
-    }
-    tapdetailsshow () {
-        this.detailshow = !this.detailshow ; 
-    }
-     public onchange(event: SelectedIndexChangedEventData, k,i ){
-       //console.log(event) ;
-        this.model[k][i].choosedelivery = [this.model[k][i]._source.delivery[event.newIndex]] ;  
-        
-          
-         /* if ( this.model[k][i]._source.choosedelivery.length!=0 ) 
-                      this.model[k][i]._source.total = (this.model.price *this.model[k][i]._source.quantity )   +this.model[k][i]._source.choosedelivery[0]['price']; 
-                    else 
-                       this.model[k][i]._source.total = (this.model.price *this.model[k][i]._source.quantity );
-    */
-       } 
-
-      public onchange2(event: SelectedIndexChangedEventData, k){
-       //console.log(event) ;
-         this.choosestoredelivery[k] = [this.storedelivery[k][event.newIndex]] ;  
-        
-                  const sum = this.model[k].reduce(this.add, 0);// => a['_source']['price']+ b['_source']['price'], 0) ; 
-                   this.totalprices[k]=sum 
-                if (this.choosestoredelivery[k].length !=0 )
-            this.totaldelivery[k] = this.totalprices[k]+ this.choosestoredelivery[k][0].price ; 
-       
-          
-         /* if ( this.model[k][i]._source.choosedelivery.length!=0 ) 
-                      this.model[k][i]._source.total = (this.model.price *this.model[k][i]._source.quantity )   +this.model[k][i]._source.choosedelivery[0]['price']; 
-                    else 
-                       this.model[k][i]._source.total = (this.model.price *this.model[k][i]._source.quantity );
-    */
-       } 
-        
-ontouch(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-} 
-   
-  ontouch2(args: TouchGestureEventData) {
-    const label = <GridLayout>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-}
-
-   ontouch3(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed3");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed3");
-            break;
-    }
-   
-    }
-    public onLoadMoreItemsRequested(args )
-    {
-     
-       console.log('ondemand') ; 
-       const listView = args.object;
-       this.page+=1;
-       if (this.page <=  this.maxpage) {
-      
-                this.getPage(this.page)  ;
-                listView.notifyLoadOnDemandFinished();
-          
-        } else {
-            args.returnValue = false;
-            listView.notifyLoadOnDemandFinished(true);
-        }
-  
-   
-  //  if (this.sizemsg *this.page < this.countmsg ) 
-    
-    
-
-}
-     hide(){
-          util.ad.dismissSoftInput() ;  
-        }
-    
-    reloading(){   
-        console.log('reloading') ; 
-        this.init() ; 
-  
-     }
 }

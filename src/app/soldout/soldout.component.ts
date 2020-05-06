@@ -1,33 +1,21 @@
-import {Component,ViewChild, OnDestroy, OnInit, AfterViewInit,AfterContentInit,  ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, OnInit , OnDestroy} from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {PicService, StoreService, CartService, SearchService} from '../_services/index'; 
+import { PicService, SearchService, StoreService, CartService} from '../_services/index'; 
+import {Store, Article, ArticleCart} from '../_models/index';
 import {Subscription} from 'rxjs';
-//import * as prettyMs from 'pretty-ms'; 
-import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
-import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
-import { SearchBar } from "tns-core-modules/ui/search-bar"; 
-import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
-import { Label } from 'tns-core-modules/ui/label'; 
-//import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
-import * as imagepicker from "nativescript-imagepicker"; 
+import * as prettyMs from 'pretty-ms';
+import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
 
-import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
-
-
-
-import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
- 
-import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
 
 @Component({
   selector: 'app-soldout',
   templateUrl: './soldout.component.html',
   styleUrls: ['./soldout.component.css']
 })
-export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
+export class SoldoutComponent implements OnInit , OnDestroy{
         
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
-
+ maxcart = 30  ; 
   display = false ;   
     display1 = false ;     
   busy: Subscription;
@@ -58,11 +46,6 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
     nosearch :boolean ; 
     fullcartwarning:boolean ; 
     suspend :boolean ; 
-    maxpage = 1; 
-    disp = [] ;
-    alertimg = false ; 
-    displaybanner = false ; 
-    reload = false ; 
   private notif:any= {} ;
   
   constructor(
@@ -71,21 +54,13 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
             private storeService: StoreService, 
             private cartService: CartService, 
             private searchService: SearchService, 
-            private _changeDetectionRef: ChangeDetectorRef,
             private rolesService:  NgxRolesService , 
-            private picService : PicService,
-            private permissionsService : NgxPermissionsService 
-      ){}
+            private permissionsService : NgxPermissionsService, 
+            private picService : PicService ){}
  
     
     ngOnInit() {
-       this.init() ; 
-        
-      
-  }
-    
-    init(){
-         this.loading0 = true ; 
+        this.loading0 = true ; 
         console.log('store') ; 
         this.sub = this.route.params.subscribe(params => {
         console.log (params) ;
@@ -95,7 +70,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
         .subscribe(     
         data0 =>{
         this.suspend = data0['suspend']; 
-           this.reload = false ; 
+           
        if (!this.suspend) {     
             
         this.storeService.getStoreStatus( this.storetitle  )
@@ -109,9 +84,14 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                     
                     
                      if (this.open ) {
-                          this.rolesService.addRole('GUESTStore', ['readStore' ]);
+                           if (this.me  == "annonym") 
+                           this.rolesService.addRole('GUEST', ['readStore' ]); 
+                       else 
+                          this.rolesService.addRole('USER', ['readStore' ]);
+                     
+                     
                      }
-                        
+                         
                      console.log(this.storetitle) ; 
                          
                      this.storeService.getStore( this.storetitle)
@@ -123,8 +103,8 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                              console.log(this.store) ; 
                              //check if i'm the store admin
                             let admin = false ; 
-                             if (this.store.hasOwnProperty("administrators")) 
-                             for (let a of this.store.adminisrators  ){
+                             if (this.store.hasOwnProperty("administrators") ) 
+                             for (let a of this.store.administrators  ){
                                if( a.userid == this.me ) {
                                    admin = true ; 
                                    break ; 
@@ -132,7 +112,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                
                                }
        
-                       if (this.me == this.store.userid ||  admin ) {
+                             if (this.me == this.store.userid ||  admin ) {
                                  
                                     this.permissionsService.addPermission('writeStore', () => {
                                           return true;
@@ -141,26 +121,26 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                   
                                     this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
                                  
-                             }else 
-                                     this.permissionsService.removePermission('writeStore');
-
+                             }
                                  
                                   
-                               
+                                         if (this.store.hasOwnProperty('bannername')){
+                              
+                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
+                                
+
+    
+                               }else{
+                                  
+                                  
+                                  this.banner ="" ; 
+                                 
+                               }  
               
                                  
                                  
-                             this.loading = true ;  
-                             
-                               if (this.store.hasOwnProperty('bannername')){                          
-                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
-                                    this.loading = false ;
-                               }else{
-                                  this.banner ="" ;       
-                                   this.loading = false ;                          
-                               }
-                             
-                           /*  this.storeService.getBanner(this.storetitle)
+                          /*   this.loading = true ;  
+                             this.storeService.getBanner(this.storetitle)
                                  .subscribe (
                                         data=>{
                                             try {
@@ -180,9 +160,9 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                             this.loading =false ; 
                                             this.display = true ; 
                                         }
-                                     ); 
+                                     ); */
                                  
-                            */
+                            
                             
                             
                         },error1 => {
@@ -198,22 +178,15 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                             console.log("XXXXXXXXXXXXXXXXXXXX"); 
                             console.log(data1) ;
                             this.totalArticles = data1['count'] ; 
-                            this.maxpage = Math.ceil( this.totalArticles/this.size)  ; 
-
-                           if( this.totalArticles == 0 ) 
-                                this.nothing =true ; 
-                            else {
-                               this.nothing = false; 
-                               this.getPage(1);
-                            }
+                           
                             }
                         ,error1 =>{
                             console.log(error1) ; 
-                            this.nothing = true ; 
                            }
                         
                         )
-                 
+                    
+                    this.getPage(1);
 
            
                }
@@ -227,14 +200,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
              this.loading0 = false ;    
              this.display1 = true ;
              this.loading = true ; 
-            
-              if (this.store.hasOwnProperty('bannername')){                          
-                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
-               }else{
-                                  this.banner ="" ;                                
-               } 
-           
-           /*this.busy= this.storeService.getBanner(this.storetitle)
+             this.busy= this.storeService.getBanner(this.storetitle)
              .subscribe (
                                         data=>{
                                             try {
@@ -253,18 +219,18 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                             console.log(error) ;     
                                         }
                                      );    
-                */
+                
                 
             }}
        ,error0=>{
                 console.log(error0 ) ;    
-                this.loading0 = false ; 
-           this.reload = true ; 
+                
         }
        )}) ; 
               
         
-        }
+      
+  }
 
        addToCart(article){
          article.loadingcart = 1  ;
@@ -273,7 +239,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
           .subscribe( 
                data0 => {
                    console.log(data0) ; 
-               if ( data0['cartcount']>=100){
+               if ( data0['cartcount']>this.maxcart){
                     
                    this.fullcartwarning = true ;  
                      article.loadingcart = 3; 
@@ -313,9 +279,8 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                  else 
                         this.nosearch = false ; 
                 for ( let i = 0; i <  this.selectArticles.length; i++) {
-                      this.selectArticles[i]._source.pic = this.picService.getPicLink(this.selectArticles[i]._source.picname) ;
-     
-                            /*      this.storeService.getPic(this.selectArticles[i]._id )
+                               
+                                  this.storeService.getPic(this.selectArticles[i]._id )
                                   .subscribe(
                                       data2=> {
                                          
@@ -325,7 +290,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                       ,error2=>{
                                           console.log(error2) ; 
                                           });
-                              */
+                              
                 }   
                //  this.query = '' ; 
              }, error =>{
@@ -413,7 +378,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
             
       
 }
-    subarticles:any = []; 
+    
  getPage (page){
             
      this.loading2 = true ; 
@@ -422,22 +387,22 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                           data=>{
                        
                              
-                              this.subarticles = data ;
+                              this.articles = data ;
                               this.display2= true ; 
-                              if (this.subarticles.length ===0 ) {
+                              if (this.articles.length ===0 ) {
                                   this.nothing = true ; 
                                   
                                   }
                               else 
                                   this.nothing = false ; 
                                this.display1 = true ; 
-                               for ( let i = 0; i < this.subarticles.length; i++) {
-                                   console.log(this.subarticles[i]) ; 
-                                   this.disp[this.subarticles[i]._id ] = false ; 
+                               for ( let i = 0; i < this.articles.length; i++) {
+                                
+                                                                     this.articles[i]._source.pic = this.picService.getPicLink(this.articles[i]._source.picname) ;
 
-                                    this.subarticles[i]._source.pic = this.picService.getPicLink(this.subarticles[i]._source.picname) ;
-
-                                /*  this.storeService.getPic( this.articles[i]._id )
+                                   
+                                   /*   console.log(this.articles[i]) ; 
+                                  this.storeService.getPic( this.articles[i]._id )
                                   .subscribe(
                                       data2=> {
                                          
@@ -446,18 +411,18 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                                       }
                                       ,error2=>{
                                           console.log(error2) ; 
-                                          });
-                              */
+                                          });*/
+                              
                               }   
                                   
                               
-                                this.selectArticles =  this.selectArticles.concat(this.subarticles) ; 
+                               this.selectArticles =  this.articles ;
                                this.loading2 = false ;  
                         }, error=>{
                           console.log(error) ;   
                             this.loading2 = false ;   
                          } ) ; 
-            
+             
      
      }
     
@@ -474,162 +439,12 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
         }
       ngOnDestroy(){
            this.sub.unsubscribe(); 
-          // this.permissionsService.flushPermissions();
-       // this.rolesService.flushRoles();
+           this.permissionsService.flushPermissions();
+        this.rolesService.flushRoles();
          
      }
-        
-    public openDrawer() {
-        this.drawer.showDrawer();
-    }
-
-    public onCloseDrawerTap() {
-        this.drawer.closeDrawer();
-    }
-    
-    
-       @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
-    private drawer: RadSideDrawer;
-
-    ngAfterViewInit() {
-        this.drawer = this.drawerComponent.sideDrawer;
-        this._changeDetectionRef.detectChanges();
-    }
-  
-    
-    
-      displ(a) {
-         this.disp[a]= !this.disp[a];
-         }
-
-    
-     
-
-    
-    
-   public onLoadMoreItemsRequested(args )
-    {
-     
-       console.log('ondemand') ; 
-       const listView = args.object;
-       this.page+=1;
-       if (this.page <=  this.maxpage) {
-      
-                this.getPage(this.page)  ;
-                listView.notifyLoadOnDemandFinished();
-          
-        } else {
-            args.returnValue = false;
-            listView.notifyLoadOnDemandFinished(true);
-        }
-  
-   
-  //  if (this.sizemsg *this.page < this.countmsg ) 
-    
-    
-
-}
-
-    public onItemSelected(args) {
-        const listview = args.object;
-        const selectedItems = listview.getSelectedItems();
-        console.log('selected') ; 
-    //   console.log( selectedItems);
-    }
-
-    public onItemSelecting(args) {
-        console.log('selecting') ;
-      // console.log(args) ; 
-    
-    }
-    
-  
-
-     public onSelectTap() {
-       // this.isSingleMode = false;
-
-        let context = imagepicker.create({
-            mode: "single"
-        });
-        this.startSelection(context);
-    }
-
-
- 
-private startSelection(context) {
-        let that = this;
-
-        context
-        .authorize()
-        .then(() => {
-          
-         
-            return context.present();
-        })
-        .then((selection) => {
-           //that.imageSrc =  selection.length > 0 ? selection[0] : null;
-
-            let  extension = selection[0]._android.split('.').pop() ;
-            if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
-              this.alertimg = false ; 
-                const img:ImageSource = <ImageSource> fromFile(selection[0]._android);
-           
-                 this.store.banner = this.banner; 
-                 this.banner  =  "data:image/"+extension+";base64,"+img.toBase64String(extension );
-              //  console.log(this.banner) ; 
-                        this.isValid = false ; 
-
-            }else 
-                this.alertimg = true ; 
-                
-           
-            
-        }).catch(function (e) {
-            console.log(e);
-        });
-    }
-
-    
-        
-ontouch(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-} 
-   
-  ontouch2(args: TouchGestureEventData) {
-    const label = <GridLayout>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-}
-
-  
-      reloading(){
-        
-        console.log('reloading') ; 
-      this.init() ; 
-        
-        
-        
-        }
-    
     
 } 
-
 
 
 

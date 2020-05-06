@@ -15,7 +15,7 @@
         	 <a    [hidden]='! (n.value=="command") '  routerLink="/stores/{{storetitle}}/commands/{{n.commandid}}"    class="fa fa-cart-arrow-down "  i18n='@@menucommande'>{{n.fullname}}: commande <i class='fa fa-clock-o'>{{n.time}}</i>
        		
         	 </a>
-        	 <a    [hidden]=" !(n.value=='litige' )"  routerLink="/stores/{{storetitle}}/commands/{{n.commandid}}"    class="   fa fa-frown-o  " i18n="@@menulitige" >{{n.fullname}}: litige <i class='fa fa-clock-o'>{{n.time}}</i>
+        	 <a    [hidden]=" !(n.value=='litige' )"  routerLink="/stores/{{storetitle}}/commands/{{n.commandid}}"    class="   fa fa-frown-o  " i18n="@@menulitige" >{{n.fullname}}: retour <i class='fa fa-clock-o'>{{n.time}}</i>
        		
         	 </a>
         	 <a    [hidden]="!( n.value=='closed' )"  routerLink="/stores/{{storetitle}}/commands/{{n.commandid}}"    class=" fa fa-check-square-o" i18n="@@menucommandetermine"  >{{n.fullname}}: commande terminé <i class='fa fa-clock-o'>{{n.time}}</i>

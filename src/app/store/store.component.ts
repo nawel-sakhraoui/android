@@ -1,21 +1,12 @@
-import {Component,ViewChild, OnDestroy ,OnInit, AfterViewInit,AfterContentInit,  ChangeDetectorRef, ElementRef,NgZone  } from '@angular/core';
+import { Component, OnInit , OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import {PicService, StoreService, CartService, SearchService} from '../_services/index'; 
+import {StoreService, CartService, SearchService, PicService} from '../_services/index'; 
+import {Store, Article, ArticleCart} from '../_models/index';
 import {Subscription} from 'rxjs';
-//import * as prettyMs from 'pretty-ms'; 
-import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
-import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
-import { SearchBar } from "tns-core-modules/ui/search-bar"; 
-import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
-import { Label } from 'tns-core-modules/ui/label'; 
-import {Image } from 'tns-core-modules/ui/image'; 
-//import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
-import * as imagepicker from "nativescript-imagepicker"; 
-import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
-import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
-import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions'; 
-import {Folder, path, knownFolders} from "tns-core-modules/file-system"; 
-import * as BitmapFactory from "nativescript-bitmap-factory"; 
+import * as prettyMs from 'pretty-ms'; 
+//import * as b64 from 'resize-base64';  
+import { NgxPicaService } from 'ngx-pica';
+import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
 
 
 @Component({
@@ -23,26 +14,29 @@ import * as BitmapFactory from "nativescript-bitmap-factory";
   templateUrl: './store.component.html',
   styleUrls: ['./store.component.css']
 })
-export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
-
-  maxcart =30 ;
-  subarticles :any =[]  ; 
+export class StoreComponent implements OnInit{
+        
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
-  menuhide = false ; 
-  boolNotif = false ;
-
-  open:boolean = true ; 
+ menuhide = false ; 
+  maxcart = 30 ; 
+    alertimg :boolean ; 
+    saveloading:boolean=false  ; 
+  busy: Subscription;
+  busy2: Subscription;
+  busy3: Subscription;
+  open:boolean ; 
+  extension:string ; 
   nostore = false ; 
   storetitle: string ="" ;   
   userid : string = '' ;
   store : any= {} ; 
   isValid :boolean = true ;
+    file:any ; 
   private sub :any ;
   selectArticles :any =[] ; 
   articles :any= [] ; 
   read :any ='' ; 
-  banner = "";
-  displaybanner = false ;  
+  banner = ""; 
   query = ""; 
   fullcartwarning:boolean; 
     share = false ; 
@@ -52,99 +46,83 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     display1 = false ; 
     display2 = false ; 
     page= 1; 
-    size = 6; 
+    size = 20; 
+    tempbannername :string=""; 
     totalArticles =0;
     nosearch :boolean ;
     nothing : boolean ; 
-    suspend :boolean=false ;
-    disp =[] ; 
-    maxpage = 1; 
-    alertimg = false ; 
-    notifCount= 0 ; 
-    saveloading = false ; 
-    bannerExt="";
-    tempbannername ="" ;
-    imgbanner :ImageSource ;  
+    suspend :boolean ;
+
     private notif:any= {} ;
     private opened: boolean = true ;
-    reload = false ; 
   constructor(
             private route: ActivatedRoute,
             private router: Router,
             private storeService: StoreService, 
             private cartService: CartService, 
             private searchService : SearchService, 
-            private rolesService:  NgxRolesService , 
+            private rolesService:  NgxRolesService ,
+            private picService :PicService,  
             private permissionsService : NgxPermissionsService,
-            private _changeDetectionRef: ChangeDetectorRef, 
-            private ngZone : NgZone, 
-            private picService :PicService ){
-      
-            }
+            private _ngxPicaService: NgxPicaService ){}
  
-   
-     
-    ngOnInit() {
-     this.init() 
- 
-  }
     
-    init(){
-        
-           this.loading0 = true;
-        this.loading = true ;  
-        this.loading2 = true ;
-        
-        
+    ngOnInit() {
+        this.loading0 = true ; 
+        console.log('store') ; 
         this.route.params.subscribe(params => {
-     
+        console.log (params) ;
             
         this.storetitle = params['store']; // (+) converts string 'id' to a number
-         
-       // this.storetitle= this.storetitle.replace(/ /g, "%20");
-     
         
-        
-        this.storeService.getSuspend(this.storetitle )
+        this.storeService.getSuspend (this.storetitle )
         .subscribe(     
-           data0 =>{
-               this.reload= false ; 
-           // console.log(data0) ; 
-            this.nostore = false ; 
-              this.suspend = data0['suspend']; 
+        data0 =>{
+            this.suspend = data0['suspend']; 
+            console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz") ; 
             console.log(this.suspend) ; 
             if (!this.suspend) {         
-            this.storeService.getStoreStatus( this.storetitle )
+            this.storeService.getStoreStatus( this.storetitle  )
             .subscribe(
                 data0 =>{
                      console.log(data0 ) ; 
                      this.open = data0['open']; 
-                    this.permissionsService.addPermission('readStore', () => {
+                  
+                     this.permissionsService.addPermission('readStore', () => {
                             return true;
                            }) 
                     
                     
                      if (this.open ) {
-                          this.rolesService.addRole('GUESTStore', ['readStore' ]);
+                       if (this.me  == "annonym") 
+                           this.rolesService.addRole('GUEST', ['readStore' ]); 
+                       else 
+                          this.rolesService.addRole('USER', ['readStore']);
+                     
+                     
                      }
-                      
-                     console.log(this.storetitle) ; 
+                     
+                 
+                         
+             
                          
                      this.storeService.getStore( this.storetitle)
                      .subscribe(
                          data1=> {
-                          
-                             this.store = data1 ;
-                             
-                                   console.log(this.store) ;   
-                              if (this.store.hasOwnProperty('bannername')){
+                             this.loading0=false ; 
+                             this.display1 = true ; 
+                             this.store = data1 ; 
+                             console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+
+                             console.log(this.store) ; 
+                               if (this.store.hasOwnProperty('bannername')){
                               
                                     this.banner = this.picService.getBannerLink(this.store.bannername) ; 
                                     this.store.banner = this.banner ; 
                                     this.tempbannername = this.store.bannername ;
                                     console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); 
                                     console.log(this.banner) ;
-                                  this.loading0 = false ;  
+                                    this.loading0 = false ;  
 
     
                                }else{
@@ -152,13 +130,10 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                                    this.store.banner = "" ;
                                   this.banner ="" ; 
                                   this.loading0 = false ;
-                               }
-                             
-                             this.loading=false ;  
-                             console.log(this.store) ; 
+                               }  
                              //check if i'm the store admin
-                             let admin = false ; 
-                             if (this.store.hasOwnProperty("administrators") ) 
+                            let admin = false ; 
+                            if (this.store.hasOwnProperty("administrators") ) 
                              for (let a of this.store.administrators  ){
                                if( a.userid == this.me ) {
                                    admin = true ; 
@@ -180,67 +155,54 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                                     this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
                                  
                              }else
-                                this.permissionsService.removePermission('writeStore');
-
+                                 this.permissionsService.removePermission('writeStore');
+                                  
+                            
+              
                                  
-                          
-                      /*        this.picService.getBanner(this.storetitle)
+                                 
+                         /*     this.loading = true ; 
+                             this.busy= this.storeService.getBanner(this.storetitle)
                                  .subscribe (
                                         data=>{
-                                         //    this.ngZone.run(() => {
                                             try {
-                                              console.log(data);
-                                                this.banner = JSON.parse(data['banner'] );
-                                              // console.log(this.banner) ;  
-                                               this.store.banner = this.banner; 
-                                                
-                                                this.loading0 = false ; 
+                                                this.banner = data['banner'] ;  
+                                                this.store.banner = this.banner; 
+                                                console.log(data);
+                                                this.loading = false ; 
                                             }catch(error) {
                                                 this.banner = "" ; 
-                                                this.loading0 = false ; 
+                                                this.loading = false ; 
                                                }
-                                        //   });
                                             
                                         }
                                         ,error=>{
-                                            this.loading0 = false ; 
+                                            this.loading = false ; 
                                             console.log(error) ;     
                                         }
                                      ); 
-                                 */
+                           */      
                             
-                       this.storeService.getArticlesCount (this.storetitle, true)
-                       .subscribe(
-                       data1=> {
-                            console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"); 
-                           console.log(data1) ;
+                    this.storeService.getArticlesCount (this.storetitle, true)
+                    .subscribe(
+                        data1=> {
+                            //console.log("XXXXXXXXXXXXXXXXXXXX"); 
+                           // console.log(data1) ;
                             this.totalArticles = data1['count'] ; 
-                            this.maxpage = Math.ceil( this.totalArticles/this.size)  ;
-                          
-                               
-                          if( this.totalArticles == 0) {
-                                this.nothing = true ; 
-                              this.loading2 = false ;
-                          }else {
-                               this.nothing =false ; 
-                                this.getPage(1);
-                              }
+                           
                             }
                         ,error1 =>{
                             console.log(error1) ; 
-                            this.loading2 = false ; 
                            }
                         
                         )
                     
-                   
+                    this.getPage(1);  
                             
                         },error1 => {
                             this.display1 = true ; 
                               console.log(error1);    
                              this.loading0 = false ; 
-                            this.loading = false ; 
-                            this.loading2 = false ; 
                         });
       
                
@@ -251,10 +213,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                 ,error0=>{
                             this.display1 = true ; 
                              this.loading0 = false ;  
-                    this.loading=false ; 
-                    this.loading2=false ; 
-                   this.nostore = true ; 
-                 
+                        this.nostore = true ; 
                         console.log(error0) ; 
                 }); 
             
@@ -262,49 +221,59 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
        
         
        }else {
-           
-        this.loading = false ;  
-        this.loading2 = false; 
-            this.storeService.getBanner(this.storetitle)
+             this.loading0 = false ;    
+             this.display1 = true ;
+             //this.loading = true ; 
+                            
+                              if (this.store.hasOwnProperty('bannername')){
+                              
+                                    this.banner = this.picService.getBannerLink(this.store.bannername) ; 
+                                    this.store.banner = this.banner ; 
+                                    this.tempbannername = this.store.bannername ;
+                                    // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); 
+                                    //console.log(this.banner) ;
+                                  this.loading0 = false ;  
+
+    
+                               }else{
+                                  
+                                   this.store.banner = "" ;
+                                  this.banner ="" ; 
+                                  this.loading0 = false ;
+                               } 
+                /* this.busy= this.storeService.getBanner(this.storetitle)
              .subscribe (
                                         data=>{
                                             try {
                                                 this.banner = data['banner'] ;  
                                                 this.store.banner = this.banner; 
                                                 console.log(data);
-                                                this.loading0 = false ; 
+                                                this.loading = false ; 
                                             }catch(error) {
                                                 this.banner = "" ; 
-                                                this.loading0 = false ; 
+                                                this.loading = false ; 
                                                }
                                             
                                         }
                                         ,error=>{
-                                            this.loading0 = false ; 
+                                            this.loading = false ; 
                                             console.log(error) ;     
                                         }
                                      );    
                 
-                
+                */
             }}
        ,error0=>{
                 console.log(error0 ) ;    
-                this.loading0 = false  ; 
-         //  this.nostore= true ; 
-                this.loading= false ; 
-           this.reload = true ; 
-                this.loading2= false ; 
+                
                 }
          ) 
-               }); 
-        
-        
-        }
-    
+       });
+  }
     addToCart(article){
          article.loadingcart = 1  ;
 
-          this.cartService.getCountCart()
+          this.cartService.getCountCart ()
           .subscribe( 
                data0 => {
                    console.log(data0) ; 
@@ -316,7 +285,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                     this.fullcartwarning = false ;
         
                     console.log(article) ; 
-                    this.cartService.postToCart( article._id  ) 
+                    this.cartService.postToCart ( article._id  ) 
                     .subscribe(
                        data => {
                         console.log(data) ; 
@@ -334,24 +303,18 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     
     getQuery2(event){
  
-         this.boolNotif = false ; 
-
-        this.enterQuery2(event); 
-        
+    
         if (this.query!="" ) {
         let q= this.query;
         //search article in store 
          this.searchService.searchArticlesStore(this.storetitle, this.query, true )
          .subscribe(
              data => {
-
                  console.log(data ) ;
                  this.selectArticles = data;
-                 if (this.selectArticles.length ==0 ) {
-                        this.nosearch = true ;
-                                              this.drawer.closeDrawer();
- 
-               }  else {
+                 if (this.selectArticles.length ==0 ) 
+                        this.nosearch = true ; 
+                 else 
                         this.nosearch = false ; 
                 for ( let i = 0; i <  this.selectArticles.length; i++) {
                                
@@ -367,33 +330,20 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                                           });
                               
                 }   
-                 
-                }
-                 this.query = '' ; 
-                 this.drawer.closeDrawer();
+               //  this.query = '' ; 
              }, error =>{
                  console.log(error ) ; 
-                         this.drawer.closeDrawer();
-
              }) ;
     //  this.selectArticles=  this.articles.filter(function(element){console.log(element['_source']['title']) ; return element['_source']['title'].includes(q);});
-       }   else {
-        
- 
-              this.selectArticles = this.articles.map(x => x)  ; 
+       }   else 
+              this.selectArticles = this.articles ; 
                     this.nosearch = false ;  
-                    this.drawer.closeDrawer();
-            
-            }
   
     }
     enterQuery2(event){
-      let searchBar = <SearchBar>event.object;
-       this.query = searchBar.text ;  
-        
       if (this.query =="" ) 
       {
-             this.selectArticles = this.articles.map(x => x)  ; 
+             this.selectArticles = this.articles ; 
                     this.nosearch = false ; 
           }
         
@@ -401,33 +351,61 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
     
     
      covsave() {
-       this.saveloading = true ; 
-       console.log ('saving cover') ; 
+         console.log ('saving cover') ; 
+         this.saveloading = true ; 
+         console.log(this.file) ; 
+  
+         this._ngxPicaService.compressImage(this.file, 0.7)//.resizeImage(this.file, 1000, 800)//  {keepAspectRatio: true, forceMinDimensions:false })
+            .subscribe((imageResized: File) => {
+                let reader: FileReader = new FileReader();
+                 reader.addEventListener('load', (event: any) => {
+                      this.banner = event.target.result;
+                      console.log(this.banner) ; 
+                }, false);
+                
+                reader.readAsDataURL(imageResized);
+                this.file = imageResized ; 
+                console.log(this.file) ; 
+                
+         
          
        if (this.tempbannername !="" ) {
          //remove before add 
            this.picService.deleteBanner(this.tempbannername ) 
            .subscribe (
                data => {
-                     console.log(data ) ; 
-                       this.picService.putBanner(this.store.bannername, this.banner, this.bannerExt)//postBanner(this.storetitle, this.banner)
-                       .subscribe(
-                        data => {
-                         this.ngZone.run(() => {
+                     console.log(data) ; 
+                  // let e =this.extension ; 
+                   //if (this.extension=="jpg") 
+                    //e= "jpeg" ; 
+                   // let file  =   new File( [window.atob(this.banner)], this.storetitle+'.'+this.extension, {type: "image/"+e}) ;
+                   //console.log(file)   ; 
+                   
+                   
+                   
+                     this.picService.putBanner( this.storetitle+'.'+this.extension, this.file,  this.extension)
+                    .subscribe(
+                        data=>{
+                              console.log(data) ; 
+                               this.isValid =true ; 
+                               this.store.banner = this.banner ;  
+                                // this.router.navigate([this.returnUrl]);
+                               
+                                this.storeService.putBannerName( this.storetitle , this.storetitle+'.'+this.extension)
+                               .subscribe( data =>{ console.log('done'); this.tempbannername= this.store.bannername;   this.saveloading = false ; } 
+                               ,error=>{  this.saveloading = false ;   });
+         
+                        }
+                        ,error=>{
+                              console.log(error) ;   this.saveloading = false ;
+                        
+                        }) ;
+                    
                          //this.images.push(path.replace(/^.*[\\\/]/, ''));
                   
-                            this.isValid =true ; 
-                            //console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-                            //console.log(data)  ;
-                            this.store.banner = this.banner ;  
-                           // this.router.navigate([this.returnUrl]);
-                           this.saveloading = false ;
-                           this.storeService.putBannerName( this.storetitle , this.store.bannername)
-                            .subscribe( data =>{ console.log('done'); this.tempbannername= this.store.bannername} 
-                            ,error=>{ });
-         
+                      
                                     
-                         });
+                       
                         },
                         error => {
                             
@@ -438,58 +416,78 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
                         
                      
                    
-                   },error=>{}
+           
                
-               ) 
+                
         }    else {
+             let e =this.extension ; 
+              //     if (this.extension=="jpg") 
+              //      e= "jpeg" ;
+              //     let file  =   new File([this.banner.replace(/^data:image\/\w+;base64,/, "")], this.storetitle+'.'+this.extension, {type: "image/"+e}) ;
+              //    console.log(file)   ; 
+                    
+            this.picService.putBanner( this.storetitle+'.'+this.extension, this.file ,  this.extension)
+                    .subscribe(
+                        data=>{
+                             console.log(data) ; 
+                                   this.isValid =true ; 
+                           ;
+                                   this.store.banner = this.banner ;  
+                                 // this.router.navigate([this.returnUrl]);
+                                 this.saveloading = false ;
+                                this.storeService.putBannerName( this.storetitle , this.storetitle+'.'+this.extension)
+                               .subscribe( data =>{ console.log('done'); this.tempbannername= this.store.bannername} 
+                               ,error=>{ });
+         
+                        }
+                        ,error=>{
+                              console.log(error) ;   this.saveloading = false ;
+                        
+                        }) ;
            
-           
-     
-       this.picService.putBanner(this.store.bannername, this.banner, this.bannerExt)//postBanner(this.storetitle, this.banner)
-          .subscribe(
+           }
+         
+         
+            }, (err ) => {
+                throw err.err;
+            })
+         
+         //this.file = this.blobToFile(this.banner, this.storetitle+'.'+this.extension) ;
+         //console.log(this.file) ; 
+         
+
+         
+     /*  this.storeService.postBanner(this.storetitle, this.banner)
+                        .subscribe(
                         data => {
-                         this.ngZone.run(() => {
-                         //this.images.push(path.replace(/^.*[\\\/]/, ''));
-                  
                             this.isValid =true ; 
-                            console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
                             console.log(data)  ;
                             this.store.banner = this.banner ;  
-                             this.tempbannername = this.store.bannername ; 
                            // this.router.navigate([this.returnUrl]);
-                           this.saveloading = false ;
-                           this.storeService.putBannerName( this.storetitle , this.store.bannername)
-                            .subscribe( data =>{ console.log('done');} 
-                            ,error=>{ });
-         
-                                    
-                         });
                         },
                         error => {
                             
                             console.log(error) ; 
                            // this.alertService.error(error2);
-                           this.saveloading = false ;
-                        });
+                          
+                        });*/
        /*this.storeService.postCover(this.storename, this.read)
        .then((result) => {
             console.log(result);
         }, (error) => {
             console.error(error);
         });
-         */
-           
-           }
+         */                          
   }
     
     
    covremove(){
     this.isValid = true ; 
-    this.store.bannername =  this.tempbannername ; 
-    this.banner = this.store.banner ;   
-    
-   // this.imgbanner = <ImageSource> ImageSource.fromFileSync(this.banner);
-      
+    if (this.store.banner=='') 
+       this.banner ="" ; 
+     else 
+        this.banner =  this.store.banner ;  
+       this.store.bannername = this.tempbannername ;        
   }                   
 
 
@@ -497,73 +495,101 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
   
 
   gotoArticle( id:string ) {
-      this.router.navigate(["./../articles/"+id], { relativeTo: this.route });
+      this.router.navigate(["/stores/"+this.storetitle+"/articles/"+id]);
 
   }
    
   updateArticle( id:string ) {
-      this.router.navigate(["./../articles/"+id+"/update"], { relativeTo: this.route });
+      this.router.navigate(["/stores/"+this.storetitle+"/articles/"+id+"/update"]);
 
   } 
  
    
-    readUrl(event:any) {
+readUrl(event:any) {
     if (event.target.files && event.target.files[0]) {
+        this.extension =event.target.files[0]['name'].split('.').pop() ; 
+        if( this.extension =="png" || this.extension =="jpg" ||  this.extension =="jpeg" ){
+              this.alertimg = false ; 
+              this.isValid = false ; 
+              let reader = new FileReader();
+              reader.onload = (event:any) => {
+                        this.banner = event.target.result;
+                        console.log(this.banner) ;
+              }
+              reader.readAsDataURL(event.target.files[0]);
+              
+               
+              this.file = event.target.files[0];
+        //     console.log(this.file[0]) ; 
+      /*  console.log(event.target.files[0]) ; 
+        this.extension =event.target.files[0]['name'].split('.').pop() ; 
+     ;
+   ;                 
         var reader = new FileReader();
-
-        reader.onload = (event:any) => {
+       
+       reader.onload = (event:any) => {
             this.banner = event.target.result;
-           // console.log(this.banner) ;
-       }
-        
+             console.log(this.banner) ;
+        }
         reader.readAsDataURL(event.target.files[0]);
         this.isValid = false ; 
-        this.read = event.target.files[0] ; 
-     //   if (this.banner !=""){
-       //   this.banner = resizeb64(this.banner,  '800' , "auto"); 
+        
+        this.file = event.target.files[0]; 
+        // console.log(event.target.files[0]) ; 
+        //   if (this.banner !="")
+       // console.log(this.banner) ; 
+       // this.banner = b64(this.banner,  500,800 ); 
       
-        // console.log(this.store.banner) ;}
-     //}
+
+        /* this.compressImage(this.banner, 100, 100).then(compressed => {
+                this.banner = compressed;          
+                console.log(this.banner) ; 
+          })   */ 
+            
+        }else{
+            
+            this.alertimg = true ; 
+        }
     }
         
+  
             
       
 }
     
  getPage (page){
-           
+            this.loading2 = true ; 
             this.storeService.getArticlesByStoreTitle(this.storetitle, (page-1)*this.size, this.size)
                      .subscribe( 
                           data=>{
                               console.log('articles'); 
-                             this.subarticles = data ; 
+                             
+                              this.articles = data ;
+                             this.display2 = true ;
                               console.log(data) ; 
-                              this.page = page ; 
-                              for ( let i = 0; i < this.subarticles.length; i++) {
-                                  // console.log(articles[i]) ; 
-                                   this.disp[this.subarticles[i]._id ] = false ; 
-                                  this.subarticles[i]._source.pic = this.picService.getPicLink(this.subarticles[i]._source.picname) ;
-                               /*   this.storeService.getPic( this.subarticles[i]._id )
+                               if (this.articles.length == 0 ) 
+                                this.nothing = true ; 
+                              else 
+                                   this.nothing = false  ; 
+                              for ( let i = 0; i < this.articles.length; i++) {
+                                   console.log(this.articles[i]) ; 
+                                  this.articles[i]._source.pic = this.picService.getPicLink(this.articles[i]._source.picname) ;
+
+                                  
+                                  
+                                  /*  this.storeService.getPic( this.articles[i]._id )
                                   .subscribe(
                                       data2=> {
                                          
-                                         this.subarticles[i]._source.pic= data2['pic'] ; 
+                                         this.articles[i]._source.pic= data2['pic'] ; 
+                                         this.page = page ; 
                                       }
                                       ,error2=>{
                                           console.log(error2) ; 
-                                          });
-                                */
+                                          });*/
+                              
                               }   
-                          
-                              this.articles = this.articles.concat(this.subarticles)  
-                              //this.articles = data ;
-                              this.selectArticles =  this.articles.map(x => x) ;
-
-                              if (this.articles.length == 0 ) 
-                                this.nothing = true ; 
-                              else 
-                                   this.nothing = false  ;  
-                           
+                               this.selectArticles =  this.articles ;
                                this.loading2 = false ; 
                                   
                         }, error=>{
@@ -575,12 +601,7 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
      }
   
     
-    ngOnDestroy(){
-        //  this.sub.unsubscribe(); 
-   //        this.permissionsService.flushPermissions();
-    //    this.rolesService.flushRoles();
-         
-     }
+ 
     
   
  
@@ -595,237 +616,25 @@ export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
         this.menuhide= true ;
         }
     
-    
-    public openDrawer() {
-        this.drawer.showDrawer();
-        this.boolNotif = false ; 
+
+  compressImage(src, newX, newY) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      const elem = document.createElement('canvas');
+      elem.width = newX;
+      elem.height = newY;
+      const ctx = elem.getContext('2d');
+      ctx.drawImage(img, 0, 0, newX, newY);
+      const data = ctx.canvas.toDataURL();
+      res(data);
     }
-
-    public onCloseDrawerTap() {
-        this.drawer.closeDrawer();
-    }
-    
-    
-       @ViewChild(RadSideDrawerComponent, { static: false }) public  drawerComponent: RadSideDrawerComponent;
-        private drawer: RadSideDrawer;
-
-
-        
-     ngAfterViewInit() {
-               
-         
-              this.drawer = this.drawerComponent.sideDrawer;
-                    this._changeDetectionRef.detectChanges(); 
-    }
-     /* ngAfterContentInit(): void {
-    // a little delay so the spinner has time to show up
-                setTimeout(() => {
-      this.listLoaded = true;
-    }, 500);
-  }*/
- 
-  display(a) {
-         this.disp[a]= !this.disp[a];
-   }
-
-    
-    
-    
-   public onLoadMoreItemsRequested(args )
-    {
-     
-       console.log('ondemand') ; 
-       const listView = args.object;
-       this.page+=1;
-       if (this.page <=  this.maxpage) {
-      
-                this.getPage(this.page)  ;
-                listView.notifyLoadOnDemandFinished();
-          
-        } else {
-            args.returnValue = false;
-            listView.notifyLoadOnDemandFinished(true);
-        }
-  
-   
-  //  if (this.sizemsg *this.page < this.countmsg ) 
-    
-    
-
-}
-    
-    
-    public onItemSelected(args) {
-        const listview = args.object;
-        const selectedItems = listview.getSelectedItems();
-        console.log('selected') ; 
-    //   console.log( selectedItems);
-    }
-
-    public onItemSelecting(args) {
-        console.log('selecting') ;
-      // console.log(args) ; 
-    
-    }
-    
-   
-   sBLoaded(args){
-        let searchbar:SearchBar = <SearchBar>args.object;
-        
-            
-            searchbar.android.clearFocus();
-        
-    }
-   onClear(args){
-        let searchbar:SearchBar = <SearchBar>args.object;
-
-        searchbar.dismissSoftInput();
-    }
-
-     public onSelectTap() {
-       // this.isSingleMode = false;
-
-        let context = imagepicker.create({
-            mode: "single"
-        });
-        this.startSelection(context);
-    }
-
-
- 
-private startSelection(context) {
-        let that = this;
-
-        context
-        .authorize()
-        .then(() => {
-          
-         
-            return context.present();
-        })
-        .then((selection) => {
-           //that.imageSrc =  selection.length > 0 ? selection[0] : null;
-
-            let  extension = selection[0]._android.split('.').pop() ;
-            if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
-              this.alertimg = false ;
-              //selection[0].options = {width:600, height:500, keepAspectRatio:true };
-
-           
-                const img:ImageSource = <ImageSource> ImageSource.fromFileSync(selection[0]._android);
-                // selection[0].options = {width:500, height:300, keepAspectRatio:true };
-              //  let base =img.toBase64String(extension ); 
-               
-               console.log(img) ; 
-                this.resizeImageSource(img, 1600).then((resizedImageSrc: ImageSource) => {
-                   
-               console.log(img) ; 
-            
-                const folderDest = knownFolders.temp();
-                const pathDest = path.join(folderDest.path, selection[0]._android.split('/').pop()) ;
-                const saved: boolean = resizedImageSrc.saveToFile(pathDest, extension);
-                if (saved) {
-                    console.log("Image saved successfully!");
-                }
-
-                     
-                     
-     
-
-                
-                 this.banner = pathDest ;
-                
-                
-                console.log("aaaaaaaaaaaaaaaaaaaaaa") ; 
-                console.log(this.banner) ;
-                this.store.bannername = this.storetitle+'.'+extension ;  
-                //    this.imgbanner = <ImageSource> ImageSource.fromFileSync(this.banner);
-
-               //  this.store.banner = this.banner; 
-                 this.bannerExt= extension;
-                 
-               
-                 //  console.log(this.banner) ; 
-                 this.isValid = false ; 
-            })
-            }else 
-                this.alertimg = true ; 
-                
-           
-            
-        }).catch(function (e) {
-            console.log(e);
-        });
-    }
-    
-    OnNotifCount(event) {
-        this.notifCount= event ; 
-       }
-
-ontouch(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-} 
-   
-  ontouch2(args: TouchGestureEventData) {
-    const label = <GridLayout>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-}
-
- ontouch3(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed3");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed3");
-            break;
-    }
-   
+    img.onerror = error => rej(error);
+  })
 }
 
     
-    loadBanner() {
-        this.loading0 = false ; 
-     }
-    
-  private resizeImageSource(imageSrc:ImageSource, maxSize) : Promise<ImageSource> {
-    return new Promise((resolve, reject) => {
-      const bitmap = BitmapFactory.create(imageSrc.width, imageSrc.height);
-      bitmap.dispose((imageBitmap) => {
-        imageBitmap.insert(BitmapFactory.makeMutable(imageSrc));
-        const resizedBitmap = imageBitmap.resizeMax(maxSize);
-        resolve(resizedBitmap.toImageSource());
-      }, (error) => { reject(error); });
-    });
-  }
-    
-    
-      reloading(){
-        
-        console.log('reloading') ; 
-      this.init() ; 
-        
-        
-        
-        }    
 } 
 
 

@@ -1,102 +1,49 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { Title }     from '@angular/platform-browser'; 
+import  { AddressService, UserdetailsService} from './_services/index'; 
 import { Router} from '@angular/router';
+//import firebase from 'firebase/app';
+//import 'firebase/auth';
 
-import * as firebase from 'nativescript-plugin-firebase';
-
-
-import { registerElement } from 'nativescript-angular/element-registry';
-// Register Custom Elements for Angular
-import {  UserdetailsService, MessagesService} from './_services/index';
-import { Carousel, CarouselItem } from 'nativescript-carousel';
-registerElement('Carousel', () => Carousel);
-registerElement('CarouselItem', () => CarouselItem);
-
-import { FilterSelect } from 'nativescript-filter-select';
-registerElement('FilterSelect', () => FilterSelect);
-
-
-registerElement("Ripple", () => require("nativescript-ripple").Ripple);
-import { ActivatedRoute } from '@angular/router';
 @Component({
-      moduleId: module.id,
-
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
-export class AppComponent implements OnInit {
-
-    token ='';
-    user=''; 
-    
-    constructor(private userdetailsService:UserdetailsService, 
-                private router: Router, 
-                private route : ActivatedRoute){
+export class AppComponent {
         
-        
-        }
-  
-    ngOnInit(): void {
+  language :string ; 
+  public constructor(private router: Router  ,
+                    private titleService: Title,
+                  @Inject(LOCALE_ID) protected localeId: string
+      ) { 
+       
       
-                            
-            this.user=JSON.parse(localStorage.getItem('currentUser')).userid ; 
-
-            firebase.init({
-                         showNotifications: true,
-                         showNotificationsWhenInForeground: true,
-
-                         onPushTokenReceivedCallback: (token) => {
-                                    console.log('[Firebase] onPushTokenReceivedCallback:', { token });
-                                    this.token = token ; 
-                                    this.userdetailsService.addFirebase(this.user, this.token) 
-                                    .subscribe(
-                                             data0=>{
-                                                    console.log(data0 ) ;
-                                                   // localStorage.setItem('currentUser', JSON.stringify({userid:this.model.userid,  token: data['token'] }));
-                                                    
-                                              },error0=>{
-                                                   console.log(error0) ;    
-                                              } ); 
       
-                         },
+  if ( !localStorage.getItem("Language") ) {
+          
+            localStorage.setItem('Language', this.localeId); 
+            if ( localStorage.getItem("Language")=="fr") 
+                this.titleService.setTitle("Ceen.dz"); 
+            else 
+                this.titleService.setTitle("Ceen.dz"); 
+            
+     } else 
+       if (localStorage.getItem("Language")!= this.localeId) {
+            window.location.href="http://"+window.location.hostname+":8080/"+localStorage.getItem("Language") ; 
 
-      /*
-    onMessageReceivedCallback: (message: firebase.Message) => {
-        console.log('[Firebase] onMessageReceivedCallback:', { message });
-      }*/
-    })
-      .then(() => {
-          console.log('[Firebase] Initialized');
-          this.router.navigateByUrl( this.route.snapshot.data.data);
-      })
-      .catch(error => {
-            console.log('[Firebase] Initialize', { error });
-            this.router.navigateByUrl( this.route.snapshot.data.data); 
-      });
 
-   /* firebase.init({
-      showNotifications: true,
-      showNotificationsWhenInForeground: true,
-
-      onPushTokenReceivedCallback: (token) => {
-        console.log('[Firebase] onPushTokenReceivedCallback:', { token });
-      },
-
-      onMessageReceivedCallback: (message: firebase.Message) => {
-        console.log('[Firebase] onMessageReceivedCallback:', { message });
       }
-    })
-      .then(() => {
-        console.log('[Firebase] Initialized');
-      })
-      .catch(error => {
-        console.log('[Firebase] Initialize', { error });
-      });*/
-        
-        
+            if ( localStorage.getItem("Language")=="fr") 
+                this.titleService.setTitle("Ceen.dz"); 
+            else 
+                this.titleService.setTitle("Ceen.dz");
+      
 
-   
+      
+        let userid = "annonym"; 
+      if(!localStorage.getItem("currentUser") )
+             localStorage.setItem('currentUser', JSON.stringify({userid,  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlUyRnNkR1ZrWDE5QU1kQjBXMWNSMkJlc2ZNUVVMSGt5VEdkaklsZDV3Njg9IiwiaWF0IjoxNTg1Mzc4OTM4fQ.IvZiaXujfWEFauOpCnIfzLv9f1a0VzpHuiYbE_J6kDM" }));
+
 }
-
 }

@@ -1,0 +1,1 @@
+﻿export * from './historic-sales.component';

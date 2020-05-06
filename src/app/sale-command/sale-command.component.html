@@ -7,8 +7,9 @@
    </div>
 
 </nav>
-<div   i18n-class class=' text-left scroll2'>
-<div style= "background-color:#F5F5F7 ; ">
+<div   i18n-class class=' text-left '>
+
+
 <div class= 'container ' >
 
 
@@ -36,13 +37,22 @@
  <ul class="list-group col-md-6 col-sm-6 col-12">
   <li class="list-group-item" *ngFor = "let a of model.articles " >
   	  	<div class='row'>
-  	  	<div class="col-sm-5 col-5"><a class="btn" (click)="gotoArticle(a.articleid)">  <img [src]="a.pic" class="resize"  alt="Image"></a></div>
+  	  	<div class="col-sm-5 col-5"><a class="btn" (click)="gotoArticle(a.articleid)">  <img alt=""  src="{{a.pic}}" class="resize" ></a></div>
   	 	<div class='col-sm-4 col-4'>	
   	 		<a class="btn" (click)="gotoArticle(a.articleid)"><b>{{a.title}}</b></a> <br>
   	 		
- 	          <i  i18n='@@couleur'>Couleur</i>
-      		 <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
-   			 <br>
+  	<span *ngIf='a.color'>
+ 	   <i i18n="@@couleur"> Couleur </i>
+       <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
+  		</span>
+  		<br>
+  		<span *ngIf="a.size">
+  	    <i i18n="@@taille" > Taille </i>
+  	  	<span class='text-info' style ='width:55px; height:20px; font-size:10px ;  background-color:#D0D0D0;  display:inline-block; text-align: center;  ' > {{a.size}}	</span>
+       </span>        
+       		    
+  	 		
+  	 		 <br>
       		 <span><i i18n='@@quantite'>Quantité</i>   {{a.quantity}} </span>
    			
    		</div>
@@ -131,7 +141,7 @@
   <li class='list-group-item  '> 
 	
    <div class ="col-sm-6 col-6 ">
-	<i i18n='@@de'> De  </i> <a class ="btn btn-link text-info " (click)="gotoUser(model.userid)">  {{fullnamelist[model.userid]}}  <img [src]="avatarlist[model.userid]" class="resize"></a>
+	<i i18n='@@de'> De  </i> <a class ="btn btn-link text-info " (click)="gotoUser(model.userid)">  {{fullnamelist[model.userid]}}  <img alt=""  src="{{avatarlist[model.userid]}}" class="resize"></a>
    </div>
  	<div    *ngIf="model.userrating!=0 && model.steps.close!=0  && model.steps.stop==0" class=' form-group col-sm-6 col-6'>
  	            
@@ -162,28 +172,28 @@
  <form-wizard>
  	   <wizard-step [title]="'1.5'" [isActive]='true'  [hidden]="model.steps.stop==0"  [isValid]="model.steps.stop!=0" [showNext]="false"[showPrev]='false' >
  	    <ul class="ongoingul" >
- 	  	 <li class="ongoingli" *ngIf='model.steps.stop!=0' ><i i18n="@@saleannulee" >Commande annulée le:</i> <span dir="ltr"> {{model.steps.stop}}</span></li>
+ 	  	 <li class="ongoingli" *ngIf='model.steps.stop!=0' ><i i18n="@@saleannulee" >Commande annulée le </i> <span dir="ltr"> {{model.steps.stop}}</span></li>
  	  
     	</ul>
      </wizard-step>
 	  <wizard-step [title]="'1'"  [hidden]="model.steps.stop!=0"   [isValid]="model.steps.prepare!=0" [showNext]='false' [showPrev]='false' >
  	    <ul class="ongoingul">
  	    						
-   		<li class="ongoingli"  *ngIf="model.steps.prepare==0 "><i i18n="@@saleprete">Commande prête: </i><button [disabled]="model.steps.prepareloading" class='btn btn-warning fa fa-check'  (click)= 'prepareDone(commandid,  model.userid); '>
+   		<li class="ongoingli"  *ngIf="model.steps.prepare==0 "><i i18n="@@saleprete">Commande prête le </i><button [disabled]="model.steps.prepareloading" class='btn btn-warning fa fa-check'  (click)= 'prepareDone(commandid,  model.userid); '>
    																							  <i *ngIf="model.steps.prepareloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>						
    																					</button>
    		</li>
-     	<li class="ongoingli" *ngIf='model.steps.prepare!=0 '><i i18n="@@salepreparee">Commande préparée le:</i> <span dir="ltr">{{model.steps.prepare}}</span>  </li>
+     	<li class="ongoingli" *ngIf='model.steps.prepare!=0 '><i i18n="@@salepreparee">Commande préparée le </i> <span dir="ltr">{{model.steps.prepare}}</span>  </li>
      	</ul>
      </wizard-step>
  	 
  	 <wizard-step  [title]="'2'"  [hidden]="model.steps.stop!=0" [isActive]="model.steps.prepare!=0" [isValid]="model.steps.send!=0" [showNext]='false' [showPrev]='false'>
 	  <ul class="ongoingul">
-	   	<li class="ongoingli" *ngIf='model.steps.send==0'><i i18n='@@saleenvoie'>Envoie de la commande:</i> <button [disabled]="model.steps.sendloading" class='btn btn-warning fa fa-check' (click)= 'sendDone(commandid,  model.userid); '>   
+	   	<li class="ongoingli" *ngIf='model.steps.send==0'><i i18n='@@saleenvoie'>Envoie de la commande </i> <button [disabled]="model.steps.sendloading" class='btn btn-warning fa fa-check' (click)= 'sendDone(commandid,  model.userid); '>   
 	   																     							<i *ngIf="model.steps.sendloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>						
 	   																			 </button> 
 	   	</li>
-    	<li class="ongoingli" *ngIf='model.steps.send!=0'><i i18n="@@saleenvoyee">Commande envoyée:</i><span dir="ltr"> {{model.steps.send}} </span></li>
+    	<li class="ongoingli" *ngIf='model.steps.send!=0'><i i18n="@@saleenvoyee">Commande envoyée le </i><span dir="ltr"> {{model.steps.send}} </span></li>
     	</ul>
 	   
  	 </wizard-step>
@@ -194,33 +204,40 @@
     	</ul>
 	 </wizard-step>
 	 
-	   <wizard-step [title]="'4.5'" [hidden]="model.steps.litige==0 || model.steps.stop!=0" [isActive]='model.steps.litige!=0' [isValid]= 'model.steps.litigesolved!=0'  [showNext]='false' [showPrev]='false' >
-        <ul class="ongoingul">
-        <li class="ongoingli"  *ngIf="model.steps.litige!=0"><i i18n="@@salelitige">
-              Début du litige:</i><span dir="ltr"> {{model.steps.litige}}</span> 
-        </li>
+	      <!-- wizard-step [title]="'4.5'" [hidden]="model.steps.litige==0 || !model.steps.stop==0 " [isActive]='model.steps.litige!=0'   [showNext]='false' [showPrev]='false' >
+     <ul class="ongoingul" >
         
-        <li class="ongoingli"  *ngIf="model.steps.solvedlitige==0">
-        	
-           <p class="lead" i18n="@@salecontacterclient">Contacter le client pour trouver une solution ! </p>
+        <!-- li class="ongoingli" *ngIf="model.steps.solvedlitige==0">
+           
+           <p class="lead" i18n="@@contactermagasin"> Veuillez contacter le magasin pour trouver une solution à votre litige</p>
+          <i i18n="@@waitlitigeresolu"> Le litige est résolu </i> <button [disabled]="model.steps.solvedlitigeloading" class="btn btn-info" (click)=" solvedlitigeDone(m._id, i, model.storetitle )" > <i class="fa fa-check"></i>
+					                                 <i *ngIf="model.steps.solvedlitigeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+					               
+	           						     </button>
         </li>
         
        
-         <li class="ongoingli"  *ngIf="model.steps.solvedlitige !=0" ><i i18n="@@salelitigeresolu"> 
-          Litige résolu le:</i> <span dir="ltr">{{model.steps.solvedlitige}}</span> 
+         <li class="ongoingli" *ngIf="model.steps.solvedlitige !=0"> 
+         <i i18n="@@litigeresolu"  >Litige résolu le:</i> <span dir='ltr'>{{model.steps.solvedlitige}} </span>
          </li>
-         <br>
+          
+         </ul>
         
-        </ul>
-	  </wizard-step>
-	 
-	  <wizard-step [title]="'4'" [hidden]="(model.steps.litige!=0 && model.steps.solvedlitige==0 ) || model.steps.stop!=0" [isActive]='model.steps.receive!=0' [isValid]="model.steps.close!=0"  [showNext]='false' [showPrev]='false' >
-  		<ul class="ongoingul">
-        <li class="ongoingli" *ngIf="(model.steps.close==0 &&  model.steps.litige ==0)|| (model.steps.close==0 &&  model.steps.solvedlitige !=0)  "><i i18n="@@saleattentefermeture">Attente de la fermeture de la commande</i></li>
-	    <li class="ongoingli" *ngIf="(model.steps.close!=0 && model.steps.litige ==0) || (model.steps.close!=0 &&  model.steps.solvedlitige !=0)  "><i i18n="@@salecommandeferme">Commande fermé le</i> <span dir="ltr">{{model.steps.close}}</span></li>
- 		</ul>
-     </wizard-step>
+	  </wizard-step> 
+      -->
+     <wizard-step [title]="'4'"   [hidden]="!model.steps.stop==0"  [isActive]='model.steps.receive!=0' [isValid]="model.steps.close!=0"  [showNext]='false' [showPrev]='false' >
+  		  <ul class="ongoingul" >
+	
+	    	<li class="ongoingli" *ngIf="model.steps.litige!=0" >
+            <i i18n='@@litigeouvert'>Retour le </i><span dir='ltr'> {{model.steps.litige}}</span> 
+   		</li>
+	    <li class="ongoingli" *ngIf="model.steps.close!=0 "  > <i  i18n="@@cloasecommande" >Commande fermée le </i> <span dir ="ltr" >{{model.steps.close}}</span></li>
+		
+	
+      
+		</ul>
      
+     </wizard-step>
    
 	 
 </form-wizard>
@@ -246,8 +263,8 @@
 		 <ul class="chat">
                      <li *ngIf='message.fromMe' i18n-class class="left clearfix"><span i18n-class class="chat-img pull-left">
                       	
-                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' 
-                      alt="User Avatar" /></span>
+                      <span class=" profile-picture "> <img alt="" class=" resize"  id="avatar2" src='{{avatarlist[message.from]}}' 
+                       /></span>
                         </span>
                             <div class="chat-body clearfix">
                                 <div class="header">
@@ -260,15 +277,15 @@
                             </div>
                         </li>
                          <li *ngIf='!message.fromMe' i18n-class class="right clearfix"><span i18n-class class="chat-img pull-right">
-                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarlist[message.from]'
-                            alt="User Avatar"/> </span>
+                       <span class=" profile-picture ">  <img alt="" class=" resize"  id="avatar" src='{{avatarlist[message.from]}}'
+                          /> </span>
                         </span>
                         <div class="chat-body clearfix">
                                 <div class="header">
                                     <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message.date}}</small>
                                     <strong i18n-class class="pull-right primary-font">{{fullnamelist[message.from]}}</strong>
                                 </div>
-                                <p>
+                                <p class="pull-right">
                                   {{message.text}}
                                 </p>
                             </div>
@@ -317,5 +334,5 @@
   
   </div>
   </div>
-  </div>
+  
   </div>

@@ -1,162 +1,259 @@
-<ScrollView (tap)="hide()" >
-    <GridLayout rows="*,auto">
-    
-         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
-        <FormattedString>
-            <Span text="Problème de connexion... "></Span>
-            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
-        </FormattedString>
-    	</Label>
+<StackLayout>
+  <Label text="profile works" textWrap="true"></Label>
+  <Label text="This is a migrated component" textWrap="true"></Label>
+  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
+</StackLayout>
 
-      
-        <GridLayout   [visibility]="!loading  && !reload ?'visible':'collapse'"  row="0"  rows="auto,auto, auto, auto, auto, auto,auto,auto" columns="*">
-           
-            <Image backgroundColor='rgba(0,0,0, 0.4)' (touch) = 'displayavatar = true'  row="0" col="0" src="{{avatar}}" stretch="aspectFill"
-                class="profilePic"></Image>
-   
-           	<ng-template ngxPermissionsOnly="ADMINProfile">
-          
-                <GridLayout     [visibility]="true ?'visible':'collapse'"  class="profilePic"   row="0" columns="*,auto" rows='*,auto'>
-    <StackLayout   margin="0,35,0,0"  row="0" col="1" orientation="horizontal">
-   <Label (touch)="ontouch3($event)" *ngIf="isValid"     class="fas up"  text="&#xf03e;" (tap)='onSelectTap() '></Label>
-   </StackLayout>
-   
-   <StackLayout   margin="0,30,0,0"  row="0" col="1" orientation="horizontal">
-   <Label  [isEnabled]="!loadingavatar" (touch)="ontouch3($event)" *ngIf="!isValid" class="fas up " text="&#xf0c7;" (tap)="avatarsave()" ></Label>
-    <ActivityIndicator *ngIf="loadingavatar" color='#FFA500' rowSpan="2" [busy]="loadingavatar"></ActivityIndicator>
-   
-   <Label  (touch)="ontouch3($event)"   (touch)="ontouch3($event)"   *ngIf="!isValid && !loadingavatar" class="fas up " text="&#xf00d;" (tap)="avatarremove()"></Label>
-   </StackLayout>   
-                </GridLayout>
-				<textView editable ="false" row="1" text="Le format de l'image est invalide" *ngIf='alertimg' class="alert"></textView>
-          </ng-template>
-                
-                <GridLayout margin="0,0,0,50" horizontalAlignment="center"  row="2" columns="auto,auto">
-            <Label margin="15,0,0,0"  col="0" text="{{model.fullname}}" class="title-profile"
-                textAlignment="center"></Label>
-           <ng-template ngxPermissionsOnly="ADMINProfile">
-                
-             <Button col="1" backgroundColor='transparent' (tap)="logout()" class="fass btn btn-active " text="&#xf2f5;" color="#00BFFF" fontSize='16' width="40" textAlign="center" ></Button>
-         </ng-template>
-                </GridLayout>
-            <StackLayout  row="3"   >
-      	        <AbsoluteLayout  height="35" width="90"  android:cursorVisible="false" >   
-                 <StarRating left="-75" top="-10"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".4" android:scaleY=".4"  [value]="model.ratingsum/model.ratingcount" ></StarRating>
-                </AbsoluteLayout>
-                 <Label fontSize="10" color='#333333'   text="({{model.ratingcount}} votes)" textAlignment="center" ></Label>
-           </StackLayout>
-                
-             <Button margin="0,0,20,0" row="4" width="50%" text="&#xf0e0; Message" color="white" backgroundColor= '#00BFFF'
-                textAlignment="center" class="fass btn  btn-active " (tap)='sendMessage();'></Button>
+<!--
+Original Web template:
 
-            <GridLayout row="5" col="0" rows="auto, *, auto" columns="auto, auto,auto"
-                class="additional-info">
-                <Label margin="13,0,0,0" row="0" col="0" text="&#xf3cd;" class="fass font icon-aditional-info"></Label>
-  				 <MaskedTextField editable="false"  row="0" col="1"  
-                       
-                       [(ngModel)]="model.phone"
-                       mask="00 00 00 00 00" class="noborder"></MaskedTextField>
+<div i18n-class class="scroll2 text-left" >
+<ngx-loading [show]="loading2" [config]="{ backdropBorderRadius: '3px' }" > </ngx-loading>  
+<div  class='container card ' *ngIf ="display2" >
 
-                <Label row="1" col="0" text="&#xf3c5;" class="fass font icon-aditional-info"></Label>
-                <Label *ngIf='!editLocation'  row="1" col="1" text="{{model.location}}" class=" description-aditional-info"></Label>   
-            <ng-template ngxPermissionsOnly="ADMINProfile">
-            	
-            	<StackLayout  row="1" col="2" orientation="horizontal" >
-            	      <Label (touch)="ontouch($event)" fontSize="18" margin='4,0,0,0' text='&#xf044;' class='fas' *ngIf="!editLocation" (tap)='editingLocation()'></Label>
-            	      <Label (touch)="ontouch($event)" fontSize="18" margin='4,25,0,0' text='&#xf0c7;' class="fas" *ngIf="editLocation" (tap)='saveLocation()'></Label>
-            	      <Label (touch)="ontouch($event)" fontSize="18" margin='4,0,0,0' text='&#xf00d;' class="fas" *ngIf="editLocation" (tap)='removeLocation()'></Label>
-            	 </StackLayout>
-            	 
-            	<stackLayout [visibility]="editLocation ?'visible':'collapse'" row="1" col="1">
-             
-              	
-            	 
-            	<GridLayout columns='auto,auto' row="1">
-      			  <!-- Label margin="5,0,0,0" text='&#xf13a;' col="0" class="fas"></Label-->
-       			<DropDown  margin="0,0,0,5"   #dd   col="1"  
-         		textAlignment="left"
-                  [items]="cities "
-                  class="item-drop-down"
-                  [(ngModel)]="selectedIndex"
-                  (selectedIndexChanged)="onchange($event)"
-					colSpan="2"
-					itemsPadding="8"
-					
-      			   >
-       			 </DropDown> 
-				</GridLayout>
-            	
-            	<!-- GridLayout rows="auto, auto, *, auto" class="page">
-    <GridLayout row="0" columns="*, *, *, *" >
-        <Button text="Enable Location" col="0" textWrap="true" (tap)="enableLocationTap()"></Button>
-        <Button text="Get Current Location" col="1" textWrap="true" (tap)="buttonGetLocationTap()"></Button>
-        <Button text="Start Monitoring" col="2" textWrap="true" (tap)="buttonStartTap()"></Button>
-        <Button text="Stop Monitoring" col="3" textWrap="true" (tap)="buttonStopTap()"></Button>
-    </GridLayout>
-    <ListView row="2" [items]="loca">
-        <ng-template let-item="item">
-            <Label text="{{ item.latitude + ', ' + item.longitude + ', ' + item.altitude }}" ></Label>
-        </ng-template>
-    </ListView>
-    <Button text="Clear" row="3" (tap)="getCity()"></Button>
-</GridLayout-->
-            	</stackLayout>
-       </ng-template>
-            </GridLayout>
+		
+							
+					       <div style='margin-bottom:15px; ' class=" row ">
+					       		<div class="col-sm-9 col-12">  
+									<span style='display:inline-block; font-size:xx-large; color:red ; '><b> {{model.fullname}}</b> </span>
+							  		<span style='display:inline-block;'> <star-rating [starType]="'svg'" [rating]="model.ratingsum/model.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> </span>
+							   		<span style='display:inline-block; font-size:x-small; 'i18n='@@uservotes'>{{model.ratingcount}}votes</span>
+								
+								<!-- span class="label label-purple arrowed-in-right">
+									<i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+									online </span->
+								</div>
+							</div> 
+			<div class="row">
+		    <div  class=" col-sm-4  col-12 res">
+				
+			<div class="row">
+		
+				
+							<div  *ngIf ="display2" class=" profile-picture ">
+							
+								  <img class=" resize" alt=" Avatar" id="avatar2" [src]=avatar />
 
-			<GridLayout   [visibility]="stores.length!=0 ?'visible':'collapse'"   rows="*,*" row="6" col="0"  class="additional-info">
-					<Label row="0" text="Magasins: "class=" description-aditional-info" ></Label>
-                
-       				   
-					<RadListView  row="1" [items]="stores">
-   					 <ng-template let-s="item">
-          				     
-    			    			    <Label (touch)="ontouch($event)" nsRouterLink="../../stores/{{s._id}}/store" textWrap='true' fontSize="18"  color='#444444' [text]="s._id"  ></Label>
-   							
-   					 </ng-template>
-					</RadListView>
-                  
-            </GridLayout>
-            <!-- 
-            <GridLayout row="3" col="0" rows="auto,auto" columns="*,*,*"
-                class="content-followers">
-                <Label row="0" col="0" text="6" class="followersTxtValue"></Label>
-                <Label row="1" col="0" text="Posts" class="followersTxt"></Label>
+ 							 <ng-template ngxPermissionsOnly="ADMINProfile">
+ 								<div class="selector">
 
-                <Label row="0" col="1" text="2300" class="followersTxtValue"></Label>
-                <Label row="1" col="1" text="Followers" class="followersTxt"></Label>
+									<label class ='img-selector btn btn-outline-info' [hidden]="!isValid" for="file"><i class="fa fa-file-image-o" ></i> </label>
 
-                <Label row="0" col="2" text="400" class="followersTxtValue"></Label>
-                <Label row="1" col="2" text="Following" class="followersTxt"></Label>
-            </GridLayout>
+									<input type='file' id="file" name="file" (change)="readUrl($event)" style="display: none;" >
+                                                        
 
-            <WrapLayout row="4" col="0" alignItems="left" class="content-photos">
-                <Image src="~/images/New-York.jpg" stretch="aspectFill" class="listImage"
-                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
-                <Image src="~/images/ny2.jpg" stretch="aspectFill" class="listImage"
-                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
-                <Image src="~/images/food.jpg" stretch="aspectFill" class="listImage"
-                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
-                <Image src="~/images/wedding.jpg" stretch="aspectFill" class="listImage"
-                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
-                <Image src="~/images/Selfie.jpg" stretch="aspectFill" class="listImage"
-                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
-                <Image src="~/images/nature.jpg" stretch="aspectFill" class="listImage"
-                    width="33.3%" decodeHeight="120" height="120" loadMode="async"></Image>
-            </WrapLayout> -->
-           <ng-template ngxPermissionsOnly="ADMINProfile">
+									<button  class ='img-selector btn btn-outline-info'  [hidden]="isValid" (click)="this.avatarsave()"><i class='fa fa-save'></i> <span *ngIf="loadingavatar "class= "fa fa-refresh fa-spin "></span></button>
+									<button  class ='img-selector btn btn-outline-info' [hidden]="isValid" (click)="this.avatarremove()"><i class='fa fa-close'></i></button>
+								</div> 
+							</ng-template>
+							</div>
+				</div>
+				
+			     <div *ngIf ="display1" class='row'> 	
+					 <a i18n='@@contacter' class="btn btn-sm btn-block btn-info  fa fa-envelope resize" (click)= 'sendMessage()'>
+						 Contacter 
+					 </a>	
+				</div>
+							
+				
+
+            </div>
             
-           <GridLayout row="7"  rows="*,*"  class="additional-info">
-			<Label  row="0" text="Mes Addresses: "class=" description-aditional-info" ></Label>
-			<StackLayout row="1" >
-            <app-adress ></app-adress>
-            </StackLayout>
-           </GridLayout>
-           </ng-template>
-        </GridLayout>
-            <StackLayout  row="1"   >
-      <ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
-    </StackLayout>
+            <div class='col-sm-8 col-12' >
+                       
+<!--
+					   <div   [ngBusy]="{busy: busy1, message: 'Loading...', backdrop: false}"   ></div>
+	->		
+	         <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+	          
+			<div *ngIf='display1' style ='margin-left:15px; margin-right:15px ; ' >
+				
+
+							<div style ='margin-bottom:15px; ' class="row">
+									<div i18n="@@telephone" class="col-sm-4 col-4"> <b>Téléphone</b> 
+									</div>
+									
+									
+									<div class="col-sm-6 col-6" >
+									<input readonly style=' margin-right:5px;' [textMask]="{mask: phonemask}"   [(ngModel)]="model.phone"  />
+									</div> 
+									<!-- ng-template ngxPermissionsOnly="ADMINProfile">
+									<div class="col-sm-6 col-6" >
+									<input readonly *ngIf='!editPhone' style=' margin-right:5px;' [textMask]="{mask: phonemask}"   [(ngModel)]="model.phone"  />
+									<input  *ngIf='editPhone' style=' margin-right:5px;' [textMask]="{mask: phonemask}"  type="tel" placeholder="model.phone" name="phone" [(ngModel)]="model.phone"  #phone="ngModel" />
+									
+									</div>
+									
+									<div class="col-sm-2 col-2" style='display:inline-block;' >
+									<a class="btn  fa fa-pencil"  *ngIf='!editPhone' style='display:inline-block;' (click)='editingPhone()'> </a>
+						
+								    <a class="btn fa fa-check"  *ngIf='editPhone' style='display:inline-block ;margin-right:5px; ' (click)='savePhone()'></a>
+								    <a class="btn fa fa-remove" *ngIf='editPhone' style='display:inline-block; ' (click)='removePhone()'></a>
+								    
+								    </div>
+								    </ng-template->
+							</div>
+
+							<div style ='margin-bottom:15px; ' class="row">
+									<div i18n="@@localisation" class="col-sm-4 col-4"><b>Localisation <i class="fa fa-map-marker light-orange bigger-110"></i></b> 
+									</div>
+									
+									<ng-template ngxPermissionsOnly="USER">
+									<div class="col-sm-6 col-6" >
+									<span i18n="@@location" style=' margin-right:5px;'>{{model.location}}</span>
+			 						
+									</div> 
+						
+									</ng-template>
+									
+									<ng-template ngxPermissionsOnly="ADMINProfile">
+									
+									<div class="col-sm-6 col-6" >
+									<span i18n="@@location"  *ngIf='!editLocation' style=' margin-right:5px;'>{{model.location}}</span>
+   									<ngx-select-dropdown  *ngIf='editLocation'  (change)="getLocation($event)" [multiple]="false" i18n-value [(value)]="location" [config]="locationconfig" i18n-options [options]="locations"></ngx-select-dropdown>
+									
+									</div>
+									
+									<div class="col-sm-2 col-2" style='display:inline-block;' >
+									<a class="btn fa fa-pencil"  *ngIf='!editLocation' style='display:inline-block;' (click)='editingLocation()'> </a>
+						
+								    <a class="btn fa fa-check"  *ngIf='editLocation' style='display:inline-block ;margin-right:5px; ' (click)='saveLocation()'></a>
+								    <a class="btn fa fa-remove" *ngIf='editLocation' style='display:inline-block; ' (click)='removeLocation()'></a>
+								    </div>
+								    </ng-template>
+								
+							</div>
+
+					
+
+							
+							<div style ='margin-bottom:15px; ' *ngIf="stores.length!=0"  class="row">
+									<div i18n="@@magasins" class="col-sm-4  col-4"><b> Magasins </b></div>
+
+									<div class="col-sm-6 col-6 list-group">
+										
+										
+										<a  class="list-group-item bg-light text-warning "*ngFor=" let s of stores "routerLink='../../../../stores/{{s._id}}/store' > {{s._id}} </a>
+										
+										
+										 
+						
+									</div>
+									
+								
+							</div>					
+							<div style ='margin-bottom:15px; ' *ngIf="true"  class="row"> 	
+									<div i18n='@@creation' class="col-sm-4 col-4"><b> Création</b>
+									 </div>
+
+									<div class="col-sm-8 col-8">
+										<span dir="ltr">{{model.joined}}</span>
+									</div>
+							</div>
+							<ng-template ngxPermissionsOnly="ADMINProfile">
+							<div style ='margin-bottom:15px; ' *ngIf="true"  class="row"> 	
+									<div i18n='@@addresses' class="col-sm-4 col-4"><b>Addresses</b>
+									 </div>
+
+									<div class="col-sm-8 col-8">
+										<a  scrollTo scrollableElementSelector="#collapseExample"   class ="  list-goup-item-info  " data-toggle="collapse" href="#collapseExample"  aria-expanded="false" aria-controls="collapse"   ><i i18n="@@afficher">Afficher</i> <span class="fa fa-angle-down"></span></a> 
+									
+										 
+									</div>
+							</div>
+							
+						</ng-template>
+				
+						
+					</div>
+							
+							
+					</div>
+
+				</div>	
+
+
+ 
+ <div class =" col-md-10 col-12  col-md-offset-3  collapse" id ="collapseExample">
+ 	<app-adress></app-adress>
+</div> 
+ 
+ <!-- div class ="row collapse" id ="collapseExample">
+ <app-adress></app-adress>
+ </div->
+ <!-- nav class="nav nav-tabs">
+
+         <a class="nav-item nav-link active"   href="#p1" data-toggle="tab">Details</a>
+		<a class="nav-item nav-link"   href="#p2" data-toggle="tab">Feedback</a>	
+</nav>
+ <div class="tab-content">
+  <div class="tab-pane active" id="p1">
+    <div class="card-block" style ="padding :50px;">
+     
+  	</div>
+  </div>
+  
+  <div class="tab-pane" id="p2">
+         <div class ="card-block list-item"  *ngFor="let m of model.rating " >
         
-      </GridLayout>
-</ScrollView>
+			<span class
+			="form-inline my-2 my-lg-0" > <span class=" profile-picture "> <img class=" resize0" alt=" Avatar" [src]='avatarlist[m.userid]' 
+                      alt="User Avatar" /></span>
+               
+                             <strong class="primary-font">{{fullnamelist[m.userid]}}</strong>      
+                             <star-rating id= "m.userid" [starType]="'svg'"  [rating]="m.value"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating>
+               				       
+
+               </span>
+                   <p class="card-text" style ='margin-left :100px ; padding-bottom:50px;  border-bottom:1px solid #C0C0C0 ;  '> {{m.feedback}}</p>   
+      	  
+ 	           
+ 	          
+ 	    </div >
+ 	    <div *ngIf ='model.rating.length ==0'>
+ 	       	<p class="card-text " style ="padding:50px ; ">	No rating </p>
+ 	     </div>
+  </div>
+</div>
+
+
+ 
+ 	 
+ </div->
+    
+			<!-- div class="col-sm-12">
+						<div class="col-xs-12 col-sm-6">
+							<div class="widget-box transparent">
+								<div class="widget-header widget-header-small">
+									<h4 class="widget-title smaller">
+										<i class="ace-icon fa fa-check-square-o bigger-110"></i>
+										Little About Me
+									</h4>
+								</div>
+
+								<div class="widget-body">
+									<div class="widget-main">
+										<p>
+											My job is mostly lorem ipsuming and dolor sit ameting as long as consectetur adipiscing elit.
+										</p>
+										<p>
+											Sometimes quisque commodo massa gets in the way and sed ipsum porttitor facilisis.
+										</p>
+										<p>
+											The best thing about my job is that vestibulum id ligula porta felis euismod and nullam quis risus eget urna mollis ornare.
+										</p>
+										<p>
+											Thanks for visiting my profile.
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+				
+				
+	         </div>
+	        
+	         </div ->
+	         </div>
+</div>
+-->

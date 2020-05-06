@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
  import { Observable } from 'rxjs/Observable';
- //import * as io from 'socket.io-client';
+ import * as io from 'socket.io-client';
 
 import { HttpClient } from '@angular/common/http';
 
@@ -8,10 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import {ConfigService} from './api-config.service'; 
 
-// import * as SocketIO from "nativescript-socket.io"; 
 
-import { NgZone} from '@angular/core';
-import { SocketIO } from "nativescript-socketio";  
 
 @Injectable()
 export class MessagesService {
@@ -21,13 +18,9 @@ export class MessagesService {
     private host :string ; 
     
    
-    constructor(private http: HttpClient, 
-                private ngZone : NgZone, 
-                private socketIO :SocketIO) { 
+    constructor(private http: HttpClient) { 
     
          this.host = ConfigService.storeServer; 
-         //this.socket = SocketIO.connect(this.host) ; 
-        
     }
    
     putOngoingMessage(commandid:string, message:string) {
@@ -37,37 +30,27 @@ export class MessagesService {
     }
     
     
-   sendMessage(message, id ){ 
-   
-        this.socketIO.connect() ; 
-         this.socketIO.emit('add-message', {"message":message, "id":id});
-       this.socketIO.disconnect () ; 
-       console.log (message) ; 
-    
-   } 
-    
+   /* sendMessage(message, id ){ 
+         this.socket.emit('add-message', {"message":message, "id":id});
+        console.log (message) ; 
+     } 
+    */
     getOngoingMessages(id) { 
-        
-        console.log(id) ; 
+         console.log(id) ; 
         let observable = new Observable(observer => { 
-                this.socketIO.connect() ; 
-                this.socketIO.on('ongoing'+id, (data) => {
-                     this.ngZone.run(() => {
-                               // Do stuff here
-                             console.log(data ) ; 
-                             observer.next(data);  
-                          }); 
-                       
+                this.socket = io(this.host);
+                this.socket.on('ongoing'+id, (data) => {
+                    console.log(data ) ; 
+                     observer.next(data);   
                 });
                 return () => {
-                     this.socketIO.disconnect(); 
+                     this.socket.disconnect(); 
                 }; 
         }) 
         return observable;
     
     } 
     
-
       private messageSource = new BehaviorSubject({});
      currentMessageTo = this.messageSource.asObservable();
 
@@ -119,18 +102,14 @@ export class MessagesService {
            else 
                id = froms+to ; 
         
-         let observable = new Observable(observer => { 
-                this.socketIO.connect() ; 
-                this.socketIO.on(id, (data) => {
-                     this.ngZone.run(() => {
-                               // Do stuff here
-                             console.log(data ) ; 
-                             observer.next(data);  
-                          });
-                     
+          let observable = new Observable(observer => { 
+                this.socket = io(this.host);
+                this.socket.on(id, (data) => {
+                    console.log(data ) ; 
+                     observer.next(data);   
                 });
                 return () => {
-                     this.socketIO.disconnect(); 
+                     this.socket.disconnect(); 
                 }; 
         }) 
         return observable;
@@ -180,13 +159,13 @@ export class MessagesService {
           
           let observable = new Observable(observer => { 
           
-              this.socketIO.connect()
-                this.socketIO.on('unread_messages'+id, (data) => {
+              this.socket = io(this.host);
+                this.socket.on('unread_messages'+id, (data) => {
                     console.log(data ) ; 
                      observer.next(data);   
                 });
                 return () => {
-                    this.socketIO.disconnect(); 
+                    this.socket.disconnect(); 
                 }; 
         }) 
         return observable;

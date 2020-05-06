@@ -1,5 +1,5 @@
 
-<div i18n-class class='text-left scroll2' >
+<div i18n-class class='text-left ' >
   <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
 
 
@@ -16,7 +16,7 @@
 
 
 
-<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']">
+<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUEST', 'USER']">
 
 <div *ngIf='!nostore' class='list-group-item '>
 
@@ -63,22 +63,25 @@
  <tr>
   <th i18n='@@owner' scope="row">Propriétaire</th>
       <td>
-      <div class="profile-picture">  <img class=" resize" alt=" Avatar" id="avatar2" [src]=avatars[store.userid] /></div> 
+      <div class="profile-picture">  <img alt=""  class=" resize"  id="avatar2" [src]=avatars[store.userid] /></div> 
       <b> {{owner.fullname}} </b> 
+      <ng-template [ngxPermissionsOnly]="['ADMINStore','USER']">
       <a class="btn  btn-info    fa fa-envelope" 
       			(click)= 'sendMessage(store.userid, owner.fullname, avatars[store.userid])' i18n="@@contacter">  Contacter </a>
 	  <a class="fa fa-user  btn   btn-link  "  (click)='profile(store.userid)' i18n="@@profil"> Profil</a>
+       </ng-template>
       </td>
   </tr>
-    <tr *ngFor="let a of store.admins" >
+    <tr *ngFor="let a of store.administrators" >
       <th i18n="@@admin" scope="row">Administrateur</th>
        <td>
-       <div class="profile-picture"><img class=" resize" alt=" Avatar" id="avatar2" [src]=avatars[a.userid] /></div>
+       <div class="profile-picture"><img alt="" class=" resize"  id="avatar2" src='{{avatars[a.userid]}}' /></div>
          <b> {{a.fullname}} </b>
+         <ng-template [ngxPermissionsOnly]="['ADMINStore', 'USER']">
      	 <a class="btn  btn-info    fa fa-envelope" 
       			(click)= 'sendMessage(a.userid, a.fullname, avatars[a.userid])' i18n="@@contacter">  Contacter </a>
-        <a class="fa fa-user  btn  btn-link"  
-      	         (click)='profile(a.userid)' i18n="@@profil"> Profil</a>
+        <a class="fa fa-user  btn  btn-link" (click)='profile(a.userid)' i18n="@@profil"> Profil</a>
+        </ng-template>
       </td>
     </tr>
     

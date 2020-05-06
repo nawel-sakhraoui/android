@@ -1,45 +1,33 @@
-import {Component,ViewChild, OnInit, AfterViewInit,  AfterContentInit, ChangeDetectorRef, ElementRef  } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {UserdetailsService, PicService, CartService, StoreService, SearchService, MyhomeService, AuthenticationService} from '../_services/index'; 
-import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
-import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
-import { Carousel } from "nativescript-carousel"; 
-//import {TreeviewItem} from 'ngx-treeview'; 
-import { RouterExtensions } from "nativescript-angular/router";
+import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
 
-import { View } from "ui/core/view";
-import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
-import { Label } from 'tns-core-modules/ui/label';
-import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
-import * as util from "utils/utils";
 
 @Component({
-  moduleId: module.id,   
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css'], 
 })
-    
-export class MainComponent implements OnInit,  AfterViewInit{
+export class MainComponent implements OnInit {
 
   constructor(  private route: ActivatedRoute,
-  private router:  RouterExtensions, 
+  private router: Router, 
   private myhomeService: MyhomeService, 
   private authService: AuthenticationService,
   private searchService: SearchService, 
   private storeService : StoreService, 
   private cartService: CartService, 
-  private picService : PicService, 
+  private picService: PicService, 
   private userdetailsService : UserdetailsService, 
-  private _changeDetectionRef: ChangeDetectorRef
+  private rolesService: NgxRolesService , 
+  private permissionsService : NgxPermissionsService 
   ) { }
-
-
-  maxcart =30;
+  
   home :any = "" ; 
   exist : boolean ; 
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
- 
+  maxcart = 30 ; 
   articles : any ;  
   countStore = 0 ;  
     stores :any =[]; 
@@ -47,8 +35,8 @@ export class MainComponent implements OnInit,  AfterViewInit{
     banners  =[];
     mainpics:any = []; 
     opened = false ; 
-    sizestores = 10; 
-    sizearticles =5 ; 
+    sizestores = 5; 
+    sizearticles =7 ; 
     store :any = {}
     main2 = false ; 
     loading:boolean = false ; 
@@ -61,39 +49,46 @@ export class MainComponent implements OnInit,  AfterViewInit{
     selected= [];
     orderby='newest';
     filter = 'Indefinie' ; 
-   
+    city= 'Toutes les villes'; 
+   cityAr='كل الولايات'
     selectcat  = [] ; 
     selectcatAr = [] ; 
     articlescats = {} ; 
-    fullcartwarning  :boolean ; 
-     city ='Toutes les villes' ;  
-    private sub :any ; 
-    value=1 ; 
-    reload = false ; 
-     private _mainContentText: string;
-    setScore(e){
-        console.log(e.object.get('value')) ; 
-           this.value = Number(e.object.get('value'));
-       }
+    fullcartwarning  :boolean ;  
+  private sub :any ; 
+
+    
+    
     ngOnInit() {
-      this.init() ; 
-    }
-    
-    
-    init(){
-              this.loading2 = true ; 
+ 
+       console.log("main") ; 
+       this.me= JSON.parse(localStorage.getItem('currentUser')).userid.toString() ; 
+
+       console.log(this.me) ; 
+       this.loading2 = true ; 
        
        this.loading = true ; 
        this.loading3 = true ;
             
+       /*   this.permissionsService.addPermission('readUser', () => {
+                return true;
+         });
           
+                         
+         if (this.me  != "annonym") {
+            console.log('annnoooo') ; 
+            // this.rolesService.flushRoles();
+             this.rolesService.addRole('USER', [ 'readUser' ]);
+         };            
+          */
+                         
                   
       //  this.searchService.sendcity.subscribe(
       //  (data00)=>{
-       this.userdetailsService.getLocation(this.me)
+        console.log(this.me) ; 
+        this.userdetailsService.getLocation(this.me)
        .subscribe(
             data=>{
-                this.reload = false ; 
                   console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") ; 
                   console.log(data) ; 
                   if (Object.keys(data).length !== 0) 
@@ -113,10 +108,9 @@ export class MainComponent implements OnInit,  AfterViewInit{
             
                  },error=>{
                      console.log(error) ; 
-                    this.reload = true ;
-                     this.loading = false ;  
-                     this.loading2=false ; 
-                     this.loading3=false ; 
+                     this.city ='Toutes les villes';
+                        
+                     this.main0() ; 
                  });   
     
     
@@ -125,26 +119,25 @@ export class MainComponent implements OnInit,  AfterViewInit{
            
            console.log(this.city) ; 
            this.city = data00['city'] ; 
-           if (this.city) 
+           
+           if(this.city) 
             this.main0() ; 
        }) ; 
     
     
     
+     }
     
     
-        
-        
-        }
+    
     
     main0(){
-         this.loading2 = true ; 
-       
+        
+       this.loading2 = true ;  
        this.loading = true ; 
-       this.loading3 = true ; 
-          this.storeService.getCategories()
+    
+       this.storeService.getCategories()
        .subscribe (
-           
            d0 => {
                this.allCategories = d0['categories'] ; 
                
@@ -165,15 +158,25 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                     tempcat.splice(index, 1);
                                     tempcatAr.splice(index,1) ; 
                                   }
-                           for (let cat of this.selectcat  ){ 
+                             
+                                 
+              
+           
+                     
+               for (let cat of this.selectcat  ){ 
+                                  
+                   
+                    
                                  this.myhomeService.getArticlesByCat(this.sizearticles, cat, this.city )
                                .subscribe (
                                    data => {
-                                      this.articlescats[cat] = data['hits']['hits']; 
-                                      console.log(this.articlescats[cat]) ;  
+                                       this.articlescats[cat] = data['hits']['hits']; 
+                                       console.log(this.articlescats[cat]) ;  
                                        for (let s of  this.articlescats[cat]){
-                                           this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
                                            this.disp[s._id ] = false ; 
+                                           this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
+
+                                           
                                            /*this.storeService.getPic(s._id)
                                          .subscribe (
                                            data0=>{
@@ -187,25 +190,21 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                         }
                                         ,error=>{
                                          this.mainpics[s._id ] = "" ; 
-                                         console.log(error) ;   
-                                            this.loading3=false ;   
+                                         console.log(error) ;     
                                         }); */
-                 }
-                                                  this.loading3=false ; 
- 
+                                        }
                }, error =>{
                    console.log(error ) ; 
                }) 
            };
                
+           
                         
              },err1 =>{
                     console.log(err1 ) ; 
-                  this.loading3=false ; 
              }) ; 
            },e0 => {
                console.log(e0 ) ; 
-                this.loading3=false ; 
               }
            )
            ;
@@ -226,19 +225,20 @@ export class MainComponent implements OnInit,  AfterViewInit{
          .subscribe (
          
              data => {
-            this.reload = false ; 
+                 this.loading = false ; 
                  this.main = true ; 
                 if (data['hits']['hits'].length !=0 ) {
-                /*  this.store = data['hits']['hits'][0] ;
+                 this.store = data['hits']['hits'][0] ;
                
-                     console.log(this.store) ;  
-                 
+                     console.log(this.store) ;
                     
-                    if (this.store._source.hasOwnProperty("bannername"))
+                         this.store['banner'] = '' ;   
+                  if (this.store._source.hasOwnProperty("bannername"))
                         this.store['banner'] = this.picService.getBannerLink(this.store._source.bannername); 
-                     else 
-                         this.store['banner'] = '' ;
-                    /*this.storeService.getBanner(this.store._id)
+                  
+                    
+                    
+                 /*   this.storeService.getBanner(this.store._id)
                                  .subscribe (
                                         data1=>{
                                             try {
@@ -257,19 +257,19 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                      ); */
                    
                  
-                // if ( data['hits']['hits'].length >=2){
+                 if ( data['hits']['hits'].length >=2){
                  this.stores = data['hits']['hits'] ; 
-                // this.stores.shift() ; 
+                 this.stores.shift() ; 
                 
                  this.home =true ; 
-                     console.log(this.stores) ; 
+                     
                  for (let i = 0 ; i < this.stores.length; i++){
-                    
-                     if (this.stores[i]._source.hasOwnProperty("bannername"))
+                     
+                      if (this.stores[i]._source.hasOwnProperty("bannername"))
                         this.stores[i]['banner'] = this.picService.getBannerLink(this.stores[i]._source.bannername); 
                      else 
                          this.stores[i]['banner'] = '' ; 
-                    /*  this.storeService.getBanner(this.stores[i]._id)
+                      /*this.storeService.getBanner(this.stores[i]._id)
                                  .subscribe (
                                         data1=>{
                                             try {
@@ -287,35 +287,32 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                         }
                                      ); */
                   }
-                    this.loading = false ; 
-                  }/* } else {
+                     
+                  } } else {
                      this.store= {'_source' : {}} ;
                       
-                    }*/
+                    }
                      
              },error =>{
                      this.loading =false ; 
                  console.log(error) ; 
-                 this.reload = true ; ; 
                  
              }
          ) ;
-        
-        
-        
 
-        this.myhomeService.getArticlesByNewest(this.sizearticles, this.city)
+         this.myhomeService.getArticlesByNewest(this.sizearticles, this.city)
          .subscribe (
          
              data => {
                  console.log(data) ; 
              //     this.countStore = data ; 
                  this.articles = data['hits']['hits'] ; 
+                 this.loading2 = false ; 
                  this.main2 = true ; 
                  for (let s of this.articles){
                         this.disp[s._id ] = false ; 
-                   this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
-                  /*    this.storeService.getPic(s._id)
+                          this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
+                    /*  this.storeService.getPic(s._id)
                                  .subscribe (
                                         data0=>{
                                             try {
@@ -331,33 +328,24 @@ export class MainComponent implements OnInit,  AfterViewInit{
                                          console.log(error) ;     
                                         }); */
                  }
-                  this.loading2 = false ; 
-
              },error =>{
                  console.log(error) ; 
                  this.loading2= false ; 
                  
-              });
-            
-            
- 
-
-                  
+              });    
         
         
         
-        
-        }
+    }
     
-  
      gotoArticle( id:string , storeid : string ) {
      
-         this.router.navigate(["stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+         this.router.navigate(["/stores/"+storeid+"/articles/"+id]);
 
      }
     
     gotoStore(id){
-                 this.router.navigate(["stores/"+id+"/store"], { relativeTo: this.route });
+                 this.router.navigate(["/stores/"+id+"/store"]);
 
        }
     
@@ -369,7 +357,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
           .subscribe( 
                data0 => {
                    console.log(data0) ; 
-               if ( data0['cartcount']>this.maxcart ){
+               if ( data0['cartcount']> this.maxcart ){
                     
                    this.fullcartwarning = true ;  
                      article.loadingcart = 3; 
@@ -392,12 +380,12 @@ export class MainComponent implements OnInit,  AfterViewInit{
         });
         }
     
-  updateArticle( id:string, storeid :string ) {
-      this.router.navigate(["stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
+      updateArticle( id:string, storeid :string ) {
+      this.router.navigate(["/stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
 
   } 
     
-  mouseEnter(a){
+      mouseEnter(a){
    // console.log(a ); 
       this.disp[a] = true ; 
    }
@@ -407,10 +395,7 @@ export class MainComponent implements OnInit,  AfterViewInit{
           this.disp[a] =false ; 
 
    }
-   display(a) {
-         this.disp[a]= !this.disp[a];
-         }
-   checkedCat(e, c) {
+    checkedCat(e, c) {
         console.log(e) ; 
         
         }
@@ -434,16 +419,15 @@ export class MainComponent implements OnInit,  AfterViewInit{
         }
 
     
-    selectFilter(e) {
+    selectFilter(e, i) {
         this.filter= e ;
         this.opened= false ;
         console.log(e) ; 
          if (this.filter != "Indefinie"){
              
-            this.searchService.sendFilter({ "filter": this.filter, "orderby": this.orderby});
+            this.searchService.sendFilter({ "filter": this.filter, "orderby": this.orderby, 'pos':i });
             //navigate to result 
-            this.router.navigate(["/home/"+this.me+"/result"]);
-       
+            this.router.navigate(["/result"]);
          }
     }
     
@@ -460,100 +444,8 @@ export class MainComponent implements OnInit,  AfterViewInit{
     }
     return result;
   } 
-    
-      @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
-    private drawer: RadSideDrawer;
-
-    ngAfterViewInit() {
-        this.drawer = this.drawerComponent.sideDrawer;
-        this._changeDetectionRef.detectChanges();
-    }
-
-
- /*    ngAfterContentInit(): void {
-    // a little delay so the spinner has time to show up
-                setTimeout(() => {
-      this.listLoaded = true;
-    }, 500);
-  }*/
-
-   
-    public openDrawer() {
-        this.drawer.showDrawer();
-    }
-
-    public onCloseDrawerTap() {
-        this.drawer.closeDrawer();
-    }
-    
-   sort(val ) {
-       this.orderby=val ; 
-    
-   }
-    @ViewChild("myCarousel", { static: false }) carouselView: ElementRef<Carousel>;
-
-     myTapPageEvent(args) {
-         console.log('Tapped page index: ' + (this.carouselView.nativeElement.selectedPage));
-    }
-
-    myChangePageEvent(args) {
-    console.log('Page changed to index: ' + args.index);
-};
-    
-
-/*
- makeSelectable(args ) {
-     console.log(args) ; 
-                args.object.nativeView.setTextIsSelectable(true);
-
- }(loaded)="makeSelectable($event)"*/
-       ontouch(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-} 
-   
-        ontouch2(args: TouchGestureEventData) {
-    const label = <GridLayout>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-} 
-           ontouch3(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed3");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed3");
-            break;
-    }
-   
-} 
-     
-    reloading(){
-        
-        console.log('reloading') ; 
-      this.init() ; 
-        
-        
-        
-        }
-    
 }
+
+
 
 

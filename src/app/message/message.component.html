@@ -1,5 +1,5 @@
 <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<div i18n-class class=" text-left scroll2">
+<div i18n-class class=" text-left ">
 
 
 <div [hidden]="loading" class="container">
@@ -8,8 +8,8 @@
   <div class="card card.text-white.bg-info"  >
         <div class="card-hearder left clearfix"  >
                  
-                  <span i18n-class class="chat-img pull-left"> <div class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarTo' 
-                      alt="Avatar" /></div></span>
+                  <span i18n-class class="chat-img pull-left"> <div class=" profile-picture "> <img alt="" class=" resize"  id="avatar2" src='{{avatarTo}}' 
+                      /></div></span>
                      
                    <div class="chat-body clearfix">
                                 <div class="header">
@@ -45,8 +45,8 @@
                      <li *ngIf='message._source.fromMe' i18n-class class="left clearfix">
                      <span i18n-class class="chat-img pull-left">
                       	
-                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarFromMe' 
-                      alt="User Avatar" /></span>
+                      <span class=" profile-picture "> <img alt="" class=" resize"  id="avatar2" src='{{avatarFromMe}}' 
+                      /></span>
                         </span>
                             <div class="chat-body clearfix">
                                 <div class="header">
@@ -60,15 +60,15 @@
                             </div>
                         </li>
                          <li *ngIf='!message._source.fromMe' class="right clearfix"><span class="chat-img pull-right">
-                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarTo'
-                            alt="User Avatar"/> </span>
+                       <span class=" profile-picture ">  <img alt="" class=" resize"  id="avatar" src='{{avatarTo}}'
+                          /> </span>
                         </span>
                         <div class="chat-body clearfix">
                                 <div class="header">
                                     <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message._source.date}}</small>
                                     <strong class="pull-right primary-font">{{this.model.fullname}}</strong>
                                 </div>
-                                <p>
+                                <p class="pull-right">
                                   {{message._source.text}}
                                 </p>
                             </div>
@@ -107,6 +107,4 @@
  <a  i18n-class class='btn btn-link fa fa-chevron-left' (click)="back();" i18n="@@retour"> Retour </a>
  </div> 
  <div style =' background-color: #F5F5F7  ;  height: 100%; '>
- </div><p>
-  message works!
-</p>
+ </div>

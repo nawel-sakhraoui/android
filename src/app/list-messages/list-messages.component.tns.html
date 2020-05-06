@@ -1,45 +1,58 @@
-<ScrollLayout >		
-<GridLayout rows='auto,auto,auto' (tap)="hide()">   
+<StackLayout>
+  <Label text="list-messages works" textWrap="true"></Label>
+  <Label text="This is a migrated component" textWrap="true"></Label>
+  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
+</StackLayout>
+
+<!--
+Original Web template:
+
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+
+<div i18n-class class=" text-left scroll2">
+ 
+<div [hidden] ='loading' class="container">
 
 
- <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
-        <FormattedString>
-            <Span text="Problème de connexion... "></Span>
-            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
-        </FormattedString>
-  </Label>
+<div i18n="@@nomsg" *ngIf='!listmessage' class="alert alert-warning ">
+Vous n'avez aucun message privé
+</div>
 
-<Label class="alert" *ngIf='!listmessage && !loading && !reload' text="Pas de messages privés"> </Label>
+<div  *ngIf='listmessage'>
 
-<RadListView row="1"  class="list-group" [items]="model" 
-				loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
-				
-				>
-    <ng-template let-m="item"  >
-      
-    	<GridLayout (touch)="ontouch2($event)" columns="auto,*" rows="*, auto"   (tap)= "goToMessage(me,  m.to, m.tofullname, m._source.last.avatar, m._source.unread)" > 
-    
+<ul class="list-group  " *ngFor="let m of model |paginate: { id: 'server', itemsPerPage: sizemsg, currentPage: page, totalItems: countmsg } ; let i = index  "[attr.data-index]="i" >
+<li class="list-group-item" style= "border:2px  #D3D3D3 solid; margin-top:50px;   ">
+<a (click) = "goToMessage(me,  m._source.last.userid, m._source.last.userfullname, m._source.last.avatar, m._source.unread)">
 
-    	<Image loadMode="async"  backgroundColor='#eeeeee'  col="0" class="site-template-image" stretch="aspectFill" src="{{m._source.last.avatar}} "></Image>
-    																
-       	<GridLayout col="1" rows="*, auto, auto" columns=" *,auto">
+                     <span i18n-class class="chat-img pull-left">
+                     <div class="profile-picture">
+                     <img [src]="m._source.last.avatar"  alt="User Avatar" class="resize">
+                     </div>
+                     </span>
+                     <div class="chat-body clearfix">
+                        <div class="header_sec">
+                           <strong class="primary-font">{{m._source.last.userfullname}}</strong> 
+                       	<span i18n-class class="badge pull-right">{{m._source.unread}}</span>
+                        </div>
+                        <div class="contact_sec">
+                           <h5>{{m._source.last.lastfrom}}</h5>
+                           <p>{{m._source.last.text}}</p>
+                           <strong i18n-class class="pull-right"><span class="fa fa-clock-o "></span>
+                           {{m._source.last.date}}</strong>
+                            
+                        </div>
+                     </div>
+                  
+                  
+  </a> 
+  </li>
+</ul>
+<div class="has-text-centered" i18n-style style='float:right; margin-top :10px ; '>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+    <pagination-controls (pageChange)="getPage($event)" id="server"  i18n-previousLabel previousLabel="précédent"  i18n-nextLabel nextLabel='suivant' ></pagination-controls>
+</div>
+</div>
 
-		
-					<Label col='0' class="site-template-title" [text]="m.tofullname"></Label>
-				    <Label margin="2,0,0,3" col="1" class="site-template-description globe" [text]="m._source.unread"></Label>	
-					<Label col="0" row="1" class="site-template-description" [text]="m._source.last.userfullname  "></Label>
-					<Label col="0" row="2" class="site-template-description" [text]="m._source.last.text  "></Label>
-		</GridLayout>
-		<StackLayout margin="0,16,0,42" row="2" colSpan="2" backgroundColor="lightGray" height="1"></StackLayout>
-			 
-		</GridLayout>
-		
-     </ng-template>
-     
-     <ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
-     
-</RadListView>
-      <ActivityIndicator row="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
-
-</GridLayout>
-</ScrollLayout>      
+</div>
+</div>
+-->

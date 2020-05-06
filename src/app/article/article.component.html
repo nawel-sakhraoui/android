@@ -1,23 +1,26 @@
 <ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<div *ngIf='art' class='scroll2'>
-<div  i18n="@@nostore" *ngIf='nostore' i18n-class="@@nostoreleft" class='text-left alert alert-info strong '>
+
+
+<div *ngIf='art && !loading0'>
+<div  i18n="@@nostore" *ngIf='nostore  && !loading0 ' i18n-class="@@nostoreleft" class='text-left alert alert-info strong '>
 pas de magasin dans ce lien ! 
 </div>
 
+<ng-template [ngxPermissionsOnly]="['ADMINStore','GUEST','USER']">
 
 
-<div i18n='@@notopen' *ngIf='!nostore && !open'>
+<div i18n='@@notopen' *ngIf='!nostore && !open && !loading0 '>
 <div i18n-class="@@notopenleft" class="text-left alert alert-warning strong "> Le magasin est fermé ! </div>
 </div>
 
-<div *ngIf='!nostore'>
+<div *ngIf='!nostore && !loading0 '>
 <div class="crop">
 
-<img    [src]="banner"   class="img0" />
+<img alt=""   src="{{banner}}"   class="img" />
 </div>
 
 
-<div  id ="storemenu" >
+<div  id ="storemenu"  >
 <nav *ngIf = 'existstore'class="navbar navbar-default  navnav sticky-top" >
   
     
@@ -45,7 +48,7 @@ pas de magasin dans ce lien !
 
 <div *ngIf='!model.suspend' class="container ">
 
-<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']"> 
+<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUEST', 'USER']"> 
 <div i18n="@@notarticle" *ngIf='!model.available' i18n-class="@@artleft" class ="text-left alert alert-danger">Cet article est epuisé   </div>
  
 
@@ -67,11 +70,11 @@ pas de magasin dans ce lien !
 
 <div class="col-sm-1 col-3 crop2">
 <a data-target="#myCarousel" data-slide-to="0" href="#" >
- <img  [src]='model.pic' class ="resizer2">
+ <img alt=""  src='{{model.pic}}' class ="resizer2">
  </a>
  <div *ngFor= 'let g of model.gallery; let i= index' >
  <a data-target="#myCarousel" data-slide-to="i+1" href="#"  >
-  <img [src]='g' class='resizer2'>
+  <img alt=""  src='{{g}}' class='resizer2'>
  </a>
   </div>
   
@@ -93,7 +96,7 @@ pas de magasin dans ce lien !
     <div class="carousel-item active">
     	<div class='crop2 btn '>
     	<div (click)= 'goTo(model.pic)'   >
-        <img [src]='model.pic' class='resizer2'>
+        <img alt="" [src]='model.pic' class='resizer2'>
         </div>
         </div>
     </div>
@@ -101,7 +104,7 @@ pas de magasin dans ce lien !
   	<div class="carousel-item" *ngFor= 'let g of model.gallery' >
   		<div class='crop2'>
   		 <div (click) = 'goTo(g)'  >
-  		<img [src]='g'  class='resizer2'>
+  		<img alt=""  [src]='g'  class='resizer2'>
   		</div>
   		</div>
     </div>
@@ -157,7 +160,7 @@ pas de magasin dans ce lien !
          	</div>
          </div>
          
-        <div class = 'row' *ngIf='boolsize' >
+        <div class = 'row' *ngIf='boolsize && size.length!=0 '>
       	    <div  i18n="@@tailles" class=" col-sm-4 col-4"> 
       		   Tailles
       		   </div>
@@ -170,7 +173,7 @@ pas de magasin dans ce lien !
        		      	
        		          	<input type="radio" name="radiogroup2" [checked]="s===model.sizing[choosecolor][0]"   id="radio2"  [value]="s"  [disabled]="!checkSizing(s)" (change)="chooseSizing($event, s)"  >
        	
-                       	<div  [ngClass]="{'text-secondary': checkSizing(s) , 'text-light': !checkSizing(s) }"  for="radio2" style ='width:25px; height:25px;  background-color:#D0D0D0;   text-align: center; vertical-align: middle; ' > {{s}}	</div>
+                       	<div  [ngClass]="{'text-secondary': checkSizing(s) , 'text-light': !checkSizing(s) }"  for="radio2" style ='width:55px; height:20px; font-size:10px ;  background-color:#D0D0D0;   text-align: center; vertical-align: middle; ' > {{s}}	</div>
        		        
        		        
        		        
@@ -189,8 +192,10 @@ pas de magasin dans ce lien !
          
        
      <br> 
+      <div class = 'row' >
+     <ng-template [ngxPermissionsOnly]="['ADMINStore', 'USER']">
      
-     	 <div class = 'row' >
+     	
       	<div i18n='@@add' class="col-sm-4 col-4"> 
       		 Selectionner votre addresse  
       	</div>
@@ -201,6 +206,7 @@ pas de magasin dans ce lien !
 				 		<app-adress (getAddress)='getAddress($event) ; ' ></app-adress>
 	    	
 	    </div>
+	 </ng-template>
 	    
 	    </div>
       <br>
@@ -239,12 +245,15 @@ pas de magasin dans ce lien !
     <br>
 	<br>
     <div class='row'>
+      <ng-template [ngxPermissionsOnly]="['ADMINStore','USER']">
+      
        <span  style = 'display:inline-block; align:right; margin-right:7px ; ' ><button [disabled]="!model.available|| model.delivery.length==0 ||choosedelivery.length==0 ||(choosesize=='' &&  boolsize)"   class="btn btn-danger" (click)="buyNow()  ; "  ><i i18n='@@buy'>Acheter</i> </button></span>
-   	 
-   	  <span  style = 'display:inline-block; align:right; margin-right:7px ; ' ><button  class="btn btn-warning" (click)="addToCart() ; modal.show() ;" ><span class="fa fa-shopping-cart"> </span> <i i18n='@@panier2'>Panier</i></button></span>
-	   <ng-template ngxPermissionsOnly="ADMINStore">
-	   
-	        <span  style = 'display:inline-block; align:right;' ><button  class="btn btn-info" (click)="updateArticle()  ; "  ><i i18n='@@param'> Paramètres </i></button></span>
+   	   <span  style = 'display:inline-block; align:right; margin-right:7px ; ' ><button  class="btn text-light btn-warning" (click)="addToCart() ; modal.show() ;" ><span class="fa fa-shopping-cart"> </span> <i i18n='@@panier2'>Panier</i></button></span>
+	  </ng-template>
+	 
+	 
+	    <ng-template ngxPermissionsOnly="ADMINStore">
+	   		 <span  style = 'display:inline-block; align:right;' ><button  class="btn btn-info" (click)="updateArticle()  ; "  ><i i18n='@@param'> Paramètres </i></button></span>
 	 	</ng-template>
      </div> 
        	  <div *ngIf="warning" i18n='@@warning1' i18n-class class='text-left alert alert-danger'>choisissez votre addresse de livraison avant de valider l'achat !</div>
@@ -264,7 +273,7 @@ pas de magasin dans ce lien !
      </div>  
     </div>
       
- <div i18n-class class ="text-left col-12 col-sm-12 col-md-12">
+ <div i18n-class class ="text-left col-12 col-sm-12 col-md-12" >
  <nav class="nav nav-tabs">
 
          <a i18n='@@desc' class="nav-item nav-link active"   href="#p1" data-toggle="tab">Descriptions</a>
@@ -272,7 +281,7 @@ pas de magasin dans ce lien !
 		<a i18n='liv' class="nav-item nav-link"   href="#p3" data-toggle="tab">Détails des livraisons</a>	
 		
 </nav>
- <div class="tab-content">
+ <div class="tab-content" >
   <div class="tab-pane active" id="p1">
     <div i18n-class class="text-left card-block" style ="padding :50px;">
      <h5 i18n-class class="text-left "  i18n='detail'>Détails:</h5>
@@ -294,8 +303,8 @@ pas de magasin dans ce lien !
   <div class="tab-pane" id="p2">
          <div  i18n-class class =" text-left card-block list-item"  *ngFor="let m of model.rating " >
         
-			<span class="form-inline my-2 my-lg-0" > <span class=" profile-picture "> <img class=" resize0" alt=" Avatar" [src]='avatarlist[m.userid]' 
-                      alt="User Avatar" /></span>
+			<span class="form-inline my-2 my-lg-0" > <span class=" profile-picture "> <img alt=""  class=" resize0"  [src]='avatarlist[m.userid]' 
+                       /></span>
                
                              <strong class="primary-font">{{fullnamelist[m.userid]}}</strong>      
                              <star-rating id= "m.userid" [starType]="'svg'"  [rating]="m.value"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating>
@@ -347,9 +356,9 @@ pas de magasin dans ce lien !
 </div>
  
 <div *ngIf="row2">
-	<a  i18n="@@angle-left" i18n-class class="fa fa-angle-left btn btn-link" (click)='close()'> Retour</a>
+	<a  i18n="@@retour" i18n-class class="fa fa-angle-left btn btn-link" (click)='close()'> Retour</a>
 	<div class="container col-md-8  col-md-offset-2">
-	<img [src]='toDisplay'  class='imgfullscreen'>
+	<img alt=""  src='{{toDisplay}}'  class='imgfullscreen'>
 	</div>
 </div>
 </ng-template>
@@ -357,7 +366,13 @@ pas de magasin dans ce lien !
 
 
 </div>
-  <app-modal [me]= 'me' [fullcartwarning]="fullcartwarning" #modal  >
+ 
+ </div>
+ </ng-template>
+ 
+ </div>
+  
+ <app-modal [me]= 'me' [fullcartwarning]="fullcartwarning" #modal  >
     <!-- div class="app-modal-header">
    </div-->
     <div class="app-modal-body">
@@ -370,6 +385,3 @@ pas de magasin dans ce lien !
      <a i18n='@@back' class="btn btn-link" (click)="modal.hide()" >Fermer</a>
     </div>
   </app-modal>
- </div>
- </div>
-  

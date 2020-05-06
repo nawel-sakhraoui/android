@@ -1,19 +1,13 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import {Store} from '../_models/store'
 import {PicService, StoreService, AddressService, DeliveryService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs'
-import * as imagepicker from "nativescript-imagepicker"; 
-import { ColorPicker } from 'nativescript-color-picker';
 
-import { SelectedIndexChangedEventData } from "nativescript-drop-down";
-import { Color } from 'tns-core-modules/color';
-import {ImageSource, fromFile, fromResource, fromBase64} from "tns-core-modules/image-source";
-import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
-import { Label } from 'tns-core-modules/ui/label'
+import { take, finalize } from 'rxjs/operators';
 
-import * as utils from "utils/utils";
-import {Folder, path, knownFolders} from "tns-core-modules/file-system"; 
-import * as BitmapFactory from "nativescript-bitmap-factory";  
+import { NgxPicaService } from 'ngx-pica'; 
+
 
 @Component({
   selector: 'app-up-article',
@@ -22,24 +16,18 @@ import * as BitmapFactory from "nativescript-bitmap-factory";
 })
 export class UpArticleComponent implements OnInit {
       
-  loading0 :boolean ; 
+loading0 :boolean ; 
   articletitle =""; 
-  model :any = {"gallery":[], "price":0}; 
-  alertimg= false ; 
+  model :any = {}; 
+    
   mainpic = 0 ; 
   tempmainpic = 0 ; 
   gallery = [];
   color = [];  
-  boolsizing =false; 
-  loading:boolean ; 
-   extension = [] ; 
+  busy : Subscription ; 
   display:boolean ;
-  Categories = [] ;  
-    galleryNames =[];
-    temppicname = ""; 
-    tempgallerynames = [] ; 
-       loadinggallery = false ;
-  config = {
+    Categories = [] ;  
+     config = {
             displayKey:"description" ,//if objects array passed which key to be displayed defaults to description,
             search:true, //enables the search plugin to search in the list
            placeholder:'Select', // text to be displayed when no item is selected defaults to Select,
@@ -50,12 +38,12 @@ export class UpArticleComponent implements OnInit {
               };
 
     
-   selectdel= [] ; 
-   delivery:any = []; 
+selectdel= [] ; 
+delivery = []; 
  
     
  
-   comconfig = {
+comconfig = {
             displayKey:"name" ,//if objects array passed which key to be displayed defaults to description,
             search:true, //enables the search plugin to search in the list
             placeholder:'Select', // text to be displayed when no item is selected defaults to Select,
@@ -68,7 +56,7 @@ export class UpArticleComponent implements OnInit {
 
     
     
-    deliveryconfig = {
+deliveryconfig = {
             displayKey:"title",//if objects array passed which key to be displayed defaults to description,
             search:true, //enables the search plugin to search in the list
             placeholder:'Select', // text to be displayed when no item is selected defaults to Select,
@@ -88,10 +76,17 @@ export class UpArticleComponent implements OnInit {
     editGallery:boolean = false ; tempGallery :any = [] ; tempPic :any = ""  ; 
     editColor:boolean =false ; tempColor:any = [];
     editDelivery: boolean = false ; tempDelivery:any=[] ; 
-    editAvailable :boolean = false ; tempsizing:any={};
+    editAvailable :boolean = false ; 
     editCat :boolean = false ; 
+    extension=[] ; 
+    tempextension = [] ;
+    galleryNames= [] ;
+    galleryfile = [];
+    tempgallerynames =[] ;
+    loadinggallery=false ;
+     temppicname:any  ; 
+    tempgalleryname :any; 
     store :any ; 
-    
     sizinglist = [ "xs", "s", "l", "xl", "xxl", "3xl","4xl", "5xl", "6xl", 
                    "t34", "t36", "t38", "t40","t42", "t44", "t46", "t48", "t50", "t52", "t54", "t56",
                     "t58", "t60", "t62", 
@@ -105,34 +100,28 @@ export class UpArticleComponent implements OnInit {
     
     boolsize = false ; 
     size :any ; 
-    reload = false ; 
-    constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private storeService: StoreService, 
-        private addressService : AddressService,
-        private deliveryService : DeliveryService, 
-        private picService : PicService,
-        private ngZone: NgZone) { }
+   
+      constructor(
+  private route: ActivatedRoute,
+  private router: Router,
+  private storeService: StoreService, 
+  private addressService : AddressService,
+  private deliveryService : DeliveryService, 
+  private picService :PicService, 
+    private _ngxPicaService :NgxPicaService) { }
       
-    
-    ngOnInit() {
-     this.init() ; 
-    
-    }
-    
-    
-    
-    init(){
-            this.loading0 = true ; 
+  ngOnInit() {
+       this.loading0 = true ; 
         let s = this.route.params.subscribe(params =>
         {
           
             this.storetitle = params.store ; 
-           
+            });
+        this.route.params.subscribe(params => {
+          
             this.articletitle = params.article ; 
           
-            this.storeService.getStoreCategories(this.storetitle)  
+            this.storeService.getStoreCategories (this.storetitle)  
             .subscribe(
                 data => {
                      this.Categories = data['selectedCat'] ; 
@@ -146,8 +135,8 @@ export class UpArticleComponent implements OnInit {
             
             
                     
-                 this.storeService.getStore( this.storetitle)
-                 .subscribe(
+                    this.storeService.getStore( this.storetitle)
+                     .subscribe(
                          data1=> {
                           //   this.nostore = false ; 
                              this.store = data1 ; 
@@ -162,32 +151,68 @@ export class UpArticleComponent implements OnInit {
                                 
                            })
      
-         console.log(this.articletitle) ; 
+        // console.log(this.articletitle) ; 
          this.storeService.getArticle(this.articletitle )
-         .subscribe(
+             .subscribe(
                 data => {
-                    this.reload = false ; 
                  console.log(data) ; 
+                      
+            //     this.waitimg= true ;
                  this.model = data ;
-                   
-                 this.display = true ;
+                 this.loading0 = false ; 
+                
+                 this.display = true ; 
+               
                  this.model.pic = this.picService.getPicLink(this.model.picname); 
                  this.mainpic = 0 ; 
                  this.model['gallery'] = [this.model.pic] ; 
-                  let temp = this.model.picname ;
-                  this.extension = [temp.split('.').pop()]
-                  if (this.model.hasOwnProperty('gallerynames') ) 
-                        for (let g of this.model.gallerynames) {
-                             let temp = g; 
-                             this.model['gallery'].push(this.picService.getGalleryLink(g))  ;
-                             this.extension = [temp.split('.').pop()]
-
+            
+                 this.galleryfile =[] ;
+                    this.picService.getPic(this.model.picname)
+                    .subscribe(
+                        data=> {
+                            console.log("cccccccccccc");
+                            console.log(data ); 
+                            let blob = new Blob([data], { type: "image/"+this.model.picname.split('.').pop()});
+                            console.log(blob) ;  
+                            
+                            this.galleryfile.push(blob) ; 
+                            this.extension.push(this.model.picname.split('.').pop());
+                             this.model.pic =  blob ;
+                        },error=> {
+                           console.log(error) ;     
                         }
-                                   this.loading0 = false ; 
-
-
+                        )
+                  
+                 if (this.model.hasOwnProperty('gallerynames') ) 
+                        for (let g of this.model.gallerynames) {
+                             this.model['gallery'].push(this.picService.getGalleryLink(g))  ;
+                          
+                               this.picService.getGallery(g)
+                                .subscribe(
+                                data=> {
+                                    console.log("cccccccccccc");
+                                    console.log(data ); 
+                                    let blob = new Blob([data], { type: "image/"+g.split('.').pop()});
+                                    console.log(blob) ;  
+                            
+                                    this.galleryfile.push(blob) ; 
+                                    this.extension.push(g.split('.').pop()); 
+                        },error=> {
+                           console.log(error) ;     
+                        }
+                        )
+                   
+                        }   else 
+                          this.model['gallerynames']=[] ; 
+                    console.log("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+                      console.log(this.galleryfile ) ; 
+                    console.log(this.extension) ; 
                     
-                    /*this.storeService.getGallery(this.articletitle )
+                //     if (this.galleryfile.length== this.model.gallery.length )  
+                  //   this.waitimg = false ; 
+                    
+                   /*  this.storeService.getGallery(this.articletitle )
                      .subscribe(
                           data3=> {
                     
@@ -213,11 +238,11 @@ export class UpArticleComponent implements OnInit {
                            },
                           error3 =>{
                              console.log(error3) ; 
-                     
-                          }) ; 
+                     ; 
+                          }) ; */
                     
-                    */
-                          if(this.model.hasOwnProperty('sizing'))  
+                    
+                               if(this.model.hasOwnProperty('sizing'))  
                                          this.boolsize =true ; 
 
                           else  
@@ -232,60 +257,96 @@ export class UpArticleComponent implements OnInit {
                             if (this.boolsize) 
                                   this.size =new Set([].concat.apply([], Object.values(this.model.sizing ))); 
 
-                    
-                               
+                     
                  
                  }, 
                  error =>{
                  console.log(error) ;  
                      this.loading0 = false ; 
-                     this.reload = true ;
                      this.display = false ;    
                 }) ; 
              
-     
-            
-       }); 
-        
-        
-     }
+          });
+  }
     
+    
+    /*readUrl(event:any) {
+    console.log("yyyyyy") ; 
+      console.log(event ) ; 
+              let reader = new FileReader();
+              
+              reader.readAsDataURL(event.target);
+        console.log(event.target ) ; 
+            return event.target.files[0] ; 
+    }*/
     
      //  urls = [];
-   onSelectFiles(event) {
-
+    waitimg = false ; 
+    alertimg=false ;
+    onSelectFiles(event) {
+       
      if (event.target.files ) {
+        this.alertimg=false ;
+         
         for (let l of event.target.files) {
-              var reader = new FileReader();
+             let extension =l['name'].split('.').pop() ; 
+             if( extension !="png" && extension !="jpg" &&  extension !="jpeg" ){
+              this.alertimg = true 
+              break ; 
+        }
 
-             reader.readAsDataURL(l); // read file as data url
+        }
+        if(!this.alertimg){
+           this.waitimg = true ; 
+               this._ngxPicaService.compressImages( event.target.files, 0.7)
+               .pipe(
+                   finalize(() => {
+                           this.waitimg = false ; 
+                    })
+                )
+               .subscribe((imageResized: File) => {
+                  let reader: FileReader = new FileReader();
+                
+                 reader.addEventListener('load', (event: any) => {
+                        this.model.gallery.push(event.target.result);
+                 }, false);
             
-              reader.onload = (event) => { // called once readAsDataURL is completed
-              //    this.model.gallery.push(event.target.result) ;
-                 // console.log(event.target.result) ; 
-                 }
-         }
-     }
+                console.log("aaaaaaaaaaaaaaaaaaaa")  ; 
+                console.log(imageResized) ; 
+                reader.readAsDataURL(imageResized);
+                this.galleryfile.push(imageResized) ; 
+                this.extension.push(imageResized['name'].split('.').pop());
+            
+                
+            }, (err) => {
+                
+                this.waitimg = false ; throw err.err;
+            }); 
+        
+                
+            
+        }
   }
+
+}
      
     onSelectionChange(i){
           //console.log("xxxxxxxxxxxxxxxxxxxx") ; 
           //console.log(i) ; 
 
-        this.mainpic = i;    
-        this.model.pic = this.model.gallery[i] ; 
-        
+            this.mainpic = i;    
       }
   
   
      removeObject (url ) {
-         var index = this.model.gallery.indexOf(url, 0);
+    
+             var index = this.model.gallery.indexOf(url, 0);
         if (index > -1) {
-            this.model.gallery.splice(index, 1);
             this.extension.splice(index,1) ; 
+            this.model.gallery.splice(index, 1);
+            this.galleryfile.splice(index,1) ; 
         }
-
-          
+        
         
      }
     
@@ -310,7 +371,7 @@ export class UpArticleComponent implements OnInit {
     
     addColor(event) {
         let c = document.getElementById("color")['value'];
-        this.model.color.push( c); 
+        this.model.color.unshift( c); 
         //console.log(v) ; 
         //this.model.color.push (v);
         //console.log(this.color) ;
@@ -325,7 +386,10 @@ export class UpArticleComponent implements OnInit {
             this.model.sizing[color].push(c) ;  
          else 
             this.model.sizing[color].splice( this.model.sizing[color].indexOf(c) , 1); 
-      
+        
+        ; 
+        
+        
         }
    
      addDelivery(event) {
@@ -335,36 +399,30 @@ export class UpArticleComponent implements OnInit {
             this.model.delivery.push(event) ; 
             
     }
-    
-    getDeliveryMethod(event){
+     getDeliveryMethod(event){
         console.log(event ) ;  
      //  this.total = (this.model.price *this.quantity )   +this.choosedelivery[0]['price'] ; 
     }
     
-    editingTitle (){
+ editingTitle (){
         this.editTitle= true; 
         this.model.tempTitle =  this.model.title;
-    }
-    
+      }
     removeTitle(){
         this.editTitle = false ; 
             this.model.title =      this.model.tempTitle ;
-    }
-    
-    loadingtitle = false ; 
+      }
     saveTitle(){
         //save to database ! 
        if (this.model.title !="") {
-         this.loadingtitle = true ; 
+        
          this.storeService.updateArticleTitle(this.storetitle,  this.articletitle, this.model.title )
         .subscribe(
             data => {
-                 this.loadingtitle = false ; 
                       this.editTitle = false 
                      console.log(data ) ; 
                 }
             ,error =>{
-                this.loadingtitle = false ; 
                      console.log(error) ; 
                 
                 }
@@ -377,106 +435,45 @@ export class UpArticleComponent implements OnInit {
            }
       }
     
+ 
     
+        
      editingGallery (){
         this.editGallery= true; 
          
         this.tempGallery=  this.model.gallery.map(x => x); 
-
-        let that = this ; 
-      
-         let i = 0 ; 
-         for (let g of this.model.gallery){ 
-                this.loadinggallery =  true ; 
-                //  let img:ImageSource = <ImageSource>ImageSource.fromFileSync(g);
-                let temp = g ;
-                let folderDest = knownFolders.temp();
-                let pathDest = path.join(folderDest.path, temp.split('/').pop()) ;
-                      console.log(g) ; 
-                      console.log(pathDest) ; 
-                ImageSource.fromUrl(g).then(function (res) { 
-                      console.log("xxxxxxxxxxxxxxxxxxxxxx");
-                      console.log(res.android) ;
-                   temp = g ;  
-                      res.saveToFile(pathDest,temp.split('.').pop());
-              
-                      console.log("Image saved successfully!");
-                      that.model.gallery[i]= pathDest;
-                      that.loadinggallery =  false  ; 
-                      i=i+1;        
-                });
-           
-             //;;"data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
-             //  console.log(that.gallery ) ;
-             
-         }
+        
+         this.tempextension =  this.extension.map(x => x);  
          this.tempPic = this.model.pic;
          this.temppicname = this.model.picname ; 
-         this.tempgallerynames = this.model.gallerynames; 
+         this.tempgallerynames = this.model.gallerynames.map(x => x);; 
          this.tempmainpic = this.mainpic   ; 
       }
     
     
-    
     removingGallery(){
-        this.loadinggallery =  false  ;
         this.editGallery = false ;
         this.mainpic = this.tempmainpic ; 
         this.model.gallery = this.tempGallery.map(x => x); ;
         this.model.pic = this.tempPic ; 
         this.model.picname = this.temppicname; 
-        this.model.gallerynames = this.tempgallerynames.map(x => x); ;
+        this.model.gallerynames = this.tempgallerynames; 
+         this.extension = this.tempextension.map(x => x);
       }
     
     
- 
     saveGallery(){
-        //save to database ! 
-     //if (this.model.gallery.length !=0 ) {
-         
-          /*    this.storeService.postPic(this.articletitle , this.model.gallery[this.mainpic] )
-                     .subscribe(
-                        data2=>{
-                           console.log(data2) ;  
-                            this.tempGallery = this.model.gallery.map(x=>x) ; 
-                           //let temp = this.model.gallery.splice(this.mainpic, 1) ;   
-                            console.log(this.model.gallery.length) ; 
-                           this.storeService.postGallery( this.articletitle, this.tempGallery.splice(this.mainpic, 1)  )
-                            .subscribe(
-                             data3=>{
-                               console.log(data3) ;    
-                               this.editGallery = false 
-                                  this.loadinggallery = false;  
-                              }
-                              ,error3=>{
-                                 console.log(error3) ; 
-                                   this.loadinggallery =  false ;
-                              }
-                             );  
-                          }
-                          ,error2=>{
-                             console.log(error2) ;    
-                               this.loadinggallery =  false ; 
-                          }
-                       );
-                 */ 
-        /* this.editGallery = false ;
-        this.mainpic = this.tempmainpic ; 
-            this.model.gallery =      this.tempGallery.map(x => x); ;
-            this.model.pic = this.tempPic ; 
 
-        
-        }*/
-          this.loadinggallery =  true ; 
+        this.waitimg = true ;
         if (this.model.gallery.length !=0 ) {
-            this.picService.deletePic(this.temppicname) 
+          
+           this.picService.deletePic(this.temppicname) 
            .subscribe (
               data => {
-              this.picService.putPic(this.articletitle+'.'+this.extension[this.mainpic] , this.model.gallery[this.mainpic], this.extension[this.mainpic] )
+              this.picService.putPic(this.articletitle+'.'+this.extension[this.mainpic] , this.galleryfile[this.mainpic], this.extension[this.mainpic] )
                      .subscribe(
                         data2=>{
                             
-                       
                          //this.images.push(path.replace(/^.*[\\\/]/, ''));
                          
                           this.storeService.putPicName( this.storetitle,this.articletitle,  this.articletitle+'.'+this.extension[this.mainpic] )
@@ -484,41 +481,37 @@ export class UpArticleComponent implements OnInit {
                                 
                             data =>{ 
                                     console.log('done save pic name ')
-                                    let g = [this.picService.getPicLink(this.articletitle+'.'+this.extension[this.mainpic] )];
-                                   this.picService.deleteGallery(this.tempgallerynames) 
-                                   .subscribe(
-                                     data=>{
-                                         if (this.model.gallery.length>1 ){
+                                    if (this.galleryfile.length>1 ){
                               
-                                             
-                                            // let gallery = this.model.gallery.map(x => x); 
-                                             
-                                            this.model.gallery.splice(this.mainpic, 1) ;   
-                                            this.extension.splice(this.mainpic,1)  ;
+                                        //this.model.gallery.splice(this.mainpic, 1) ;   
+                                        this.galleryfile.splice(this.mainpic, 1) ;   
+                                        this.extension.splice(this.mainpic,1)  ;
+                                   
+                                        
+                                        if(this.tempgallerynames.length!=0 ) 
+                                        this.picService.deleteGallery(this.tempgallerynames) 
+                                        .subscribe(
+                                        data=>{
+                                       
                                             this.galleryNames = [] ;  
-                                            for (let i=0 ; i<this.model.gallery.length; i++) 
+                                            for (let i=0 ; i<this.galleryfile.length; i++) 
                                                 this.galleryNames.push(this.articletitle+i+'.'+this.extension[i])
                                
-                                                this.picService.putGallery( this.galleryNames, this.model.gallery, this.extension )
+                                                this.picService.putGallery( this.galleryNames, this.galleryfile, this.extension )
                                                 .subscribe(
                                                     data3=>{
-                                                            
+                                                           
                                                                  this.storeService.putGalleryName( this.storetitle, this.articletitle,this.galleryNames )
                                                                  .subscribe( 
                                                                      data =>{ 
                                                                             console.log('done');  
                                                                             this.loadinggallery = false; 
-                                                                            this.editGallery = false 
-                                                                         // 
-                                                                        //  this.model.gallerynames=   this.tempgallerynames.map(x => x);
-                                                                         
-                                                                         for (let gg of this.galleryNames)     
-                                                                         g.push(this.picService.getGalleryLink(gg))  ;
-                                                                     this.model.gallery=g.map(x => x); 
-                                                                         
+                                                                            this.editGallery = false ;
+                                                                            this.waitimg = false ;  
                                                                      },error=>{ 
-                                                                            this.loadinggallery = false; 
-                                                                               this.editGallery = false   
+                                                                              this.loadinggallery = false; 
+                                                                              this.editGallery = false   ; 
+                                                                              this.waitimg = false ;   
                                                                      });
                                            
                              
@@ -528,59 +521,111 @@ export class UpArticleComponent implements OnInit {
                                                     ,error3=>{
                                                              console.log(error3) ; 
                                                              this.loadinggallery = false;  
-                                                              this.editGallery = false 
+                                                              this.editGallery = false ;
+                                                         this.waitimg = false ;  
                                                    }); 
                                     
-                                           }else{
-                                                this.storeService.putGalleryName( this.storetitle, this.articletitle,[] )
+                                       
+                              
+                                    },err=>{ 
+                                      console.log(err) ; 
+                                      this.loadinggallery = false; 
+                                      this.editGallery = false ; 
+                                      this.waitimg = false ;  
+                                    });
+                                  else {
+                                        
+                                            this.galleryNames = [] ;  
+                                            for (let i=0 ; i<this.galleryfile.length; i++) 
+                                                this.galleryNames.push(this.articletitle+i+'.'+this.extension[i])
+                               
+                                                this.picService.putGallery( this.galleryNames, this.galleryfile, this.extension )
+                                                .subscribe(
+                                                    data3=>{
+                                                           
+                                                                 this.storeService.putGalleryName( this.storetitle, this.articletitle,this.galleryNames )
+                                                                 .subscribe( 
+                                                                     data =>{ 
+                                                                            console.log('done');  
+                                                                            this.loadinggallery = false; 
+                                                                            this.editGallery = false ;
+                                                                            this.waitimg = false ;  
+                                                                     },error=>{ 
+                                                                              this.loadinggallery = false; 
+                                                                              this.editGallery = false   ; 
+                                                                              this.waitimg = false ;   
+                                                                     });
+                                           
+                             
+                                          
+                                                                
+                                                    }
+                                                    ,error3=>{
+                                                             console.log(error3) ; 
+                                                             this.loadinggallery = false;  
+                                                              this.editGallery = false ;
+                                                         this.waitimg = false ;  
+                                                   });           
+                                            
+                                  }
+                                            
+                                
+                                      }else{
+                                        
+                                                  this.loadinggallery = false; 
+                                                  this.waitimg = false ;  
+                                                  this.editGallery = false 
+                                            /*    this.storeService.putGalleryName( this.storetitle, this.articletitle,[] )
                                                 .subscribe( 
                                                         data =>{ 
                                                                 console.log('done');  
                                                                  this.loadinggallery = false;
-                                                                  this.editGallery = false   ;
+                                                                  this.editGallery = false   
                                                         } ,error=>{ 
                                                                  this.loadinggallery = false;  
                                                                   this.editGallery = false 
                                                         });
                               
-                                            }
-                              
-                                    },err=>{ 
-                                      console.log(err) ; 
-                                      this.loadinggallery = false; 
-                                              this.editGallery = false 
-                                    });
-                             
+                                            */}
+                                        
+                                        
+                                        
                             },error=>{  
                                 console.log(error) ; 
                                   this.loadinggallery = false;  
-                                      this.editGallery = false 
-                            }
-                                       
-                                       );    
+                                  this.editGallery = false 
+                                  this.waitimg = false ; 
+                            });    
                                 
                        
                         
                       },error2=>{
                             console.log(error2) ;   
                             this.loadinggallery = false;   
-                                this.editGallery = false 
+                            this.editGallery = false ; 
+                            this.waitimg = false ;  
                        });
         
                 },err=>{
                         console.log(err) ; 
                         this.loadinggallery = false;   
-                        this.editGallery = false     
+                        this.editGallery = false     ; 
+                     this.waitimg = false ;   
                 });
             
-        }else{
-            
-              this.loadinggallery =  false ;
-             
-            
         }
-      }
-                 
+        
+        
+        
+        
+        /* this.editGallery = false ;
+        this.mainpic = this.tempmainpic ; 
+            this.model.gallery =      this.tempGallery.map(x => x); ;
+            this.model.pic = this.tempPic ; 
+
+        
+        }*/
+      }  
 
       editingPrice (){
         this.editPrice= true; 
@@ -590,22 +635,17 @@ export class UpArticleComponent implements OnInit {
         this.editPrice = false ; 
             this.model.price =      this.model.tempPrice ;
       }
-    
-    loadingprice = false ; 
-    
     savePrice(){
-        //save to database 
-        this.loadingprice = true ; 
+        //save to database ! 
          this.storeService.updateArticlePrice( this.storetitle, this.articletitle, this.model.price )
         .subscribe(
             data => {
                       this.editPrice = false 
                      console.log(data ) ; 
-                     this.loadingprice = false; 
                 }
             ,error =>{
                      console.log(error) ; 
-                         this.loadingprice = false ; 
+                
                 }
             ) 
       }
@@ -618,21 +658,16 @@ export class UpArticleComponent implements OnInit {
         this.editQt = false ; 
             this.model.numbers =      this.model.tempQt ;
       }
-    
-    loadingqt = false ; 
     saveQt(){
         //save to database ! 
-        this.loadingqt = true ; 
          this.storeService.updateArticleNumbers( this.storetitle, this.articletitle, this.model.numbers )
         .subscribe(
             data => {
-                this.loadingqt = false ; 
                       this.editQt = false 
                      console.log(data ) ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                this.loadingqt = false ; 
                 
                 }
             ) 
@@ -640,51 +675,43 @@ export class UpArticleComponent implements OnInit {
     
      editingColor (){
         this.editColor= true; 
-        this.tempColor =  this.model.color;
-        if(this.boolsize) 
-         
-         this.tempsizing = this.model.sizing;
+        this.model.tempColor =  this.model.color.map(x => x);
+         this.model.tempSizing = this.model.sizing.map(x=>x) ; 
          
       }
     removingColor(){
-            this.editColor = false ; 
-            this.model.color =      this.tempColor.map(x=>x)  ;
-            if(this.boolsize) 
-              this.model.sizing = this.tempsizing;
+        this.editColor = false ; 
+            this.model.color =      this.model.tempColor ;
+        this.model.sizing = this.model.tempsizing ; 
       }
-    loadingcolor =false ; 
     saveColor(){
-        this.loadingcolor = true ; 
         //save to database ! olor
          this.storeService.updateArticleColor( this.storetitle, this.articletitle, this.model.color )
         .subscribe(
             data => {
-               
                 console.log(data ) ; 
                 this.storeService.updateArticleSizing(this.storetitle, this.articletitle, this.model.sizing)
                 .subscribe(
                     data3=> {
-                         this.loadingcolor = false ;  
                             console.log(data3) ; 
                             this.editColor= false 
                           this.size =new Set([].concat.apply([], Object.values(this.model.sizing ))); 
 
                     }
                     ,error3=>{
-                         this.loadingcolor = false ; 
                          console.log(error3) ; 
                         
                     }) ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                 this.loadingcolor = false ;  
+                
                 }
             )
       }
     
     
-    editingDelivery (){
+      editingDelivery (){
         this.editDelivery= true; 
         this.model.tempDelivery =  this.model.delivery.map(x => x);
       }
@@ -692,23 +719,21 @@ export class UpArticleComponent implements OnInit {
         this.editDelivery = false ; 
             this.model.delivery = this.model.tempDelivery.map(x => x);;
       }
-    
-    loadingdelivery = false ; 
     saveDelivery(){
         //save to database ! 
       console.log(this.model.delivery ) ; 
       if (this.model.delivery.length !=0 ) {
-          this.loadingdelivery = true ; 
+              
+          
          this.storeService.updateArticleDelivery( this.storetitle, this.articletitle, this.model.delivery )
         .subscribe(
             data => {
                       this.editDelivery = false 
                      console.log(data ) ; 
-                 this.loadingdelivery = false ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                 this.loadingdelivery = false ; 
+                
                 }
             )
             }else {
@@ -725,50 +750,40 @@ export class UpArticleComponent implements OnInit {
         this.editDesc = false ; 
             this.model.description =      this.model.tempDesc;
       }
-    loadingdesc = false  ;
-    
     saveDesc(){
-        this.loadingdesc = true  ;
         //save to database ! 
          this.storeService.updateArticleDescription( this.storetitle, this.articletitle, this.model.description )
         .subscribe(
             data => {
-                  this.loadingdesc = false ; 
                       this.editDesc = false 
                      console.log(data ) ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                      this.loadingdesc = false ;  
+                
                 }
             )
       }
     
-    
-    editingAvailable (){
+       editingAvailable (){
         this.editAvailable= true; 
         this.model.tempAvailable =  this.model.available;
       }
-    
     removeAvailable(){
         this.editAvailable = false ; 
             this.model.available =      this.model.tempAvailable;
       }
-    
-    loadingavailable = false ; 
     saveAvailable(){
         //save to database ! 
-        this.loadingavailable = true ; 
          this.storeService.updateArticleAvailable(this.storetitle,  this.articletitle, this.model.available )
         .subscribe(
             data => {
-                this.loadingavailable = false ; 
                       this.editAvailable = false 
                      console.log(data ) ; 
                 }
             ,error =>{
                      console.log(error) ; 
-                this.loadingavailable = false ;   
+                
                 }
             )
       }
@@ -782,23 +797,18 @@ export class UpArticleComponent implements OnInit {
         this.editCat = false ; 
             this.model['selectedCat'] =  this.model['tempSelectedCat'].map(x => x)   ;
     }
-    selectedIndex1 = 1 ;
     
-    loadingcat = false ; 
     saveCat(){
-        
         //save to database ! 
         if ( this.model['selectedCat'].length !=0 ) {
-            this.loadingcat = true ; 
         this.storeService.updateArticleCategories( this.storetitle, this.articletitle, this.model['selectedCat'] )
         .subscribe(
             data => {
                     this.editCat = false  
                      console.log(data ) ; 
-                this.loadingcat= false ;     
-            }
+                }
             ,error =>{   
-                this.loadingcat= false ;   
+                 
                      console.log(error) ; 
                 
                 }
@@ -813,7 +823,7 @@ export class UpArticleComponent implements OnInit {
       } 
     
     
-   getDeliveryBy (selectedCat, villes){
+       getDeliveryBy (selectedCat, villes){
                
             let f = []; 
           for (let v of villes ) 
@@ -826,8 +836,11 @@ export class UpArticleComponent implements OnInit {
                     this.delivery = [] ; 
                     for (let x of data['hits']['hits'] ) {
                        // console.log(x['_source'])  ;
-                        if(!( x._source in this.delivery ))
-                       this.delivery.push(x._source );
+                        
+                        x._source['id']=x._id ;
+                         if(!( x._source in this.delivery ))
+
+                        this.delivery.push(x._source );
                         }
                    // console.log(this.delivery ) ; 
                   //  
@@ -844,218 +857,6 @@ export class UpArticleComponent implements OnInit {
     }
     
    
-
-    public onSelectMultipleTap() {
-       // this.isSingleMode = false;
-
-        let context = imagepicker.create({
-            mode: "multiple"
-        });
-        this.startSelection(context);
-    }
-
-  
-    private startSelection(context) {
-        let that = this;
-
-        context
-        .authorize()
-        .then(() => {
-            //that.imageAssets = [];
-         //   that.imageSrc = null;
-            return context.present();
-        })
-        .then((selection) => {
-           // console.log("Selection done: " + JSON.stringify(selection));
-           // that.imageSrc = that.isSingleMode && selection.length > 0 ? selection[0] : null;
-
-            // set the images to be loaded from the assets with optimal sizes (optimize memory usage)
-          selection.forEach(function (element) {
-                
-            let  extension = element._android.split('.').pop() ;
-            if( extension =="png" || extension =="jpg" ||  extension =="jpeg" ){
-              that.alertimg = false ; 
-             //  console.log(element._android) ;
-             //       element.options = {width:300, height:200, keepAspectRatio:true };
-             //  let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
-             //  console.log(img) ; 
-             //  console.log(extension) ; 
-                
-             
-               let img:ImageSource = <ImageSource> ImageSource.fromFileSync(element._android);
-                // selection[0].options = {width:500, height:300, keepAspectRatio:true };
-              //  let base =img.toBase64String(extension ); 
-               
-                 that.resizeImageSource(img, 500).then((resizedImageSrc: ImageSource) => {
-                   
-               
-                 
-                let folderDest = knownFolders.documents();
-                let pathDest = path.join(folderDest.path, element._android.split('/').pop()) ;
-                 let saved: boolean = resizedImageSrc.saveToFile(pathDest, extension);
-                if (saved) {
-                    console.log("Image saved successfully!");
-                } 
-                
-                that.extension.push(extension) ; 
-                that.model.gallery.push(pathDest)//;;"data:image/"+extension+";base64,"+img.toBase64String(extension )) ;
-             //  console.log(that.gallery ) ;
-               })
-                
-            }else 
-                that.alertimg = true ; 
-                
-            });
-
-           
-        }).catch(function (e) {
-            console.log(e);
-        });
-  //  console.log(this.gallery) ; 
-    }
-
-    picker = new ColorPicker();
     
-    showARGBPicker() {
-        
-       this.picker.show('#D0D0D0',  'ARGB' ).then((result) => {
-       const c :number  =result as number;
-          let col = new Color(c).hex  ;  
-       //    console.log( c.toString(16) ); 
-           
-           this.model.color.push(col ) ; 
-      
-        //console.log(v) ; 
-        //this.model.color.push (v);
-        //console.log(this.color) ;
-  
-           if (this.boolsize) 
-           if (!(col in this.model.sizing) ) 
-           this.model.sizing[col] =[] ; 
-           
-         
-       }).catch((err) => {
-          console.log(err)
-        });
 
-     }
-    
-     onchange(event: SelectedIndexChangedEventData){
-       
-         console.log(event) ;
-        this.model.selectedCat.push(this.Categories[event.newIndex]) ;  
-         /*     if (this.selectcats.length !=0  ) 
-              this.getDeliveryBy( this.selectcats, this.store.geo ) ; 
-         else 
-             this.delivery = [] ; 
-        */
-            for (let c of this.model.selectedCat) {
-                c= c.trim() ; 
-                if( c == "Habillements-Femmes"||c=="Habillements-Hommes"|| c=="Habillements-Enfants" ){
-                   this.boolsize= true ; 
-                                console.log(c) ; 
-                    }else 
-                    this.boolsize=false ;
-              }
-                    
-
-       }
-    
-     removeC ( index) {
-        this.model.selectedCat.splice(index, 1);
-                  for (let c of this.model.selectedCat) {
-                c= c.trim() ; 
-                if( c == "Habillements-Femmes"||c=="Habillements-Hommes"|| c=="Habillements-Enfants" ){
-                   this.boolsize = true ; 
-                                console.log(c) ; 
-                    }else {
-                    
-                    this.boolsize = false ; 
-                    }
-                    
-              }
-    }
-    
-    addSize(color , c) {
-      
-        
-        if(! (c in this.model.sizing[color]) ) 
-            this.model.sizing[color].push(c) ;  
-         else 
-            this.model.sizing[color].splice( this.model.sizing[color].indexOf(c) , 1); 
-        
-       
-        
-        
-        }
-    
-        selectDelivery (del ) {
-        console.log(del) ; 
-        if (del.checked ==true ) {
-            
-            this.model.delivery.splice( this.model.delivery.indexOf(del) ) ; 
-            del.checked =  !del.checked  ; 
-         
-        }else{
-            del.checked =  !del.checked  ;
-            this.model.delivery.push(del ); 
-            
- 
-        }         
-        console.log(del) ; ;
-//        console.log(this.selectdel) ; 
-        
-    }
-    
-   ontouch(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed");
-            break;
-    }
-   
-} 
-    ontouch3(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
-        case 'up':
-            label.deletePseudoClass("pressed3");
-            break;
-        case 'down':
-            label.addPseudoClass("pressed3");
-            break;
-    }
-   
-}
- 
-    hide(){
-                     utils.ad.dismissSoftInput() ; 
-
-   }
-  private resizeImageSource(imageSrc:ImageSource, maxSize) : Promise<ImageSource> {
-    return new Promise((resolve, reject) => {
-      const bitmap = BitmapFactory.create(imageSrc.width, imageSrc.height);
-      bitmap.dispose((imageBitmap) => {
-        imageBitmap.insert(BitmapFactory.makeMutable(imageSrc));
-        const resizedBitmap = imageBitmap.resizeMax(maxSize);
-        resolve(resizedBitmap.toImageSource());
-      }, (error) => { reject(error); });
-    });
-  }
-    
-    
-      
-      reloading(){
-        
-        console.log('reloading') ; 
-      this.init() ; 
-        
-        
-        
-        }    
-    
 }

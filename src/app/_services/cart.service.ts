@@ -3,6 +3,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+import { Article , Store } from '../_models/index';
 import {ConfigService} from './api-config.service'; 
 
 

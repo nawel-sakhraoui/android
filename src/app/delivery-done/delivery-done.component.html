@@ -1,0 +1,110 @@
+
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+ <div  class="container " >
+
+ <nav class="nav nav-tabs">
+
+         <a  *ngFor=' let del of myDeliveries '  style="display:inline-block" class="nav-item nav-link text-warning"   href="#{{del}}" data-toggle="tab">{{deliveries[del]['title']}}</a>
+		
+</nav>
+ <div  class="tab-content" >
+  <div *ngFor='let del of myDeliveries' class="tab-pane " [id]="del"  >
+  
+ <ul  class="list-group" >
+<li class="list-group-item alert alert-warning"  *ngIf='!deliveries[del].available'  >
+    Methode de livraison non disponible 
+ </li>
+ 
+<li class="list-group-item text-danger"   >
+   <b> {{countdel[del]}} </b ><i> livraisons terminées</i> 
+</li>
+ 
+</ul>  
+
+ <table  *ngIf="countdel[del]!=0" class="table table-sm">
+   <thead>
+     <tr class="table-active" >
+       <th>Début</th>
+       <th>Magasin</th>
+		<th>Paquet  </th>
+		<th>Destination</th>
+		<th>#</th>
+		
+     </tr>
+  </thead>
+  <tbody>
+  
+   
+    <tr *ngFor=" let ongoing of deliveries[del].ongoing |paginate: { id: 'server', itemsPerPage: max, currentPage: page[del], totalItems:countdel[del] }; let i = index  " [attr.data-index]="i" >
+  		<th class='text-danger' > {{ongoing._source.start }} </th>
+  		<th>{{ongoing._source.storeid }}</th>
+  		<th>{{ongoing._source.price}}D.A</th>
+  		<td>
+  		<table *ngIf='ongoing._source.hasOwnProperty("address")' class="table table-sm table-responsive add"  >     
+    
+ 			  <tbody>
+				 <tr >
+  				<td scope="col" i18n="@@mmme"> à M.Mme </td>
+  				<td> {{ongoing._source.address.to}}</td>
+  				</tr>
+  				<tr scope="col" >
+  	    		<td i18n="@@telephone"> Téléphone </td>
+  				<td>{{ongoing._source.address.phone}}</td>
+  	 			</tr>
+  				<tr > 
+  	    		<td scope="col" i18n='@@ville' >Ville </td>
+  				<td>{{ongoing._source.address.city }}</td> 
+  				</tr>
+  				<tr> 
+  	    		<td  scope="col" i18n="@@commune">Commune </td>
+  				<td>{{ongoing._source.address.commune }}</td> 
+  				</tr> 
+  				<tr> 
+  	   			<td  scope="col" i18n="@@codepostal">Codepostal  </td>
+  				<td>{{ongoing._source.address.zipcode}}</td> 
+  				</tr>
+  				<tr> 
+  				<td scope="col" i18n="@@addresse">Addresse </td>
+  				<td>{{ongoing._source.address.address}}</td> 
+    		    </tr>
+   
+  				</tbody>
+
+		</table>
+  		
+  		
+  		</td>
+  		
+  		
+  		
+  		<td><tr ><td> Paquet Recupéré</td>
+  				 <td *ngIf="ongoing.got!=0"> le   <b> {{  ongoing._source.got }}  </b></td>
+  			</tr > 
+  			<tr ><td> Paquet Livré </td>
+  			 <td *ngIf="ongoing.delivered!=0"> le   <b> {{  ongoing._source.delivered }}  </b></td>
+  		    </tr >
+  			
+  			<tr *ngIf="ongoing._source.refund!=0" >
+  			<td> Retour</td>
+  			 <td > le    <b> {{  ongoing._source.refund }}  </b></td>
+  			</tr >
+  			
+  			<tr ><td>Fermé </td>
+  	    	  <td *ngIf="ongoing.close!=0"> le    <b class='text-danger' >{{  ongoing._source.close}}  </b></td>
+  			</tr >
+  		</td>
+  			</tr >
+  </tbody>
+</table>
+  
+<div *ngIf="countdel[del]!=0" class="has-text-centered" style='float:right; '>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+    <pagination-controls (pageChange)="getPage(del, $event)" id="server"></pagination-controls>
+</div>
+
+</div>
+   
+   
+  </div>
+ 
+</div>

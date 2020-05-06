@@ -1,191 +1,254 @@
-<ScrollView (tap)="hide()"  >
-  <GridLayout  rows='auto, auto,* '>
+<StackLayout>
+  <Label text="newarticle works" textWrap="true"></Label>
+  <Label text="This is a migrated component" textWrap="true"></Label>
+  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
+</StackLayout>
 
-      <GridLayout row="0"  columns=auto,auto >
-        <Label (touch)="ontouch($event)" text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
-  		<Label (touch)="ontouch($event)" col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
-    
-    </GridLayout> 
-    
-    <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
-<Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading0 && reload' class="reload">
-        <FormattedString>
-            <Span text="Problème de connexion... "></Span>
-            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
-        </FormattedString>
-  </Label>  
+<!--
+Original Web template:
 
-      <GridLayout *ngIf='!loading0 && !reload' class='main' row='2'rows="auto,auto, auto, auto, auto, auto,auto,auto,auto, auto, 
-      auto, auto,auto,auto,auto, *, auto, auto,auto,auto, auto,auto, *">
-		
-			<Label margin='10,0,0,0' row='0' text="Nouveau Article" class="title" ></Label>
-			
-			<Label row="1" text='Titre' class="label"    ></Label>
-			<StackLayout row="2">
-			<textField  returnKeyType="done"  hint="..." maxLength="200" [(ngModel)] ="model.title"  ></textField>
-			 <TextView editable="false"  text ="Le titre du magasin est obligatoire" *ngIf="send && model.title.length==0" class="alert"></TextView>            
-	 		<TextView   editable="false" text ="Le titre doit contenir au moins 5 caractères" *ngIf="send && model.title.length< 4" class="alert"></TextView>            
-   			 <TextView  editable="false" text ="Ce titre est trop long" *ngIf="send && model.title.length>150 " class="alert"></TextView>            
-			
-			
-			</StackLayout>
-			
-			<Label (touch)="ontouch($event)" margin-bottom="5" row="3" text="&#xf067; Gallerie d'image" (tap)="onSelectMultipleTap()" class='label fas '></Label>
-			<GridLayout row="4" rows="*, auto,auto,auto">
-  			  <RadListView row="0" [items]="gallery" >
-   			     <ng-template let-image="item" let-i="index">
-        		    <GridLayout columns="auto, auto">
-             		   
-             		   <Image loadMode="async"  decodeWidth="60" decodeHeight="60" borderWidth="2" borderColor="red" *ngIf="mainpic ==i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"  src="{{image}}" stretch="aspectFill"></Image>
-              		   <Image loadMode="async"  decodeWidth="60" decodeHeight="60"  *ngIf="mainpic !=i "  (tap)='onSelectionChange(i)'  col="0"  width="60"    height="60"  src="{{image}}" stretch="aspectFill"></Image>
-              		  
-              		  <Label  color="red"   col="1" class="fas" text="&#xf00d;" (tap)="removeObject(image)"></Label>
-            		</GridLayout>
-        		</ng-template>
-        		     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewGridLayout>
-        	
-    		  </RadListView>
-    		
-    		<StackLayout  [visibility]="gallery.length!=0 ?  'visible' : 'collapsed'"  row="1" >
-    			<Label text="l'image principale: "></Label>
-    			  <Image horizontalAllignment="left"    width="80"  height="80"   src="{{gallery[mainpic]}}" stretch="aspectFill"></Image>
-    			
-    		</StackLayout>
-    		
-    	    <StackLayout row="2" margin="15,0,0,0" backgroundColor="darkgray" colSpan="2"  height="1"></StackLayout>
-    		    		<StackLayout row="3">
-    		    		 <TextView  editable="false"  text ="Ajouter au moins une image de l'article" *ngIf="send && gallery.length==0" class="alert"></TextView>            
-    		   			 <TextView  editable="false" text ="le format de l'image sélectionné est invalide" *ngIf="alertimg " class="alert"></TextView>            
-    					</StackLayout>
-    		</GridLayout>
-    		
-    		
-    		<Label class="label" row='5'  text=' Prix '></Label> 
-    		<GridLayout row="6" columns="*,auto">
-    		<textField col="0" returnKeyType="done" hint="0.00" keyboardType="number" maxLength="20"   [(ngModel)] ="model.price" hint='{{model.price}}'></textField>
-    		<Label color="#000" fontSize="14" col="1" text="D.A" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
-    		</GridLayout>
-    	    <TextView editable="false" row="7"  text ="Ajouter le prix" *ngIf="send && (model.price.length==0 || model.price=='0')" class="alert"></TextView>            
-    		
-    		<Label class="label"  row='8'  text='Nombre'></Label>
-    		<GridLayout row="9" columns="*,auto">
-    		<textField col="0" returnKeyType="done" hint="0" keyboardType="number" maxLength="5"   [(ngModel)] ="quantity" hint='{{quantity}}'></textField>
-    		<Label color="#000" fontSize="14" col="1" text="UNIT" height="35" margin="10,10,10,0" padding="4" backgroundColor="#D0D0D0"></Label>
-    		</GridLayout>
-    		
-    		<Label row="11"  text='Catégories' class="label" ></Label>
-        	<GridLayout  row="12" margin="0,0,10,0" rows="auto,auto ">
-        	    <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
-        	
-        		<DropDown  #dd
-                  itemsTextAlignment="left"
-              	 [items]="Categories"  
-                  (selectedIndexChanged)="onchange($event)"  
-                  row="0"
-                  itemsPadding="5"
-                  >
-        		</DropDown>
-        		<StackLayout row="1"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
-    		</GridLayout>
-    	
-    		<GridLayout rows="auto,auto" row='13'  *ngIf="selectcats.length!=0">
-       		<RadListView  row='0'  [items]="selectcats" >
-  		  		<ng-template let-c="item" let-i="index" >
-  		  		<GridLayout columns ='auto,auto'>
-                    <Label col="0" text='{{c}}' color="#000"></Label>
-                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeCat(i) '></Label>   
-   		  		</GridLayout>
-   		 		 </ng-template>
-      		</RadListView>
-      	 	<!-- TextView  editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="send && selectcat.length==0 " class="alert"></TextView>            
-      		-->
-      		
-      		 <StackLayout margin='10,0,0,0' row="1"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
-      		
-	        </GridLayout>
-	      <TextView editable="false" row="14"  text ="Ajouter au moins une catégorie" *ngIf="send && selectcats.length==0 " class="alert"></TextView>            
-	        
-    		
-    		
-    		
-    		
-    		<Label (touch)='ontouch($event)' class=" fas label" row='15' text="&#xf067; Couleurs et autres " (tap)="showARGBPicker()" ></Label>
-    		
-    	
-   				 
-				<RadListView  margin='10,0,0,0'  row='16'  [items]="color" >
-  		  		<ng-template let-c="item" let-i="index" >
-  		  		<GridLayout rows="*,*">
-  		  			<GridLayout columns ='auto,auto' row="0">
-                    <Label borderWidth="1" borderColor="#000"  col="0" [backgroundColor]='c' height="25" width="40"></Label>
-                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeColor(c) '></Label>   
-   		  			</GridLayout>
-   		  			<RadListView row="1" [items]="sizinglist" [visibility]="boolsizing?'visible':'collapse'">
-   		  			 <ng-template let-s='item'> 
-   		  			 <GridLayout>
-   		  			    		<Label *ngIf="sizing[c].includes(s)" (tap)='addSizing($event, c, s)'  borderWidth="2" borderColor="red"   color="#000" fontSize="10"  text="{{s}}" height="20" width="50" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
-   		  			
-   		  			          	<Label *ngIf="!sizing[c].includes(s)"  (tap)='addSizing($event, c, s)'     color="#000" fontSize="10"  text="{{s}}" height="20" width="50" margin="2,0,0,0" backgroundColor="#D0D0D0"></Label>
-   		  			  </GridLayout>     
-   		  			</ng-template>
-   		  			  <ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="6"></ListViewGridLayout>
-   		  			</RadListView>
-   		  		</GridLayout>
-   		 		 </ng-template>
-      		   </RadListView>
-   	    
-    		<StackLayout margin='10,0,0,0' row="17"  colSpan="2" backgroundColor="darkgray" height="1"></StackLayout>
-    		
-    		
-    		<Label class="label" row="18" text="Description"></Label>
-    		
-    		<TextView returnKeyType="done" fontSize="12" row="19" (ngModel)]="model.description" hint="..."
-       		></TextView>
-       				 
-    		
-    		<Label class="label"  row="20" text="Selectionner vos livraisons"></Label>
-    		<GridLayout  row="21" rows="*,auto,auto">
-    		 
-    		   
-    		   <RadListView row="0" [items]="delivery" >
-   		  			 <ng-template let-del='item'  >
-   		  			 <StackLayout (tap)=" selectDelivery(del)">
-   		  			 <GridLayout columns="*,auto">
-   		  				 <Label color="#000" col="0" text="{{del._source.title}}"></Label>
-   		  				<Label fontSize="24" color="#00BFFF" *ngIf="!del.checked" margin="0,0,0,15"   class="fas" col="1" text='&#xf0c8;' ></Label>
-   		  	    		<Label fontSize="24" color="#FFA500" *ngIf="del.checked" margin="0,0,0,15"  class="fas" col="1" text='&#xf14a;' ></Label>
-   		  			 </GridLayout>
-   		  			  <GridLayout  margin="0,20,0,80" columns='80,auto'>	  	
-   		  			  	<Label col="0" text="Poid max"></Label>
-   		  			  	<Label col="1" text="{{del._source.weight}} kg"></Label>
-   		  			  </GridLayout>
-   		  			  <GridLayout margin="0,20,0,80" columns='80,auto'>	  	
-   		  			  	<Label col="0" text="Téléphone"></Label>
-   		  			  	<Label col="1" text="{{del._source.phone}}"></Label>
-   		  			  </GridLayout>
-   		  	
-   		  			  <GridLayout margin="0,20,0,80" columns='80,auto'>	  	
-   		  			  	<Label col="0" text="Prix"></Label>
-   		  			  	<Label col="1" text="{{del._source.price}} D.A"></Label>
-   		  			  </GridLayout>
-   		  			   
-   		  			  
-   		  			 </StackLayout>
-   		  			 </ng-template>
-   		  	</RadListView>
-   		  	
-    		   <StackLayout margin='10,0,0,0' row="1"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
-    			      <TextView editable="false" row="2"  text ="Selectionner au moins une méthode de livraison" *ngIf="send && selectdel.length==0 " class="alert"></TextView>            
-    		
-    		</GridLayout>
-    		
-    	 <GridLayout row='22' columns ='*,auto,auto, auto'>
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+<div *ngIf ='show'i18n-class class='text-left'>
+<div *ngIf='nostore' i18n="@@nostore">
+Ce magasin n'existe pas 
+</div>
+<div *ngIf='!nostore && !open'>
+<div i18n="@@noopen" class="list-group-item  strong "> Ce Magasin est fermé</div>
+</div>
+
+<div *ngIf='!nostore'>
+<div class='scroll2'>
+<nav class="navbar navbar-default  navnav sticky-top" >
+  
+    
       
-       		  <Button [isEnabled]="!loading"   col="1" class="send " text="Envoyer" (tap)="newarticle()"></Button>
-       		  <ActivityIndicator *ngIf="loading"  col="2" color="#00BFFF" rowSpan="2" [busy]="loading"></ActivityIndicator>
-      		 <Label  [isEnabled]="!loading"   (touch)='ontouch($event)' class="undo  " col="3"  text="Annuler" (tap)="cancel()"  ></Label>
-      	</GridLayout>
-      </GridLayout>
+    <span class="form-inline ">
+     
+	  
+	    
+		<a   class="navbar-brand  btn btn-link " routerLinkActive="active"  [routerLink]="['../store']" >
+           {{storetitle}}  </a>
+
+     <star-rating size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: xx-small ; " i18n="@@votess2">( {{store.ratingcount}} votes)</span>
+
+    
+   </span> 
+  
+      	
+
+   
+</nav>
+
+
+
+
+<div class="container col-md-6 col-md-offset-3 card"  >
+    <h2 i18n="@@nouveauarticle" >  Nouveau Article </h2>
+   
+   
+    <form name="form" (ngSubmit)="f.form.valid    && newarticle() " #f="ngForm" novalidate>
+  	        
+       <div class="form-group text-info" >
+            <label i18n="@@titre" for="title" > Titre </label>
+            <input  type="text" class="form-control" name="title" [(ngModel)]="model.title" #title="ngModel" required  maxlength='50'  minlength='4'>
+              <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
+              <div i18n="@@alerttitle"*ngIf="f.submitted && title.hasError('required')" class="help-block">Ajouter un titre</div>
+              <div i18n="@@alert2title"*ngIf=" title.hasError('maxlength')" class="help-block">Le titre est trop long</div>
+              <div i18n="@@alert3title"*ngIf=" title.hasError('minlength')" class="help-block">le titre est trop court</div>
+             
+      	    </div>
+      </div>
+        		
+     <div class="form-group text-info" >
+         
+      <label class ='btn btn-link'  for="files"><i class="fa fa-plus"></i><i i18n='@@gallerieimages'>Gallerie d'images</i></label>
+
+      <input type='file' id="files" name="files" (change)="onSelectFiles($event)" multiple style="display: none;" required>
+       
+      <div class=" card">
+      
+      
+      <ul >
+       <li  *ngFor = 'let url of gallery; let  i=index ' style="list-style: none; display:inline;"> 
+       <label class="labl"  >
+           
+       	        <input type="radio" name="radiogroup"  [checked]="i===0" 
+                [value]="i" (change)="onSelectionChange(i)" id ='radio' />
+                       	
+		          	<div><img [src]="url" height="50" > </div>
+		</label>
+		<button type="button" (click)="removeObject(url)" class='btn btn-info' > <i class="fa fa-close"></i></button>
+		   
+		
+
+      </li>
+      </ul>
+      
+      <div *ngIf= "gallery[mainpic]" >
+      <label i18n="@@mainpic" >Choisissez l'image principale:</label>
+      <br/>
+      <img [src]="gallery[mainpic]" height="100"  > 
+      </div>
+       <br/>
+       
+     </div>	
+       <div i18n='@@picalert' *ngIf="f.submitted && gallery.length==0 " class="alert alert-warning help-block">Ajouter au moins une image du produit</div>
+     	           
+     </div>	
+    
+      <div class="form-group text-info" >
+      		 <label i18n="@@prix" for="price"> Prix</label>
+            <div class="input-group" style="float:left;">
+  				<input type="number" step="0.1"  name="price" [(ngModel)]="model.price" #price="ngModel" required/>
+  		
+  				<span class="input-group-addon" style="display:inline;" i18n="@@da22" >D.A</span>
+				<div *ngIf="price.invalid && (price.dirty || price.touched)" class="alert alert-danger">
+				
+				<div  i18n="@@prixalert" *ngIf="f.submitted && price.hasError('required')" class="help-block">Ajouter un prix</div>
+             
+            	
+            </div>
+			
+			</div>
+	    </div> 
+	     <br/> <br/>
+	    <div class="form-group text-info" >
+      		 <label i18n="@@nombre" for="number"> Nombre </label>
+            <div class="input-group" style="float:left;">
+  				<input type="number" [(ngModel)]="model.numbers" name="numbers"  #numbers="ngModel" min="1" step="any"/>
+  				<span class="input-group-addon" style="display:inline;" i18n='@@unit'>UNIT</span>
+				<div *ngIf="numbers.invalid && (numbers.dirty || numbers.touched)" class="alert alert-danger">
+				
+				<div i18n="@@nombrealert"*ngIf="f.submitted && numbers.hasError('required')" class="help-block">Ajouter le nombre d'articles </div>
+				
+            	
+            </div>
+			</div>
+	    </div> 
+	    <br>
+	    <br>
+	    
+	      <div class="form-group text-info " >
+	       <label class='btn btn-link' for="color"> <i class="fa fa-plus"></i> <i i18n="@@couleur">Couleurs </i></label>
+	       
+	      <input type="color" (change)= "addColor($event)" id='color'  >
+	      
+	      
+     		 <div class=" card card-default">
+	      		<br>
+	       		<ul >
+      		 		<li  *ngFor = 'let c of color; let  i=index ' style="list-style: none; display:inline-block;"> 
+       	
+		          	<span  style =' display: block;  width:50px; height:20px; border:1px  solid ; display: inline-block;' [style.background]='c' > </span>
+		          	
+		          			<button type="button" (click)="removeColor(c)" class='btn btn-info'> <i class='fa fa-close'></i></button>  
+
+     		 </li>
+     		 </ul>
+          </div>
+	      </div>
+	    
+	    <!-- div class="form-group">
+	     <label for="sel1">Choose delivery method:</label>
+	     
+	
+		   <select   id="selectdelivery" (ngModelChange)="addDelivery($event)" [(ngModel)]="selectdelivery"   name="selectdelivery" class="selectpicker"  placeholder="Choose one of the following..."   >
+  					  <option  *ngFor='let d of  delivery' [ngValue]="d"><b><span  style='float:left;display: inline-block;'>{{d.title}}</span><span  style='float:right;display: inline-block; ' >{{d.price}} D.A</span></b></option>
+ 					  
+           </select>	
+		   <div class=" panel panel-default">
+		   			<ul  class="list-group" >
+      		 			 <li  *ngFor = 'let d of selectdeliveries; let  i=index '  class="list-group-item " style="width:100%; height:100%;"> 
+		          			<span   style =' display: inline-block;' > {{d.title}}</span>
+		          			<span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeDelivery(d)" class='btn-info'> X</button>  </span>
+	 					 </li>
+     		 		</ul>
+          	</div>
+		
+                 
+          </div-> 
+          
+          
+          
+		
+	    <div class="form-group  text-info " >
+    		 <label for="categories" i18n="@@categories">Categories</label>
+  		
+        	 <ngx-select-dropdown (change)='selectCat($e)' [config]="config" [options]="Categories" 
+        	    [(value)]="selectcats" [multiple]="true" ></ngx-select-dropdown>     
+      			   <div i18n="@@categoriesalert" *ngIf="f.submitted && selectcats.length==0" class="help-block alert alert-danger">Ajouter au moins une catégorie</div>
+       </div>
+       
+       <div class="form-group text-info" >
+       <br/> <br/>
+            <label for="description" i18n="@@description" >Description </label>
+            <textarea rows="3" class="form-control" name="description" [(ngModel)]="model.description" #description="ngModel" maxlength="1000" required ></textarea>
+			 <div i18n="@@descriptionalert" *ngIf="f.submitted && !model.description" class="help-block alert alert-danger">Ajouter une description</div>
+			
+      	    
+      </div> 
+   
+       
+            
+            <!-- ngx-select-dropdown (change)="addDelivery($event)" [multiple]="true" [(value)]="selectdeliveries" [config]="deliveryconfig" [options]="delivery" required ></ngx-select-dropdown>
+			 ->
+    
+	    
+       <h5 i18n="@@livraison" class='text-info '>Choisir vos livraisons  </h5>
+    		<div style='border-top :2px solid #D0D0D0 ; padding-top:  10px ; '>
+         
+   
+   
+		 <div class="form-group" style='margin-bottom:200px;' >
+            
+<table class="table table-sm">
+  <thead class="thead-light">
+    <tr>
+      
+    			  <th i18n="@@adtr" scope="col">Titre</th>
+			      <th i18n='@@adp' scope='col'>Poids Max</th>
+ 			      <th i18n='@@adt' scope='col'>Téléphone</th>
+ 			      <th i18n="@@adpp" scope="col">Prix</th>
+  
+
+    </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor=' let del of delivery'  >
+      
+      <td>{{del._source.title}}</td>
+      <td>{{del._source.weight}}<span class="input-group-addon" style="display:inline;" i18n='@@kg'>kg</span> </td> 
+       <td>{{del._source.phone}} </td> 
+      
+      <td>{{del._source.price}}<span class="input-group-addon" style="display:inline;" i18n="@@da22">D.A</span> </td> 
+      <td><label class="checkbox"><input type="checkbox"(change)="selectDelivery(del)"></label></td>
+    </tr>
+  </tbody>
+  </table>
+  <div i18n="@@livraisonalert"*ngIf="f.submitted &&  selectdel.length==0" class=" alert alert-warning help-block">Selectionner les livraisons </div>
+  
+  
+          
+		   </div>
+      <div class="form-group" style="float:right; ">
+              <button [disabled]="loading " class="btn btn-info" i18n="@@envoyer">Envoyer</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+			       
+			        
+              <a class="btn btn-link" (click)=cancel() i18n='@@annuler'>Annuler</a>
+         	<div i18n="@@envoyeralert" *ngIf="f.submitted &&  !f.form.valid" class="alert alert-danger help-block">Remplisser les champs obligatoires </div>
+         
+      </div>
         
-	</GridLayout>
-</ScrollView>
+           </div>
+    </form>
+  
+  
+    
+</div>
+</div>
+
+</div>
+</div>
+-->

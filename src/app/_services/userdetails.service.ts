@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { NgZone} from '@angular/core';
-
-import { SocketIO } from "nativescript-socketio"; 
- 
+import { Article , Store } from '../_models/index';
 
 
 import { Observable } from 'rxjs/Observable';
-//import { SocketIO } from 'nativescript-socketio';
+import * as io from 'socket.io-client';
 import {ConfigService} from './api-config.service'; 
- //import * as SocketIO from "nativescript-socket.io"; 
+ 
 
  
 @Injectable()
@@ -18,17 +15,10 @@ export class UserdetailsService {
 
    socket :any ; 
    host :string ; 
-    apiKey:string ; 
-   constructor(private http: HttpClient, 
-                private socketIO :SocketIO, 
-                private ngZone :NgZone) { 
+   constructor(private http: HttpClient) { 
     
          this.host = ConfigService.storeServer; 
-         this.apiKey = ConfigService.apiKey; 
-        // this.socket =new SocketIO(this.host );
-        // this.socket.connect();
-    // this.socket = SocketIO.connect(this.host) ; 
-       
+         this.socket = io.connect(this.host );
     } 
     
     
@@ -47,10 +37,6 @@ export class UserdetailsService {
 
         }
     
-    
-    
-
-    
    postAvatar (userid : string , avatar :any){
       return this.http.put(this.host+'/api/users/'+userid+'/avatar',{'avatar':avatar}); 
 
@@ -58,7 +44,8 @@ export class UserdetailsService {
    }
    
    getAvatar (userid : string ) {
-         return this.http.get(this.host+'/api/users/'+userid+'/avatar'); 
+     
+        return this.http.get(this.host+'/api/users/'+userid+'/avatar'); 
 
     }
     putRating(userid, value, feedback, storetitle  ) {
@@ -99,22 +86,18 @@ export class UserdetailsService {
       }
     getNotif (id) {
             
-     console.log(id) 
-     let observable = new Observable(observer => { 
+       console.log(id) 
+          
+          let observable = new Observable(observer => { 
           
               //this.socket = io(this.host);
-              this.socketIO.connect() ; 
-                this.socketIO.on('ongoing_step'+id, (data) => {
-                        this.ngZone.run(() => {
-                               // Do stuff here
-                             console.log(data ) ; 
-                             observer.next(data);  
-                          });
-                    
+                this.socket.on('ongoing_step'+id, (data) => {
+                    console.log(data ) ; 
+                     observer.next(data);   
                 });
-             return () => {
-                   this.socketIO.disconnect(); 
-                }; 
+           //     return () => {
+            //        this.socket.disconnect(); 
+              //  }; 
         }) 
         return observable;
     
@@ -145,22 +128,18 @@ export class UserdetailsService {
     
     getMessagesNotif(userid) {
             
-      console.log(userid); 
+       console.log(userid); 
           
           let observable = new Observable(observer => { 
           
              // this.socket = io(this.host);
-              this.socketIO.connect() ; 
-                this.socketIO.on('messages_notif'+userid, (data) => {
-                    this.ngZone.run(() => {
-                               // Do stuff here
-                             console.log(data ) ; 
-                             observer.next(data);  
-                          });   
+                this.socket.on('messages_notif'+userid, (data) => {
+                    console.log(data ) ; 
+                     observer.next(data);   
                 });
-              return () => {
-                   this.socketIO.disconnect(); 
-               }; 
+             //   return () => {
+             //       this.socket.disconnect(); 
+              //  }; 
         }) 
         return observable;
     
@@ -168,24 +147,18 @@ export class UserdetailsService {
     
     getMessagesNotifDown(userid) {
             
-      console.log(userid); 
+       console.log(userid); 
           
           let observable = new Observable(observer => { 
           
              // this.socket = io(this.host);
-              this.socketIO.connect() ; 
-                this.socketIO.on('messages_notif_down'+userid, (data) => {
-                        this.ngZone.run(() => {
-                               // Do stuff here
-                             console.log(data ) ; 
-                             observer.next(data);  
-                          });
-                
+                this.socket.on('messages_notif_down'+userid, (data) => {
+                    console.log(data ) ; 
+                     observer.next(data);   
                 });
-               return () => {
-                 this.socketIO.disconnect(); 
-              
-                   }; 
+             //   return () => {
+             //       this.socket.disconnect(); 
+              //  }; 
         }) 
         return observable;
     
@@ -211,17 +184,13 @@ export class UserdetailsService {
           let observable = new Observable(observer => { 
           
              // this.socket = io(this.host);
-              this.socketIO.connect() 
-                this.socketIO.on('ongoing_remove_step'+id, (data) => {
-                     this.ngZone.run(() => {
-                               // Do stuff here
-                             console.log(data ) ; 
-                             observer.next(data);  
-                          });
+                this.socket.on('ongoing_remove_step'+id, (data) => {
+                    console.log(data ) ; 
+                     observer.next(data);   
                 });
-                return () => {
-                    this.socketIO.disconnect(); 
-                }; 
+             //   return () => {
+              //      this.socket.disconnect(); 
+               // }; 
         }) 
         return observable;
     
@@ -243,25 +212,15 @@ export class UserdetailsService {
                return this.http.get (this.host+'/api/useraccount/'+userid+'/location'); 
 
         }
-      
-    getFirebase(userid : string ){
+      getFirebase(userid : string ){
         return this.http.get(this.host+'/api/useraccount/'+userid+'/firebase'); 
       }
     
     addFirebase(userid:string, firebase:string) {
                 return this.http.put(this.host+'/api/useraccount/'+userid+'/firebase',{"firebase":firebase}); 
-     }      
-      
+     }  
     
-    getGeo(longitude, latitude) {
         
-            //   longitude = '10.393';
-           //    latitude = "31.373";
-        let url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude+"&key=" + this.apiKey;
-        return this.http.get(url); 
-    
-    }
-    
     putProfilePicName(userid, name ) {
         return this.http.put(this.host+'/api/useraccount/'+userid+'/profilepicname', {'profilepicname':name});
      }
@@ -271,5 +230,4 @@ export class UserdetailsService {
                return this.http.get (this.host+'/api/useraccount/'+userid+'/profilepicname'); 
 
         }
-    
 }

@@ -1,0 +1,132 @@
+
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+
+<div *ngIf='!loading'>
+
+
+<div class="container"> 
+<br>
+<br>
+
+    <div class="search-container">
+    <form >
+		<div class="input-group">
+        <input  type="text"
+                id="userQuery"
+                name='userQuery'
+                class="form-control" 
+                i18n-placeholder placeholder="rechercher User  par téléphone..." 
+                aria-describedby="sizing-addon2"
+                [(ngModel)]="userQuery"
+        />
+        <span class="input-group-btn">
+        <button 
+                type="submit" 
+                class="btn btn-danger  search-button" 
+                (click)="getUser($event)">
+                <i class="fa fa-search"></i></button>
+        </span>
+        <span> Total {{usersCount}} Users</span>
+		</div>
+    </form>
+   </div>
+  
+  
+  
+  <table class="table table-sm">
+   <thead>
+     <tr class="table-active" >
+       <th>Fullname</th>
+       <th>Phone</th>
+		<th> <label for="status">status</label>  </th>
+		<th>store Owner</th>
+		<th>stores</th>
+		<th>delivery Owner</th>
+		<th>deliveries</th>
+     </tr>
+  </thead>
+  <tbody>
+  
+   
+    <tr *ngFor=" let user of users |paginate: { id: 'server', itemsPerPage: size, currentPage: page, totalItems: usersCount }">
+  		<th> {{user._source.fullname }} </th>
+  		<th>{{user._source.phone }}</th>
+  		
+  		 <td>
+  		 
+  		      <span *ngIf='!editStatus[user._id]' ><span *ngIf= "user._source.enable">Active</span> 
+            						  <span *ngIf= "!user._source.enable">Disable</span>
+            						  </span>
+         
+		    <label *ngIf='editStatus[user._id]' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="user._source.enable" [value]="true" checked>active</label>
+			<label *ngIf='editStatus[user._id]' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="user._source.enable" [value]="false" >disable</label>
+
+		         
+  	     	 <a class="btn fa fa-pencil"  *ngIf='!editStatus[user._id]' style='display:inline-block;' (click)='editingStatus(user)'> </a>
+         	 <a class="btn fa fa-check"  *ngIf='editStatus[user._id]' style='display:inline-block ;margin-right:5px; ' (click)='saveStatus(user._id, user._source.enable)'></a>
+			 <a class="btn fa fa-remove"  *ngIf='editStatus[user._id]' style='display:inline-block; ' (click)='removeStatus(user)'></a>
+		  
+  	        
+  		 </td>
+  		 <td> 
+  		    <span *ngIf='!editStore[user._id]' ><span *ngIf= "user._source.ownerstore">Active</span> 
+            						  <span *ngIf= "!user._source.ownerstore">Disable</span>
+            						  </span>
+         
+		    <label *ngIf='editStore[user._id]' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="user._source.ownerstore" [value]="true" checked>active</label>
+			<label *ngIf='editStore[user._id]' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="user._source.ownerstore" [value]="false" >disable</label>
+
+		         
+  	     	 <a class="btn fa fa-pencil"  *ngIf='!editStore[user._id]' style='display:inline-block;' (click)='editingStore(user)'> </a>
+         	 <a class="btn fa fa-check"  *ngIf='editStore[user._id]' style='display:inline-block ;margin-right:5px; ' (click)='saveStore(user._id, user._source.ownerstore)'></a>
+			 <a class="btn fa fa-remove"  *ngIf='editStore[user._id]' style='display:inline-block; ' (click)='removeStore(user)'></a>
+		  
+  		 
+  		 </td> 
+  		 <td> <tr *ngFor="let s of user._source.store"> {{s}}</tr></td> 
+  		 
+  		  <td> 
+  		    <span *ngIf='!editDelivery[user._id]' ><span *ngIf= "user._source.ownerdelivery">Active</span> 
+            						  <span *ngIf= "!user._source.ownerdelivery">Disable</span>
+            						  </span>
+         
+		    <label *ngIf='editDelivery[user._id]' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="user._source.ownerdelivery" [value]="true" checked>active</label>
+			<label *ngIf='editDelivery[user._id]' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="user._source.ownerdelivery" [value]="false" >disable</label>
+
+		         
+  	     	 <a class="btn fa fa-pencil"  *ngIf='!editDelivery[user._id]' style='display:inline-block;' (click)='editingDelivery(user)'> </a>
+         	 <a class="btn fa fa-check"  *ngIf='editDelivery[user._id]' style='display:inline-block ;margin-right:5px; ' (click)='saveDelivery(user._id, user._source.ownerdelivery)'></a>
+			 <a class="btn fa fa-remove"  *ngIf='editDelivery[user._id]' style='display:inline-block; ' (click)='removeDelivery(user)'></a>
+		  
+  		 
+  		 </td>
+  		 
+  		 
+  		 <td> 
+  		 	  
+  		  <tr *ngIf='!editDelList[user._id]'  >  {{ user._source.delivery}} </tr>
+          <input   *ngIf='editDelList[user._id]'  type="text" class="form-control" name="delivery" [(ngModel)]="user._source.delivery" #delivery="ngModel">
+              
+		      
+  	     	 <a class="btn fa fa-pencil"  *ngIf='!editDelList[user._id]' style='display:inline-block;' (click)='editingDelList(user)'> </a>
+         	 <a class="btn fa fa-check"  *ngIf='editDelList[user._id]' style='display:inline-block ;margin-right:5px; ' (click)='saveDelList(user._id, user._source.delivery)'></a>
+			 <a class="btn fa fa-remove"  *ngIf='editDelList[user._id]' style='display:inline-block; ' (click)='removeDelList(user)'></a>
+		  
+  		 
+  		 </td>
+  		
+    </tr>
+  
+  </tbody>
+</table>
+  
+<div class="has-text-centered" style='float:right; '>
+    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
+    <pagination-controls (pageChange)="getPage($event)" id="server"></pagination-controls>
+</div>
+
+</div>
+  
+</div>
+
+

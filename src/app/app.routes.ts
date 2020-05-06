@@ -390,13 +390,13 @@ export const routes: Routes = [
     { path:'home', redirectTo:'' , pathMatch: 'full'},
     { path: '', component: HomeComponent, canActivate: [AnAuthGuard]},
     { path: 'login', component: HomeComponent, canActivate: [AnAuthGuard] },
-   // { path: 'signin', component: SigninComponent, canActivate: [AnAuthGuard] },
-    //{ path: 'validation/:userid', component: UserValidationComponent, canActivate: [AnAuthGuard] },
-    //{ path: 'loginaccount', component: LoginAccountKitComponent, canActivate: [AnAuthGuard] },
+     // { path: 'signin', component: SigninComponent, canActivate: [AnAuthGuard] },
+     //{ path: 'validation/:userid', component: UserValidationComponent, canActivate: [AnAuthGuard] },
+     //{ path: 'loginaccount', component: LoginAccountKitComponent, canActivate: [AnAuthGuard] },
        
 
-    // otherwise redirect to home
-    { path: '**', redirectTo: '' , pathMatch: 'full'  } 
+      // otherwise redirect to home
+     { path: '**', redirectTo: '' , pathMatch: 'full'  } 
     
    
 

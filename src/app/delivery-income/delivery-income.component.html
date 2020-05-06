@@ -1,0 +1,73 @@
+
+<ngx-loading  [show]="loading0" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<div *ngIf='!loading0 &&  !open'>
+
+</div>
+
+
+<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+ <div  class="container " >
+
+ <nav class="nav nav-tabs">
+
+         <a  *ngFor=' let del of myDeliveries '  style="display:inline-block" class="nav-item nav-link text-warning"   href="#{{del}}" data-toggle="tab">{{deliveries[del]['title']}}</a>
+		
+</nav>
+ <div  class="tab-content" >
+  <div *ngFor='let del of myDeliveries' class="tab-pane " [id]="del"  >
+  
+ <ul  class="list-group" >
+<li class="list-group-item alert alert-warning"  *ngIf='!deliveries[del].available'  >
+    Methode de livraison non disponible 
+ </li>
+
+ 
+</ul>  
+    <table class="table table-sm  table-striped table-responsive-sm">    <!-- *ngIf='data.length!=0' -->
+   <thead>
+     <tr class="table-active" >
+       <th> Dates </th>
+       <th> Livraisons</th>
+       <th> Recettes</th>
+	  
+		
+     </tr>
+  </thead>
+  <tbody>
+  
+   
+    <tr  *ngFor='let d of deliveries[del].income' >
+  		<th>{{d.key_as_string}}  </th>
+  		<td>{{d.doc_count}}</td>
+  		<td> {{deliveries[del].price* d.doc_count }} DA</td>
+
+    </tr>
+  
+
+    
+  </tbody>
+</table>
+   
+   
+      <!-- div   i18n="@@pasventecompelete"   *ngIf='!loading0 && data.length==0' class="alert alert-warning " > 
+  	  
+  	   Pas de vente complétée.
+  	  </div>
+  
+   -->
+  
+  
+
+</div>
+   
+   
+  </div>
+ 
+</div>
+
+
+
+
+
+   
+   

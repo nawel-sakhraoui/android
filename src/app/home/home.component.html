@@ -1,18 +1,27 @@
+﻿
 
- 
- <div  i18n-class class=" text-left jumbotron text-center" >
-  <h1>  Welcome to SMSM </h1>
-  <p>Echange en ligne, vente,  achat, services </p>
+
+ <div   i18n-class class=" text-left ">
+ <div   class="  text-center top title " >
+  <h1>  Ceen.dz  </h1>
+  <p><i> 
+    </i> </p>
 </div>
 
-<div i18n-class class="text-left container"  >
+<div  class="text-left jumbotron main  "  >
 
   <div class="row">
-    <div class="col-sm-6 col-xs-6" >
-      <h4 align="center">Semsim </h4>
+    <div class="col-sm-5 col-12 col-md-5" >
+    
+      <h4 align="center">
+                   <img src="assets/sin1.png" alt="" style='width:200px; height:200px;  object-fit:cover;  '>
+      
+      
+      </h4>
     </div>
     
-    <div class="col-sm-6 col-xs-6" >
+    <div class="col-sm-7 col-12 col-md-7" >
+
      <div class='row'>   
      <span class="dropdown"  >
        <a class=" text-dark  btn-link  btn dropdown-toggle " href="#" id="navbardrop" data-toggle="dropdown"  aria-expanded="false" aria-labelledby="navbarDropdown">  {{langue}}
@@ -26,30 +35,33 @@
        </ul>
      </span>
      </div>
+     
       	<div *ngIf='login'>
-	    <h2  i18n="@@connexion" >Connexion</h2>
+	    <h2  i18n="@@connexion" class="con" >Connexion</h2>
 	    <br>
 	    <div  i18n="@@logalert" class ="alert alert-danger " *ngIf="justLog">Ce téléphone est déjà enregistré, veuiller vous connecter </div>
 	    <div i18n="@@logsuspend" class ="alert alert-danger" *ngIf="suspended"> Utilisateur suspendu contacter le support technique pour plus d'info</div>
 	    
-		<form name="form" (ngSubmit)="f.form.valid  && logins()  && UserPhone" #f="ngForm" novalidate>
+	    	    <div  i18n="@@loginerror"  class ="alert alert-danger" *ngIf="loginerror"> {{loginerror}}</div>
+	    
+	    
+		<form name="form" (ngSubmit)="f.form.valid  && logins() && !lengthphone " #f="ngForm" novalidate>
 		 	<div class="form-group" >
             <label i18n="@@logphone" for="useremail">Téléphone</label>
-            <input dir="ltr"  class="form-control" [textMask]="{mask: phonemask}"  type="tel"  name="phone" [(ngModel)]="model.phone"  required #phone="ngModel" />    
-            <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
+            <input placeholder="00 00 00 00 00 " dir="ltr"  class="form-control" [textMask]="{mask: phonemask}"  type="tel"  name="phone" [(ngModel)]="model.phone"  required #phone="ngModel" />    
         	
-        	 <div  i18n="@@phonealert" *ngIf="f.submitted && fullname.hasError('required')" class="help-block">Entrer votre numéro de téléphone</div>
-            </div>							
+        	 <div  i18n="@@phonealert" *ngIf="f.submitted && phone.hasError('required')" class="alert alert-danger help-block">Entrer votre numéro de téléphone</div>
+            <div  i18n="@@phonealert" *ngIf=" f.submitted && lengthphone " class="alert alert-danger help-block">Entrer Le numero complet</div>
+            
+            						
             </div>
             <div class="form-group"> 
             <span  style="float:right; ">
-               <button i18n="@@log" [disabled]="loading" class="btn btn-warning">Se connecter</button>
+               <button i18n="@@log" [disabled]="loading" class="btn btn-info" >Se connecter</button>
                <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-			   <a i18n="@@signin" (click)="login=!login" class="btn btn-outline-warning">S'enregistrer</a>
+			   <a i18n="@@signin"  (click)="change() " class="btn btn-outline-info">S'enregistrer</a>
 			    <a  i18n="@@annuler" class="btn btn-link" (click)= cancel()>Annuler</a> 
-			    
             </span>
-            
             </div>
         
         </form>
@@ -57,14 +69,17 @@
         
         
         <div dir="auto" *ngIf="!login">      
-        <h2  dir="auto"  i18n="@@signin" >Enregistrement</h2>
+        <h2  dir="auto"  i18n="@@signin" class="con" >Enregistrement</h2>
     	<br>
     	<div i18n="@@signinalert" class ="alert alert-danger" *ngIf="pleaseRegister">Ce téléphone n'est pas enregister, enregistrer le  </div>
-    	<form name="form" (ngSubmit)="f.form.valid  && register() && !UserPhone" #f="ngForm" novalidate>
+    		    	    <div   i18n="@@loginerror" class ="alert alert-danger" *ngIf="loginerror"> {{loginerror}}</div>
+    	
+    	
+    	<form name="form" (ngSubmit)="f.form.valid  && register() && !lengthphone" #f="ngForm" novalidate>
         
        	<div class="form-group" >
             <label i18n="@@fullname" for="username">Nom Complet </label>
-            <input type="text" class="form-control" name="fullname" [(ngModel)]="model.fullname" #fullname="ngModel" required    pattern="^([\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z]{2,}\s[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-z]{1,}?-?[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z]{2,}\s?([\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z]{1,})?)"/>
+            <input placeholder="Nom Prénom" type="text" class="form-control" name="fullname" [(ngModel)]="model.fullname" #fullname="ngModel" required    pattern="^([\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z]{2,}\s[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-z]{1,}?-?[\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z]{2,}\s?([\u0600-\u065F\u066A-\u06EF\u06FA-\u06FFa-zA-Z]{1,})?)"/>
             <div *ngIf="fullname.invalid && (fullname.dirty || fullname.touched)" class="alert alert-danger">
             <div i18n="@@namealert"  *ngIf="f.submitted && fullname.hasError('required')" class="help-block">Entrer votre nom</div>
          
@@ -73,19 +88,18 @@
         </div>  
 		<div class="form-group" >
             <label i18n="@@tel" for="useremail">Téléphone</label>
-            <input dir='ltr' class="form-control" [textMask]="{mask: phonemask}"  type="tel"  name="phone" [(ngModel)]="model.phone"  required #phone="ngModel" />    
-            <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
+            <input  placeholder="00 00 00 00 00 "  dir='ltr' class="form-control" [textMask]="{mask: phonemask}"  type="tel"  name="phone" [(ngModel)]="model.phone"  required #phone="ngModel" />    
         	
-        	 <div i18n="@@telalert"*ngIf="f.submitted && phone.hasError('required')" class="help-block">Entrer votre numéro</div>
-             <div *ngIf="f.submitted && phone.hasError('pattern')" class="help-block">Ce numero est incomplet</div>
+        	 <div i18n="@@telalert"*ngIf="f.submitted && phone.hasError('required')" class="alert alert-danger help-block">Entrer votre numéro</div>
+             <div *ngIf="f.submitted && lengthphone" class="alert alert-danger help-block">Ce numero est incomplet</div>
              
-            </div>							
-        </div>
+        </div>							
+       
         <div class="form-group"> 
           <span  style="float:right; ">
-              <button i18n="@@signinb" [disabled]="loading2" class="btn btn-warning">S'enregistrer</button>
+              <button i18n="@@signinb" [disabled]="loading2" class="btn btn-info">S'enregistrer</button>
               <img *ngIf="loading2" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-			  <a i18n="@@log2" (click)="login=!login" class="btn btn-outline-warning">Se connecter</a>
+			  <a i18n="@@log2" (click)="change()" class="btn text-info btn-outline-info">Se connecter</a>
 			  <a  i18n="@@annuler2"class="btn btn-link" (click)= cancel()>Annuler</a>
 			          
           </span>
@@ -95,6 +109,13 @@
         </div>
             
     </div>
-   
+       
+       
   </div>
+</div> 
+
+
+ <app-modalhome id='modal'  #modal [phone]='model.phone' [fullname]='model.fullname' [confirmResult]="confirmResult" [login]='login' [userid]="model.userid"  (validate)='getValidate($event)' >
+</app-modalhome>
+<div id="phone-sign-in-recaptcha"></div>
 </div> 

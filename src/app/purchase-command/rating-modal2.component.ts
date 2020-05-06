@@ -1,57 +1,78 @@
-import {Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {RatingModalService, StoreService, OngoingService, UserdetailsService } from '../_services/index';
 import { Subscription }   from 'rxjs';
 import { Router, ActivatedRoute  } from '@angular/router';
-import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
 
 
 @Component({
-  selector: 'app-rating-modal',
+  selector: 'app-rating-modal2',
   template: `
-     <GridLayout margin='10,10,10,10' rows='auto,*,auto'>
-       <TextView editable ="false" class="text" row="0" text="Merci pour vos achats noter ces articles svp !" ></TextView>
+  <div *ngIf="visible" (click)="onContainerClicked($event)" class="modal fade" tabindex="-1" [ngClass]="{'in': visibleAnimate}"
+       [ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
 
-        <RadListView row="1"  [items]='model.articles'>
-            <ng-template let-a='item'>
-             <StackLayout>  
-                    <Image [src]="a.pic"    class="pic"  stretch="aspectFill" ></Image>
+                 
 
-                    <StackLayout  >
-            
-                        <StarRating  (valueChange)="setScore($event,a.articleid)"   android:scaleX=".4" android:scaleY=".4"
-                                horizontalAlignment="center" verticalAlignment="center"  [value]="rating[a.articleid]" ></StarRating>
-                           
-                    </StackLayout>
-                  
-                    <TextView fontSize="12" row='0' hint="votre évaluation" class="input" [(ngModel)]="feedback[a.articleid]"    returnKeyType="done" 
-                  maxLength="300"></TextView>
-            </StackLayout>
-            </ng-template>
-        </RadListView>
-        <GridLayout row="2" columns='*,auto,auto,auto'>
-            <Button  [isEnabled]='!loading' color="#fff"  backgroundColor="#00BFFF" col="1"  (tap) ="sendRating()" text="Envoyer"></Button>
-                <ActivityIndicator col="2" *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
-        
-            <Button  [isEnabled]='!loading' color="#00BFFF"  backgroundColor="#fff"   col="2" (tap)="hide()" text='Annuler'></Button>
-        </GridLayout>
-</GridLayout>
-  `,
-   styles: [`
-        .pic{ width:60; height:60 ; 
+        </div>
+ 
+     <div class="modal-body">
+     <p i18n="@@ratingmmrc" > Merci pour vos achats noter ces article s'il vous plait </p> 
+      <ul class="list-group">
+
+       <li  class="list-group-item" *ngFor='let m of model.articles '> 
+  
+         <img alt=""  src="{{m.pic}}" class="img-responsive crop"  >
+         <star-rating id= " m.articleid" [starType]="'svg'"   size='large' [showHalfStars]="true" labelText="{{m.title}}" (starClickChange)="onClick($event, m.articleid)" ></star-rating>
+         <div i18n="@@ratingalert" *ngIf="alert[m.articleid]" class="alert alert-danger" role="alert">s'il vous plait notez cet article </div>
+            <textarea rows="5" class="message" name="message" [(ngModel)]="feedback[m.articleid]" #message="ngModel"   maxlength=400></textarea>
+          <!--div *ngIf="alert2[m.articleid]" class="alert alert-danger" role="alert"> please add a feedback to help us improuve our service </div-->
+
+      </li>
+      </ul>
+    <div class="modal-footer">
+    
+      <button  class="btn btn-info" (click) ="sendRating();"[disabled]="waiting"   > <i i18n="@@envoyer" >Envoyer</i>   <span *ngIf="waiting" class= "fa fa-spin"></span></button>
+      <a  class="btn btn-link" (click)="hide()" i18n="@@annuler" >Annuler</a>
+    </div>
+      </div>
+    </div>
+  </div>` 
+  ,
+  styles: [`
+    .message {
+          overflow-y: scroll;
+          height: 100px;
+          width:100%;
+          resize: none;
+     }
+
+    .modal {
+      background: rgba(0,0,0,0.3);
+        Ae41c8rx
+    }
+    .modal-body {
+         max-height: calc(100vh - 210px);
+         overflow-y: auto;
         }
-        .text{
-            border-bottom-width:1 ; 
-            border-bottom-color:#D0D0D0;
-            font-size:12; 
-        }
-
- `]
+    .crop {
+    
+        background-color:#eeeeee; 
+        width: auto;
+        height: 60px;
+        overflow: hidden;
+        position: relative;
+        display:inline-block;
+        margin-right:10px;
+    }
+  `]
+  
 })
     
-export class RatingModal2Component {
-  
+export class RatingModal2Component  {
   subscription: Subscription;
-  commandid ="";
+     
   model:any = {} ; 
   rating :any={};
   feedback: any ={};
@@ -59,7 +80,7 @@ export class RatingModal2Component {
   alert2:any={};   
   public visible = false;
   public visibleAnimate = false;
- loading:boolean ; 
+
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
     ratingDone = false ; 
@@ -69,67 +90,66 @@ export class RatingModal2Component {
               private storeService : StoreService, 
               private userdetailsService: UserdetailsService, 
               private ongoingService: OngoingService, 
-              private route : ActivatedRoute, 
-              private router : Router, 
-              private params: ModalDialogParams) {
-      
-      this.model = this.params.context.model ; 
-      this.commandid = this.params.context.commandid
-     
+                private route : ActivatedRoute, 
+              private router : Router) {
+
   }
 
-  
+
     
- 
+   public show(): void {
+
+   this.subscription = this.ratingModalService.rating$.subscribe(
+      data  => {
+            this.model = data ; 
+          console.log(data) ; 
+            this.visible = true;
+         setTimeout(() => this.visibleAnimate = true, 5);
+    });
+  
+  }
 
 
   public hide(): void {
-     if (!this.ratingDone) {
+      if (!this.ratingDone) {
           let time = new Date().getTime() ; 
-          this.userdetailsService.putNotification(this.me, this.commandid, 'rating', time  , this.model.storetitle) 
+          this.userdetailsService.putNotification(this.me, this.model._id, 'rating', time  , this.model.storetitle) 
         .subscribe (
                 data => { 
-                        //console.log("hide") ; 
-                        //console.log(data)  ; 
-                       this.router.navigate(["../../done"], { relativeTo: this.route });
-                                                this.params.closeCallback('done');
-
+                        console.log(data)  ; 
                  }
                 ,error=>{
                     console.log(error) ; 
                     });
-         }else {
-         
-               this.router.navigate(["../../done"], { relativeTo: this.route });
-                          this.params.closeCallback('not done ');
-
          }
-         
+            this.visible = false;
+            this.visibleAnimate = false;
+            setTimeout(() => this.visible = false, 10);
   }
 
-setScore(e,a){
-        console.log(e.object.get('value')) ; 
-           this.rating[a] = Number(e.object.get('value'));
-       }
+  public onContainerClicked(event: MouseEvent): void {
+    if ((<HTMLElement>event.target).classList.contains('modal')) {
+      this.hide();
+    }
+  }
 
   waiting = false ; 
- /* onClick(event, id ) {
+  onClick(event, id ) {
       console.log(event) ; 
       this.rating[id ] = event.rating ; 
        //console.log(id ) ;
       this.alert[id] = false ;  
-      }*/
+      }
   sendRating () {
-      this.loading = true ; 
       this.waiting = true ;  
          let bool = true ; 
          for (let m of this.model.articles ){
              
-             if (!this.rating.hasOwnProperty(m.articleid) )
+             if (!this.rating[m.articleid] )
              {    
                  this.alert[m.articleid] = true ; 
                  bool = false ; 
-                 this.waiting = false ; 
+                       this.waiting = false ;  
              }
              else 
                  this.alert[m.articleid] = false ; 
@@ -154,6 +174,7 @@ setScore(e,a){
                          .subscribe (
                              data2 =>{
                                  console.log(data2) ;
+                              
                                  }
                              ,error2 =>{
                                  
@@ -165,26 +186,35 @@ setScore(e,a){
                       })
              this.ratingDone = true
             }
-            this.loading = false ; 
                    //put userid rating 
-            this.ongoingService.putAllRatingArticle(this.commandid  , this.rating, this.feedback )
-            .subscribe (
-               data3=> {
-                           console.log(data3) ;  
-                          this.router.navigate(["../../done"], { relativeTo: this.route });
-                          this.params.closeCallback('done');
-                                           //navigate to done 
-                }, error3=> {
-                             console.log(error3) ; 
-                }); 
+                                 this.ongoingService.putAllRatingArticle(this.model._id  , this.rating, this.feedback )
+                                 .subscribe (
+                                     data3=> {
+                                        console.log(data3) ; 
+                                          
+                                               this.userdetailsService.removeNotifByCommandId(this.me, this.model._id , "rating" )
+                                             .subscribe(
+                                                  datas =>{
+                                                    console.log(datas) ;
+                                                this.router.navigate(["../../done"], { relativeTo: this.route });
+ 
+                                                    }
+                                                 ,errors =>{
+                                                   console.log(errors);
+                                                    }
+                                             ); 
+                                     },
+                                     error3=> {
+                                        console.log(error3) ; 
+                                     }
+                                     )
+                                 ; 
                    
                    
              
            this.waiting = false ; 
-          
-        
-      }else 
-          this.loading = false ; 
+           this.hide(); 
+    }
 
 }
 }

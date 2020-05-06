@@ -1,14 +1,5 @@
-/* Add mobile styles for the component here.  */
-
-.alert {
-	
-	padding :5 ; 
-	background-color: #eeeeee; 
-	border-color : #FFA1A1;
-	 border-width: 1 ;
-	 border-radius :2; 
-	 margin:2,2,2,2;
-   color:#F27171;
-   font-size:12; 
-   text-alignment: center ;  
-}
+/*
+Add your NativeScript specific styles here.
+To learn more about styling in NativeScript see:
+https://docs.nativescript.org/angular/ui/styling
+*/

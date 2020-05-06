@@ -1,0 +1,28 @@
+
+
+<div class=" input-group">
+        <input 	  
+                type="text"
+                id="query"
+                name='query'
+                class="form-inline form-control" 
+                i18n-placeholder 
+                placeholder="Rechercher..." 
+                aria-describedby="sizing-addon2"
+                [(ngModel)]="query"
+                size='65'
+                
+        />
+        <span class="input-group-btn" style='display:inline-block; '>
+             <button    placement="bottom"  tooltip="Rechercher"
+                     data-toggle="collapse" data-target=".navbar-collapse.show" 
+                type="submit" 
+                class="btn bg-light search-button text-dark  " 
+                (click)="getQuery($event)">
+                <i class="fa fa-search"></i></button>
+        </span>
+</div>
+    
+  
+
+

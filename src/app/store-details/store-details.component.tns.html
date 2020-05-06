@@ -1,106 +1,99 @@
-<ScrollView>
-<GridLayout rows="auto,*">
-	<StackLayout row="0" >
-   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
-   	</StackLayout>  
+<StackLayout>
+  <Label text="store-details works" textWrap="true"></Label>
+  <Label text="This is a migrated component" textWrap="true"></Label>
+  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
+</StackLayout>
+
+<!--
+Original Web template:
+
+
+<div i18n-class class='text-left scroll2' >
+  <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+
+
+<div class= ' container' *ngIf ='show'> 
+<div i18n="@@nostore" *ngIf='nostore' >
+ Pas de magasin dans ce lien. 
+</div>
+<div *ngIf='!nostore && !open'>
+<div i18n="@@noopen" class=" alert alert-warning  strong "> Ce magasin est fermé </div>
+</div>
 
 
 
+<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']">
 
-      
-   <GridLayout row="1" rows='auto, auto,* '>
+<div *ngIf='!nostore' class='list-group-item '>
 
+<!--
+<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false, wrapperClass:resize}"   ></div>
 
- 
-    <GridLayout row="0"  columns=auto,auto >
-    <Label  (touch)="ontouch($event)" text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> </Label>
-  		<Label (touch)='ontouch($event)' textWrap='true' col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+->
+
+  
+  <table class="table table-sm" >
+   <thead>
+  <tr class="table-active" >
+  <th><strong>{{storetitle}}</strong></th>
+  <th>   <span class="form-inline " ><star-rating [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> <span class="small" i18n="@@votes">( {{store.ratingcount}} votes)</span></span>
+     </th> 
+   
+   </tr>
+  </thead>
+  <tbody>
+  
+   
+  <tr>
+  	<th i18n="@@create">Création</th>
+  	<th>{{store.created}}</th>
+  </tr>
+  <tr>
+   <th i18n='@@description'>Déscription</th>
+  <td> {{store.description}}</td>
+  </tr>
+  <tr>
+  	<th i18n='@@categories'>Catégories</th>
+  	<th class="list-group-item"  *ngFor='let c of store.selectedCat'> {{c}}  </th>
+  </tr>
+   <tr>
+  	<th  i18n='@@geo'>Couverture Géographique</th>
+  	<th class="list-group-item"  *ngFor='let c of store.geo'> {{c.name}}  </th>
+  </tr>
+  
+ <tr>
+  <th i18n='@@owner' scope="row">Propriétaire</th>
+      <td>
+      <div class="profile-picture">  <img class=" resize" alt=" Avatar" id="avatar2" [src]=avatars[store.userid] /></div> 
+      <b> {{owner.fullname}} </b> 
+      <a class="btn  btn-info    fa fa-envelope" 
+      			(click)= 'sendMessage(store.userid, owner.fullname, avatars[store.userid])' i18n="@@contacter">  Contacter </a>
+	  <a class="fa fa-user  btn   btn-link  "  (click)='profile(store.userid)' i18n="@@profil"> Profil</a>
+      </td>
+  </tr>
+    <tr *ngFor="let a of store.admins" >
+      <th i18n="@@admin" scope="row">Administrateur</th>
+       <td>
+       <div class="profile-picture"><img class=" resize" alt=" Avatar" id="avatar2" [src]=avatars[a.userid] /></div>
+         <b> {{a.fullname}} </b>
+     	 <a class="btn  btn-info    fa fa-envelope" 
+      			(click)= 'sendMessage(a.userid, a.fullname, avatars[a.userid])' i18n="@@contacter">  Contacter </a>
+        <a class="fa fa-user  btn  btn-link"  
+      	         (click)='profile(a.userid)' i18n="@@profil"> Profil</a>
+      </td>
+    </tr>
     
-    </GridLayout>
-    
-    <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
-    
-     
-         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading && reload' class="reload">
-        <FormattedString>
-            <Span text="Problème de connexion... "></Span>
-            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
-        </FormattedString>
-    	</Label>
-    
-	<GridLayout *ngIf='!loading && !reload '     margin="15,0,15,0" row="2" columns="120,*" rows="auto,auto,auto,auto,auto,auto,auto,auto">
+  </tbody>
+</table>
+  
 
-	<Label textWrap='true'  text="{{storetitle}}" class=" border "row='0' col="0"></Label>
 
-   <AbsoluteLayout  class=" border " row="0" col="1" >
-      	           <StackLayout left="-80" top="-20" android:cursorVisible="false"  >
-      	           
-                 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="store.ratingsum/store.ratingcount" ></StarRating>
-                </StackLayout>
-                 <Label fontSize="10" left ="80" top="0"  text="({{store.ratingcount}} votes)"></Label>
-                
-        </AbsoluteLayout>
-	
-	
-	<Label class=" border " row="1" text="Suspendu" col="0"></Label>
-	<Label class=" border " row="1" col="1" *ngIf='store.suspend' text ="Oui"></Label>
-  	<Label class=" border " row="1"  col="1" *ngIf='!store.suspend' text="Non"></Label>
 
-	
-	<Label class=" border "  row="2" text="Création" col="0"></Label>
-	<Label class=" border "  row="2" col="1"  text ="{{store.created}}"></Label>
- 
-
-	
-	<Label textWrap='true'  class="border "  row="3"  text="Description" col="0"></Label>
-	
-	
-	<Label textWrap='true'  row="3" col="1"  class="border"  text="{{store.description}}" ></Label>
-	
-	<Label textWrap='true'  class=" border "  row="4" text="Catégories" col="0"></Label>
-	<RadListView class=" border "  row="4" [items]="store.selectedCat" col='1'>
-			<ng-template  let-c="item" >
-			<Label textWrap='true'  text='{{c}}'></Label>
-			</ng-template>
-	</RadListView>
-	
-	<Label class=" border "  row="5" text="Couverture Géo" col="0" editable="false"></Label >
-	<RadListView class=" border "  row="5" [items]="store.geo" col="1" >
-			<ng-template  let-g="item">
-			<Label textWrap='true' text='{{g.name}}'></Label>
-			</ng-template>
-	</RadListView>
-	
-	
-	  <Label  textWrap='true'  class="border "  row="6" text="Propriétaire" col="0"></Label>
-	  <GridLayout   columns ="auto,auto" rows="auto,auto" class="border "  row="6" col="1"  orientation="horizontal">
-      <Image col="0" row="0"  class="profilePic " [src]=avatars[store.userid] stretch="aspectFill"></Image>
-     <StackLayout col="1" row="0">
-      <Label  (touch)='ontouch($event)' color='#FFA500'    fontSize="20"   class='fas' text="&#xf0e0;" (tap)= 'sendMessage(store.userid, owner.fullname, avatars[store.userid])' ></Label>
-	  <Label  (touch)='ontouch($event)' color='#FFA500'    fontSize="20"  class="fas" text ="&#xf007;" (tap)='profile(store.userid)' ></Label>
-      
-     </StackLayout>
-      <Label  row="1" col='0'  text="{{owner.fullname}} "></Label>
-      </GridLayout>
- 
-
-	  <Label  textWrap='true'  *ngIf="store.hasOwnProperty('administrators') " class=" border "  row="7" text="Administrateurs" col="0"></Label>
-	  	<RadListView class=" border "  row="7"  [items]="store.administrators" col="1" >
-			<ng-template  let-a="item">
-			 <GridLayout rows='auto,auto' columns='auto,auto'>
-      			<Image col="0" row="0" class="profilePic " [src]=avatars[a.userid] stretch="aspectFill"></Image>
-     			 <Label  textWrap='true' col="0" row="1" text="{{a.fullname}} "></Label>
-     			 <StackLayout col="1" row="0">
-     			 <Label (touch)='ontouch($event)' color='#FFA500' fontSize="20" class='fas' text="&#xf0e0;" (tap)= 'sendMessage(a.userid, a.fullname, avatars[a.userid])' ></Label>
-				  <Label (touch)='ontouch($event)'color="#FFA500" fontSize="20" class="fas" text ="&#xf007;" (tap)='profile(a.userid)' ></Label>
-    		  </StackLayout>
-    		  </GridLayout>
-			
-			
-			</ng-template>
-	</RadListView>
-	 
-	</GridLayout>
-</GridLayout>
-</GridLayout>
-</ScrollView>
+  <a i18n="@@back"  i18n-class class='btn btn-link fa fa-chevron-left' (click)= 'backToStore();'> Retour </a>
+  
+  
+  </div>
+</ng-template>
+</div> 
+</div>
+-->
