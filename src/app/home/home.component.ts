@@ -1,17 +1,20 @@
-﻿import { Component, OnInit, ViewChild ,  ElementRef } from '@angular/core';
-
-import { AuthService, UserService, UserdetailsService } from '../_services/index';
-//import { AccountKit, AuthResponse } from 'ng2-account-kit'; 
-
+import { Component, OnInit, NgZone } from '@angular/core';
+ 
+import { UserService, UserdetailsService } from '../_services/index';
+import { FacebookAccountKit, AccountKitResponseType,AccountKitOptions  } from 'nativescript-facebook-account-kit';
 import * as CryptoJS from 'crypto-js'; 
+import { Color } from "tns-core-modules/color";
+import * as localStorage from  "nativescript-localstorage" ; 
+import { ActivatedRoute, Router } from "@angular/router";
 
-import { Router, ActivatedRoute } from '@angular/router';
-import {ModalhomeComponent} from './modalhome.component' ; 
-import { AngularFireAuth } from '@angular/fire/auth';
-import { auth } from 'firebase/app';
-declare var grecaptcha: any;
+import * as firebase from 'nativescript-plugin-firebase';
+import { Page } from "tns-core-modules/ui/page"; 
+ import { RouterExtensions } from "nativescript-angular/router";
+import { getConnectionType } from "tns-core-modules/connectivity"; 
+import * as Connectivity from "tns-core-modules/connectivity"; 
+import * as util from "utils/utils";
+ 
 
-                            
 @Component({
     //moduleId: module.id.toString(),
     selector: 'app-home',
@@ -20,335 +23,485 @@ declare var grecaptcha: any;
 })
 
 export class HomeComponent implements OnInit {
-    currentUser:any;
-    phonemask = ["0",/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," "]
+  
+    options : AccountKitOptions; // = {
+     /* prefillPhoneNumber : "9XXXX12345", 
+      prefillCountryCode : "91",
+      defaultCountryCode : "IN",
+      whitelistedCountryCodes : ["IN"],
+      blacklistedCountryCodes : [],
+      enableGetACall : true,
+      presentAnimated : false,
+      enableSendToFacebook : true,
+      primaryColor : new Color("orange")*/
+  //  };
+   facebookAccountKit = new FacebookAccountKit(AccountKitResponseType.AuthorizationCode);
 
+    user:any ; 
+    
+    /* currentUser:any;
+    phonemask = ["0",/[5-7]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," ",/[0-9]/,/[0-9]/," "]
+    */
+
+    processing = false;
     login = true ; 
+    wait = false ; 
     loading = false ; 
     loading2 = false ; 
-    showmodal=true ; 
-    lengthphone:boolean 
     UserPhone =false ; 
     pleaseRegister = false ;
     justLog = false ; 
-    model : any= {phone:""} ; 
+    model : any= {}//'phone':''} ; 
     suspended = false ; 
     returnUrl =""; 
-    langue:string="fr" ;
-    langue2:string ; 
-    verificationId = "" ; 
-    loginerror ="" ; 
-    code ="" ; 
-    openmodal=false ; 
-    phoneRecaptchaVerifier: auth.RecaptchaVerifier; 
-    confirmResult :any ;
-    @ViewChild('modal',{static: true}) modal:ModalhomeComponent;
-    constructor(private route :ActivatedRoute, 
-                private router :Router,
-                private userService: UserService, 
-                public  afAuth:  AngularFireAuth,
-                private authService :AuthService, 
-                private userdetailsService : UserdetailsService
-             ) {
+    langue:string ;
+    langue2:string ;
+    alertLength = false ;
+    alertphone = false ; 
+    alertnamelength = false ;
+    alertname = false ; 
+    response:any ="" ; 
+    countcode =0  ; 
+    noConnexion; 
+    connection ;
+    constructor(
+               private router: Router,
+                private route :ActivatedRoute, 
+                //private router :Router,
+                private userService: UserService,
+               private userdetailsService : UserdetailsService, 
+               private page :Page , 
+               
+               private routerE: RouterExtensions,
+               private ngZone : NgZone
+               
+        ) {
 
-    
+                this.page.actionBarHidden = true; 
    }
-
-    ngOnInit() {
-
-
-                this.phoneRecaptchaVerifier = new auth.RecaptchaVerifier('phone-sign-in-recaptcha', {
-                'size': 'invisible',//"normal",//'invisible',
-                'callback': function(response) {
-                    console.log("xxxxxxxxxxx")  ;
-                    console.log(response) ; 
-                        // reCAPTCHA solved - will proceed with submit function
-                    
-                    
-                    },
-                'expired-callback': function() {
-                          // Reset reCAPTCHA?
-                  this.phoneRecaptchaVerifier.render().then(function(widgetId) {
-                              grecaptcha.reset(widgetId);
-                                this.loading=false;
-                                 });
-                }
-                });   
  
-                this.afAuth.auth.useDeviceLanguage();
-                this.afAuth.auth.languageCode = 'fr';
+    
+    ngOnInit() {
+        this.countcode = 0 ; 
+        //041  62 80 49
 
-
-                
       //  this.loadAllUsers();
      // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home/'+this.model.userid ;
-   //  this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home/'+this.model.userid ||'/home';
+    // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home/'+this.model.userid ||'/home';
 
         //language 
-          if (localStorage.getItem('Language')=="fr") {
+     /*     if (localStorage.getItem('Language')=="fr") {
               this.langue2 = 'ar' ; 
               this.langue='fr';
          }else {
-              if (localStorage.getItem('Language')=="ar"){
               this.langue2='fr' ; 
                 this.langue='ar'; 
-              }
+          }*/
+        
+        
+        
+          
+           this.connection = Connectivity.getConnectionType();
+            if ( this.connection == Connectivity.connectionType.none )  
+               this.noConnexion = true ; 
+            else 
+                 this.noConnexion =false; 
+          console.log(this.connection ) 
+        console.log( Connectivity.connectionType.none) ; 
+        Connectivity.startMonitoring(connectionType => {
+            this.ngZone.run(() => {
+                this.connection =  Connectivity.getConnectionType();
+                console.log(this.connection);
+                 if ( this.connection == Connectivity.connectionType.none )  
+               this.noConnexion = true ; 
+            else 
+                  
+                 this.noConnexion =false;  
+            });
+        });
+        }
 
-          }
-         console.log(this.model['phone']) ; 
-         if(!this.model.phone.includes("_") && this.model.phone.length!=0)
-                 this.lengthphone =false ; 
-    }
-
-    deleteUser(id: number) {
+ /*   deleteUser(id: number) {
       //  this.userService.delete(id).subscribe(() => { this.loadAllUsers() });
-    }
+    }*/
 
     logins(){
-        this.justLog=false ; 
-        this.loginerror ="";
+          this.countcode = 0 ; 
+        this.justLog = false ; 
+           this.response = "" ;  
+       
+        let that = this ; 
+    if (this.loading == false ) {
+    if ( !('phone' in this.model)) {
+        this.alertphone = true ; 
+    }else {
+            this.alertphone= false ; 
+       
         this.loading = true ; 
         this.loading2 = false ; 
-        let that = this ; 
         //check if userphone is already register 
-        let f = this.model.phone.replace(/\s/g, "");
+     //   let f = this.model.phone.replace(/\s/g, "_");
+       // console.log(f) ; 
+       // console.log(f.length) ; 
+        if ( this.model.phone.includes('_') ) {
+            this.alertLength = true ; 
+            this.loading = false ; 
+        }else{
         
+        this.alertLength = false ; 
         this.model.phone = this.model.phone.replace(/\s/g, "") ; 
-        console.log(this.model.phone ) 
-        
-        if(this.model.phone.includes("_") ){
-                 this.lengthphone =true ; 
-                  this.loading = false ; 
-        }else {
-            this.lengthphone=false ; 
         this.userService.checkUserPhone (this.model.phone)
         .subscribe (
             data =>{
                 console.log(data );  
-                if (data['total']['value']!=0 ){
-                if ( data['hits'][0]['_source']['enable'] ==true ) {   
-                // continuous with login 
-                //AccountKit login 
-                    this.model.userid =data['hits'][0]['_id']; 
-                    // AccountKit.login('PHONE', { countryCode: '+213', phoneNumber: f.substr(1) }).then(
-                    console.log(this.phoneRecaptchaVerifier);
-
-                     this.afAuth.auth.signInWithPhoneNumber('+213'+f.substr(1), this.phoneRecaptchaVerifier)
-                    //.then(
-                         
-
-                   .then(function (response) {
+                if (data['total']['value']!=0 ) {
+                if ( data['hits'][0]['_source']['enable'] ==true ) {  
+                    this.model.userid =data['hits'][0]['_id'];  
+                       // continuous with login 
+                    
+                     /*       this.options= {
+                                prefillPhoneNumber :this.model.phone.substr(1), 
+                                prefillCountryCode : "+213",
+                                  defaultCountryCode : "DZ",
+                                whitelistedCountryCodes : ["DZ"],
+                                 blacklistedCountryCodes : [],
+                                 enableGetACall : true,
+                                  presentAnimated : false,
+                                enableSendToFacebook : true,
+                                       primaryColor : new Color("orange")
+                                    };*/
+                           //  this.facebookAccountKit.loginWithPhoneNumber(this.options).then(response => {}
+                    
+               
                   
-                        
-                            console.log(response);
-                            that.confirmResult = response;
-                            that.verificationId = response.verificationId ;
-                        
-                            that.modal.show();  
-                    
-                                
-                       
-                        }).catch(function (error) {
-                          
-                           //   let grecaptcha: any ;
-                                console.error(error)
-                                that.loading = false ; 
-                                that.loginerror ='problème de connexion reessayer ultérieurement';
-                                that.phoneRecaptchaVerifier.render().then(function(widgetId) {
-                                  //  console.log(grecaptcha);
-                                    grecaptcha.reset(widgetId);
-                                 });
-                            
-
-                        });          
-
-                     
-                    
+                   this.firebaseLogin(this.countcode);
+                
                 }else {
-                   
+                  
                         this.suspended = true ; 
                         this.loading = false ;
-                   }}else {
+                 }
+                
+                } else {
                     this.login  = !this.login; 
                     //the phone is not registered please register first 
                     this.pleaseRegister = true ; 
                     this.loading = false ; 
                 }
-                
             }
             ,error => {
                     console.log(error ) ; 
                     this.loading = false ; 
+                     this.response ="Problème de connexion, réessayer ultérieurement"
+
                     //some technical issue to solve 
                 
-            });
-
-        }
+            }); 
             
-            
-        
-   }
-                
-                
+   
+       } }
+   }}
     
-    getValidate(event) {
-         if (event!="") {
-           this.loginerror=event ; 
-             this.loading = false ;   
-           this.phoneRecaptchaVerifier.render().then(function(widgetId) {
-                              grecaptcha.reset(widgetId);
-                                 });
-                          
-
-          }
-             
-        }
-                
-           /*     getValidate(event) {
-                    console.log('event') ; 
-                    console.log(event ) ; 
-                    let e = event
-                           // const credential = auth.PhoneAuthProvider.credential(this.verificationId, e);
-                                      
-                    
-                           // auth.signInWithCredential(credential).then(a => {
-                                   // after successful verification.
-                               
-                    this.confirmResult.confirm(e)
-                            
-                    .then(function (result) {
-                         //// User signed in successfully.
-                          //var user = result.user;
-                             // ...
-                              console.log(result);
- 
-                            
-                             //CryptoJS.PBKDF2(this.model.phone, 'abc', { keySize: 128/32, iterations: 1}).toString();; 
-                                
-                            
-                                let salt = this.model.userid ; 
-                                console.log(salt) ; 
-                                let token =  CryptoJS.PBKDF2(e,  salt, { keySize: 128/32, iterations: 100 }).toString();; 
-                                                  
-                                this.userService.loginUser( this.model.userid, token )
-                             // .pipe(first())
-                                    .subscribe (
-                                     data=> {
-                                             if (data['auth'] ) {
-                                                 
-                                                    let userid: string = this.model.userid;
-                                                    localStorage.setItem('currentUser', JSON.stringify({userid,  token: data['token'] }));
-                                                        console.log(localStorage.getItem('currentUser'));
-                                                // localStorage.setItem('currentUser', JSON.stringify({userid:this.model.userid,  token: data['token'] }));
-                                                 //create userdetails in store 
-                                                // this.router.navigateByUrl(this.returnUrl);
-                                                 this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home/'+this.model.userid;
-                                                 this.loading= false ; 
-                                                 console.log(this.returnUrl) ;  
-                                                 this.router.navigateByUrl(this.returnUrl);
-
-                                                
-                                                 console.log(data);
-                                                }
-                                         
-                                      },error0=>{
-                                       if (error0.status == 401) {
-                                          let noauth = true;
-                                  
-                                    }});  
-                                // create user session and useraccount ! 
-                        //    });
-                    
-                               }).catch(function (error) {
-                                     // User couldn't sign in (bad verification code?)
-                                     // ...
-                                });
-                               
-                    }*/
     register(){
-        this.pleaseRegister=false ; 
-         this.loginerror ="";
-        let that = this ;  
-         this.loading2 = true ; 
+          this.countcode = 0 ; 
+        this.pleaseRegister = false ;
+        this.response = "" ; 
+    if (this.loading == false ) {
+      
+       if (!('fullname' in this.model )) 
+              this.alertname = true ; 
+      else  {
+           
+           this.alertname = false;  
+        if (this.model.fullname.length < 5 ) 
+             this.alertnamelength =true
+        else 
+            this.alertnamelength= false ;  
+     }   
+        
+      if ( !('phone' in this.model)) 
+              this.alertphone = true ; 
+        else {
+           this.alertphone=false ; 
+           if ( this.model.phone.includes('_') ) {
+               this.alertLength = true ; 
+          } else {
+                this.alertLength = false ; 
+          
+          if (this.model.fullname.length < 5 ) 
+             this.alertnamelength =true
+          else 
+            this.alertnamelength= false ;   
+               
+               
+       if ( !this.alertLength  && !this.alertphone && !this.alertnamelength && !this.alertname)
+       { 
+        this.loading2 = true ;
          this.loading =false ; 
         //check if userphone is already register 
-        let f = this.model.phone.replace(/\s/g, "");
         this.model.phone = this.model.phone.replace(/\s/g, "") ; 
-        
-         if(this.model.phone.includes("_") ){
-                 this.lengthphone =true ; 
-                  this.loading = false ; 
-        }else {
-            this.lengthphone=false ; 
         this.userService.checkUserPhone (this.model.phone)
         .subscribe (
             data =>{
                 console.log(data ) ;  
                 if (data['total']['value']==0 ) {   
-                    //continuous with register 
+                 
+                        
+                    /*     this.options= {
+                                prefillPhoneNumber :this.model.phone.substr(1), 
+                                prefillCountryCode : "+213",
+                                  defaultCountryCode : "DZ",
+                                whitelistedCountryCodes : ["DZ"],
+                                 blacklistedCountryCodes : [],
+                                 enableGetACall : true,
+                                  presentAnimated : false,
+                                enableSendToFacebook : true,
+                                       primaryColor : new Color("orange")
+                                    };*/
+                        this.firebaseSignin(this.countcode) ;
                     
-                         this.afAuth.auth.signInWithPhoneNumber('+213'+f.substr(1), this.phoneRecaptchaVerifier)
-                    //.then(
-                         
 
-                   .then(function (response) {
-                  
-                        
-                            console.log(response);
-                            that.confirmResult = response;
-                            that.verificationId = response.verificationId ;
-                        
-                            that.modal.show();  
-                    
-                                
-                       
-                        }).catch(function (error) {
+                }else {
+                    this.login  = true; 
+                    this.justLog = true ; 
+                    this.loading2 = false ; 
+                    this.loading=false;
+                }
+            }
+            ,error => {
+                    console.log(error ) ; 
+                    this.loading2 = false ; 
+                    //some technical issue to solve 
+                  this.response ="Problème de connexion, réessayer ultérieurement"
+
+                
+            }); 
+        
+        }}
+            }
+       }
+        
+        }
+/*    private loadAllUsers() {
+        this.userService.getAll().subscribe(users => { this.users = users; });
+    }*/
+    
+    /*
+   cancel (){
+    this.loading = false ;     
+    this.loading2 = false ;
+        this.model = {}; 
+        window.location.reload(); 
+    }
+    
+    changeLang(event){
+            let temp = this.langue; 
+            this.langue = event ; 
+            this.langue2= temp ; 
+        //       localStorage.setItem('Language', event);
+       //      window.location.href="http://"+window.location.hostname+":8080/"+event ; 
+
+         }*/
+ 
+    
+    textChangeM(event){
+     console.log(event ) ;     
+    }
+    
+    
+    
+    
+    
+    firebaseLogin (countcode ){
+        let that=this; 
+        that.countcode= countcode; 
+        let prompt =''  ; 
+        if (that.countcode ==0) 
+            prompt ='Taper votre code ' ;
+        else{
+            let i = 3-that.countcode ;    
+            prompt ="Taper votre code, il vous reste "+i+" essaies";  
+        }
+          firebase.login({
                           
-                           //   let grecaptcha: any ;
-                                console.log(error);
-                                that.loading = false ; 
-                                that.loginerror ='problème de connexion reessayer ultérieurement';
-                                that.phoneRecaptchaVerifier.render().then(function(widgetId) {
-                                  //  console.log(grecaptcha);
-                                    grecaptcha.reset(widgetId);
-                                 });
+                      type: firebase.LoginType.PHONE,
+                      phoneOptions: {
+                         phoneNumber: '+213'+this.model.phone.substr(1),
+                         verificationPrompt: prompt, // default "Verification code"
+                         // Optional
+                        android: {
+                            timeout: 60 // The maximum amount of time you are willing to wait for SMS auto-retrieval to be completed by the library
+                            }
+                        }
+                }).then(
+                 function(result) {
+                     
+                     if (result.phoneNumber.substr(4) == that.model.phone.substr(1)){ 
+                           console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                           // JSON.stringify(result);
+                     
+                          //  that.response = result ; 
+                            console.log(result) ; 
+                           
+                                 
+                             //          this.wait = true ; 
+                             //   console.log(response);
+                           
+                                //CryptoJS.PBKDF2(this.model.phone, 'abc', { keySize: 128/32, iterations: 1}).toString();; 
+                                //let userid = result['phoneNumber'].substr(4);
                             
-
-                        }); 
-                    
-                    
-                    /*AccountKit.login('PHONE', { countryCode: '+213', phoneNumber: f.substr(1) }).then(
-                        (response: AuthResponse) =>{
-                        
-                                console.log(response);
-                               
-                                this.model.userid = CryptoJS.PBKDF2(this.model.phone, 'abc', { keySize: 128/32, iterations: 1}).toString();; 
-                                let salt = this.model.userid ; 
-                                console.log(salt) ; 
-                                let token =  CryptoJS.PBKDF2(response.code,  salt, { keySize: 128/32, iterations: 100 }).toString();; 
+                               let salt = that.model.userid ; 
+                             
+                                let token =  CryptoJS.PBKDF2(JSON.stringify(result),  salt, { keySize: 128/32, iterations: 100 }).toString();; 
                                                   
-                                this.userService.createUser( this.model.fullname, this.model.phone, token, this.model.userid )
+                                that.userService.loginUser( that.model.userid, token )
+                                // .pipe(first())
+                                 .subscribe (
+                                     data=> {
+                                           
+                                   
+                                                if (data['auth'] ) {
+                                             let userid: string = that.model.userid;
+                                                    
+                                             localStorage.setItem('currentUser', JSON.stringify({userid:that.model.userid,  token: data['token'] }));
+                                             that.returnUrl = '/home/'+that.model.userid; //this.route.snapshot.queryParams['returnUrl'] || 
+                                                    
+                                                      firebase.deleteUser().then(
+                                                       function () {
+                                                             that.loading= false ; 
+
+                                                           // called when the user was successfully deleted
+                                                            //  that.router.navigateByUrl(that.returnUrl); 
+                                                             
+                                                                that.routerE.navigate([that.returnUrl], {clearHistory: true});
+
+                                                       },
+                                                         function (errorMessage) {
+                                                              console.log(errorMessage);
+                                                             
+                                                      }
+                                                        );
+                                          
+                                                        
+    
+           
+                                    }},error0=>{
+                                       if (error0.status == 401) {
+                                          let noauth = true;
+                                            that.response ="Problème de connexion, réessayer ultérieurement"
+                                             that.loading = false ; 
+                                  
+                                    }});  
+                            
+                      }else {
+                           that.response ="Problème de connexion, réessayer ultérieurement"
+                            that.loading = false ; 
+
+                        
+                            } 
+                     
+                     
+                  
+                      },  function(error) {
+                            //that.response= error;
+                          console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") ; 
+                          console.log(error);
+                          //that.response =error ; 
+                          console.log(that.countcode ) ; 
+                            that.countcode+=1 
+                          if (that.countcode < 3){
+                              that.firebaseLogin (that.countcode);
+                           }else {
+                             // that.countcode = 0 ; 
+                                that.response ="Vous avez atteint le nombre d'essaie maximal reesayer ultérieurement"
+                                that.loading = false ; 
+                            }
+
+                        } );
+        
+        
+        }
+    
+    
+        
+    firebaseSignin (countcode ){
+        let that=this; 
+        that.countcode= countcode; 
+        let prompt =''  ; 
+        if (that.countcode ==0) 
+            prompt ='Taper votre code ' ;
+        else{
+            let i = 3-that.countcode ;    
+            prompt ="Taper votre code, il vous reste "+i+" essaies";  
+        }
+          firebase.login({
+                          
+                      type: firebase.LoginType.PHONE,
+                      phoneOptions: {
+                         phoneNumber: '+213'+this.model.phone.substr(1),
+                         verificationPrompt: prompt, // default "Verification code"
+                         // Optional
+                        android: {
+                            timeout: 60 // The maximum amount of time you are willing to wait for SMS auto-retrieval to be completed by the library
+                            }
+                        }
+                }).then(
+                 function(result) {
+                           console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                           // JSON.stringify(result);
+                 
+                         if (result.phoneNumber.substr(4) == that.model.phone.substr(1)){ 
+                                console.log(result);
+                               
+                                that.model.userid = CryptoJS.PBKDF2(that.model.phone, 'abc', { keySize: 128/32, iterations: 1}).toString();; 
+                                let salt = that.model.userid ; 
+                                console.log(salt) ; 
+                                let token =  CryptoJS.PBKDF2(JSON.stringify(result),  salt, { keySize: 128/32, iterations: 100 }).toString();; 
+                                                  
+                                that.userService.createUser( that.model.fullname, that.model.phone, token, that.model.userid )
                          //     .pipe(first())
                                     .subscribe (
                                 
                                     
                                     data=> {
                                              if (data['auth'] ) {
-                                                
-                                                   let userid: string = this.model.userid;
-                                                    localStorage.setItem('currentUser', JSON.stringify({userid,  token: data['token'] }));
-                                                        console.log(localStorage.getItem('currentUser'));
+                                                         
+                                                   let userid: string = that.model.userid;
+                                                 //localStorage.setItem('currentUser', JSON.stringify({userid,  token: data['token'] }));
+                                                    //   console.log(localStorage.getItem('currentUser'));
                                                  //localStorage.setItem('currentUser', JSON.stringify({userid:this.model.userid,  token: data['token'] }));
                                                 //create userdetails in store 
-                                                              this.userdetailsService.postUserAccount (this.model.fullname, this.model.phone)
+                                                   
+                                             localStorage.setItem('currentUser', JSON.stringify({userid:that.model.userid,  token: data['token'] }));
+                                             that.returnUrl = '/home/'+that.model.userid; //this.route.snapshot.queryParams['returnUrl'] || 
+                                             //that.loading= false ; 
+                                             //that.router.navigateByUrl(that.returnUrl);   
+                                                 
+                                                 that.userdetailsService.postUserAccount (that.model.fullname, that.model.phone)
                                                                 .subscribe(
                                                                       data3=>{
                                                                             console.log(data3);
-                                                                          this.loading2 = false ; 
-                                                                      
-                                                                          this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home/'+data3['_id'];
+                                                                   
+                                                                     
+                                                                          //that.returnUrl = that.route.snapshot.queryParams['returnUrl'] || '/home/'+data3['_id'];
 
-                                                                             this.router.navigateByUrl(this.returnUrl);
+                                                                          //localStorage.setItem('currentUser', JSON.stringify({userid:that.model.userid,  token: data['token']}));
+
+                                                                            firebase.deleteUser().then(
+                                                                       function () {
+                                                                            // called when the user was successfully deleted
+                                                                           //that.router.navigateByUrl(that.returnUrl); 
+                                                                          that.routerE.navigate([that.returnUrl], {clearHistory: true});
+ 
+                                                                           that.loading2 = false ; 
+                                                                               
+                                                                      },
+                                                         function (errorMessage) {
+                                                              console.log(errorMessage);
+                                                             
+                                                      }
+                                                        );
+                                           
                                                                       },error3=>{
                                                                           console.log(error3);
                                                                       }
@@ -361,60 +514,38 @@ export class HomeComponent implements OnInit {
                                     },error0=>{
                                        if (error0.status == 401) {
                                           let noauth = true;
+                                           that.response ="Problème de connexion, réessayer ultérieurement"
+                                           that.loading2 = false ; 
                                   
                                     }});  
                                 // create user session and useraccount ! 
                                 
-                                
-                        },
-                        (error: any) => {
-                            
-                                console.error(error)
+                          }else {
+                           that.response ="Problème de connexion, réessayer ultérieurement"
+                            that.loading2 = false ; 
+
                         
-                        } );*/
+                            } 
+                       
+                     
+                  
+                      },  function(error) {
+                            //that.response= error;
+                            console.log(error);
+                            that.countcode+=1 
+                          if (that.countcode < 3){
+                              that.firebaseSignin (that.countcode);
+                           }else {
+                              that.countcode = 0 ; 
+                                that.response ="Vous avez atteint le nombre d'essaie maximal reesayer ultérieurement"
+                                that.loading2 = false ; 
+                            }
+
+                        } );
+        
                     
-
-                }else {
-                    this.login  = !this.login; 
-                    this.justLog = true ; 
-                    this.loading2 = false ; 
-                }
-            }
-            ,error => {
-                    console.log(error ) ; 
-                    this.loading2 = false ; 
-                    //some technical issue to solve 
-                
-            }); 
-        }
+        
         
         }
-/*    private loadAllUsers() {
-        this.userService.getAll().subscribe(users => { this.users = users; });
-    }*/
     
-    
-    cancel (){
-    this.loading = false ;     
-    this.loading2 = false ;
-        this.model = {}; 
- //       window.location.reload(); 
-         this.router.navigateByUrl('/');
-
-    }
-    
-    changeLang(event){
-            let temp = this.langue; 
-            this.langue = event ; 
-            this.langue2= temp ; 
-               localStorage.setItem('Language', event);
-             window.location.href="http://"+window.location.hostname+":8080/"+event ; 
-
-         }
-    change(){
-        this.login=!this.login; 
-        this.loginerror = ""; 
-        
-        }
- 
 }

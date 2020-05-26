@@ -1,349 +1,297 @@
-<StackLayout>
-  <Label text="article works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
-
-<!--
-Original Web template:
-
-<ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<div *ngIf='art' class='scroll2'>
-<div  i18n="@@nostore" *ngIf='nostore' i18n-class="@@nostoreleft" class='text-left alert alert-info strong '>
-pas de magasin dans ce lien ! 
-</div>
-
-
-
-<div i18n='@@notopen' *ngIf='!nostore && !open'>
-<div i18n-class="@@notopenleft" class="text-left alert alert-warning strong "> Le magasin est fermé ! </div>
-</div>
-
-<div *ngIf='!nostore'>
-<div class="crop">
-
-<img    [src]="banner"   class="img0" />
-</div>
-
-
-<div  id ="storemenu" >
-<nav *ngIf = 'existstore'class="navbar navbar-default  navnav sticky-top" >
+<ScrollView>
+<GridLayout rows="auto,auto,auto,auto,auto,*">
+  <StackLayout row="0" >
+  		<Label  (touch)='ontouch($event)' textWrap='true'    class=" storetitle "  text="{{storetitle}}"  nsRouterLink='../../store' ></Label>
+         <StackLayout margin="0,0,2,8" orientation="horizontal">
+      	        <AbsoluteLayout  height="22" width="85"  android:cursorVisible="false"  >   
+                 <StarRating left="-80" top="-18"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".3" android:scaleY=".3"   [value]="store.ratingsum/store.ratingcount"  ></StarRating>
+                </AbsoluteLayout>
+                 <Label margin="3,0,0,5" fontSize="10"   text="({{store.ratingcount}} votes)"></Label>
+          </StackLayout>
+   </StackLayout>
   
-    
-      
-    <span class="form-inline ">
-     
-	  
-	    
-		<a   class="navbar-brand  btn btn-link " routerLinkActive="active"  [routerLink]="['../../store']" >
-           {{storetitle}}  </a>
-
-     <star-rating  size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: xx-small ; " i18n="@@ratingstore">( {{store.ratingcount}} votes)</span>
-
-    
-   </span> 
   
-      	
 
+
+  <StackLayout row="1"    colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+  
+	<StackLayout row="2">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading0' [busy]="loading0" ></ActivityIndicator>
+   	</StackLayout>  
+
+
+<Label  row="3" class="alert" [visibility]="!loading0 && nostore && !reload ? 'visible' : 'collapsed'" text="pas de magasin dans ce lien ! "></Label>
+<Label row="4" class="alert" [visibility]="(!loading0 && nostore && !open && !reload)  ? 'visible' : 'collapsed'" text="Le magasin est fermé ! "></Label>
+
+    <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='5'  *ngIf='!loading0  && reload' class="reload">
+        <FormattedString>
+
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    </Label> 
+
+
+
+<GridLayout rows="auto,*" row="5" [visibility]=" !loading0 && !nostore && !reload ? 'visible' : 'collapsed'"  orientation="vertical">
+    
+    <Label row="0"  [visibility]="model.suspend && !reload? 'visible' : 'collapsed'" class="alert" text="L'article est suspendu "></Label>
+<GridLayout  row="1"  [visibility]="!model.suspend? 'visible' : 'collapsed'" rows='auto,auto,auto,auto,340,*,auto,*'>
+
+
+  <!-- Image row ="0" [src]="banner" class="pic"  stretch="aspectFill"></Image-->
+ 
+
+  <Label margin='10,5,0,5' row="2" [visibility]="!loading0 && !reload && !model.available? 'visible' : 'collapsed'"  class="alert" text="Article épuisé"></Label>
+  
+ 
+  <GridLayout   *ngIf='!loading && !reload '    row="3" class="title " rows="*,*,*">
+  
+  
+    <textView  row ="0" editable="false" class='titlea' >
+   	  <FormattedString>
+   			<Span text="{{model.title}}"></Span>
+      </FormattedString>
+     </textView>
+    
+      	   <StackLayout  row="1"   >
+      	        <AbsoluteLayout  height="35" width="90"  android:cursorVisible="false"  >   
+                 <StarRating left="-75" top="-10"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".4" android:scaleY=".4"  [value]="model.ratingsum/model.ratingcount" ></StarRating>
+                </AbsoluteLayout>
+                 <Label color='#333333' fontSize="10"  text="({{model.ratingcount}} votes)"></Label>
+           </StackLayout>
+     <Label class='price' row ="2"   text=' {{model.price}} D.A'  ></Label>
    
-</nav>
-
-<div class="container ">
-
-<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']"> 
-<div i18n="@@notarticle" *ngIf='!model.available' i18n-class="@@artleft" class ="text-left alert alert-danger">Cet article est epuisé   </div>
- 
-
-       <div align="center">
-            <h3 ><b>{{model.title}}</b></h3>
-       </div>
-       
-       <div align="center">
-        <star-rating  [starType]="'svg'" [rating]="model.ratingsum/model.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> 
-        <span class="small" i18n='@@articlevote' >( {{model.ratingcount}} votes)</span>
-        </div>
-         <div  align="center">
-      		<h3><b i18n="@@articleprice">{{model.price}} D.A</b> </h3>
-      </div> 
-    
-
-
-<div class="row" *ngIf='row'>
-
-<div class="col-sm-1 col-3 crop2">
-<a data-target="#myCarousel" data-slide-to="0" href="#" >
- <img  [src]='model.pic' class ="resizer2">
- </a>
- <div *ngFor= 'let g of model.gallery; let i= index' >
- <a data-target="#myCarousel" data-slide-to="i+1" href="#"  >
-  <img [src]='g' class='resizer2'>
- </a>
-  </div>
-  
-</div>
-
-
-
-
-<div id="myCarousel" class="carousel slide col-sm-5 col-9 resizer2" data-ride="carousel">
-  <!-- Indicators ->
-  <!-- ol class="carousel-indicators" >
-     <li data-target="#myCarousel" data-slide-to="-1" class="active"></li>
-    <li *ngFor='let g of model.gallery;let i= index'
-     data-target="#myCarousel" data-slide-to='i'></li>
    
-  </ol->
-
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-    	<div class='crop2 btn '>
-    	<div (click)= 'goTo(model.pic)'   >
-        <img [src]='model.pic' class='resizer2'>
-        </div>
-        </div>
-    </div>
-  	<!-- Wrapper for slides ->
-  	<div class="carousel-item" *ngFor= 'let g of model.gallery' >
-  		<div class='crop2'>
-  		 <div (click) = 'goTo(g)'  >
-  		<img [src]='g'  class='resizer2'>
-  		</div>
-  		</div>
-    </div>
-
-  </div>
- 
-<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-
- </div>
- 
      
-
-
-
-  <div style ="margin-top :80px ; " i18n-class class=" text-left col-sm-6 col-12"> 
-    
-       
-	  
-      
-  
-    	<div class = 'row' >
-      	    <div i18n='@@color' class=" col-sm-4 col-4"> 
-      		   Couleurs
-      	    </div>
-      	    <div i18n-class class="text-left col-sm-8 col-8"> 
-      		  
-	       
-      		     <li  *ngFor= 'let c of model.color; let  i=index ' style="list-style: none; display:inline-block;"> 
-    
-       		       <label  class='labl' >
-       		      	
-       		          	<input type="radio" name="radiogroup"  [checked]="i===0"   id="radio"  [value]="c"  (change)="getColor(c)" />
-       	
-                       	<div for="radio" style ='width:25px; height:20px; ' [style.background]='c' >   	</div>
-       		        
-       		        
-       		        
-       		        
-       				  </label>  	
-		          			<!--  button type="button" (click)="removeColor(c)" class='btn-info'> X</button->  
-				 </li> 
-				 
-				 
-				 
-     	  
-         	</div>
-         </div>
-       
-     <br> 
+    	
+   
+  </GridLayout>
+   	
+   
+   	<StackLayout   *ngIf='!loading'   row="4">
+    <Carousel #carouseln debug="false" [items]="gallery" height="90%" width="100%" color="#fff" (pageChanged)="myChangePageEvent($event)" 
+                    indicatorAnimation="swap"  indicatorColor="#FFA500" indicatorOffset="0,-10" showIndicator="true" indicatorColorUnselected="#D0D0D0" >
+        <CarouselItem *ngFor="let item of gallery" >
+            <GridLayout rows="auto" >
+          
+                <Image  row="0" loadMode="async"  src="{{item}}" class="pic" ></Image>
      
-     	 <div class = 'row' >
-      	<div i18n='@@add' class="col-sm-4 col-4"> 
-      		 Selectionner votre addresse  
-      	</div>
-      	<div class="col-sm-8 col-8 list-group">
-      	<span (click)='show =true 'class ="col-sm-8 col-8 add "  data-toggle='collapse'  href="#collapse1" >{{choosenAddressTitle}} <i  class="fa fa-angle-down" i18n-style style='float:right; '></i></span> 
-      	 </div> 
-     	<div  class='collapse scroll col-sm-12 col-12' [hidden]='!show' id ="collapse1"   [ngClass]="{'collapse.show':show, 'collapse': !show}"   >
-				 		<app-adress (getAddress)='getAddress($event) ; ' ></app-adress>
-	    	
-	    </div>
-	    
-	    </div>
-      <br>
-       <div class = 'row' >
-      	<div i18n='@@delivery' class="col-sm-4 col-4"> 
-      		Livraison
-      	</div>
-      	<div class="col-sm-8 col-8" > 
-   				<ngx-select-dropdown  (change)="getDeliveryMethod($event)" [multiple]="false" [(value)]="choosedelivery" [config]="deliveryconfig" [options]="model.delivery"></ngx-select-dropdown>
-	    
-      	</div>
-      </div>
-	     
-     <br>     
+           
+            </GridLayout>
+        </CarouselItem>
+    </Carousel>
      
-         
-       <div class = 'row' >
-      	<div i18n='@@quantity' class="col-sm-4 col-4"> 
-      		 Quantité
-      	</div>
-      	<div  i18n-class class="text-left col-sm-8 col-8"> 
-			 <input type='number'  [(ngModel)]="quantity" name="quantity"   min="1" max="model.numbers" style="width: 50px"  (change)="getQuantity($event)"  />
-			 <span style="display:inline" i18n='@@total4'>total: {{model.numbers}}</span>
-	     </div>
-      </div>
-      <br>
-      <div class = 'row' >
-      	<div i18n='@@total' class="col-sm-4 col-4"> 
-      		 Montant total
-      	</div>
-      	<div class="col-sm-8 col-8"> 
-      		<b i18n="@@total2"> {{total}} D.A  </b>
-      	</div>
-      	
-    </div> 
-    <br>
-	<br>
-    <div class='row'>
-       <span  style = 'display:inline-block; align:right; margin-right:7px ; ' ><button [disabled]="!model.available|| model.delivery.length==0 ||choosedelivery.length==0"   class="btn btn-danger" (click)="buyNow()  ; "  ><i i18n='@@buy'>Acheter</i> </button></span>
-   	 
-   	  <span  style = 'display:inline-block; align:right; margin-right:7px ; ' ><button  class="btn btn-warning" (click)="addToCart() ; modal.show() ;" ><span class="fa fa-shopping-cart"> </span> <i i18n='@@panier2'>Panier</i></button></span>
-	   <ng-template ngxPermissionsOnly="ADMINStore">
-	   
-	        <span  style = 'display:inline-block; align:right;' ><button  class="btn btn-info" (click)="updateArticle()  ; "  ><i i18n='@@param'> Paramètres </i></button></span>
-	 	</ng-template>
-     </div> 
-       	  <div *ngIf="warning" i18n='@@warning1' i18n-class class='text-left alert alert-danger'>choisissez votre addresse de livraison avant de valider l'achat !</div>
-    	  <div i18n='@@warning2' *ngIf="choosedelivery.length==0 && model.delivery.length!=0 " i18n-class class='text-left alert alert-danger'>choisissez votre livraison ! </div>
-    	   <div i18n='@@warning3' *ngIf="!warning &&model.delivery.length==0 " i18n-class  class='text-left alert alert-danger'>livraison indisponible pour votre région</div>
-    	 
-    <div class='row'> 
-     <share-button button="facebook"></share-button>
-	<share-button button="twitter"></share-button>
-	<share-button button="messenger"></share-button>
-	<share-button button="linkedin"></share-button>
-	<share-button button="pinterest"></share-button>
-	<share-button button="whatsapp"></share-button> 
- 
-     </div>  
-    </div>
-      
- <div i18n-class class ="text-left col-12 col-sm-12 col-md-12">
- <nav class="nav nav-tabs">
-
-         <a i18n='@@desc' class="nav-item nav-link active"   href="#p1" data-toggle="tab">Descriptions</a>
-		<a i18n='@@eval22' class="nav-item nav-link"   href="#p2" data-toggle="tab">Evaluations</a>	
-		<a i18n='liv' class="nav-item nav-link"   href="#p3" data-toggle="tab">Détails des livraisons</a>	
-		
-</nav>
- <div class="tab-content">
-  <div class="tab-pane active" id="p1">
-    <div i18n-class class="text-left card-block" style ="padding :50px;">
-     <h5 i18n-class class="text-left "  i18n='detail'>Détails:</h5>
-        <p i18n-class class="text-left"  > {{model.description}}</p>
-      
-      <!--  h5 i18n="@@cat">Catégories:</h5> 
-      <ul class ="list-group col-12 col-sm-8 col-md-5" >     
-       <li class="list-group-item" *ngFor ='let d of model.selectedCat'>
-     		 <span > {{d}}</span><span  class=' fa fa-check' style ="color:#add8e6 ; float:right; "  ></span> 
-       </li>
-       </ul>->
-
-      
-   </div>
-  </div>
-  
-  <div class="tab-pane" id="p2">
-         <div  i18n-class class =" text-left card-block list-item"  *ngFor="let m of model.rating " >
-        
-			<span class="form-inline my-2 my-lg-0" > <span class=" profile-picture "> <img class=" resize0" alt=" Avatar" [src]='avatarlist[m.userid]' 
-                      alt="User Avatar" /></span>
-               
-                             <strong class="primary-font">{{fullnamelist[m.userid]}}</strong>      
-                             <star-rating id= "m.userid" [starType]="'svg'"  [rating]="m.value"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating>
-               	       
-
-               </span>
-                   <p i18n-class class=" text-left card-text" style ='margin-left :100px ; padding-bottom:50px;  border-bottom:1px solid #C0C0C0 ;  '> {{m.feedback}}</p>   
-      	  
- 	           
- 	          
- 	    </div >
- 	    <div *ngIf ='model.rating.length ==0'>
- 	       	<p  i18n='@@noeval' i18n-class class=" text-left card-text " style ="padding:50px ; ">	pas d'évaluation disponible </p>
- 	     </div>
-  </div>
-     <div class="tab-pane" id="p3">
      
-                    
-		<table class="table table-responsive ">
-  			<thead class="thead-light">
-    		<tr>
-  
-    			  <th i18n="@@adtr" scope="col">Titre</th>
- 			      <th i18n='@@adv' scope='col'>Villes</th> 
-			      <th i18n='@@adp' scope='col'>Poids Max</th>
- 			      <th i18n='@@adt' scope='col'>Téléphone</th>
- 			      <th i18n="@@adpp" scope="col">Prix</th>
-  		   </tr>
-  			</thead>
-
-  			<tbody>
-  			<tr *ngFor=' let del of delivery'  >
-      
-  		    	<td>{{del.title}}</td>
-    	  	    <td><li class='list-group-item' *ngFor='let com of del.villes'>{{com.name}}</li> </td>
-   			    <td>{{del.weight}}<span class="input-group-addon" style="display:inline;"><i i18n='@@kg'>kg</i></span> </td> 
-                <td>{{del.phone}} </td> 
-
-      			<td>{{del.price}}<span i18n='@@da2'class="input-group-addon" style="display:inline;">D.A</span> </td> 
-      			<td><i class='fa fa-check text-warning '></i></td>
-    		</tr>
-  			</tbody>
-  			</table>
-   </div>
-</div>
-
- 
+ 	</StackLayout>
  	 
- </div>
-    
-</div>
+<StackLayout row="4"  *ngIf='loading'  >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"[busy]="loading" ></ActivityIndicator>
  
-<div *ngIf="row2">
-	<a  i18n="@@angle-left" i18n-class class="fa fa-angle-left btn btn-link" (click)='close()'> Retour</a>
-	<div class="container col-md-8  col-md-offset-2">
-	<img [src]='toDisplay'  class='imgfullscreen'>
-	</div>
-</div>
-</ng-template>
-</div>
-
-
-</div>
-  <app-modal [me]= 'me' [fullcartwarning]="fullcartwarning" #modal  >
-    <!-- div class="app-modal-header">
-   </div->
-    <div class="app-modal-body">
-      <div *ngIf='fullcartwarning' class="alert alert-warning">Le panier est pleins ! </div>
-       <div i18n='@@alertpn' *ngIf='!fullcartwarning' class="alert alert-warning">
-       	 Article sauvgardé dans le panier fermer pour continuer vos achats </div>
-    </div>
-    <div class="app-modal-footer">
-      <a  class="btn btn-info"  [routerLink]="['../../../../home/'+me+'/cart']"> <span i18n="@@panier3" class="fa fa-shopping-cart">  Panier </span> </a>
-     <a i18n='@@back' class="btn btn-link" (click)="modal.hide()" >Fermer</a>
-    </div>
-  </app-modal>
- </div>
- </div>
+</StackLayout>
+	
+ <GridLayout margin="0,10,0,10"  row="5" rows = '*,*,auto,auto'>
+ <GridLayout row="0"   rows='auto,auto,auto,auto,auto,auto'>
+ 
+  <GridLayout margin="15,0,0,0" row="0"  columns="100,*"  [visibility]="model.color.length!=0  ? 'visible' : 'collapsed'"  >
+   			<Label   col="0"  text="Couleur"></Label>
   
+  			<RadListView     col="1"  [items]="model.color" >
+      		 <ng-template let-a="item" >
+      		 	<GridLayout>	
+      		 		<Label *ngIf='choosecolor==a'  margin='0,0,5,0'  [backgroundColor]="a"  class="colorActive"  (tap)="getColor(a)"   ></Label>
+      			    <Label *ngIf='choosecolor!=a'  margin='0,0,5,0'  [backgroundColor]="a"  class="color"  (tap)="getColor(a)"   ></Label>
+      				</GridLayout>
+      		</ng-template>
+      		     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewGridLayout>
+      		
+    		</RadListView>
+   </GridLayout>     				  
+  <GridLayout margin="15,0,0,0"  row="1"  columns="100,*" [visibility]=" size.length!=0 ? 'visible' : 'collapsed'"  >
+  
+  	<Label   col="0" text="Taille"></Label>
+  	<RadListView    col="1"  [items]="size" >
+      		 <ng-template let-a="item" >
+      		 		<GridLayout>
+      		 		<Label *ngIf='a!=choosesize && !model.sizing[choosecolor].includes(a)' margin='0,0,5,0' text='{{a}}' class="sizeDisable"></Label>
+      		 		
+      		 		<Label *ngIf='a==choosesize ' margin='0,0,5,0' text='{{a}}' class="sizeActive" (tap)="chooseSizing( a)" ></Label>
+      			    <Label *ngIf=' a!=choosesize && model.sizing[choosecolor].includes(a)'  margin='0,0,5,0' text='{{a}}' class="size" (tap)="chooseSizing(a)" ></Label>
+      			
+      			
+      				</GridLayout>
+      		</ng-template>
+      		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewGridLayout>
+      		
+    </RadListView>
+  </GridLayout>
+  
+  <GridLayout margin="15,0,0,0" row="2"  columns="100,*" >
+  
+  		<Label col="0"  text="Votre Adresse"></Label>
+  		<GridLayout col="1" columns ='*,auto'  rows="auto,auto, auto,auto">
+       <Label col='1' row="0" text='&#xf078;'  class="fas dropdownLabel" (tap)="chooseAddress()"  (touch)="ontouch($event)"   ></Label>
+       <Label col='0' row ="0" text ="{{choosenAddressTitle}}" color="#000"   (tap)="chooseAddress()" (touch)='ontouch($event)'   ></Label>
+        <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+		<StackLayout  row="1" [visibility]=" show? 'visible' : 'collapsed'" >
+  			  <app-adress (getAddress)='getAddress($event) ; ' ></app-adress>
+  	    </StackLayout>
+  		</GridLayout>
+  </GridLayout>
+  
+  <GridLayout margin="15,0,0,0"  row="3"  columns="100,*" >
+  
+  	<Label  col="0" text="Livraison"></Label>
+  	<GridLayout col="1" rows="auto,auto,auto">
+  	  <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
+        
+        <DropDown  #dd
+                  [items]="delTitle "
+                  color='#000'
+                  [(ngModel)]="selectedIndex"
+                  (selectedIndexChanged)="onchange($event)"
+                  colSpan="0"
+                  paddingItem="5" 
+                  row="0">
+        </DropDown>
+		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+		</GridLayout>
+  	
+  </GridLayout>
+    
+  <GridLayout margin="15,0,0,0" row="4"  columns="100,auto, auto " >
+   
+  	<Label col="0"  margin="10,0,0,0" text="Quantité"></Label>
+  	<TextField class='input ' col="1" color='#000'   returnKeyType="done"  text='{{quantity}}'  [(ngModel)] ="quantity"
+  	 keyboardType="number" maxLength="3" (returnPress)="getQuantity()" ></TextField>
+  	<Label   margin="12,0,10,0" col="2" text='Total: ({{model.numbers}})'></Label>
+  	
+  </GridLayout>
+  
+  <GridLayout  margin="15,0,0,0" row="5"  columns="100,*" >
+  
+  	<Label  col="0"   text="Montant total"></Label>
+  	<Label  col="1" color='#000' text='{{total}} D.A'></Label>
+  </GridLayout>
+</GridLayout>
 
--->
+ <GridLayout row="2" columns='*,auto,auto, auto'>
+ <Button  [isEnabled]="!loadingcart"  [visibility]="model.available ?'visible':'collapse'"   text="Acheter"  col="1"   backgroundColor="#d9534f" color="#FFF"  (tap)='buyNow()'></Button> 
+  
+ <Button [isEnabled]="!loadingcart" text="&#xf218;Panier"  class="fas" col="2" backgroundColor="#FFA500" color="#FFF" (tap)="addToCart() ;  "></Button>
+<StackLayout col="2">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loadingcart' [busy]="loadingcart" ></ActivityIndicator>
+   	</StackLayout> 
+<ng-template ngxPermissionsOnly="ADMINStore">
+
+ <Button [isEnabled]="!loading"  text="Paramètre" col="3"  backgroundColor="#00BFFF" color="#FFF" (tap)="updateArticle();" ></Button>
+</ng-template>
+ </GridLayout>
+  
+  <GridLayout   [visibility]="model.available ?'visible':'collapse'"  row='3' rows='auto,auto,auto,auto'>
+  <!-- Label class="alert" *ngIf='fullcartwarning' text="Le panier est plein" row="4" ></Label--> 
+  	    <Label class="alert" *ngIf="choosenAddress=='' && send " row="0" text='Choisissez votre addresse' ></Label>
+   <Label row='1' class='alert' *ngIf="send && choosedelivery.length==0 && model['delivery'].length!=0 " text="choisissez votre livraison ! "></Label>
+   <Label row='2' class="alert"  *ngIf="model['delivery'].length==0 " text='Livraison indisponible pour votre région' ></Label>
+    	   
+ </GridLayout>
+
+ </GridLayout>
+ 
+
+ <GridLayout row="6" columns='auto,auto,auto'>
+ <Label *ngIf="!showdesc" col='0' class="lab2" text='Déscriptions' (tap)="showDesc()" ></Label>
+ <Label *ngIf="!showeval" col="1" class="lab2" text="Evaluations" (tap)='showEval()'></Label>
+ <Label *ngIf="!showdel"  col="2" class=" lab2" text='Détails des livraisons' (tap)="showDel()"></Label>
+ <Label *ngIf="showdesc"  col='0' class="lab2Active" text='Déscriptions' (tap)="showDesc()" ></Label>
+ <Label *ngIf="showeval" col="1" class="lab2Active" text="Evaluations" (tap)='showEval()'></Label>
+ <Label *ngIf="showdel" col="2" class="lab2Active" text='Détails des livraisons' (tap)="showDel()"></Label>
+ </GridLayout>
+
+ <StackLayout  row="7" [visibility]=" showdesc? 'visible' : 'collapsed'" >
+<GridLayout margin="0,0,30,0" rows="auto, auto,auto,auto">
+<Label row="0" text="Description" fontSize='12' color="#000"></Label>
+ <TextView margin='0,15,0,15'row="1" editable ="false" class="input " text="{{model.description}}"></TextView>
+ <Label margin='5,0,0,0' row="2" fontSize="12" color="#000" text="Disponible dans les villes suivante"></Label>
+ <ListView row="3" [items]='store.geo'>
+   <ng-template let-v='item'  >
+   		<GridLayout  margin='2,0,0,15' columns='auto,auto'>
+   		<Label col="0"  text="{{v.name}} "></Label> 
+		<Label col="1" color="#00BFFF" class="fas" text="&#xf00c;"></Label>
+		</GridLayout>
+	</ng-template>
+ </ListView>
+ </GridLayout>
+</StackLayout>
+ <StackLayout  row="7" [visibility]=" showeval ? 'visible' : 'collapsed'" >
+ 
+   
+ 	    <TextView *ngIf='!boolrating '  margin="0,0,30,0" editable ="false" class="input  "  text="Pas d'évaluation disponible"></TextView>
+ 	    
+ 
+ <RadListView [visibility]="boolrating? 'visible' : 'collapsed'" [items]="model.rating" >
+ 	<ng-template let-m="item">
+ 	<StackLayout margin='8,0,10,8'>
+ 	   	<GridLayout columns="auto,*"  >
+						
+						<Image  loadMode="async" col="0" src='{{avatarlist[m.userid]}}' class="pic2"  stretch="aspectFill"  ></Image>
+					    <GridLayout col="1" rows='auto,auto'  >
+					   		 <GridLayout columns='auto,auto' row="0" orientation=horizontal>
+					   		 	<Label  col="0" text="{{fullnamelist[m.userid]}}" class="fname"></Label>
+					   		 	
+      	    				  <AbsoluteLayout  col="1" height="35"   android:cursorVisible="false"  >   
+              					   <StarRating left="-75" top="-15"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="m.value" ></StarRating>
+           				     </AbsoluteLayout>
+           
+					   		  </GridLayout>
+					  		 
+					  		 <textView *ngIf='m.hasOwnProperty("feedback")' row="1" text='{{m.feedback}}' editable="false" class="msgs1"></textView>
+						 </GridLayout> 
+		</GridLayout>
+ 	   
+ 	   </StackLayout>
+ 	</ng-template>
+ 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
+ 	
+</RadListView> 
+</StackLayout>
+ <StackLayout  row="7" [visibility]=" showdel ? 'visible' : 'collapsed'" >
+ 
+<RadListView  [items]="model.delivery" >
+	
+	 <ng-template let-del='item'  >
+   		  			 <StackLayout class="border" margin="0,0,10,0" >
+   		  			 
+   		  				<StackLayout orientation="horizontal"> 
+   		  				<Label color="#000" col="0" text="{{del.title}}  "></Label>
+   		  			    <Label color="#FFA500" class="fas" text="&#xf00c;"></Label>
+   		  				
+   		  				</StackLayout>
+   		  			  <GridLayout  margin="0,20,0,25" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Poid max"></Label>
+   		  			  	<Label col="1" text="{{del.weight}} kg"></Label>
+   		  			  </GridLayout>
+   		  			  <GridLayout margin="0,20,0,25" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Téléphone"></Label>
+   		  			  	<Label col="1" text="{{del.phone}}"></Label>
+   		  			  </GridLayout>
+   		  	
+   		  			  <GridLayout margin="0,20,0,25" columns='80,auto'>	  	
+   		  			  	<Label col="0" text="Prix"></Label>
+   		  			  	<Label col="1" text="{{del.price}} D.A"></Label>
+   		  			  </GridLayout>
+   		  			   
+   		  			  
+   		  			 </StackLayout>
+   	 </ng-template>
+   	  	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
+   	 
+</RadListView>
+</StackLayout>
+</GridLayout>
+
+ 
+
+ </GridLayout></GridLayout>
+
+</ScrollView>

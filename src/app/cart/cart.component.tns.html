@@ -1,188 +1,248 @@
-<StackLayout>
-  <Label text="cart works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
-
-<!--
-Original Web template:
-
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-
-<div  i18n-class class ='scroll2 text-left'>
-
-<div class='container'>
-<div [hidden]="loading " >
-<div *ngIf='cart'>
-
-
-<li style="border-bottom:15px   #F5F5F7 solid  "  class="list-group-item " *ngFor="let k of  model | keyvalue let j = index ; " [attr.data-index]="j" >
- <h6><i i18n="@@magasin2"> Magasin: </i> <a class='btn text-info'  (click) ='gotoStore(k.key)'> {{k.key}}</a></h6>
-
-<ul class="list-group ">
- <li   style="border-bottom:1.5px  #D3D3D3 solid  " class="list-group-item" *ngFor="let m of  k.value ;  let i = index ; " [attr.data-index]="i">
-<form name="form" (ngSubmit)="f.form.valid  && buynow(k.key, m) && m.selectedAddress.to!='' " #f="ngForm" novalidate>
+<ScrollView>
+<GridLayout rows="auto,auto,auto" (tap)='hide()'>		
+ 
+ 
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>
   
-
-<div i18n="@@noarticle" *ngIf='!m._source.available' class ="alert alert-danger"> Cet article n'est plus disponible </div>
-
-<div class="row">
-
-<div class="col-sm-4 col-12 col-md-4">
-
- <div class='row'>
-    <div class='col-sm-6 col-6' ><img [src]="m.pic" class="img-responsive crop"  alt="Image"></div>
-   <div class='col-sm-6 col-6 '><b>{{ m._source.title}}</b>  
-          <br> <i>{{  m._source.price}} <i i18n="@@da3">DA</i></i> </div>
- </div>
-	<div class="row" [attr.id]="'accordion_'+m._id">
-
-         
-           <a class ="btn btn-outline-warning" data-toggle="collapse" [attr.data-parent]="'#accordion_'+m._id" [attr.href]="'#collapseOne_'+m._id"><i class='fa fa-plus'></i><i i18n="@@details"> détails </i> </a>
-           <div [attr.id]="'collapseOne_'+m._id" class="card collapse col-md-12 col-sm-12 col-12">
-           <div class="card-body">
-           
-              <div class = 'row' >
-      	    <div i18n="@@couleurs" class="col-md-6 col-sm-6  col-6"> 
-      		   Couleurs
-      	    </div>
-      	    <div class="col-sm-6 col-6"> 
-      		     <li  *ngFor= 'let c of m._source.color; let  i=index ' style="list-style: none; display:inline-block;"> 
+   <Label  row="0" *ngIf="empty && !loading && !reload" class="alert"  text="Aucun article sélectionné"></Label>
+ 
+   <StackLayout row="2">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading" ></ActivityIndicator>
+   	</StackLayout>  
+   	 
+<RadListView row ="1" class="list-group" [items]="displaystores"  
+				 [visibility]="!loading? 'visible' : 'collapsed'"
+				  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
+    <ng-template let-k="item"  >
     
-       		       <label  class='labl' >
-       		      	
-       		          	<input type="radio" name="radiogroup"  [checked]="i===0"   id="radio"  [value]="c"  (change)="getColor(c, k.key, m)" require />
-       	
-                       	<div for="radio" style ='width:25px; height:20px; ' [style.background]='c' >   	</div>
-       		        
-       				</label>  	
-		          			<!--  button type="button" (click)="removeColor(c)" class='btn-info'> X</button->  
-				 </li> 
-		
-         	</div>	
-            </div>
-    	     
-       		<div class = 'row' >
-      		<div i18n="@@quantite" class="col-md-6 col-sm-6 col-6"> 
-      			 Quantité
-      		</div>
-     	 	<div class=" col-md-6 col-sm-6 col-6"> 
-				 <input type='number'  [(ngModel)]="m.choosequantity" name="choosequantity"   min="1" max="m._source.numbers" style="width: 50px"  (change)="getQuantity($event, k.key, m)" require />
-			
-	   	   </div>
-           </div>
-           
- 	 
-                </div>
-            </div>
+        <GridLayout class="list-group-item" rows="*, *,auto"  >
+         
+         <Label row="0" [text]="k" class="title" ></Label>
+            
+          <RadListView row ="1" class="list-group" [items]="model[k]" ><!-- [itemTemplateSelector]="templateSelector" (itemTap)="onItemTap($event)" -->
+    		<ng-template let-m="item" let-i='index'><!--  tkListItemTemplate  -->
+    		<GridLayout rows="*,auto,auto,auto,auto,auto">
+  		      <GridLayout row="0"  rows="auto,auto, auto" columns="*,*">
+          			 <GridLayout row="0" col="0">
+          			 	 <Image src="{{m.pic}}"	loadMode="async" class="pic"  stretch="aspectFill" ></Image>
+          			 </GridLayout>
+   			         <GridLayout  row="0" col="1" rows="25,auto,*,auto,*" >
+   			         	
+   			         	<GridLayout  row="0"  columns="40, 58,20,20">
+   			 	         	 <Button col="3" text="&#xf064;" class=" fass button2  btn-active  " (tap)="gotoArticle(m._id, k )"></Button>
+   			 	      		 <Button margin="0,20,0,0" col="2" text="&#xf00d;" class="fass  button3   btn-active"(tap)="deleteArticle(k, m)" ></Button>
+   			 	       </GridLayout>  
+   			 	     
+   			         
+   			         <TextView editable="false" row="1"  class="titlea" text="{{m._source.title}}">
+					</TextView>
+   			 	        <!-- Label row="0" col="0" [text]="m._source.title" class=" titlea " ></Label>
+             	  	      -->
+             	  	      
+             	  	    <Label row="2"  text="{{m._source.price}} D.A" class=" fass titlea " ></Label>
+
+            		 	 <Label (touch)='ontouch($event)'  margin="8,0,0,0" row="3"  text="+details" (tap)="m.details=!m.details"   class="button0 "  ></Label>
+            		 
+            		   	
+				</GridLayout>
+     
+       </GridLayout>
+     
+             
+             <GridLayout row="1" rows="*,*,*,*,*,*"  [visibility]="m.details ? 'visible' : 'collapsed'" >
+            				  <GridLayout  margin="10,15,0,15" row="0"  columns="100,auto"  [visibility]="m._source.color.length !=0 ? 'visible' : 'collapsed'"  >
+   								<Label  class="titlea " col="0"  text="Couleur"></Label>
+  
+  								<RadListView     col="1"  [items]="m._source.color" >
+      							 <ng-template let-a="item" >
+      						 	<GridLayout>	
+      					 		<Label *ngIf='m.choosecolor==a'  margin='0,0,5,0'  [backgroundColor]="a"  class="colorActive"  (tap)="getColor(a, k, m)"   ></Label>
+      						    <Label *ngIf='m.choosecolor!=a'  margin='0,0,5,0'  [backgroundColor]="a"  class="color"  (tap)="getColor(a,k,m)"   ></Label>
+      							</GridLayout>
+      							</ng-template>
+
+																 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="4"></ListViewLinearLayout>
+								      		
+    							</RadListView>
+  						 </GridLayout>     				  
+  						 <GridLayout  margin="10,15,0,15" row="1"  columns="100,auto" [visibility]="m.boolsize? 'visible' : 'collapsed'"  >
+  
+					  	<Label  class="titlea "  col="0" text="Taille"></Label>
+ 				 		<RadListView    col="1"  [items]="m.size" >
+      		 				<ng-template let-a="item" >
+      		 					<GridLayout>
+      		 					<Label *ngIf=' !m._source.sizing[m.choosecolor].includes(a)' margin='0,0,5,0' text='{{a}}' class="sizeDisable"></Label>
+	      		 				<Label *ngIf='a==m.choosesize ' margin='0,0,5,0' text='{{a}}' class="sizeActive" (tap)="chooseSizing( e,a,k,m )" ></Label>
+      			 				<Label *ngIf=' a!=m.choosesize && m._source.sizing[m.choosecolor].includes(a)'  margin='0,0,5,0' text='{{a}}' class="size" (tap)="chooseSizing(e, a,k,m)" ></Label>
+      							</GridLayout>
+      						</ng-template>
+								 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="3"></ListViewLinearLayout>
+								
+	
+      						 </RadListView>
+ 						 </GridLayout>
+  
+            		         <GridLayout margin="10,15,0,15" row="2"  columns="100,auto, auto " >
+   
+  							<Label class="titlea "  col="0"  margin="10,0,0,0" text="Quantité"></Label>
+  							<TextField class='input titlea '  returnKeyType="done" col="1" color='#000'   text='{{m.choosequantity}}'  [(ngModel)] ="m.choosequantity"
+  								 keyboardType="number" maxLength="3" (returnPress)="getQuantity('', k,m)" ></TextField>
+  							<Label class="titlea "   margin="12,0,10,0" col="2" text='Total: ({{m._source.numbers}})'></Label>
+  	
+ 							 </GridLayout>
+            		
+       		      <GridLayout margin="10,15,0,15" row="3"  columns="100,*" >
+  
+  						<Label col="0" class="titlea"  text="Votre Adresse"></Label>
+  						<GridLayout col="1"   rows="auto,auto,auto,auto">
+ 					      <Label  (touch)='ontouch($event)' row="0" text='&#xf078;'  class="fas titlea dropdownLabel" (tap)="m.show=!m.show"    ></Label>
+   					    <Label textWrap='true'  (touch)='ontouch($event)'  row ="0" text ="{{m.selectedAddress.title}} " color="#000"   (tap)="m.show=!m.show"  ></Label>
+   					     <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+						<StackLayout  row="1" [visibility]=" m.show? 'visible' : 'collapsed'" >
+  					  <app-adress (getAddress)='getAddress($event,k, i) ; ' ></app-adress>
+  				    </StackLayout>
+  					</GridLayout>
+  			  	</GridLayout>
+  
+  				<GridLayout margin="10,15,0,15"  row="4"  columns="100,*" >
+  
+ 					<Label textWrap='true' class="titlea" col="0" text="Livraison"></Label>
+  					<GridLayout col="1" rows="auto,auto,auto">
         
-    </div>
-	
-	
+       				 <DropDown  #dd
+                 		 [items]="m._source.titleDel "
+                 		 color='#000'
+               			   (selectedIndexChanged)="onchange($event,k, i)"
+                		  colSpan="2"
+                		  row="0"
+                		  fontSize="12"
+                		       paddingItem="5"  >
+        			</DropDown>
+					 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+					</GridLayout>
+  	
+  				</GridLayout>		
+            
+            
+            </GridLayout>
+                 		   
+        
+            		
+            		
+            	 <GridLayout  row="2" col="0" columns="*,auto">
+   			 	  <Button col='1' text="Acheter"   class=" button1   btn-active " (tap)="  buynow(k, m) " ></Button>
+   			 	
+  	
+  				</GridLayout>		
+            
+            		
+            	
+            		<GridLayout row='3' rows='auto,auto,auto,auto ' >
+       
+  
+					 <TextView  row='1' class="alert" *ngIf ='m.send && m.choosedelivery.length==0 && m._source.delivery.length!=0'
+							text="Aucune livraison n'est sélectionnée "></TextView>
+					<TextView row='2'  class="alert" *ngIf ='m._source.delivery.length==0'
+							text="Aucune livraison n'est disponible pour votre région ! "></TextView>
 
- 
-</div>
-<div  class="col-md-4 col-sm-4 col-12 "   >
-<div  class='row list-group-item  ' [attr.id]="'address_'+m._id" >
-      		
-				<div i18n="@@addresse" style='font-size:small; ' >Votre Addresse:</div>
-      			<a (click)="m.show=true" class ="list-group-item add " data-toggle="collapse" [attr.data-parent]="'#address_'+m._id" [attr.href]="'#addressOne_'+m._id" >{{m.selectedAddress.title}} <span  class="fa fa-angle-down" style='float:right; '></span></a> 
-      	 	
-     			<div  [attr.id]="'addressOne_'+m._id"    [hidden]='!m.show' class='collapse scroll col-sm-12 col-12' [ngClass]="{'collapse.show':m.show, 'collapse': !m.show}"    >
-				 		<app-adress (getAddress)='getAddress($event,k.key, i) ; ' ></app-adress>
-	    	
-	    		</div>
-	</div>
-<div class='row list-group-item ' >
-<div style='font-size:small; 'i18n="@@delivery" >Livraison:</div>
-<ngx-select-dropdown (change)="getDeliveryMethod($event,k.key, m)" [multiple]="false" [(value)]="m.choosedelivery" [config]="deliveryconfig" [options]="m._source.delivery"></ngx-select-dropdown></div>
-
-</div>
-	
- <div class ="col-sm-3 col-12" style="float:right;  margin-top:40px;">
-   <a  class = "btn btn-info fa fa-close" (click)="deleteArticle(k.key, m)" > </a>
-   <button button [disabled]="!m._source.available"  class = "btn btn-danger" ><i i18n="@@acheter">Acheter</i></button>
-   <a  class = "btn btn-warning fa fa-mail-forward "(click)="gotoArticle(m._id, k.key )"> </a>
-  <div i18n="@@addressealert2" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='m.selectedAddress.warning  && m._source.delivery.length!=0'>
-Sélectionnez votre addresse de livraison d'abord ! 
- </div>  
- <div  i18n="@@livraisonalert2" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='m.choosedelivery.length==0 && m._source.delivery.length!=0'>
-Aucune livraison n'est sélectionnée 
- </div>
-
- <div  i18n="@@nolivraison" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='!m.selectedAddress.warning && m._source.delivery.length==0'>
-aucune livraison n'est disponible pour votre région ! 
- </div>
-</div>
- 
-</div>
-
-  <!-- button class = "btn btn-info  "style="float: right; margin-top:40px; "> go to article</button-><br>
-
-   <!-- input input type="number" style="float:right; width: 50px ; margin-top:40px ;  "  min="1" step="1" placeholder='1'->
-   	
-</form>
-
-</li>
-
-	 <li class="list-group-item"  >
-	 <div i18n-style style="float: right;"  >
-       <span i18n="@@total" class="col-sm-3 col-6" >Total </span>
-       <span   class="col-sm-5 col-6 " ><b>  {{totalprices[k.key]}} <i i18n="@@da3">D.A</i></b></span>
-       </div>
- 	</li>
-  	<li  class="list-group-item">
- 		  <div  i18n-style style="float: right;  "class="col-sm-5  col-12 " [attr.id]="'address2_'+j" >  
- 		  <div style='font-size:small; ' i18n="@@addresse" >Votre Addresse:</div>
- 		  <a (click)="show[k.key]= true " class='add list-group-item '  data-toggle='collapse'  [attr.data-parent]="'#address2_'+j" [attr.href]="'#addressOne2_'+j" >{{k.value.selectedAddress.title}} <span  class="fa fa-angle-down" style='float:right; '></span></a> 
-      	 	<div  [hidden]='!show[k.key]' class=' collapse scroll col-sm-12 col-12'[attr.id]="'addressOne2_'+j"    >
-				 		<app-adress (getAddress)='getAddress2($event, k.key) ; ' ></app-adress>
-	    	</div>
-	    	</div>
-    </li>	
- 	<li  class="list-group-item">
- 	  
- 	  <div  i18n-style style=" float:right" class="col-sm-5 col-12 " >
- 	  <div style='font-size:small; ' i18n="@@delivery"> Livraison:</div>
- 	  <ngx-select-dropdown (change)="getStoreDeliveryMethod($event, k.key)" [multiple]="false" [(value)]="choosestoredelivery[k.key]" [config]="deliveryconfig" [options]="storedelivery[k.key]"></ngx-select-dropdown></div>
-			
-		
- 	</li>
-	<li *ngIf ="!buyall[k.key]"  class="list-group-item">
-	   	<div i18n="@@nosomearticles"  class ="alert alert-warning"> certains articles dans la selection ne sont plus disponible ! </div>
-	          
-	</li>
-	<li class="list-group-item">
-	 
-	      <div  i18n-style style="float: right; " >
-	         <span class="col-sm-3 col-6" ><b> {{totaldelivery[k.key]}} D.A</b></span>
-	         <span class="col-sm-5 col-6 " ><button [disabled]="!buyall[k.key] || k.value.selectedAddress.warning || choosestoredelivery[k.key].length==0  "  class = "btn btn-danger" (click)= 'multiplebuynow(k.key)' style="margin-left:5px;" ><i i18n="@@toutacheter">Tout Acheter</i> </button></span>
-	       </div>
-	
-	         <div i18n='@@livraisonalert2' i18n-style style="float:right; " class="alert alert-danger" *ngIf ='  storedelivery[k.key].length!=0 &&choosestoredelivery[k.key].length==0 '>
-				choississez la livraison 
-			 </div>
- 			 <div i18n="@@addressealert2" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='storedelivery[k.key].length!=0 &&k.value.selectedAddress.warning'>
-				 Selectionnez votre addresse de livraison avant !
-			 </div>
-			 
-			  <div i18n="@@nolivraison" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='!k.value.selectedAddress.warning&&  storedelivery[k.key].length==0'>
-				 Aucune livraison disponible pour votre addresse ! 
-			 </div>
- 	</li>
-
+            		<TextView row="3" class="alert" *ngIf ='m.send  &&  m.selectedAddress==""'
+							text="Sélectionnez votre addresse de livraison d'abord ! "></TextView>
+            		</GridLayout>
+            		
+                    <StackLayout row="4" margin="10,0,10,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+            		 
+            	 </GridLayout>	
+            	
+  	         </ng-template>
+  	     
+             <!-- ng-template tkTemplateKey="expanded" let-m="item">
+		      <GridLayout rows="*,auto" columns="*,*" class="add-dropdown">
+            		 <GridLayout  row="1" col="2" rows="30,30" columns="*">
+   			 	       		 <Button  row="0"  text="Acheter"    class="fass button1"  ></Button>
+   			 	        <GridLayout  row="1"  rows="*" columns="30,30">
+   			 	      		 <Button row="0"col="1" text="&#xf064;" class=" fass button2 "></Button>
+   			 	      		 <Button row="0"col="0" text="&#xf00d;" class="fass  button3 "></Button>
+   			 	       </GridLayout>
+            		</GridLayout>
+         
+              </GridLayout>
+            </ng-template-->		  
+          </RadListView>
  	
+ 			 <GridLayout  row="2"  rows="*,*,*,*,auto,auto">
+   			 	     <GridLayout  margin="10,0,0,0" row='0' columns="*,auto" >
+   			 	      <Label class="titlea "  text="Total: ({{model[k].length}}Articles) " col="0"></Label>
+   			 	       <Label class="titlea fas"  text="{{totalprices[k]}} DA " col="1"></Label>
+   			 	     </GridLayout>      		
+       		      <GridLayout  margin="10,0,0,0" row="1"  columns="100,*" >
+  
+  						<Label col="0" class="titlea"  text="Votre Adresse"></Label>
+  						<GridLayout col="1"   rows="auto,auto, auto,auto">
+ 					      <Label (touch)='ontouch($event)' row="0" text='&#xf078;'  class="fas titlea dropdownLabel" (tap)="storeshow[k]=!storeshow[k]"    ></Label>
+   					    <Label (touch)='ontouch($event)'  (tap)="storeshow[k]=!storeshow[k]"   row ="0" text ="{{model[k].selectedAddress.title}}" color="#000"   ></Label>
+   					     <StackLayout row="2"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+						<StackLayout  row="1" [visibility]="storeshow[k]? 'visible' : 'collapsed'" >
+  					  <app-adress (getAddress)='getAddress2($event, k) ; ' ></app-adress>
+  				    </StackLayout>
+  					</GridLayout>
+  			  	</GridLayout>
+  
+  				<GridLayout margin="10,0,0,0"   row="2"  columns="100,*" >
+  
+ 					<Label class="titlea" col="0" text="Livraison"></Label>
+  					<GridLayout col="1" rows="auto,auto,auto">
+        
+       				 <DropDown  #dd
+                 		 [items]="titlestoreDel[k] "
+                 		 color='#000'
+                 		 fontSize="12"
+               			 (selectedIndexChanged)="onchange2($event,k)"
+                		  colSpan="2"
+                		  row="0"
+                		  paddingItem="5" 
+                		  fontSize="12">
+        			</DropDown>
+					 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+					</GridLayout>
+			</GridLayout>
+			
+			<GridLayout columns="*,auto,auto" row="3">
+			 <Label textWrap="true"  margin="10,0,0,0" class="titlea fas" text="{{totaldelivery[k]}} DA " col="1"></Label>
+			
+   			<Button  text="Tout Acheter"  col="2"   class=" button1 btn-active " (tap) =  'multiplebuynow(k)'  ></Button>
+   			 </GridLayout>
+ 	
+ 			<GridLayout row="4" rows="auto,auto,auto">
+ 			<Label textWrap="true" row="0" *ngIf ="!buyall[k]" class="alert" text="certains articles dans la selection ne sont plus disponible !"></Label>
+ 		
+ 		 	<Label textWrap="true" row="1" class="alert" *ngIf =' send[k]&& storedelivery[k].length!=0 &&choosestoredelivery[k].length==0 '
+				text="choississez la livraison "></Label>
+		
+ 			 <Label textWrap="true" row="2" class="alert" *ngIf ='send[k]&&  model[k].selectedAddress==""'
+				 text="Selectionnez votre addresse  !"></Label>
+			
+			 
+			  <Label textWrap="true"  row="3" class="alert" *ngIf ='  storedelivery[k].length==0'
+				text=" Aucune livraison disponible pour votre addresse ! "></Label>
+			 
+ 		
+ 		
+ 			</GridLayout>
+ 	       		 <StackLayout row="5"  colSpan="2" backgroundColor="darkgray" height="3"></StackLayout>
+ 	
+          </GridLayout>
+          
+          </GridLayout>
+</ng-template>
+ 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
+ 
+</RadListView>
 
 
-
-</ul>
-</li>
-</div>
-
-
-<div i18n="@@emptycart" *ngIf="empty" class="form-group alert alert-info">Aucun article sélectionné</div>
-
-</div>
-</div></div>
-
--->
+</GridLayout>      
+</ScrollView>

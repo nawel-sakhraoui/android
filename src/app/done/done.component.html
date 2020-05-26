@@ -1,7 +1,6 @@
 
-
 <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<div i18n-class class="text-left ">
+<div i18n-class class="text-left scroll2">
 
 <div class='container'>
 <div [hidden]= "loading" >
@@ -44,7 +43,7 @@
   <li class="list-group-item" >
   	  	<div  *ngFor = "let a of m._source.articles " >
   	  	<div class='row'>
-  	  	<div class="col-sm-5 col-md-5 col-5">  <img alt="" src="{{a.pic}}" class="img-responsive crop"  /></div>
+  	  	<div class="col-sm-5 col-md-5 col-5">  <img [src]="a.pic" class="img-responsive crop"  alt="Image"></div>
   	 	<div class='col-sm-4 col-md-5  col-4'>	
   	 		<a class="btn" (click)="gotoArticle(a.articleid, m._source.storetitle)"><b>{{a.title}}</b></a> <br>
   	 		<span *ngIf="a.color">
@@ -55,7 +54,7 @@
    			 <br>
    			 <span *ngIf="a.size">
   	    <i i18n="@@taille" > Taille </i>
-  	  	<span class='text-info' style ='width:55px; height:20px; font-size:10px ;  background-color:#D0D0D0;  display:inline-block; text-align: center;  ' > {{a.size}}	</span>
+  	  	<span class='text-info' style ='width:55px; height:20px; font-size:10px ; background-color:#D0D0D0;  display:inline-block; text-align: center;  ' > {{a.size}}	</span>
        </span>
    			 <br>
       		 <span><i i18n="@@quantite"> Quantité</i>   {{a.quantity}} </span>
@@ -162,7 +161,7 @@
  
   <ul class="list-group col-sm-6  col-md-6 col-12">
   <li class='list-group-item'> 
-  <span> <i i18n="@@commandefaite" >Commande faite le </i>  <span dir='ltr'>{{m._source.startdate}}</span></span>
+  <span> <i i18n="@@commandefaite" >Commande faite le:</i>  <span dir='ltr'>{{m._source.startdate}}</span></span>
   </li>
   <li class='list-group-item'>
 
@@ -206,12 +205,13 @@
 		</ul>	
 	 </wizard-step>
 	 
-	 	 
-	     <!-- wizard-step [title]="'4.5'" [hidden]="m._source.steps.litige==0 || !m._source.steps.stop==0 " [isActive]='m._source.steps.litige!=0'   [showNext]='false' [showPrev]='false' >
+	     <wizard-step [title]="'4.5'" [hidden]="m._source.steps.litige==0 || !m._source.steps.stop==0 " [isActive]='m._source.steps.litige!=0' [isValid]= 'm._source.steps.litigesolved!=0'  [showNext]='false' [showPrev]='false' >
      <ul class="ongoingul" >
-
+        <li class="ongoingli" *ngIf="m._source.steps.litige!=0" >
+            <i i18n='@@litigeouvert'>  Litige ouvert le :</i><span dir='ltr'> {{m._source.steps.litige}}</span> 
+   		</li>
       
-        <!-- li class="ongoingli" *ngIf="m._source.steps.solvedlitige==0">
+        <li class="ongoingli" *ngIf="m._source.steps.solvedlitige==0">
            
            <p class="lead" i18n="@@contactermagasin"> Veuillez contacter le magasin pour trouver une solution à votre litige</p>
           <i i18n="@@waitlitigeresolu"> Le litige est résolu </i> <button [disabled]="m._source.steps.solvedlitigeloading" class="btn btn-info" (click)=" solvedlitigeDone(m._id, i, m._source.storetitle )" > <i class="fa fa-check"></i>
@@ -224,34 +224,28 @@
          <li class="ongoingli" *ngIf="m._source.steps.solvedlitige !=0"> 
          <i i18n="@@litigeresolu"  >Litige résolu le:</i> <span dir='ltr'>{{m._source.steps.solvedlitige}} </span>
          </li>
-         
          </ul>
         
-	  </wizard-step--> 
-     <wizard-step [title]="'4'"   [hidden]=" !m._source.steps.stop==0"  [isActive]='m._source.steps.receive!=0' [isValid]="m._source.steps.close!=0"  [showNext]='false' [showPrev]='false' >
+	  </wizard-step> 
+     <wizard-step [title]="'4'"   [hidden]="(!m._source.steps.litige==0 && m._source.steps.solvedlitige==0) || !m._source.steps.stop==0"  [isActive]='m._source.steps.receive!=0' [isValid]="m._source.steps.close!=0"  [showNext]='false' [showPrev]='false' >
   		  <ul class="ongoingul" >
-	    <li class="ongoingli"  *ngIf="m._source.steps.close==0 && m._source.steps.litige==0"> <i  i18n="@@openlitige"> Retourner la commande </i> <button [disabled]='m._source.steps.litigeloading'class="btn btn-info" (click)=" litigeDone(m._id, i, m._source.storetitle )" > <i class="fa fa-check"></i>
+	    <li class="ongoingli"  *ngIf="m._source.steps.close==0 && m._source.steps.litige==0"> <i  i18n="@@openlitige"> Ouvrir un litige</i> <button [disabled]='m._source.steps.litigeloading'class="btn btn-info" (click)=" litigeDone(m._id, i, m._source.storetitle )" > <i class="fa fa-check"></i>
 																									   <i *ngIf="m._source.steps.litigeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
 																															
 		    																								</button>	
-		
 	    </li>
-	     <li class="ongoingli" *ngIf="m._source.steps.litige!=0" >
-            <i i18n='@@litigeouvert'>Retour le  </i><span dir='ltr'> {{m._source.steps.litige}}</span> 
-   		</li>
-	    <li class="ongoingli"  *ngIf="(m._source.steps.close==0 &&  m._source.steps.litige ==0) ||(m._source.steps.close==0 )"> <i  i18n="@@waitclosecommande" > Fermer la commande </i> <button [disabled]="m._source.steps.closeloading" class="btn btn-info" (click)="  modal.show();  closeDone(m._id, i, m._source.storetitle); "> <i class="fa fa-check"></i>
+	    <li class="ongoingli"  *ngIf="(m._source.steps.close==0 &&  m._source.steps.litige ==0) ||(m._source.steps.close==0 &&  m._source.steps.solvedlitige !=0)"> <i  i18n="@@waitclosecommande" > Fermer la commande </i> <button [disabled]="m._source.steps.closeloading" class="btn btn-info" (click)="  modal.show();  closeDone(m._id, i, m._source.storetitle); "> <i class="fa fa-check"></i>
 	    																																										  <i *ngIf="m._source.steps.closeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
 	    																																											
 	    																																											</button>
 	    </li>
-	            
+	    
 	    <li class="ongoingli" *ngIf="m._source.steps.close!=0 "  > <i  i18n="@@cloasecommande" >Commande fermée le </i> <span dir ="ltr" >{{m._source.steps.close}}</span></li>
 		</ul>
      
      </wizard-step>
  
 </form-wizard>
-
 	
   </li>
  </ul>
@@ -274,8 +268,8 @@
 		 <ul class="chat">
                      <li *ngIf='message.fromMe' i18n-class class="left clearfix"><span i18n-class class="chat-img pull-left">
                       	
-                      <span class=" profile-picture "> <img alt=""  class=" resize"  id="avatar2" src='{{avatarlist[message.from]}}' 
-                      /></span>
+                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' 
+                      alt="User Avatar" /></span>
                         </span>
                             <div class="chat-body clearfix">
                                 <div class="header">
@@ -288,15 +282,15 @@
                             </div>
                         </li>
                          <li *ngIf='!message.fromMe' i18n-class class="right clearfix"><span i18n-class class="chat-img pull-right">
-                       <span class=" profile-picture ">  <img alt="" class=" resize" alt=" Avatar" id="avatar" src='{{avatarlist[message.from]}}'
-                          /> </span>
+                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarlist[message.from]'
+                            alt="User Avatar"/> </span>
                         </span>
                         <div class="chat-body clearfix">
                                 <div class="header">
                                     <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message.date}}</small>
                                     <strong i18n-class class="pull-right primary-font">{{fullnamelist[message.from]}} </strong>
                                 </div>
-                                <p class="pull-right" >
+                                <p>
                                   {{message.text}}
                                 </p>
                             </div>

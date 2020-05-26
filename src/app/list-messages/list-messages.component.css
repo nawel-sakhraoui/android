@@ -1,66 +1,84 @@
-
-.profile-picture {
-    border: 2px solid #CCC;
-    background-color: #FFF;
-   /* padding: 4px;*/
-    display: inline-block;
-    height :70px;
-    width : 60px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, .15); 
-   /*    overflow: hidden;*/
-       	 position: relative;
-       	 margin-top :5px ; 
-       	 margin-left : 10px ; 
-       	 margin-right : 10px ; 
-       	 margin-bottom : 20px;  
-       	
-       	 
-}
-img.resize {
- /*margin-bottom: 0;*/
-/* min-width:200px; min-height:220px;
- max-width : 200px; max-height : 220px;*/
-   object-fit: cover;
-  height:68px;
-  width :58px; 
-  background-color:#eeeeee; 
-  
-}
-.contact_sec p
-{
-    margin-left:100px;
-    margin-top:0px;
-    padding:5px;
-    margin-bottom:0px ;   
-    color: #777777;
-    background: #fbf9fa none repeat scroll 0 0;
-    border:1px  #D3D3D3 solid  ;
-    overflow-x :hidden; 
-}
-.contact_sec h6
-{
-    margin-left:50px;
-    margin-top:0px;
-    padding:0px;
-    margin-bottom:0px ;
-       color: #777777;   
-
-} 
-
-
-
-li:hover {
-  background: #868e96 none repeat scroll 0 0;
-  /*color: #ffffff;*/
-  cursor:pointer;
+.site-template-image {
+    border-radius: 100;
+    margin: 8 16;
+    width: 60;
+    height: 60;
 }
 
-.scroll2{
-	height: 90vh;
-   overflow-y:  scroll ; 
-   background-color : #F5F5F7 ;
+.site-template-title {
+    margin: 0 0 6 0;
+    font-size: 18;
+}
 
-}  
+.site-template-description {
+    font-size: 11;
+}
+.image-with-background {
+    background-image: url("~/assets/img_back.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: contain;
+    margin-top: -25;
+}
+
+.thumb-with-background {
+    background-image: url("~/assets/img_back.png") top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: bottom;
+}
+
+.action-item-right {
+    color: white;
+    padding: 12;
+    margin: 0 16;
+    font-size: 18;
+    vertical-align: center;
+}
+
+.action-item-left {
+    color: white;
+    margin: 0 12;
+    padding: 12;
+    font-size: 18;
+    vertical-align: center;
+}
+
+.site-main-content {
+    margin: 12 24;
+}
+
+.tilted-line {
+    height: 10;
+    width: 15;
+    rotate: 120;
+    margin: 0 2;
+    background-color: #ffffff;
+}
+
+.line {
+    height: 1px;
+    background-color: #666666;
+    margin-top: 8;
+    margin-bottom: 8;
+}
+
+.inventory-icon {
+    margin: 10 10 10 0;
+}
+
+.inventory-layout .ok {
+    opacity: 1;
+    font-size: 12;
+    vertical-align: center;
+}
+
+.inventory-layout .not-present {
+    opacity: 0.5;
+    font-size: 12;
+    vertical-align: center;
+}
+
+.inventory-presence {
+    margin: 10 0;
+}

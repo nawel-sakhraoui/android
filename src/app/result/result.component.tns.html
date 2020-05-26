@@ -1,166 +1,197 @@
-<StackLayout>
-  <Label text="result works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
 
-<!--
-Original Web template:
-
-<nav class="navbar navnav navbar-default mr-auto  sticky-top" id="navbar2" >
-    <div class=" form-inline   "> 
-    <a  class="text-left nav-link btn btn-link  text-info "  (click)= '_toggleSidebar(); ' routerLinkActive="active" >
-   <b i18n="@@cat" > Catégories </b> <span *ngIf="!opened" class=" fa fa-tag"> </span><span *ngIf="opened" i18n-class="@@angg2"  class="fa fa-angle-left"> </span></a>
- 
- 
-    <span  i18n="@@filter2" class="nav-text tag" for='filter'  [class.active]="true" >
-    {{filter}} <a [hidden]="filter=='Indefinie'" class=" btn btn-link fa fa-remove" (click)="removeFilter()"></a>
-    </span>
-  	
-    <span i18n="@@#=requete" *ngIf='query!=""' class='nav-link text-info'>Requête:</span>
-    <span  style ="font-size:small;"  *ngIf='query!=""' i18n-class class="text-left nav-text tag" for='query'  [class.active]="true" >
-    {{query}}  <button class="btn btn-link fa fa-remove" (click)="removeQuery() ; "></button> 
-    </span>
-  	</div>
-	<div class=" form-inline   " style ="font-size:small;" > 
-	        <span i18n="@@trie" class='nav-text text-info '>Trier par <i class=" fa fa-sort "></i>	</span>
-	        <span class="form-inline">
-			<input  type="radio" name="optradio" checked  id="rb1" [(ngModel)]="orderby" [value]="'newest'" (change)="onSelectionChange('newest')"> <label i18n='@@recent' class='label' for ='rb1'>récent</label> 
-			<input type ="radio" name="optradio" id="rb2"  [(ngModel)]="orderby"  [value]="'feedback'" (change)="onSelectionChange('feedback')"><label  i18n="@@eval"  class='label' for ='rb2'>évaluation</label> 
-			<input  type="radio" name="optradio"id="rb3"  [(ngModel)]="orderby"  [value]="'price'" (change)="onSelectionChange('price')"><label i18n="@@prix"  class='label' for ='rb3'>prix</label>
-			</span>
-	</div>
-
-
-
-</nav>
-<ng-sidebar-container  showBackdrop="true" sidebarClass ="container"  style="   z-index:2;  background-color: #F5F5F7; height: 82vh;  ">
-  
-      <!-- A sidebar ->  
-<ng-sidebar   i18n-position position ='left'  #sidebar  [opened]="opened"  [mode]="'push'" autoCollapseWidth="600" (onCloseStart)='onclose($event)' (onOpenStart)='onopen($event)'>
-     
-   
-    <i style='margin-top:20px; '></i>
-	<div class="btn-group btn-group-toggle list-group " data-toggle="buttons">
-	  <label i18n class="btn btn-outline-warning list-group-item  text-info" for='c'  [class.active]="c==filter" 
-	   *ngFor="let c of allCategories ;  let i=index; " [attr.data-index]="i"
-	   (click)="selectFilter(c, i);" >
-	  	 <input   type="radio" name="options" id="c"  [value] ="c"   [checked]="c==filter"   >
-	   {{c}}  </label>
-	  
-	</div>
-
-</ng-sidebar>
- 
-      <!-- Page content ->
-<div ng-sidebar-content > 
- <div i18n="@@alertcart" class='alert alert-warning sticky-top' *ngIf='fullcartwarning' style='z-index:99999999;'> Le panier est pleins ! </div>
-
-
-<div class='container' style='margin-top:30px'> 
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-
-<div *ngIf="search"> 
- 
- <div  id ="article" style=' border-bottom :3px solid #ADD8E6; margin-top :50px  ; margin-bottom:50px;  '  >  
-   <h5 i18n="@@art" i18n-class class='text-left strong text-info'>Articles </h5>
-     <br>
-    <div  *ngIf="notfound ">
-			<br><br><br>
-  	         <p i18n-class class="text-left alert alert-info ">... </p>
-
-    </div>
-    
-    
-    
-    
-    <div  *ngIf="!notfound " class="row"  >
-   		         
-  
-  
-    <div   style ='position:relative ;'  class="btn col-sm-6 col-12 col-md-3" *ngFor="let a  of  articles  |paginate: { id: 'server', itemsPerPage: articlesize, currentPage: articlepage, totalItems: countarticle }" >
-  
-      <div  class="card bg-light   "       (mouseenter) ="mouseEnter(a._id) "  (mouseleave) ="mouseLeave(a._id)"  >
-           <img (click)="gotoArticle(a._id, a._source.storetitle )"  [src]="mainpics[a._id]" class="card-img-top resize" style ='width:100%; '  >
-          
-          <div class ="card-block ">
-           
-          <div (click)="gotoArticle(a._id, a._source.storetitle )" class="card-title " > 
-                  {{a._source.title}} 		
-       	  </div>
-       	  <div [hidden]="!disp[a._id]">
-       	     <div i18n="@@prix"  (click)="gotoArticle(a._id, a._source.storetitle )" class="card-text  " > <b>{{a._source.price}} D.A </b></div>
-       	    
-             <div i18n='@@vote' (click)="gotoArticle(a._id, a._source.storetitle )"  class="card-text  "> <star-rating [starType]="'svg'" [rating]="a._source.ratingsum/a._source.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> <span style ="font-size:small; color :#C0C0C0">( {{a._source.ratingcount}} évaluations)</span></div>
-       	 	  <div><button class="btn btn-link " style='font-size:small; color:#C0C0C0 '(click)= 'gotoStore(a._source.storetitle)'> {{a._source.storetitle}}</button>
-       	 	 </div>
-       	 	  <button i18n='@@cart' class=" btn   btn-warning" (click)="addToCart(a)"> <span class="fa fa-shopping-cart"></span >Panier<span *ngIf=" a.loadingcart==1" class= "fa fa-refresh fa-spin "></span>  <span *ngIf=" a.loadingcart==2" class= "fa fa-check"></span>	<span *ngIf=" a.loadingcart==3" class="fa fa-ban"></span>
-       	 	   </button> 
-       	 			 		
-       	 </div>	 			
-       	 		
-   		</div>
-     
-     	
-     	</div>
-     	
-
-     	
-    </div>
-    </div>
-      
-     <div i18n-style  style='float:right ; ' *ngIf="!notfound " class=" row has-text-centered"  >
-    <a class="spinner" scrollTo href="#article"  >
-    <pagination-controls (pageChange)="getArticlePage($event)" id="server"  i18n-previousLabel previousLabel="précédent" i18n-nextLabel nextLabel='suivant' ></pagination-controls>
-	</a>
-    </div>
-  
-  </div>
-   <div id="store" style='margin-top :50px ; margin-bottom:50px;  border-bottom  :3px solid #ADD8E6;   '>  
-   <h5 i18n="@@store" i18n-class  class='text-left text-info strong' >Magasins</h5>
-    <br>
-	<div  *ngIf="notfoundstore ">
-			<br><br><br>
-  	         <p i18n-class class="text-left alert alert-info ">...</p>
-
-	</div>
-	<div  *ngIf="!notfoundstore " class="row"  >
-    <div   style ='position:relative ;'  class="btn col-sm-8 col-12 col-md-6 "   *ngFor="let s of stores  |paginate: { id: 'server2', itemsPerPage: storesize, currentPage: storepage, totalItems: countstore }">
-  		
-               <div class='card  bg-light btn'(click)='gotoStore(s._id)'   >
-               
-  		     	  <img class="card-img-top img " [src]="s.banner" alt="img"  style ='width:100%;' >
- 			 	
- 			 	 <div i18n-align align=left data-toggle="tooltip" data-placement="bottom" title="{{s._source.description}}" >
-  	 		   
-  				   <h5 class="card-title">{{s._id}}</h5>
-			       <span i18n="@@eval2" class="form-inline my-2 my-lg-0" ><star-rating  size="small" [starType]="'svg'" [rating]="s._source.ratingsum/s._source.ratingcount"   [readOnly]="true" [showHalfStars]="true"></star-rating><span style=' font-size:x-small;color: #C0C0C0'>( {{s._source.ratingcount}} votes)</span>
-   				   </span>
-   				
-   
-			        <p style=" color : #C0C0C0" class='card-text'> 
-			             {{s._source.description}}
-			        </p>
-  				</div>
-   				</div>
-    </div>
-     </div> 
+<RadSideDrawer tkExampleTitle tkToggleNavButton>
+    <GridLayout (tap)='hide()'   tkDrawerContent rows="40, *" class="sideStackLayout">
+        <Label row="0" (touch)='ontouch($event)'   text="Catégories  &#xf104;" class='fas sideTitleStackLayout' (tap)="onCloseDrawerTap()"></Label>
         
-     <div i18n-style style='float:right ; ' *ngIf="!notfoundstore " class=" row has-text-centered"  >
-    <a class="spinner" scrollTo href="#store"  >
-    <pagination-controls (pageChange)="getStorePage($event)" id="server2" i18n-previousLabel previousLabel="précédent" i18n-nextLabel nextLabel='suivant' ></pagination-controls>
-   </a>
-    </div>
-	 </div>
+
+        <RadListView row ="1" class="list-group" [items]="allCategories " style="height:auto" >
+  				  <ng-template let-k="item" let-i='index' >
+            		<StackLayout  class="sideStackLayout ">
+           		     <Label textWrap="true" (touch)='ontouch($event)'   editable="false"  *ngIf='k!=filter' text="{{k}}" class="sideLabel list-group-item" (tap)="selectFilter(k, orderby);onCloseDrawerTap();"></Label>
+           		    
+           		      <Label textWrap="true"   (touch)='ontouch($event)'  editable="false"   *ngIf='k==filter' text="{{k}}" class="sideLabelActive list-group-item" (tap)="selectFilter(k, orderby);onCloseDrawerTap();"></Label>
+           		    </StackLayout> 
+                  </ng-template>
+        </RadListView>
+    </GridLayout>
+
+    
+ <GridLayout rows="auto,auto,auto,*" tkMainContent (tap)='hide()'  >
+ <StackLayout row="0" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+  
+ <GridLayout    row="1" columns="auto,*,auto" rows='35,35,*'  (tap)='hide()' >
+       <Label (touch)='ontouch($event)' row='0'  margin="7,0,0,5" text="Catégories &#xf02b;" col='0'  (tap)="openDrawer()" class=" fas cat"></Label>
+        <StackLayout row='0' margin='5,0,0,5' col="1" orientation='horizontal'>    
+            
+        <Label  text='{{filter}}' class="fas filter">  </Label>
+        <Label margin="0,0,0,4" *ngIf='filter!="Indefinie" ' (tap)='removeFilter();' text='&#xf057;' class="fas" color='red'></Label>
+        
+        </StackLayout>
+        
+        <Label *ngIf='query.length!=0' row='2' margin="7,0,0,5"  col="0" text="Requête: " class="fas cat"></Label>
+        
+        <StackLayout orientation="horizontal" row="2" col="1"  >
+        <TextView margin='-5,0,0,0' *ngIf='query.length!=0'    text='{{query}}' class=" query" editable="false"> </TextView>
+        <Label  *ngIf='query.length!=0' margin='10,0,0,4'  text='&#xf057;' class="fas" color='red'  (tap)="removeQuery()"></Label>
+       </StackLayout>
+        
+         <Label row='1' margin="8,5,0,5" text="Trier par &#xf0dc;" col='0' class=" fas cat"></Label>
+
+		<StackLayout orientation="horizontal"  row="1" col="1">
+  			<Label  *ngIf="orderby!='newest'"text="Récent"  class='label' (tap)="onSelectionChange('newest')"></Label>
+  			<Label *ngIf="orderby=='newest'" text="Récent"  class='labelActive'></Label>
+  			
+  			<Label *ngIf="orderby!='feedback'" text="Evaluation"  class='label' (tap)="onSelectionChange('feedback')"></Label>
+  			<Label *ngIf="orderby=='feedback'" text="Evaluation"  class='labelActive' ></Label>
+  			
+  			<Label *ngIf="orderby!='price'" text="Prix"  class='label' (tap)="onSelectionChange('price')"></Label>
+	     	<Label *ngIf="orderby=='price'" text="Prix"  class='labelActive' ></Label>
+	   
+	    </StackLayout>
+ </GridLayout>
+   <StackLayout row="2" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="3"></StackLayout>
+<TabView row="3"  id="tabViewContainer"
+	tabTextColor="#00BFFF"
+	selectedTabTextColor="#FFA500"
+	tabBackgroundColor="#FFFFFF"
+	tabTextFontSize="12"
+	androidSelectedTabHighlightColor="#FFA500"
+	textTransform="none"
+ >
+<StackLayout *tabItem="{title: 'Articles'}" (tap)='hide()' > 		
+
  
-</div>
-<!-- div *ngIf="!search">
-<br><br><br>
-  	         <p class="alert alert-info ">no request   </p>
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"   *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
 
-</div->
+      
+   <Label class="notfound" text="Pas d'articles disponibles"  [visibility]=" !reload && !loading &&  notfound? 'visible' : 'collapsed'"></Label>
+  		<RadListView  (tap)='hide()' [visibility]="!reload && !loading && !notfound? 'visible' : 'collapsed'"  [items]="articles"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedArticles($event)"
+         (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)" >
+      		 <ng-template let-a="item" class="itemStackLayout" >
 
-</div>
-</div>
-</ng-sidebar-container>
--->
+      		 
+      		 <GridLayout (touch)="ontouch2($event)"  rows='*,auto'  (doubleTap)="gotoArticle(a._id, a._source.storetitle )" >
+      		   
+      			<Image loadMode="async"  row="0" src='{{mainpics[a._id]}}' class='articlepic' stretch="aspectFill"   (touch)="display(a._id)"   ></Image>
+      			
+      			<AbsoluteLayout  >
+			      <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='a.loadingcart==1' [busy]="a.loadingcart==1" ></ActivityIndicator>
+			      			
+      			<Label (tap)="addToCart(a)"  [visibility]="disp[a._id] ?'visible':'collapse'"
+      					left="55" top="5" class='panier fas'>
+						<FormattedString>
+										<Span text='Panier &#xf217;' ></Span>
+										<Span  *ngIf=" a.loadingcart==2 " text='&#xf00c;'></Span>
+										<Span  *ngIf=" a.loadingcart==3  " text="&#xf05e;"></Span>
+      					</FormattedString>
+      	         </Label>
+      	          <Label left="0" top="40" row='0' id="globeItemNavigation"  class="alert" *ngIf='fullcartwarning && a.loadingcart==3 ' text="Le panier est plein" ></Label> 
+      	         
+      			<GridLayout left='0' top='55' rows="auto,auto,auto,auto"    class="title" [visibility]="disp[a._id] ?'visible':'collapse'" >
+            
+              <TextView  row='0'   editable="false" class='titlea'>
+             	   <FormattedString>
+   					     <Span text="{{a._source.title}}"></Span>
+        
+  					  </FormattedString>
+               </TextView>
+                <AbsoluteLayout row="1">
+      	           <StackLayout left="-40" top="-20" android:cursorVisible="false"  >
+      	           
+                 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="a._source.ratingsum/a._source.ratingcount" ></StarRating>
+                </StackLayout>
+                                	<Label fontSize="10" left ="60" top="10" text="({{a._source.ratingcount}} votes)"></Label>
+                
+                </AbsoluteLayout>
+               <Label textWrap="true" (touch)='ontouch($event); gotoStore(a._source.storetitle);' class='storetitle' row="2" text='Magasin: {{a._source.storetitle}}'></Label>
+      			<Label class='price' row="3"   text=' {{a._source.price}} D.A'  ></Label>
+			   </GridLayout>
+      			</AbsoluteLayout>
+      			<!-- StarRating style="margin: 0px 0.35em 0.25em -1.6em; vertical-align: middle;" emptyColor="black"  isindicator='true'filledColor="red" value="3" max="5"></StarRating-->
+      		  
+      		  
+      		  
+      		  </GridLayout>
+      		
+     		 </ng-template>	
+     
+     		
+     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
+    
+      </RadListView> 
+       
+    <StackLayout >
+  <ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+ </StackLayout>  
+</StackLayout>
+    
+    <StackLayout *tabItem="{title: 'Magasins'}" (tap)='hide()'>
+    <Label class=" notfound " text="Pas de magasin disponible"  [visibility]=" !reload && !loading && notfoundstore ? 'visible' : 'collapsed'">
+   
+   </Label>
+    
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+       
+       <RadListView (tap)='hide()' [visibility]="!reload && !loading && !notfoundstore ? 'visible' : 'collapsed'"  [items]="stores"  selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequestedStores($event)" >
+      		 <ng-template let-s="item" class="itemStackLayout"  >
+      	
+
+      		 
+      		 <GridLayout  (tap)="gotoStore(s._id )" (touch)="ontouch2($event)" rows='*,auto'>
+      		   
+      			<Image loadMode="async"  row="0"  src='{{s.banner}}' class='storepic' stretch="aspectFill" ></Image>
+      			
+      			<AbsoluteLayout  >
+      			
+      		
+      			<GridLayout left='0' top='90' rows="auto,auto,auto"  class='title' [visibility]="!storedisp[s._id] ?'visible':'collapse'">
+              <Label row="0"  text='{{s._id}}'></Label>
+              <AbsoluteLayout row="1">
+      	         <StackLayout left="-80" top="-20" android:cursorVisible="false"  >
+      	           
+                 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="s._source.ratingsum/s._source.ratingcount" ></StarRating>
+                </StackLayout>
+             	                	<Label fontSize="10" left ="15" top="10" text="({{s._source.ratingcount}} votes)"></Label>
+             	
+              </AbsoluteLayout>   
+              
+              <TextView  row='2'   editable="false"  text=" {{s._source.description}}" >
+        
+               </TextView>
+                
+            </GridLayout>
+      			</AbsoluteLayout>
+      			<!-- StarRating style="margin: 0px 0.35em 0.25em -1.6em; vertical-align: middle;" emptyColor="black"  isindicator='true'filledColor="red" value="3" max="5"></StarRating-->
+      		  
+      		    <StackLayout row="1" margin="0,0,0,0"  colSpan="2" backgroundColor="#333333" height="8"></StackLayout>
+      		  
+      		  </GridLayout>
+  
+     		 </ng-template>	
+     
+     		
+     		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
+    
+      </RadListView>
+       
+    <StackLayout >
+  <ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+ </StackLayout> 
+    </StackLayout>
+</TabView>
+</GridLayout>
+
+    
+
+</RadSideDrawer>

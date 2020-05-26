@@ -1,6 +1,6 @@
 <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
 
-<div i18n-class class=" text-left ">
+<div i18n-class class=" text-left scroll2">
  
 <div [hidden] ='loading' class="container">
 
@@ -13,20 +13,20 @@ Vous n'avez aucun message privé
 
 <ul class="list-group  " *ngFor="let m of model |paginate: { id: 'server', itemsPerPage: sizemsg, currentPage: page, totalItems: countmsg } ; let i = index  "[attr.data-index]="i" >
 <li class="list-group-item" style= "border:2px  #D3D3D3 solid; margin-top:50px;   ">
-<a (click) = "goToMessage(me,  m.to, m.tofullname, m._source.last.avatar, m._source.unread)">
+<a (click) = "goToMessage(me,  m._source.last.userid, m._source.last.userfullname, m._source.last.avatar, m._source.unread)">
 
                      <span i18n-class class="chat-img pull-left">
                      <div class="profile-picture">
-                     <img  alt=""  src="{{m._source.last.avatar}}"  class="resize">
+                     <img [src]="m._source.last.avatar"  alt="User Avatar" class="resize">
                      </div>
                      </span>
                      <div class="chat-body clearfix">
                         <div class="header_sec">
-                           <strong class="primary-font">{{m.tofullname}}</strong> 
+                           <strong class="primary-font">{{m._source.last.userfullname}}</strong> 
                        	<span i18n-class class="badge pull-right">{{m._source.unread}}</span>
                         </div>
                         <div class="contact_sec">
-                           <h6 >{{m._source.last.lastfrom}}</h6>
+                           <h5>{{m._source.last.lastfrom}}</h5>
                            <p>{{m._source.last.text}}</p>
                            <strong i18n-class class="pull-right"><span class="fa fa-clock-o "></span>
                            {{m._source.last.date}}</strong>

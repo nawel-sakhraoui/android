@@ -1,86 +1,106 @@
-<StackLayout>
-  <Label text="createstore works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
 
-<!--
-Original Web template:
+  <ScrollView (tap)='hide()'>
+    <GridLayout  margin='5,10, 5,10' rows="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,* " >
+    <Label class="new" row ="0" text="Nouveau Magasin" ></Label>
 
-<div class="scroll2">
+     <Label row="1" text='Titre' class="label"></Label>
+     <GridLayout row ="2" rows="auto, auto, auto , auto,auto">
+      <TextField   returnKeyType="done"  maxLength="50" row="0" hint="" class='input'  [(ngModel)]="model.title"  [isEnabled]="!loading" ></TextField>
+	 <Label editable="false" row="1" text ="Le titre du magasin est obligatoire" *ngIf="send && model.title.length==0" class="alert"></Label>            
+	 <Label   editable="false" row="2" text ="Le titre doit contenir au moins 5 caractères" *ngIf='send && model.title.length< 5' class="alert"></Label>            
+   	 <Label  editable="false" row="3" text ="Ce titre est trop long" *ngIf="send && model.title.length>50 " class="alert"></Label>            
+   	<Label   editable="false" row="4" text ="Ce titre existe déjà choisissez un autre" *ngIf="send && exist" class="alert"></Label>            
+	</GridLayout>
 
-<div i18n-class  class="text-left container col-md-6 col-md-offset-3 card">
-    <h3 i18n='@@nouveaumag'>Nouveau Magasin</h3>
-    <form style='margin-top:50px ; ' name="form" (ngSubmit)='f.form.valid  &&  newstore()' #f="ngForm" novalidate>
+      <Label row="3"  text='Catégories' class="label" ></Label>
+        <GridLayout  margin="0,0,10,0"  row='4' rows="auto,auto ">
+        <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
+        <DropDown  #dd
+                  itemsTextAlignment="left"
+              	 [items]="Categories"
+                  [(ngModel)]="selectedIndex1"
+                  (selectedIndexChanged)="onchange($event)"  
+                  colSpan="0"
+                  itemsPadding="5"
+                  row="0">
+        </DropDown>
+        <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
         
-       <div class="form-group text-info " >
-            <label i18n='@@magtitle' for="title"> Titre </label>
-            <input type="text" class="form-control" name="title" [(ngModel)]="model.title" #title="ngModel"
-             required  minlength=5  maxlength=30 (input)='existStore() '  />
-            <div i18n='@@alertrequired' *ngIf="f.submitted && title.hasError('required')" class=" alert alert-danger help-block">Le titre du magasin est obligatoire</div>
-            <div i18n='@@alertlength' *ngIf=" title.hasError('minlength')" class="help-block alert alert-danger ">Le titre doit contenir au moins 5 caractères</div>
-       	    <div i18n='@@alertlength2' *ngIf="  title.hasError('maxlength')" class="help-block alert alert-danger ">Le titre est trop long</div>
-       	    <div i18n='@@alerttitlexist' *ngIf=" exist" class="help-block alert alert-danger ">Ce titre est déjà pris </div>
-       	    
-       	    <!-- div *ngIf="  title.hasError('pattern')" class="help-block alert alert-danger "> pattern issue </div>
-      	     ->
-      </div> 
-        
-        
-           
-      <div class="form-group text-info" style='margin-top:50px; ' >
-    	 <label i18n="@@catname" for="categories">Categories</label>
-  		
-         <ngx-select-dropdown   [config]="config" [options]="Categories" 
-            [(value)]="model.selectedCat" [multiple]="true" ></ngx-select-dropdown>     
-         <div i18n='@@alertcat2' *ngIf="f.submitted && model.selectedCat.length==0" class="help-block alert alert-danger">Choisissez au moins une catégorie</div>
-         
-       
-  
-  
-  	  </div>
-  	  
-         
-      <div class=" text-info form-group" style='margin-top:50px; '  >
-    	 <label i18n='@@geo' for="geo">Couverture géographique (par région ou willaya)</label>
-  		
-         <ngx-select-dropdown   [config]="config2" [options]="cities" 
-            [(value)]="model.geo" [multiple]="true" ></ngx-select-dropdown>     
-         <div i18n='@@alertcities' *ngIf="f.submitted && model.geo.length ==0 " class="help-block alert alert-danger">Choisissez au moins une région</div>
-         
-       
-  
-  
-  	  </div>
-   
-   
-                  
-        
-        
-      <div class="text-info form-group" style='margin-top:50px; '  >
-            <label i18n='@@desc' for="desc"> Déscription </label>
-            <textarea rows="5" class="form-control" name="desc" required [(ngModel)]="model.description" maxlength="300" #desc="ngModel"  ></textarea>
-            <div i18n='@@alertdesc' *ngIf="f.submitted && desc.hasError('required')" class="help-block alert alert-danger"> Ajoutez une description à votre magasin</div>
-       	    <div  i18n='@@descalert' *ngIf="f.submitted &&  desc.hasError('maxlength')" class="help-block alert alert-danger"> Description trop longue</div>
+    	</GridLayout>
+    	
+    	<GridLayout rows="auto,auto" row='5'>
+       <RadListView  row='0'  [items]="model.selectedCat " >
+  		  <ng-template let-c="item" let-i="index" >
+  		  <GridLayout columns ='auto,auto'>
+                    <Label col="0" text='{{c}}' color="#000" class="border"></Label>
+                    <Label col="1" text="&#xf057;"  (tap)='removeCat(i) ' class="fas border"></Label>   
+   		  </GridLayout>
+   		  </ng-template>
+      </RadListView>
+      	 <Label editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="send && model.selectedCat.length==0 " class="alert"></Label>            
+      
+	  </GridLayout>
 
-      	  
-      	    
-     </div>
-     	 
-     	
+        <Label row="6" text='Couverture Géographique' class="label" ></Label>
+      
+          <GridLayout margin="0,0,10,0" row='7' rows="auto,auto ">
+        <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
         
-        <div class="form-group" style="float:right; ">
-              <button i18n='@@envoyer' [disabled]="loading  " class="btn btn-info" >Envoyer</button>
-              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-			       
-			           
-              <a i18n='@@annuler' [routerLink]="['/myhome']" class="btn btn-link">Annuler</a>
-         
-        </div>
-           
-    </form>
+        <DropDown  #dd
+                  [items]="cities"
+                  [(ngModel)]="selectedIndex2"
+                  (selectedIndexChanged)="onchange1($event)"
+                  colSpan="0"
+					itemsPadding="5"
+                  row='0'>
+        </DropDown>
+		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+			
+		</GridLayout>
+		<GridLayout rows="auto,auto" row='8'>
+		
+        <RadListView row='0' [items]="geo">
+            <ng-template let-c="item" let-i="index" let-odd="odd" let-even="even">
+              <GridLayout columns ='auto,auto'>
+                    <Label col="0" text='{{c}}' color="#000" class="border "></Label>
+                    <Label col="1" text="&#xf057;"  (tap)="removeGeo(i)" class="border fas" ></Label>   
+   		  		</GridLayout>
+            </ng-template>
+        </RadListView>
+        <Label  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="send && geo.length ==0 " class="alert"></Label>          
+       </GridLayout>
+ 	 
+ 	  <Label row='9' text="Description" class="label"></Label>
+ 	  <GridLayout row='10'  rows="auto,auto,auto">
+      <TextView  [isEnabled]="!loading"  row='0' hint="" class="input" [(ngModel)]="model.description"    returnKeyType="done" 
+        returnPress="newstore()"
   
-  
-</div>
-</div>
--->
+        maxLength="300"></TextView>
+      <TextView  editable="false" row="1" text ="Ajoutez une description à votre magasin" *ngIf="send && model.description.length ==0 " class="alert"></TextView>            
+       <TextView  editable="false" row="2" text ="Description trop longue" *ngIf="send && model.description.length >300 " class="alert"></TextView>            
+      
+      </GridLayout>
+    
+      <GridLayout row='11' columns ='*,auto,auto, auto'>
+      
+         <Button [isEnabled]="!loading"  col="1" class="send " text="Envoyer" (tap)=" newstore()"></Button>
+         <ActivityIndicator *ngIf="loading"  col="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+      
+         <Label (touch)='ontouch($event)' [isEnabled]="!loading"  class="undo  " col="3"  text="Annuler"  [nsRouterLink]="['/myhome']"  ></Label>
+      </GridLayout>
+      
+    </GridLayout>
+
+
+
+    <!-- Button col="1" [text]="isLoggingIn ? 'Log In' : 'Sign Up'" (tap)="submit()"></Button>
+    <Label *ngIf="isLoggingIn" text="Forgot your password?"></Label-->
+ 
+
+  <!-- Label (tap)="toggleForm()">
+    <FormattedString>
+      <Span [text]="isLoggingIn ? 'Don’t have an account? ' : 'Back to Login'"></Span>
+      <Span [text]="isLoggi<ngIn ? 'Sign up' : ''" class="bold"></Span>
+    </FormattedString>
+  </Label-->
+</ScrollView>

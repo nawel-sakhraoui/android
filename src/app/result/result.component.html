@@ -25,7 +25,7 @@
 
 
 </nav>
-<ng-sidebar-container  showBackdrop="true" sidebarClass ="container"  style="   z-index:2;  background-color: #F5F5F7; height: 87.5vh;  ">
+<ng-sidebar-container  showBackdrop="true" sidebarClass ="container"  style="   z-index:2;  background-color: #F5F5F7; height: 82vh;  ">
   
       <!-- A sidebar -->  
 <ng-sidebar   i18n-position position ='left'  #sidebar  [opened]="opened"  [mode]="'over'" autoCollapseWidth="600" (onCloseStart)='onclose($event)' (onOpenStart)='onopen($event)'>
@@ -69,10 +69,10 @@
    		         
   
   
-    <div   style ='position:relative ;'  class="btn col-sm-6 col-6 col-md-4 col-xl-3 " *ngFor="let a  of  articles  |paginate: { id: 'server', itemsPerPage: articlesize, currentPage: articlepage, totalItems: countarticle }" >
+    <div   style ='position:relative ;'  class="btn col-sm-6 col-6 col-md-3" *ngFor="let a  of  articles  |paginate: { id: 'server', itemsPerPage: articlesize, currentPage: articlepage, totalItems: countarticle }" >
   
       <div  class="card bg-light   "       (mouseenter) ="mouseEnter(a._id) "  (mouseleave) ="mouseLeave(a._id)"  >
-           <img alt="" (click)="gotoArticle(a._id, a._source.storetitle )"  src="{{mainpics[a._id]}}" class="card-img-top resize" style ='width:100%; '  >
+           <img (click)="gotoArticle(a._id, a._source.storetitle )"  [src]="mainpics[a._id]" class="card-img-top resize" style ='width:100%; '  >
           
           <div class ="card-block ">
            
@@ -85,11 +85,10 @@
              <div i18n='@@vote' (click)="gotoArticle(a._id, a._source.storetitle )"  class="card-text  "> <star-rating [starType]="'svg'" [rating]="a._source.ratingsum/a._source.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> <span style ="font-size:small; color :#C0C0C0">( {{a._source.ratingcount}} évaluations)</span></div>
        	 	  <div><button class="btn btn-link " style='font-size:small; color:#C0C0C0 '(click)= 'gotoStore(a._source.storetitle)'> {{a._source.storetitle}}</button>
        	 	 </div>
-		 
-       	 	  <button *ngIf='me!="annonym"' i18n='@@cart' class=" btn   btn-warning text-light" (click)="addToCart(a)"> <span class="fa fa-shopping-cart"></span >Panier<span *ngIf=" a.loadingcart==1" class= "fa fa-refresh fa-spin "></span>  <span *ngIf=" a.loadingcart==2" class= "fa fa-check"></span>	<span *ngIf=" a.loadingcart==3" class="fa fa-ban"></span>
+       	 	  <button i18n='@@cart' class=" btn   btn-warning" (click)="addToCart(a)"> <span class="fa fa-shopping-cart"></span >Panier<span *ngIf=" a.loadingcart==1" class= "fa fa-refresh fa-spin "></span>  <span *ngIf=" a.loadingcart==2" class= "fa fa-check"></span>	<span *ngIf=" a.loadingcart==3" class="fa fa-ban"></span>
        	 	   </button> 
-       
-       	  </div>	 			
+       	 			 		
+       	 </div>	 			
        	 		
    		</div>
      
@@ -121,7 +120,7 @@
   		
                <div class='card  bg-light btn'(click)='gotoStore(s._id)'   >
                
-  		     	  <img alt="" class="card-img-top img " src="{{s.banner}}"   style ='width:100%;' >
+  		     	  <img class="card-img-top img " [src]="s.banner" alt="img"  style ='width:100%;' >
  			 	
  			 	 <div i18n-align align=left data-toggle="tooltip" data-placement="bottom" title="{{s._source.description}}" >
   	 		   

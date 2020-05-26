@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import {StoreService } from '../_services/index'; 
 import { Router, ActivatedRoute, ParamMap, NavigationEnd   } from '@angular/router';
 import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
- 
+ import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+
 @Component({
   selector: 'month-income',
-  templateUrl: './month-income.component.html',
-  styleUrls: ['./month-income.component.css']
+  templateUrl: 'month-income.component.html',
+  styleUrls: ['month-income.component.css']
 })
 export class MonthIncomeComponent implements OnInit {
 
@@ -14,8 +16,9 @@ export class MonthIncomeComponent implements OnInit {
   display1= false ; 
   storetitle:string ; 
   open:boolean ; 
-  store : any ={}; 
-      me = JSON.parse(localStorage.getItem('currentUser')).userid ;
+  store : any ; 
+    reload = false ; 
+  me = JSON.parse(localStorage.getItem('currentUser')).userid ;
 
     income:any= [] ; 
     createdyear :any ; 
@@ -24,8 +27,7 @@ export class MonthIncomeComponent implements OnInit {
     currentmonth:any ; 
     data :any =[];
     loanproof : any ;  
-     opened:boolean = false ; 
-    menuhide:boolean= true ; 
+     
     constructor(private storeService:StoreService, 
               private router : Router, 
               private route: ActivatedRoute ,
@@ -33,7 +35,12 @@ export class MonthIncomeComponent implements OnInit {
               private rolesService  :NgxRolesService) { }
 
      ngOnInit(){
-           this.loading0 = true ; 
+         this.init() ; 
+         
+     }
+    
+    init(){
+          this.loading0 = true ; 
            this.route.params.subscribe(params => {
             
               this.storetitle = params['store']; // (+) converts string 'id' to a number
@@ -43,6 +50,7 @@ export class MonthIncomeComponent implements OnInit {
             this.storeService.getStoreStatus( this.storetitle  )
             .subscribe(
                 data0 =>{
+                    this.reload = false  ;
                      console.log(data0 ) ; 
                      this.open = data0['open']; 
                      this.permissionsService.addPermission('readStore', () => {
@@ -119,26 +127,42 @@ export class MonthIncomeComponent implements OnInit {
                                  
              }    ) ;                  
                   
+                },error=> { 
+                
+                   this.loading0 = false ; 
+                    this.reload = true ; 
+                    
+                    }
+                );
                 });
-                });
-                }
-    
+        
+        }
     
     sendLoan() {
         
         
     }
     
-        _toggleSidebar(){
-    this.opened = !this.opened;
-  }
-  onclose(e){
-        
-      this.menuhide=false ;   
-     }    
-  onopen(e){
-        this.menuhide= true ;
-        }
     
-    
+      ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
     }
+    }
+    
+    
+    reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }  
+     }

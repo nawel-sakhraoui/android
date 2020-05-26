@@ -1,1 +1,0 @@
-﻿export * from './month-income.component';

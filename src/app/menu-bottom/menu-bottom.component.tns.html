@@ -1,6 +1,6 @@
 
 
-	<GridLayout   rows="43" columns="*,*,*,auto,*,*" row="1"  class="footer bottom">
+	<GridLayout   rows="43" columns="*,*,*,*,*,*" row="1"  class="footer bottom">
 
 			
         <Button id="profile" row="0" col="0" text="&#xf007;" nsRouterLinkActive="icon-footer-active" 
@@ -16,7 +16,7 @@
           [nsRouterLink]="['/home',myhome,'ongoing']" class="fass icon-footer Btn "></Button>
 		
 		
-        <Button *ngIf="ownerstore" id="stores" row="0" col="3" text="&#xf54f;" nsRouterLinkActive="icon-footer-active" 
+        <Button id="stores" row="0" col="3" text="&#xf54f;" nsRouterLinkActive="icon-footer-active" 
            [nsRouterLink]="['/home',myhome,'storesmenu']" class="fass icon-footer Btn "></Button>
 
 

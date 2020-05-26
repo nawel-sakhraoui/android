@@ -1,41 +1,16 @@
 
 <ngx-loading  [show]="loading0" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
 
- 
- <div *ngIf='!loading0 &&  !open'>
-
-<div i18n="@@noopen" class="alert alert-warning  strong ">Ce magasin est fermé</div>
-</div>
-
-
+   <div  class='container '> 
+   <br><br>
+  
    
-   <nav   class="navbar navbar-default  navnav sticky-top"  >
-
-   
-    <div class="form-inline">
-     
-      <div class='navbar-brand'>
-
-		<a   class="navbar-brand " routerLinkActive="active"  [routerLink]="['../store']" >
-           {{storetitle}}  </a>
-
-	</div>  
-     <star-rating size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: x-small ;" i18n='@@votess2'>( {{store.ratingcount}} votes)</span>
-	 </div> 
-
-
-     </nav>
-
-<div   class ="container" >
-
-<br/>
-<br/>
-  <table  *ngIf='data.length!=0' class="table table-sm  table-striped table-responsive-sm">
+  <table *ngIf='data.length!=0' class="table table-sm  table-striped table-responsive-sm">
    <thead>
      <tr class="table-active" >
-       <th i18n="@@dates"  >Date </th>
-       <th i18n="@@ventess" >Ventes</th>
-       <th i18n="@@recettess"  >Recettes</th>
+       <th>Date </th>
+       <th>Ventes</th>
+       <th>Recettes</th>
 	   <th>3% </th>
 		
      </tr>
@@ -46,9 +21,10 @@
     <tr  *ngFor='let d of data' >
   		<th>{{d.month+1}}/{{d.year}}  </th>
   		<td>{{d.total}}</td>
-  		<td i18n="@@pricess"> {{d.price }} DA</td>
-  		<td i18n="@@pricess2" >{{(d.price*0.03).toFixed(2)}} DA <i class="fa fa-check text-danger strong "></i> </td>
-
+  		<td> {{d.price }} DA</td>
+  		<td>{{(d.price*0.03).toFixed(2)}} DA <i class="fa fa-check text-danger strong "></i> </td>
+		<td >  envoyer votre reçu  </td>
+		<td></td>
     </tr>
   
 
@@ -57,9 +33,9 @@
 </table>
    
    
-      <div   i18n="@@pasventecompelete"   *ngIf='!loading0 && data.length==0' class="alert alert-warning " > 
+      <div *ngIf='!loading0 && data.length==0' class="alert alert-warning " > 
   	  
-  	   Pas de vente complétée.
+  	   Aucune vente n'a été établie 
   	  </div>
    
    </div>

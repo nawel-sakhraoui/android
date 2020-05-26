@@ -25,15 +25,15 @@ export class FirebaseService {
     }
 
     //sendMsgNotification()
-    messageNotif( token:string, fullname:string, userid:string, pic  ) {
+    messageNotif( token:string, fullname:string, userid:string ) {
        
       return  this.http.post("https://fcm.googleapis.com/fcm/send" , 
                  {
                     "notification": {
                          "title": fullname,
                          "text":  "Vous à envoyé un nouveau message.",
-                         "icon": pic ,//'assets/siin.png',
-                         "sound": "default",
+                         
+                         "sound": "default"
                      },
                      "data": {
                          "notif":"message",
@@ -62,7 +62,7 @@ export class FirebaseService {
                      'data': {
                          'notif':"ongoing",
                          "commandid":commandid,
-                         'fragment': 'message',
+                         'fragment': 'message'
                       },
                        "priority": "High",
                         "to": token
@@ -187,7 +187,7 @@ export class FirebaseService {
                  {
                     "notification": {
                          "title": storename,
-                         "text":   fullname+" retour de la commande",
+                         "text":   fullname+" à ouvert un litige",
                          "sound": "default"
                      },
                      'data': {

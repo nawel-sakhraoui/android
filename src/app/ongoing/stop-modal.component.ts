@@ -2,36 +2,26 @@ import {Component, Input, OnInit,Output,EventEmitter  } from '@angular/core';
 import {RatingModalService, StoreService, OngoingService, UserdetailsService } from '../_services/index';
 import { Subscription }   from 'rxjs';
 import { Router, ActivatedRoute  } from '@angular/router';
+import { ModalDialogParams } from "nativescript-angular/directives/dialogs";
 
 
 @Component({
   selector: 'app-stop-modal',
   template: `
-  <div *ngIf="visible" (click)="onContainerClicked($event)" i18n-class class=" text-left modal fade" tabindex="-1" [ngClass]="{'in': visibleAnimate}"
-       [ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
-    <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-body" i18n="@@confirmationannuler">
-
-                  <p> êtes vous sure de vouloir annuler votre commande ? </p>
-
-        </div>
- 
-     
-    <div class="modal-footer">
-    
-      <a i18n="@@oui" class="btn btn-danger" (click) ="sendStop() "> Oui  <span *ngIf="waiting" class= "fa fa-refresh fa fa-refresh-animate"></span></a>
-      <a  i18n="@@non"class="btn btn-link " (click)="hide()" >Non</a>
-    </div>
-      </div>
-    </div>
-  </div>` 
+<GridLayout rows="*,auto"> 
+<TextView editable='false' font-size='12' row="0" col="0" text='êtes vous sure de vouloir Annuler cette  transaction ? {{model.id}} ' ></TextView>
+<GridLayout  row="1" columns='*,* '>
+<Button  col='0' text="Oui"  color="#ffffff"  backgroundColor='#d9534f'  (tap)="sendStop()" ></Button> 
+<Button  col='1' text='Non'    backgroundColor='transparent'  (tap)="hide()" ></Button>
+</GridLayout>
+</GridLayout>
+    ` 
   ,
   styles: [`
     
 
     .modal {
-      background: rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.6);
         
     }
     .modal-body {
@@ -51,7 +41,7 @@ import { Router, ActivatedRoute  } from '@angular/router';
   
 })
     
-export class StopModalComponent {
+export class StopModalComponent  {
   
   subscription: Subscription;
      
@@ -62,29 +52,21 @@ export class StopModalComponent {
 
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
- @Output() stop: EventEmitter<any> = new EventEmitter();
+ //@Output() stop: EventEmitter<any> = new EventEmitter();
  
 
   constructor( 
               private ratingModalService : RatingModalService, 
               private ongoingService: OngoingService, 
-                private route : ActivatedRoute, 
-              private router : Router) {}
+              private route : ActivatedRoute, 
+              private router : Router, 
+              private params: ModalDialogParams) {
     
+      
+  
+}
+  
     
-  
-   public show(): void {
-                
-   this.subscription = this.ratingModalService.stop$.subscribe(
-      data  => {
-            this.model = data ; 
-          console.log(data) ; 
-            this.visible = true;
-         setTimeout(() => this.visibleAnimate = true, 5);
-    });
-  
-  }
-
 
   
   
@@ -92,26 +74,30 @@ export class StopModalComponent {
 
   public hide(): void {
      
-            this.visible = false;
-            this.visibleAnimate = false;
-            setTimeout(() => this.visible = false, 10);
+    //        this.visible = false;
+            //this.visibleAnimate = false;
+      
+            this.params.closeCallback();
+            //setTimeout(() => this.visible = false, 10);
   }
 
-  public onContainerClicked(event: MouseEvent): void {
-    if ((<HTMLElement>event.target).classList.contains('modal')) {
-      this.hide();
-    }
-  }
+
 
     sendStop(){
+        
+        
         this.waiting = true ; 
+          console.log(this.model ) ; 
            let time = new Date().getTime() ;
-                this.model.time = time ; 
- 
-         this.stop.emit(this.model) ; 
+           this.model['time'] = time ; 
+        
+            console.log(this.model) ; 
+      //   this.stop.emit(this.model) ; 
        
     
-        this.waiting = false ; 
-         this.hide()  ;  
+       // this.waiting = false ; 
+        // this.hide()  ;
+        this.params.closeCallback(this.model);
+
        }
 }

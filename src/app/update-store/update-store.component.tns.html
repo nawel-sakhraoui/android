@@ -1,246 +1,230 @@
-<StackLayout>
-  <Label text="update-store works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
+
+<ScrollView>
+<GridLayout rows="auto,auto,*">
+<StackLayout row="0"  >
+  	
+    <GridLayout  columns="auto,auto" >
+         <Label (touch)="ontouch($event)"  text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
+  		 <Label (touch)="ontouch($event)"  textWrap='true' col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+    
+    </GridLayout>
+
+    <StackLayout  colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 </StackLayout>
 
-<!--
-Original Web template:
+<StackLayout row="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf="loading" [busy]="loading" ></ActivityIndicator>
+</StackLayout>  
 
-  <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
 
-<div i18n-class class="text-left scroll2" *ngIf="show">
- 
-<nav class="navbar navbar-default  navnav sticky-top" >
-  
-    
-      
-    <span class="form-inline ">
-     
-	  
-	    
-		<a   class="navbar-brand  btn btn-link " routerLinkActive="active"  [routerLink]="['../store']" >
-           {{storetitle}}  </a>
-
-     <star-rating size ='small'  [starType]="'svg'" [rating]="model.ratingsum/model.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: xx-small ; " i18n="@@votess">( {{model.ratingcount}} votes)</span>
-
-    
-   </span> 
-  
-      	
-
-   
-</nav>
-
-
- 
-
-
-<!--
-<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false}"   ></div>
-->
-<div class="container list-group-item  ">
-    
-     <table class="table table-sm 	 table-striped "style='margin-top:50px;'>     
        
-       <tbody>
-         <tr>
-  	      <th scope="col">  <label for="status" i18n="@@categories"> Categories </label> </th>
-  	      
-  	      <th>  
-  	        <a class="btn fa fa-pencil"  *ngIf='!editCat' style='display:inline-block;' (click)='editingCat()'> </a>
-  	     	<a class="btn fa fa-check"  *ngIf='editCat' style='display:inline-block ;margin-right:5px; ' (click)='saveCat()'></a>
-			 <a class="btn fa fa-remove" *ngIf='editCat' style='display:inline-block; ' (click)='removeCat()'></a>
-								    
-                 
-  	      </th>
-         </tr>
-        
-     			
-  		<tr>
-  		<td></td>
-  		 <td>
-	
-	
-		  <div *ngIf='!editCat' class="card">
-		   			<ul  class="list-group" >
-      		 			 <li  *ngFor = 'let d of model.selectedCat; let  i=index '  class="list-group-item " style="width:100%; "> 
-		          			<span   style =' display: inline-block;' > {{d}}</span>
-		          			<!-- span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeCategory(d)" class='btn-info'> X</button>  </span->
-	 					 </li>
-     		 		</ul>
-          	</div>
-			
-		
-			 <ngx-select-dropdown   *ngIf='editCat'  [config]="config" [options]="Categories" 
-            [(value)]="model.selectedCat" [multiple]="true" ></ngx-select-dropdown>     
-     		 <div *ngIf=" model.selectedCat.length==0" class="help-block alert alert-danger" i18n="@@categoriesalert">Choisissez au moins une catégorie</div>
-     		
-			
-         
-  			</td></tr>
-  			
-  	
-  		<tr>
-  	      <th scope="col">  <label for="status" i18n="@@geo"> Couverture Géographique </label> </th>
-  	      
-  	      <th>  
-  	        <a class="btn fa fa-pencil"  *ngIf='!editGeo' style='display:inline-block;' (click)='editingGeo()'> </a>
-  	     	<a class="btn fa fa-check"  *ngIf='editGeo' style='display:inline-block ;margin-right:5px; ' (click)='saveGeo()'></a>
-			 <a class="btn fa fa-remove" *ngIf='editGeo' style='display:inline-block; ' (click)='removeGeo()'></a>
-								    
-                 
-  	      </th>
-         </tr>
-        
-     			
-  		<tr>
-  		<td></td>
-  		 <td>
-	
-	
-		  <div *ngIf='!editGeo' class="card">
-		   			<ul  class="list-group" >
-      		 			 <li  *ngFor = 'let d of model.geo; let  i=index '  class="list-group-item " style="width:100%; "> 
-		          			<span   style =' display: inline-block;' > {{d.name}}</span>
-		          			<!-- span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeCategory(d)" class='btn-info'> X</button>  </span->
-	 					 </li>
-     		 		</ul>
-          	</div>
-			
-		
-			 <ngx-select-dropdown   *ngIf='editGeo'  [config]="config2" [options]="cities" 
-            [(value)]="model.geo" [multiple]="true" ></ngx-select-dropdown>     
-     		 <div *ngIf=" model.geo.length==0" class="help-block alert alert-danger" i18n="alertgeo">Choisissez au moins une région</div>
-     		
-			
-         
-  			</td></tr>	
-  			
-  			
-  			
-  		<tr>
-  	      <th scope="col"> <label for="status" i18n="@@admins">Administrateurs </label> </th>
-  	      
-  	     <th>  
-  	     	<a class="btn fa fa-pencil"  *ngIf='!editAdmin' style='display:inline-block;' (click)='editingAdmin()'> </a>
-  	     	<a class="btn fa fa-check"  *ngIf='editAdmin' style='display:inline-block ;margin-right:5px; ' (click)='saveAdmin()'></a>
-			<a class="btn fa fa-remove" *ngIf='editAdmin' style='display:inline-block; ' (click)='removeAdmin()'></a>
-			
-  	     </th>
-  	     </tr>
-  	     <tr>
-  		 <td></td>
-  		 <td>
-  		      		
-		  <div *ngIf='!editAdmin' class="card">
-		   			<ul  class="list-group" >
-      		 			 <li  *ngFor = 'let d of model.administrators; let  i=index '  class="list-group-item " style="width:100%; height:100%;"> 
-						 <span   style =' display: inline-block;' > {{d.fullname}} {{d.phone}}</span>
-							
-				          			<!-- span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeCategory(d)" class='btn-info'> X</button>  </span->
-	 					 </li>
-     		 		</ul>
-          	</div>
-	<div *ngIf="editAdmin">
-    <div class="search-container">
-    <form >
-		<div class="input-group">
-        <input  type="text"
-                id="adminquery"
-                name='adminquery'
-                class="form-control" 
-                i18n-placeholder placeholder="rechercher par téléphone..." 
-                aria-describedby="sizing-addon2"
-                [(ngModel)]="adminquery"
-        />
-        <span class="input-group-btn">
-        <button 
-                type="submit" 
-                class="btn btn-default search-button" 
-                (click)="getAdminQuery($event)">
-                <i class="btn fa fa-search"></i></button>
-        </span>
-		</div>
-    </form>
-   </div>
-   	<ul  class="list-group" >
-   	<li  *ngFor = 'let d of search; let  i=index '  class="list-group-item " style="width:100%; height:100%;">
-   	{{d._source.fullname}} <span  style='float:right;display: inline-block; ' ><button  type="button" (click)="addAdmin(d)" class='btn-info btn fa fa-plus' i18n="@@ajouter"> Ajouter</button>  </span>
-   	
-   	</li>
-   	</ul>
-   	<ul class="list-group" i18n="@@admins">Administrateurs
-      		 			 <li  *ngFor = 'let d of model.administrators; let  i=index '  class="list-group-item " style="width:100%; height:100%;"> 
-		          			<span   style =' display: inline-block;' > {{d.fullname}} {{d.phone}}</span>
-		          			<span  style='float:right;display: inline-block; ' ><button  type="button" (click)="removeAd(d)" class='btn-info btn fa fa-close'> </button>  </span>
-	 					 </li>
-     </ul>
-   </div>
-  			
-  		 </td>
-  		 </tr>
-  			
-  			
-  		  <tr>
-  	      <th scope="col">     <label for="description" i18n="@@description">Description </label> </th>
-  	      
-  	     <th> 
-  	     	<a class="btn fa fa-pencil"  *ngIf='!editDesc' style='display:inline-block;' (click)='editingDesc()'> </a>
-            <a class="btn fa fa-check"  *ngIf table-striped='editDesc' style='display:inline-block ;margin-right:5px; ' (click)='saveDesc()'></a>
-		    <a class="btn fa fa-remove" *ngIf='editDesc' style='display:inline-block; ' (click)='removeDesc()'></a>
-		 	
-  	     
-  	     </th>
-  	     </tr>	
-  	     
-  	      <tr>
-  		 <td></td>
-  		 <td>
-  		     <textarea  *ngIf='!editDesc' rows="5" class="form-control" name="title" [(ngModel)]="model.description" #description="ngModel" readonly ></textarea>
+<GridLayout [visibility]="!reload && !loading ?'visible':'collapse'"   row="2" rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,*' columns='120,*'>
 
-      	    <textarea  *ngIf='editDesc' rows="5" class="form-control" name="title" [(ngModel)]="model.description" #description="ngModel"  ></textarea>
-		    
-  		 </td>
-  		 </tr>
-  		 
-  		 
-  		 	
-  		  <tr>
-  	      <th scope="col">     <label for="status" i18n="@@etat">Etat</label> </th>
-  	      
-  	     <th>
-  	     	 <a class="btn fa fa-pencil"  *ngIf='!editStatus' style='display:inline-block;' (click)='editingStatus()'> </a>
-         	 <a class="btn fa fa-check"  *ngIf='editStatus' style='display:inline-block ;margin-right:5px; ' (click)='saveStatus()'></a>
-			 <a class="btn fa fa-remove"  *ngIf='editStatus' style='display:inline-block; ' (click)='removeStatus()'></a>
-		  
-  	     </th> 
-  	     </tr>
-  	     
-  	      <tr>
-  		 <td></td>
-  		 <td>
-  		      <div *ngIf='!editStatus' ><span *ngIf= "model.open"i18n="@@ouvert">Ouvert</span> 
-            						  <span *ngIf= "!model.open" i18n="@@ferme">Fermé</span>
-            						  </div>
-         
-		    <label *ngIf='editStatus' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="model.open" [value]="true" i18n="@@ouvert" checked>Ouvert</label>
-			<label *ngIf='editStatus' class="radio-inline"><input type="radio" name="optradio"  [(ngModel)]="model.open" [value]="false"  i18n="@@ferme" >Fermé</label>
+<Label class='head' textWrap='true' col="0" row="0" text="Catégories"></Label>
+<StackLayout class='head' col="1" row="0" orientation ="horizontal">
+<Label (touch)="ontouch3($event)" textWrap='true'  fontSize='20' [visibility]="!editCat ?'visible':'collapse'"   (tap)='editingCat()' text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   textWrap='true' fontSize='20'  margin="0,40,0,0" [visibility]="editCat  ?'visible':'collapse'"    (tap)='saveCat()'  text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    textWrap='true' fontSize='20'  [visibility]="editCat  ?'visible':'collapse'"     (tap)='removeCat()' text='&#xf00d;' class="fas"></Label>
+</StackLayout>
 
-		    
-  		 </td>
-  		 </tr>
-   
-   			
-   </tbody>
-     </table>
-       <a  i18n-class class='btn btn-link fa fa-chevron-left' [routerLink]="['../store']" i18n="@@back">Retour </a>
+<GridLayout [visibility]="!editCat ?'visible':'collapse'"  col="1" row="1" >
+<RadListView    [items]="model.selectedCat" >
+			<ng-template  let-c="item" >
+			<Label  textWrap='true' class="border" text='{{c}}'></Label>
+			</ng-template>
+</RadListView>
+
+</GridLayout>
+<GridLayout [isEnabled]="!loadingcat"  rows="*,*" [visibility]="editCat ?'visible':'collapse'"  col="1" row="1" >
+   <GridLayout   row='0' rows="auto,auto ">
+        <!--Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
+        <DropDown  #dd
+                  itemsTextAlignment="left"
+                  itemsPadding="5"  
+              	 [items]="Categories"
+                  [(ngModel)]="selectedIndex1"
+                  (selectedIndexChanged)="onchange($event)"  
+                  colSpan="2"
+                  row="0"
+                  fontSize="14"
+                  >
+                  
+        </DropDown>
+        <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+        
+    	</GridLayout>
+    	
+    	<GridLayout rows="auto,auto" row='1'>
+       <RadListView  row='0'  [items]="model.selectedCat " >
+  		  <ng-template let-c="item" let-i="index" >
+  		  <GridLayout columns ='auto,auto'>
+                    <Label class="border" col="0" text='{{c}}' color="#000"></Label>
+                    <Label col="1" text="&#xf057;" class="fas " (tap)='removeC(i) '></Label>   
+   		  </GridLayout>
+   		  </ng-template>
+      </RadListView>
+      	 <TextView  editable="false" row="1" text ="Choisissez au moins une catégorie" *ngIf="model.selectedCat.length==0" class="alert"></TextView>            
+      
+	  </GridLayout>
+
+</GridLayout>
+<StackLayout row="1" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingcat" ></ActivityIndicator>
+</StackLayout>  
+
+<Label   textWrap='true'  class="head" col="0" row="2" text="Couverture Géo"></Label>
+<StackLayout class="head" orientation ="horizontal" col="1" row="2">
+<Label (touch)="ontouch3($event)"   fontSize='20' [visibility]="!editGeo?'visible':'collapse'"  (tap)="editingGeo()"  text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   fontSize='20'   margin="0,40,0,0" [visibility]="editGeo  ?'visible':'collapse'"  (tap)="saveGeo()"  text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   fontSize='20'  [visibility]="editGeo ?'visible':'collapse'"   (tap)="removeGeo()" text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+<GridLayout [visibility]="!editGeo ?'visible':'collapse'"  col="1" row="3" >
+	<RadListView [items]="model.geo"  >
+			<ng-template  let-g="item">
+			<Label class="border" text='{{g.name}}'></Label>
+			</ng-template>
+	</RadListView>
+</GridLayout>
+<GridLayout [isEnabled]="!loadinggeo"  rows="*,*" [visibility]="editGeo ?'visible':'collapse'"  col="1" row="3" >
      
-    
-</div >
+          <GridLayout  row='0' rows="auto,auto ">
+        <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
+        
+        <DropDown  #dd
+                  [items]="namecities"
+                  itemsTextAlignment="left"
+                  fontSize="14"
+                  [(ngModel)]="selectedIndex2"
+                  (selectedIndexChanged)="onchange1($event)"
+                  colSpan="2"
+                  row='0'
+                     itemsPadding="5" >
+        </DropDown>
+		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+			
+		</GridLayout>
+		<GridLayout rows="auto,auto" row='1'>
+		
+        <RadListView row='0' [items]="model.geo">
+            <ng-template let-c="item" let-i="index" >
+              <GridLayout columns ='auto,auto'>
+                    <Label  textWrap='true' class="border" col="0" text='{{c.name}}' color="#000"></Label>
+                    <Label col="1" text="&#xf057;" class="fas " (tap)="removeG(i)"></Label>   
+   		  		</GridLayout>
+            </ng-template>
+        </RadListView>
+        <TextView  editable="false"  row="1" text ="Choisissez au moins une région" *ngIf="model.geo.length==0" class="alert"></TextView>            
+       </GridLayout>
 
-                  </div>
+</GridLayout>
+<StackLayout row="3"  col="1">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadinggeo" ></ActivityIndicator>
+</StackLayout>   
+
+<Label  textWrap='true' class='head' col="0" row="4" text="Administrateurs"></Label>
+<StackLayout class="head" orientation ="horizontal" col="1" row="4">
+<Label (touch)="ontouch3($event)"    fontSize='20'   [visibility]="!editAdmin ?'visible':'collapse'" (tap)="editingAdmin()"   text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"   fontSize='20' margin="0,40,0,0" [visibility]="editAdmin  ?'visible':'collapse'"  (tap)="saveAdmin()"     text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20' [visibility]="editAdmin ?'visible':'collapse'"    (tap)="removeAdmin()"  text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+<GridLayout [visibility]="!editAdmin ?'visible':'collapse'"  col="1" row="5" >
+ <RadListView  row="7"  [items]="model.administrators" col="1" >
+			<ng-template  let-a="item">
+			 <GridLayout class=" border2 "  columns="auto,auto" >
+      			 <Label   textWrap='true'  col="0" text="{{a.fullname}}: "></Label>
+     		     <Label   textWrap='true' col="1" text="{{a.phone}}"></Label>
+     			 
+    		  </GridLayout>
+			
+			
+			</ng-template>
+	</RadListView>
+
+</GridLayout>
+<GridLayout [isEnabled]="!loadingadmin"  rows="auto,auto,auto" [visibility]="editAdmin ?'visible':'collapse'"  col="1" row="5" >
+	<GridLayout row="0" columns="auto,auto" >
+   		<textField  keyboardType="phone"  [(ngModel)]="adminquery" col='0' hint="Rechercher par téléphone" class='border2'     returnKeyType="next"   (returnPress)='getAdminQuery($event)'  ></textField>
+           <Button col="1" text="&#xf002;" class="fas searchbutton "  (tap)="getAdminQuery($event)"></Button>
+       
+     </GridLayout>
+     <Label row="1" text="Recherche introuvable" *ngIf='searchNothing'></Label>
+      <RadListView class=" border2 "  row="1"  [items]="search" >
+			<ng-template  let-d="item" let-i="index">
+			 <GridLayout class="border2" columns="auto,auto">
+      			 <Label   textWrap='true'  col='0' text="{{d._source.fullname}} "></Label>
+      			 <Label col="1" text="&#xf067;" class="fas"(tap)="addAdmin(d)" ></Label> 
+     		 </GridLayout>
+			</ng-template>
+	 </RadListView>
+ 	   <RadListView class=" border2 "  row="2"  [items]="model.administrators" >
+			<ng-template  let-d="item" let-i="index">
+			 <GridLayout columns="auto,auto">
+      			 <Label   textWrap='true'  col='0' text="{{d.fullname}} "></Label>
+      			 <Label   textWrap='true' col="1" text='&#xf00d;' class="fas"  (tap)="removeAd(d)" ></Label> 
+     		 </GridLayout>
+			</ng-template>
+	 </RadListView>
  	
-     	
-     
--->
+</GridLayout>
+<StackLayout row="5" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingadmin" ></ActivityIndicator>
+</StackLayout>  
+
+<Label   textWrap='true'  class="head" col="0" row="6" text="Description"></Label>
+<StackLayout  class="head" orientation ="horizontal"  col="1" row="6">
+<Label (touch)="ontouch3($event)"    fontSize='20'  [visibility]="!editDesc ?'visible':'collapse'"   (tap)="editingDesc()" text='&#xf14b;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20'  margin="0,40,0,0" [visibility]="editDesc  ?'visible':'collapse'"  (tap)='saveDesc()'  text='&#xf0c7;' class="fas"></Label>
+<Label (touch)="ontouch3($event)"    fontSize='20'  [visibility]="editDesc ?'visible':'collapse'"    text='&#xf00d;' (tap)='removeDesc()' class="fas"></Label>
+</StackLayout>
+<GridLayout [visibility]="!editDesc ?'visible':'collapse'"  col="1" row="7" >
+	<TextView class="border "  text="{{model.description}}" editable ="false"></TextView>
+
+</GridLayout>
+<GridLayout [isEnabled]="!loadingdesc" [visibility]="editDesc ?'visible':'collapse'"  col="1" row="7" >
+	<TextView class="border "  text="{{model.description}}" editable ="true"></TextView>
+
+
+</GridLayout>
+<StackLayout row="7" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingdesc" ></ActivityIndicator>
+</StackLayout>  
+
+<Label   textWrap='true' class="head" col="0" row="8" text="Etat"></Label>
+<StackLayout  class="head" orientation ="horizontal" col="1" row="8">
+<Label  (touch)="ontouch3($event)"   fontSize='20'  [visibility]="!editStatus ?'visible':'collapse'"  (tap)='editingStatus()'  text='&#xf14b;' class="fas"></Label>
+<Label  (touch)="ontouch3($event)"   fontSize='20'   margin="0,40,0,0" [visibility]="editStatus  ?'visible':'collapse'"  (tap)="saveStatus()"  text='&#xf0c7;' class="fas"></Label>
+<Label  (touch)="ontouch3($event)"   fontSize='20'   [visibility]="editStatus ?'visible':'collapse'"   (tap)="removeStatus()"text='&#xf00d;' class="fas"></Label>
+</StackLayout>
+<GridLayout margin='0,0,15,0' [visibility]="!editStatus ?'visible':'collapse'"  col="1" row="9" >
+  <Label class="border" *ngIf= "model.open" text='Ouvert'></Label> 
+  <Label class="border" *ngIf= "!model.open" text="Fermé"></Label>
+
+</GridLayout>
+<GridLayout   [isEnabled]='!loadingstatus' margin='0,0,15,0' rows ='auto,*,*'[visibility]="editStatus ?'visible':'collapse'"  col="1" row="9" > 
+   <Label row="0" class="alert" textWrap='true'  text ='Avant de fermer le magasin assurez vous de mettre tout vos articles en indisponibilité !'></Label>
+ 	
+ 	<stackLayout row="1" orientation="horizontal">
+ 	<Label (touch)="ontouch3($event)"   (tap)=" model.open= true "  class="select" text='Ouvert'></Label> 
+ 	<Label (touch)="ontouch3($event)"    (tap)=" model.open= true " fontSize="20" color="#00BFFF" *ngIf="!model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
+   	<Label (touch)="ontouch3($event)"    (tap)=" model.open= true " fontSize="20" color="#FFA500" *ngIf="model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
+   </stackLayout>
+   <stackLayout row="2" orientation="horizontal">
+ 	<Label (touch)="ontouch3($event)"   (tap)=" model.open= false "  class="select" text='Fermé'></Label> 
+ 	<Label (touch)="ontouch3($event)"    (tap)=" model.open= false " fontSize="20" color="#00BFFF" *ngIf="model.open" margin="0,0,0,10"   class="fas" col="1" text='&#xf0c8;' ></Label>
+   	<Label (touch)="ontouch3($event)"    (tap)=" model.open= false " fontSize="20" color="#FFA500" *ngIf="!model.open" margin="0,0,0,10"  class="fas" col="1" text='&#xf14a;' ></Label>
+   </stackLayout> 
+ </GridLayout>
+<StackLayout row="9" col="1" >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loadingstatus" ></ActivityIndicator>
+</StackLayout>  
+</GridLayout>
+
+</GridLayout>
+
+</ScrollView>

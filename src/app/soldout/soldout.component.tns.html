@@ -1,201 +1,171 @@
-<StackLayout>
-  <Label text="soldout works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
+
+<ScrollView>
+<GridLayout rows="auto,auto,auto,*"> 
+<StackLayout  row='0' >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+</StackLayout>  
+
+<Label row="1" *ngIf='!loading &&  nostore && !reload  ' class='alert 'text="Aucun magasin n'est disponible sur ce lien.">
+</Label>
+
+<StackLayout row='2' [visibility]="!loading && suspend && !reload    ?'visible':'collapse'" >
+
+<Image  [src]="banner"  class="pic"  stretch="aspectFill"></Image>
+
+<Label class='alert' >
+   Ce magasin est suspendu
+</Label>
+
+
 </StackLayout>
 
-<!--
-Original Web template:
 
-<ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<div *ngIf =' display1'  i18n-class class='text-left scroll2'>
-<div i18n="@@nostore"*ngIf='nostore' i18n-class class='alert alert-info text-left '>
-Aucun magasin n'est disponible sur ce lien.
-</div>
-
-<ng-template [ngxPermissionsOnly]="['ADMINStore', 'GUESTStore']">
-
-
-<div *ngIf='!nostore && !open'>
-
-<div i18n='@@storeclose' class="alert alert-warning  strong "> Ce magasin est fermé ! </div>
-</div>
-
-<div *ngIf='!nostore'>
-  
-<div class = "crop">
-
-<img [src]="banner"   class="img" />
-
-     
-
-<ng-template ngxPermissionsOnly="ADMINStore">
- <div align="right" class="selector">
-
-
-<label class ='img-selector btn btn-outline-info' *ngIf="isValid" for="file"><i class="fa fa-file-image-o" ></i> </label>
-
-<input type='file' id="file" name="file" (change)="readUrl($event)" style="display: none;" >
-
-
-<button  class ='img-selector btn btn-outline-info'   *ngIf="!isValid" (click)="this.covsave()"><i class='fa fa-save'></i></button>
-<button  class ='img-selector btn btn-outline-info' *ngIf="!isValid" (click)="this.covremove()"><i class='fa fa-close'></i></button>
-</div> 
-</ng-template>
-</div>
- 
-
- 
- 	
-   <nav   class="navbar navbar-default  navnav sticky-top"  >
-
-   
-    <span class="form-inline">
-     
-	   <span class ="navbar-brand  btn btn-link fa fa-bars" (click)= '_toggleSidebar();  menuhide =!menuhide ; '  > </span>
-	    
-		<a   class="navbar-brand " routerLinkActive="active"  [routerLink]="['../']" >
-           {{storetitle}}  </a>
-
-     <star-rating size ='small'  [starType]="'svg'" [rating]="store.ratingsum/store.ratingcount"   [readOnly]="true" [showHalfStars]="true"  ></star-rating><span style="font-size: x-small ;" i18n='@@votess2'>( {{store.ratingcount}} votes)</span>
-
-     <ng-template ngxPermissionsOnly="ADMINStore">
-	 		<span class ="nav-link">	 <app-stores-menu [storetitle]="storetitle"></app-stores-menu> </span>
-	</ng-template> 
-   </span> 
-  
-
-     </nav>
-
-    
-    
-<ng-sidebar-container  showBackdrop="false" sidebarClass ="container" style=" background-color: #F5F5F7 ; height: 92vh; z-index:2 ;  ">
- 
-      <!-- A sidebar ->
-<ng-sidebar  i18n-position="@@sidebarpos"  position='left' #sidebar [class]="ng-sidebar" [opened]="!opened"  [mode]="'slide'" autoCollapseWidth="450" keyClose='true' closeOnClickOutside ='true'  (onCloseStart)= 'onclose(event)' (onOpenStart)='onopen(event)'>
- 
-
-    
-    
-  	<div class="input-group" style='margin-top:15px ; '> 
-  	
-    <form class="form-inline">
-      <input   class="form-control  " aria-describedby="sizing-addon2" type="search" i18n-placeholder placeholder="Rechercher dans magasin" aria-label="Search in storetitle" name='query' [(ngModel)]="query" (keyup)='enterQuery2($event)'>
-      <span class="input-group-btn">
-      <button  class="btn btn-outline-info  search-button " type="submit"   (click)='getQuery2(event)' > <i class="fa fa-search"></i></button>
-      </span>
-      </form>
-    </div>
-    
- 
-      	<ng-template ngxPermissionsOnly="ADMINStore">	 
-      	 <a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../newarticle']"><i class='fa fa-plus'></i><i i18n="@@nouveauarticle"> Nouveau Article</i></a>
-   	   </ng-template>
-   	   
-   		 <a routerLinkActive="active"  class="nav-link  btn-outline-info " [routerLink]="['../details']"><i i18n="@@details">Détails</i></a>
- 		<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../soldout']"> <i i18n='@@articleepuises'>Articles épuisés</i></a>
- 		
- 		<ng-template ngxPermissionsOnly="ADMINStore">	
-    		<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../update']"><i i18n="@@parametres">Paramètres</i></a>
-  		 	<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../sales']"><i i18n="@@ventesencours">Ventes en cours</i></a>
-  		 	<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['../historic']"><i i18n="@@historiquedesventes">Historique des ventes</i></a>
-  			
-  		 </ng-template>
-  		  	<a routerLinkActive="active" class="nav-link  btn-outline-info " [routerLink]="['.']" (click)='share=!share' ><i i18n="@@partage">Partage</i>r</a>
-  			<div *ngIf="share" style ='margin-left:10px ; '>
-  	<share-button  button="facebook"  [showText] = "true" ></share-button><br>
-	<share-button  button="twitter" [showText] = "true"></share-button><br>
-	<share-button button="messenger"  [showText] = "true" ></share-button><br>
-	<share-button button="linkedin"  [showText] = "true" ></share-button><br>
-	<share-button button="pinterest"  [showText] = "true"></share-button><br>
-	<share-button button="whatsapp"  [showText] = "true" ></share-button> 
-  			</div>
-  
-   	
- </ng-sidebar>
- 
-      <!-- Page content ->
-<div ng-sidebar-content>
- <div class='alert alert-warning sticky-top' *ngIf='fullcartwarning' style='z-index:99999999;' i18n='@@panierplein'> Le panier est pleins ! </div>
+<RadSideDrawer [visibility]="!loading && !suspend  && !nostore?'visible':'collapse'" row="3" tkExampleTitle tkToggleNavButton>
+    <GridLayout tkDrawerContent rows="auto,40,auto,auto, auto, auto,auto,auto,auto,auto*"  class=" sideStackLayout">
+        <StackLayout row='0' class="sideTitleStackLayout">
+            <Label (touch)="ontouch($event)"  text="Articles épuisés  &#xf104;" class='fas storetitle' (tap)="onCloseDrawerTap()"></Label>
+        </StackLayout>
+        <!-- GridLayout row="1" columns="*,auto" orientation="horizontal">
+   		<textView  col='0' hint="Rechercher dans magasin" class='search'></textView>
+           <Button col="1" text="&#xf002;" class="fas searchbutton "></Button>
+        </GridLayout-->
         
-
+           
+		<GridLayout row="1" columns="*,auto" orientation="horizontal">
+   		<textField col='0' hint="Rechercher dans magasin" class='search' [(ngModel)]="query"  (returnPress)='getQuery2($event)'  ></textField>
+           <Button col="1" text="&#xf002;" class="fas searchbutton "  (tap)="getQuery2($event)"></Button>
+        </GridLayout>
+        
+         <ng-template ngxPermissionsOnly="ADMINStore"> 
+        
+         <Label (touch)="ontouch($event)"  nsRouterLinkActive="sideStackLayoutActive" class='sideStackLayout item' row='2' text='Ajouter Nouveau Article' [nsRouterLink]="['../newarticle']"></Label>
+        </ng-template>
+         <Label (touch)="ontouch($event)" nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='3' text='Détails'  [nsRouterLink]="['../details']" ></Label>
+     	 <Label (touch)="ontouch($event)"  nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='4'text='Articles épuisés'  [nsRouterLink]="['../soldout']" ></Label>
+         <ng-template ngxPermissionsOnly="ADMINStore"> 
+       
+         <Label (touch)="ontouch($event)" nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='5' text='Paramètres'  [nsRouterLink]="['../update']"></Label>
+         <Label (touch)="ontouch($event)" nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item' row='6' text='Ventes en cours' [nsRouterLink]="['../sales']" ></Label>
+         <Label (touch)="ontouch($event)" nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item' row='7' text='Historique des ventes'  [nsRouterLink]="['../historic']"  ></Label>
+         <Label (touch)="ontouch($event)" nsRouterLinkActive="sideStackLayoutActive"   class='sideStackLayout item'  row='8' text='Recettes mensuels'  [nsRouterLink]="['../monthincome']"></Label>
+         <Label (touch)="ontouch($event)"  nsRouterLinkActive="sideStackLayoutActive"  class='sideStackLayout item' row='9' text='Partager'></Label>
+   	
+   
+    </ng-template>
+        </GridLayout>       
     
- <!-- button type="button" class="btn btn-outline-warning my-2 my-sm-0" (click)="SidebarOpen()">  <i class="fa fa-bars" aria-hidden="true"></i>
-  </button>
-   ->
-
-
-<div class="container" id ="top"> 
-
-
-
-  <ngx-loading [show]="loading2" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-
-<div *ngIf =' display2' >
-<div i18n-class class="row text-left"  >  
-    <div *ngIf ='nothing' class='alert alert-warning' i18n='@@noarticle'>Pas d'articles disponible dans ce magasin </div> 
-    <div *ngIf ='nosearch' class='alert alert-warning'i18n="@@norecherche">Recherche introuvable. </div> 
-    
-    <div style="position: relative; " class="btn col-sm-6 col-12 col-md-3 " *ngFor="let a  of selectArticles |paginate: { id: 'server', itemsPerPage: size, currentPage: page, totalItems: totalArticles } " >
   
-      <div class="card "     >
-        <img [src]="a._source.pic" class="resize img-responsive card-img-top" style="width:100%; " (click)="gotoArticle(a._id, a._source.storetitle )"   alt="Image">
-          <div class ="card-block ">
-          <div (click)="gotoArticle(a._id, a._source.storetitle )"  >
-             <h6 class="card-title "  > {{a._source.title}} </h6>
-             	<b  i18n='@@da'>{{a._source.price}} D.A </b>
-             <p class="card-text" > <star-rating [starType]="'svg'" [rating]="a._source.ratingsum/a._source.ratingcount"   [readOnly]="true" [showHalfStars]="true" ></star-rating> <span style ="font-size:x-small; color :#C0C0C0" i18n="@@votesart">( {{a._source.ratingcount}} votes)</span>
-       	     </p>
-       	 </div> 
-       	 	<div>
-       	 	
-       	 	
-       	 	
-       	     <button  class="card-link btn  btn-warning" (click)="addToCart(a)"> <i class="fa fa-shopping-cart" ></i><i i18n="@@panier3">Panier</i><span *ngIf=" a.loadingcart==1" class= "fa fa-refresh fa-spin "></span>  <span *ngIf=" a.loadingcart==2" class= "fa fa-check"></span> <span *ngIf=" a.loadingcart==3" class= "fa fa-ban"></span> </button> 
-       	 	</div>
-       	 	 <ng-template ngxPermissionsOnly="ADMINStore">
-       		 <button class="card-link btn btn-info"  (click)="updateArticle(a._id)" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i><i i18n="@@param">Paramètres</i> </button>
-         	 </ng-template> 		
-       				
-       	 </div> 
-   		  
-        </div>
-     	
-     	
-     	
+    <GridLayout  tkMainContent rows='auto,auto ,auto, auto,auto,auto ,auto,auto'>
+	<StackLayout row="0" backgroundColor='rgba(0,0,0, 0.4)' >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+   	</StackLayout>  
+   
+  <Image *ngIf='!loading' backgroundColor='rgba(0,0,0, 0.4)' (touch) = 'displaybanner = true' row ="0" [src]="banner"  class="pic"  stretch="aspectFill"></Image>
+   <!-- GridLayout   [visibility]="displaybanner ?'visible':'collapse'"  row="0" columns="*,auto" rows='*,auto'>
+   <Label  *ngIf="isValid"  col="1" row="1"    class="fas up"  text="&#xf03e;" (tap)='onSelectTap() '></Label>
+   <StackLayout  row="0" col="1" orientation="horizontal">
+   <Label row="1" *ngIf="!isValid" class="fas up " text="&#xf03e;" (tap)="covsave()" ></Label>
+   <Label row="1" *ngIf="!isValid" class="fas up " text="&#xf03e;" (tap)="this.covremove()"></Label>
+   </StackLayout>
+   
+   </GridLayout-->
+   
+   
+    <GridLayout row="1" columns="40,auto"  >
+        <Button col='0' class="fas bars btn btn-active" text='&#xf0c9;' (tap)="openDrawer()"></Button>
+  		
+  		<Label (touch)="ontouch($event)" textWrap='true'  col="1" class=" storetitle"  text="{{storetitle}}"  [nsRouterLink]="['../store']" ></Label>
+        <!-- AbsoluteLayout col="2" backgroundColor="rgba(0,0,0,0.4)">
+      	           <StackLayout left="-80" top="0" android:cursorVisible="false"  >
+      	           
+                 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="store.ratingsum/store.ratingcount" ></StarRating>
+                </StackLayout>
+                 <Label fontSize="10" left ="80" top="20"  text="({{store.ratingcount}} votes)"></Label>
+                
+        </AbsoluteLayout>
+       <Button id="notifications"  col="2" text="&#xf0f3; &#xf0d7;" 
+            class="bell fas"></Button> 
+        <Label id="globeItemNavigation"  col="2" text="3" class="globe"
+                   ></Label--> 
+    </GridLayout>
+       <StackLayout row="2"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 
-     	
-    </div>
+ 
+         <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='3'  *ngIf='!loading0 && !loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+
+
+		<Label row="3" *ngIf='!loading0 && !reload  &&  !nostore && !open && !suspend'  class="alert" text="Ce magasin est fermé ! "  >
+
+			</Label> 
+		    <Label row="5" *ngIf ='!loading2 && nothing && !reload   ' class="alert" text="Pas d'articles épuisés "></Label> 
+    		<Label row="4" *ngIf =' !loading2 && nosearch && !reload  ' class='alert' text="Recherche introuvable."></Label> 
     
-  </div>
- 
+		
 
-    <!-- ng-template ngxPermissionsOnly="ADMINStore">
- 		<button type="button" class="btn btn-outline-warning my-2 my-sm-0" data-toggle="collapse" data-target="#new">new Article</button>
-    		<div id='new' class="row collapse p anel panel-info">
-       		 <div class="col-sm-12">
-        	  <app-newarticle> </app-newarticle>
-        	 </div>
-  		 </div>
-	 </ng-template-> 
- 
+        <RadListView  row="6" [items]="selectArticles" selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
+         (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)">
 
-  
- <div  i18n-style style ='float:right ; ' class=" row has-text-centered"  >
-    <a    scrollTo href="#top"  >
-    <div class="spinner" [ngClass]="{ 'hidden': !loading2 }"></div>
-    <pagination-controls (pageChange)="getPage($event)" id="server"  i18n-previousLabel previousLabel="précédent" i18n-nextLabel nextLabel='suivant' ></pagination-controls>
-   </a> 
-</div>
-</div>
-</div>
-</div>
-</ng-sidebar-container>
-</div>
-</ng-template>
-    </div>
+      		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
+      		 <GridLayout (touch)="ontouch2($event)" >
+      		   
+      			<Image (doubleTap)="gotoArticle(a._id, a._source.storetitle )"  (touch)="displ(a._id)"  [src]="a._source.pic"  class='articlepic' stretch="aspectFill" ></Image>
+      			
+ 				<AbsoluteLayout  >
+      			     <!-- ActivityIndicator color='#FFA500' rowSpan="3" [busy]="a.loadingcart==1"></ActivityIndicator>
+      			
+      			<Label (tap)="addToCart(a)"  [visibility]="disp[a._id] ?'visible':'collapse'"
+      					left="55" top="5" class='panier fas'>
+						<FormattedString>
+										<Span text='Panier &#xf217;' ></Span>
+										<Span  *ngIf=" a.loadingcart==2 " text='&#xf00c;'></Span>
+										<Span  *ngIf=" a.loadingcart==3  " text="&#xf05e;"></Span>
+      					</FormattedString>
+      	         </Label-->
+      	           <ng-template ngxPermissionsOnly="ADMINStore">  
+      	          <Label  [visibility]="disp[a._id] ?'visible':'collapse'" text="Paramètre"  left="55" top="10" class="param"  (tap)="updateArticle(a._id) ; "></Label>
+      	         </ng-template>
+      			<GridLayout left='0' top='55' rows="auto,auto,auto"    class="title" [visibility]="disp[a._id] ?'visible':'collapse'" >
+            
+              <TextView  row='0'   editable="false" class='titlea' text="{{a._source.title}}">
+        			
+               </TextView>
+                <AbsoluteLayout row="1">
+      	           <StackLayout left="-40" top="0" android:cursorVisible="false"  >
+      	           
+                 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="a._source.ratingsum/a._source.ratingcount" ></StarRating>
+                </StackLayout>
+                 <Label fontSize="10" left ="55" top="30" text="({{a._source.ratingcount}} votes)"></Label>
+                
+                </AbsoluteLayout>
+      		
+               
+      			<Label class='price' row="2"   text=' {{a._source.price}} D.A'  ></Label>
+			   </GridLayout>
+      			</AbsoluteLayout>
  
+      			<!-- StarRating style="margin: 0px 0.35em 0.25em -1.6em; vertical-align: middle;" emptyColor="black"  isindicator='true'filledColor="red" value="3" max="5"></StarRating-->
+      		  </GridLayout>
+      		  
+     		 </ng-template>	
      
+     		
+			     		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
+			
+      	
+      	</RadListView>
+      	<StackLayout row="7">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading2' [busy]="loading2" ></ActivityIndicator>
+   	</StackLayout>
+   
+</GridLayout>
 
 
--->
+
+</RadSideDrawer>
+</GridLayout>
+ </ScrollView>

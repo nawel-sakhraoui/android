@@ -1,7 +1,7 @@
 <ngx-loading [show]="loading0" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
 
 
-<div *ngIf='display' i18n-class  class="text-left "> 
+<div *ngIf='display' i18n-class  class="text-left scroll2"> 
 <nav class="navbar navbar-default  navnav sticky-top" >
   
     
@@ -36,8 +36,8 @@
   	       
   	      <th>      
   	      			 <a class="btn fa fa-pencil"  *ngIf='!editTitle' style='display:inline-block;' (click)='editingTitle()'> </a>
-  	     		  	 <a class="btn fa fa-save"  *ngIf='editTitle' style='color:green; display:inline-block ;margin-right:5px; ' (click)='saveTitle()'></a>
-				 	 <a class="btn fa fa-remove" *ngIf='editTitle' style='color:red; display:inline-block; ' (click)='removeTitle()'></a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editTitle' style='display:inline-block ;margin-right:5px; ' (click)='saveTitle()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editTitle' style='display:inline-block; ' (click)='removeTitle()'></a>
 								    
           </th>
   	    </tr>
@@ -69,8 +69,8 @@
   	      
   	      <th>
   	      			 <a class="btn fa fa-pencil"  *ngIf='!editGallery' style='display:inline-block;' (click)='editingGallery()'> </a>
-  	     		  	 <a class="btn fa fa-save"  *ngIf='editGallery' style='color:greeen; display:inline-block ;margin-right:5px; ' (click)='saveGallery()'></a>
-				 	 <a class="btn fa fa-remove" *ngIf='editGallery' style='color:red; display:inline-block; ' (click)='removingGallery()'></a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editGallery' style='display:inline-block ;margin-right:5px; ' (click)='saveGallery()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editGallery' style='display:inline-block; ' (click)='removingGallery()'></a>
 				
   	      </th>
   	    </tr>
@@ -80,14 +80,9 @@
   		<td></td>
   		<td>
   		    <div *ngIf="editGallery"class="form-group" >
-  		    
   		    <th scope="col">  <label class ='img-selector btn btn-link'  for="files"><i class='fa fa-plus'></i><i i18n="@@gallerieimages">Gallerie d'images</i> </label></th>
      		 <input type='file' id="files" name="files" (change)="onSelectFiles($event)" multiple style="display: none;" >
 			 <div class=" card">
-			   		          <ngx-loading [show]="waitimg" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-			 
-			         <div  *ngIf="alertimg" class="alert alert-warning  strong "> Format image invalide! </div>
-			   
    			   <ul >
    			   
        			<li  *ngFor = 'let url of model.gallery; let i=index; ' style="list-style: none; display:inline-block;"> 
@@ -95,7 +90,7 @@
            
        	        <input type="radio" name="radiogroup"  [checked]="i===0" 
                 [value]="i" (change)="onSelectionChange(i)" id ='radio' />
-                  <div><img backgroundColor='#eeeeee'  [src]="url" height="50" > </div>
+                  <div><img [src]="url" height="50" > </div>
 				</label>
 				<button type="button" (click)="removeObject(url)" class='btn-info' > <i class="fa fa-close"></i></button>
 			 </li>
@@ -104,7 +99,7 @@
              <div *ngIf= "model.gallery[mainpic]" >
               <label i18n="@@chooosemainpic" > Choisissez l'image principale parmis les images en haut </label>
              <br/>
-                  <img backgroundColor='#eeeeee' [src]="model.gallery[mainpic]" height="100"  > 
+                  <img [src]="model.gallery[mainpic]" height="100"  > 
                   </div>
                <br/>
        
@@ -145,8 +140,8 @@
   	      
   	      <th>
   	       			<a class="btn fa fa-pencil"  *ngIf='!editPrice' style='display:inline-block;' (click)='editingPrice()'> </a>
-  	     		  	 <a class="btn fa fa-save"  *ngIf='editPrice' style='color:green ; display:inline-block ;margin-right:5px; ' (click)='savePrice()'></a>
-				 	 <a class="btn fa fa-remove" *ngIf='editPrice' style='color:red; display:inline-block; ' (click)='removePrice()'></a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editPrice' style='display:inline-block ;margin-right:5px; ' (click)='savePrice()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editPrice' style='display:inline-block; ' (click)='removePrice()'></a>
 				
   	      </th>
   	    </tr>
@@ -187,8 +182,8 @@
   	      
   	      <th>
   	      			 <a class="btn fa fa-pencil"  *ngIf='!editQt' style='display:inline-block;' (click)='editingQt()'> </a>
-  	     		  	 <a class="btn fa fa-save"  *ngIf='editQt' style=' color:green ; display:inline-block ;margin-right:5px; ' (click)='saveQt()'></a>
-				 	 <a class="btn fa fa-remove" *ngIf='editQt' style='color:red; display:inline-block; ' (click)='removeQt()'></a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editQt' style='display:inline-block ;margin-right:5px; ' (click)='saveQt()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editQt' style='display:inline-block; ' (click)='removeQt()'></a>
 				
   	      </th>
   	    </tr>
@@ -215,8 +210,8 @@
   	      
   	      <th>
   	      			 <a class="btn fa fa-pencil"  *ngIf='!editColor' style='display:inline-block;' (click)='editingColor()'> </a>
-  	     		  	 <a class="btn fa fa-save"  *ngIf='editColor' style='color:green; display:inline-block ;margin-right:5px; ' (click)='saveColor()'></a>
-				 	 <a class="btn fa fa-remove" *ngIf='editColor' style='color:red; display:inline-block; ' (click)='removingColor()'></a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editColor' style='display:inline-block ;margin-right:5px; ' (click)='saveColor()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editColor' style='display:inline-block; ' (click)='removingColor()'></a>
 				
   	      </th>
   	    </tr>
@@ -282,7 +277,7 @@
     
        		      	
        
-                       	<div   style ='width:55px; height:20px; font-size:10px ;background-color:#D0D0D0;padding:2px;  border:1px  solid ; margin:2px;     text-align: center; vertical-align: middle; ' > {{s}}	</div>
+                       	<div   style ='width:25px; height:25px;  background-color:#D0D0D0;padding:2px;  border:1px  solid ; margin:2px;     text-align: center; vertical-align: middle; ' > {{s}}	</div>
        		        
        		        
        		        	
@@ -304,8 +299,8 @@
   	      
   	      <th>  
   	        <a class="btn fa fa-pencil"  *ngIf='!editCat' style='display:inline-block;' (click)='editingCat()'> </a>
-  	     	<a class="btn fa fa-save"  *ngIf='editCat' style='color:green; display:inline-block ;margin-right:5px; ' (click)='saveCat()'></a>
-			 <a class="btn fa fa-remove" *ngIf='editCat' style=' color:red; display:inline-block; ' (click)='removeCat()'></a>
+  	     	<a class="btn fa fa-check"  *ngIf='editCat' style='display:inline-block ;margin-right:5px; ' (click)='saveCat()'></a>
+			 <a class="btn fa fa-remove" *ngIf='editCat' style='display:inline-block; ' (click)='removeCat()'></a>
 								    
                  
   	      </th>
@@ -342,8 +337,8 @@
   	      
   	      <th> 
   	       		 <a class="btn fa fa-pencil"  *ngIf='!editDesc' style='display:inline-block;' (click)='editingDesc()'> </a>
-  	     		  	 <a class="btn fa fa-save"  *ngIf='editDesc' style='color:green;  display:inline-block ;margin-right:5px; ' (click)='saveDesc()'></a>
-				 	 <a class="btn fa fa-remove" *ngIf='editDesc' style=' color:red; display:inline-block; ' (click)='removeDesc()'></a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editDesc' style='display:inline-block ;margin-right:5px; ' (click)='saveDesc()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editDesc' style='display:inline-block; ' (click)='removeDesc()'></a>
 				
   	      </th>
   	    </tr>
@@ -371,8 +366,8 @@
   	      
   	      <th>
   	      			 <a class="btn fa fa-pencil"  *ngIf='!editDelivery' style='display:inline-block;' (click)='editingDelivery()'> </a>
-  	     		  	 <a class="btn fa fa-save"  *ngIf='editDelivery' style='color:green; display:inline-block ;margin-right:5px; ' (click)='saveDelivery()'></a>
-				 	 <a class="btn fa fa-remove" *ngIf='editDelivery' style='color:red; display:inline-block; ' (click)='removingDelivery()'></a>
+  	     		  	 <a class="btn fa fa-check"  *ngIf='editDelivery' style='display:inline-block ;margin-right:5px; ' (click)='saveDelivery()'></a>
+				 	 <a class="btn fa fa-remove" *ngIf='editDelivery' style='display:inline-block; ' (click)='removingDelivery()'></a>
 				
   	      </th>
   	    </tr>
@@ -414,8 +409,8 @@
   	      
   	     <th>
   	     	 <a class="btn fa fa-pencil"  *ngIf='!editAvailable' style='display:inline-block;' (click)='editingAvailable()'> </a>
-         	 <a class="btn fa fa-save"  *ngIf='editAvailable' style='color:green; display:inline-block ;margin-right:5px; ' (click)='saveAvailable()'></a>
-			 <a class="btn fa fa-remove"  *ngIf='editAvailable' style='color:red; display:inline-block; ' (click)='removeAvailable()'></a>
+         	 <a class="btn fa fa-check"  *ngIf='editAvailable' style='display:inline-block ;margin-right:5px; ' (click)='saveAvailable()'></a>
+			 <a class="btn fa fa-remove"  *ngIf='editAvailable' style='display:inline-block; ' (click)='removeAvailable()'></a>
 		  
   	     </th> 
   	     </tr>

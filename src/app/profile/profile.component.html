@@ -1,6 +1,6 @@
-<div i18n-class class="text-left" >
+<div i18n-class class="scroll2 text-left" >
 <ngx-loading [show]="loading2" [config]="{ backdropBorderRadius: '3px' }" > </ngx-loading>  
-<div  class='container  ' *ngIf ="display1" >
+<div  class='container card ' *ngIf ="display2" >
 
 		
 							
@@ -23,9 +23,8 @@
 				
 							<div  *ngIf ="display2" class=" profile-picture ">
 							
-								  <img alt="" class=" resize"  id="avatar2" src='{{avatar}}' />
-								<div  *ngIf="alertimg" class="alert alert-warning  strong "> Format image invalide! </div>
-								
+								  <img class=" resize" alt=" Avatar" id="avatar2" [src]=avatar />
+
  							 <ng-template ngxPermissionsOnly="ADMINProfile">
  								<div class="selector">
 
@@ -89,16 +88,23 @@
 							<div style ='margin-bottom:15px; ' class="row">
 									<div i18n="@@localisation" class="col-sm-4 col-4"><b>Localisation <i class="fa fa-map-marker light-orange bigger-110"></i></b> 
 									</div>
-					
 									
+									<ng-template ngxPermissionsOnly="USER">
+									<div class="col-sm-6 col-6" >
+									<span i18n="@@location" style=' margin-right:5px;'>{{model.location}}</span>
+			 						
+									</div> 
+						
+									</ng-template>
+									
+									<ng-template ngxPermissionsOnly="ADMINProfile">
 									
 									<div class="col-sm-6 col-6" >
 									<span i18n="@@location"  *ngIf='!editLocation' style=' margin-right:5px;'>{{model.location}}</span>
    									<ngx-select-dropdown  *ngIf='editLocation'  (change)="getLocation($event)" [multiple]="false" i18n-value [(value)]="location" [config]="locationconfig" i18n-options [options]="locations"></ngx-select-dropdown>
 									
 									</div>
-								 
-								 <ng-template ngxPermissionsOnly="ADMINProfile">
+									
 									<div class="col-sm-2 col-2" style='display:inline-block;' >
 									<a class="btn fa fa-pencil"  *ngIf='!editLocation' style='display:inline-block;' (click)='editingLocation()'> </a>
 						

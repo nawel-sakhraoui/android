@@ -1,336 +1,319 @@
-<StackLayout>
-  <Label text="done works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
-
-<!--
-Original Web template:
-
-
-
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
-<div i18n-class class="text-left scroll2">
-
-<div class='container'>
-<div [hidden]= "loading" >
-
-<!--
-<div [ngBusy]="{busy: busy, message: 'Loading...', backdrop: false}"   ></div>
-
-->
-
-<div *ngIf="!ongoing" class="alert alert-warning " i18n="@@nohisto"> vous n'avez aucun historique 
-</div>
-
-<div  *ngIf='ongoing' >
-
-<ul  class="list-group" >
+<ScrollView>
+<GridLayout rows="auto,auto,auto,auto,*,auto">
+<GridLayout row="0" columns='*,auto'>
+<Label col="0" margin='10,0,0,5'  >
+        <FormattedString>
+            <Span text="{{totalcommand}} " color="#FFA500" class="fas"  ></Span>
+            <Span color="#444444" text=" Commandes terminées "  ></Span>
+        </FormattedString>
 
 
- <div class="list-group-item"> <b> {{totalcommand}} </b> <i i18n="@@commandesterminees"> commandes terminées</i> </div>
-
-
- <li  id="command{{m._id}}" style="border-bottom:12px  #F5F5F7 solid ; " class="list-group-item" *ngFor = "let m of model |paginate: { id: 'server', itemsPerPage: size, currentPage: page, totalItems: totalcommand } ; let i = index  " [attr.data-index]="i" >
-  
-  <div class='row' > 
-  <span i18n-style style='float:left'  > <i i18n="@@commandefermee" >Commande fermée le :</i><span dir="ltr"> <b>{{m._source.steps.close}}</b></span></span> </div>
+ </Label>
  
- <div class="row">
- <div class='col-sm-12 col-12 col-md-12' >
- <span>
- <span i18n-style style='float:left'  > <i i18n='@@commandeid'>Commande id:</i>  <a class="btn btn-link text-info" (click) = 'gotoPurchase(m._id)' > <b >{{ m._id }}</b></a></span>
- <span i18n-style style="float:right" > <i i18n='@@montanttotal'>Montant total:</i> <b >{{ m._source.totalprice}} <i i18n='@@da3'> DA</i></b></span>
- </span>
- </div>
- </div> 
- <div class="row">
-<span><i i18n='@@magasin2'> Magasin:</i> <a class='btn btn-link strong  text-info'     (click) ='gotoStore(m._source.storetitle)' ><b> {{m._source.storetitle }}</b></a></span>
+ <Label col='1' class="link"   [nsRouterLink] ="['../']" text="Commande en cours"> </Label>
+ </GridLayout>
  
- </div>
-<div class="row">
- <ul class="list-group col-md-6 col-sm-6 col-12">
-  <li class="list-group-item" >
-  	  	<div  *ngFor = "let a of m._source.articles " >
-  	  	<div class='row'>
-  	  	<div class="col-sm-5 col-md-5 col-5">  <img [src]="a.pic" class="img-responsive crop"  alt="Image"></div>
-  	 	<div class='col-sm-4 col-md-5  col-4'>	
-  	 		<a class="btn" (click)="gotoArticle(a.articleid, m._source.storetitle)"><b>{{a.title}}</b></a> <br>
-  	 		<i i18n="@@couleur"  >
- 	          Couleur </i>
-      		 <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
-   			 <br>
-      		 <span><i i18n="@@quantite"> Quantité</i>   {{a.quantity}} </span>
-   			
-   		</div>
-   		</div> 
-   		<div class="row" style='float:right; margin-right:5px;'> <span >{{a.price}} <i i18n="da2"> DA </i></span></div>
- 	
- 		<br>
- 	<div *ngIf="m._source.articlesrating.hasOwnProperty(a.articleid)" class='row form-group'>
- 	             <star-rating id= "a.articleid" [starType]="'svg'"  [rating]="m._source.articlesrating[a.articleid]"   [readOnly]="true"  [showHalfStars]="true"  ></star-rating><br>
- 	     
- 	</div>
- 	<div *ngIf="!(m._source.articlesrating.hasOwnProperty(a.articleid)) && m._source.steps.stop==0" class='row form-group'>
- 	
- 	    <span i18n="@@noterarticle">Noter l'article: </span>
-        <star-rating id= "a.articleid" [starType]="'svg'"   [showHalfStars]="true"  (starClickChange)="onClick($event,i, a.articleid)" ></star-rating><br>
-         <div i18n="@@ratingalert" *ngIf="alert[a.articleid]" class="alert alert-danger" role="alert"> s'il vous plait notez cet article avant d'envoyer</div> 
-         <textarea rows="5" class="message" name="message" [(ngModel)]="feedback[a.articleid]" #message="ngModel"  required maxlength=400></textarea>
- 		
-     </div>
-     </div>
-     <div i18n-style style="float:right; " *ngIf="isEmpty(m._source.articlesrating) && m._source.steps.stop==0" class='row form-group'>
-     	
- 	          <button  style="float:right; " class="btn btn-warning " (click)=" sendRating(i, m._source.storetitle) " i18n='@@envoyer'>Envoyer</button>
- 	 </div>
- </li>
- <li class='list-group-item '>
- <span ><i i18n="@@livraison2">Livraison:</i>  <span class='text-info'>{{m._source.delivery.title }} </span></span>
- <span i18n-style style='float:right;'> {{m._source.delivery.price }} <i i18n="@@da2">DA</i></span>
- </li>
-  
-  <li class='list-group-item'>
-  <span i18n="@@addresse">Addresse: </span>
-       	<table class="table table-sm table-responsive   add" style='float:right;' >     
-    <thead>
-  </thead>
-   <tbody>
-	 <tr >
-  		<td scope="col" i18n="@@mmme" > à M.Mme </td>
-  		<td>
-  		     
-    
-     		 {{m._source.choosenAddress.to}}
-     		
-     		   
-  		</td>
-  	</tr>
-  	<tr scope="col" >
-  	    <td i18n="@@telephone"> Téléphone </td>
-  		<td>
 
-     		 {{m._source.choosenAddress.phone}}
-     	
-     		     
-  		</td>
-  		
-  	 </tr>
-  	<tr > 
-  	    <td scope="col" i18n="@@ville">Ville </td>
-  		<td>
-     		 {{m._source.choosenAddress.city }}
-     		 
-     		   
-  		</td> 
-  		
-  	</tr>
-  	<tr> 
-  	    <td  scope="col" i18n='@@commune'>Commune </td>
-  		<td>
-  		   
+<StackLayout row="1" margin="5,0,0,0"  colSpan="2" backgroundColor="#D3D3D3" height="3"></StackLayout>
 
-     		 {{m._source.choosenAddress.commune }}
-     		
-     		   
-  		</td> 
-  		
-  	</tr> 
-  	<tr> 
-  	   <td  scope="col" i18n="@@codepostal">Codepostal  </td>
-  		<td>
-  		    
-           
-         
-     		 {{m._source.choosenAddress.zipcode}}
-     	
-  		</td> 
-  	</tr>
-  	<tr  > 
-  		<td scope="col" i18n="@@addresse">Addresse </td>
-  		<td>
-  		    
+<GridLayout margin='0,30,10,30' row="2" columns="*,auto" orientation="horizontal">
+   		<textField col='0' hint="Rechercher commande id" class='search'  (returnPress)='getQuery2($event)'  ></textField>
+           <Button col="1" text="&#xf002;" class="fas searchbutton "  (tap)="getQuery2($event)"></Button>
+</GridLayout> 
+
+<StackLayout row="3" margin="0,0,5,0"  colSpan="2" backgroundColor="#D3D3D3" height="3"></StackLayout>
+
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='4'  *ngIf='!loading && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>
+
+ 
+<RadListView  row="4" [items]="model" loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
+          <ng-template let-m="item" let-i="index"  >
             
-     		 {{m._source.choosenAddress.address}}
-     		
-  		</td> 
-    </tr>
-   
-  </tbody>
+				 <GridLayout  margin="0,15,0,15" rows="auto,auto,auto,auto,*,*,auto,auto,*,auto,*,auto,*,*,auto">
+				   
+				   
+				     <StackLayout row="0">
+				     <StackLayout orientation='horizontal'>
+				      <Label text="Commande id:  " ></Label>
+				      <Label  text="{{m._id}}" class="fas link0" (touch)='ontouch($event)'  nsRouterLink='../purchase/{{m._id}}' (longPress)="selectText($event)">	      	
+				      </Label>
+				      </StackLayout>
+				        <StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+				       
+				      </StackLayout>
+				      
+				      <StackLayout row="1">
+				      <Label     >
+				      		  <FormattedString>
+            					<Span text="Faite le:  "  ></Span>
+         					    <Span text="{{m._source.startdate}}" class="fas" color='#00BFFF'       ></Span>
+       						</FormattedString>
+				      	      		  
+				      </Label>
+				        <StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+				       
+				      </StackLayout>
+					  <GridLayout    row='2'  columns='*,auto'>
+					  		<Label col='0'  text="Montant total:  "  ></Label>
+         					<Label col="1"  text="{{ m._source.totalprice}} DA" class="fas" color='#000'    ></Label>
+       					
+					  
+					  </GridLayout> 
+					  
+					  <StackLayout row="3" margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="2"></StackLayout>
+					  <StackLayout row='4'  orientation='horizontal' >
+							 
+            						<Label text="Magasin:  "  ></Label>
+         					    <Label textWrap='true' (touch)="ontouch($event)"  text="{{m._source.storetitle }}" class="fas link0 "  nsRouterLink="../../../../stores/{{m._source.storetitle}}/store"  ></Label>
+       					
+					  </StackLayout>
+					  <RadListView  row="5" [items]="m._source.articles" >
+						<ng-template let-a="item"  >
+						<StackLayout  orientation="vertical">
+							 <GridLayout columns='*,*,auto'>
+							    <Image  src="{{a.pic}}"	loadMode="async" class="pic"  stretch="aspectFill" ></Image>
 
-</table>
-</li>
-</ul>
- 
-  <ul class="list-group col-sm-6  col-md-6 col-12">
-  <li class='list-group-item'> 
-  <span> <i i18n="@@commandefaite" >Commande faite le:</i>  <span dir='ltr'>{{m._source.startdate}}</span></span>
-  </li>
-  <li class='list-group-item'>
-
-   <form-wizard  class='wizard' >
-	  <wizard-step [title]="'1'" [isActive]='true' [isValid]="m._source.steps.prepare!=0" [showNext]="false"[showPrev]='false' >
- 	    <ul class="ongoingul" >
- 	  	 <li class="ongoingli" *ngIf='m._source.steps.prepare==0' i18n="@@waitprepare">La commande est en cours de préparation
- 	  	 </li>
- 	  	  <li class="ongoingli" *ngIf='( m._source.steps.prepare==0 && m._source.steps.stop ==0)' > <i i18n="@@annulercommande" >Annuler la commande </i>
- 	  	  		 <button [disabled]="m._source.steps.stoploading" class="btn btn-danger" (click)="modal2.show(); stopSend(m._id, i, m._source.storetitle );  " > <i class="fa fa-close"></i>
-                  <i *ngIf="m._source.steps.stoploading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-			    </button>
- 	  	 </li>
- 	  	
- 	  	 <li class="ongoingli" *ngIf='m._source.steps.prepare!=0'> <i i18n="@@commandepreparee" > Commande préparée le </i> <span dir='ltr'>{{m._source.steps.prepare}}</span></li>   
-    	</ul>
-     </wizard-step>
-       <wizard-step [title]="'1.5'" [isActive]='true'  [hidden]="m._source.steps.stop==0"  [isValid]="m._source.steps.stop!=0" [showNext]="false"[showPrev]='false' >
- 	    <ul class="ongoingul" >
- 	  	 <li class="ongoingli" *ngIf='m._source.steps.stop!=0' > <i i18n="@@commandeannulee" >Commande annulée le </i><span dir='ltr'>{{m._source.steps.stop}}</span> </li>
- 	  
-    	</ul>
-     </wizard-step>
-     
- 	 <wizard-step [title]="'2'"  [hidden]="!m._source.steps.stop==0"  [isActive]='m._source.steps.prepare!=0' [isValid]="m._source.steps.send!=0" [showNext]='false' [showPrev]='false'>
-	     <ul class="ongoingul" >
-	   	 <li class="ongoingli" *ngIf="m._source.steps.send==0" i18n="@@attenteenvoie">Attente de l'envoie </li>
-	   
-	     <li class="ongoingli" *ngIf="m._source.steps.send!=0" ><i i18n="@@commandeenvoyee" >Commande envoyée le </i> <span dir='ltr'> {{m._source.steps.send}} </span></li>
- 		</ul>
- 	 </wizard-step>
- 	
-	 <wizard-step [title]="'3'"  [hidden]="!m._source.steps.stop==0" [isActive]='m._source.steps.send!=0' [isValid]="m._source.steps.receive!=0" [showNext]='false' [showPrev]='false'>
-	 	  <ul class="ongoingul" >
-	    <li  class="ongoingli" *ngIf="m._source.steps.receive==0" ><i i18n="@@waitcommanderecu" >Commande reçu </i><button  [disabled]=" m._source.steps.receiveloading" class="btn btn-danger" (click)=" receiveDone(m._id, i,m._source.storetitle)"> <i class="fa fa-check"></i>
-           															       <i *ngIf="m._source.steps.receiveloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-	
-	    																			</button>
-	    </li>
-	    <li class="ongoingli"  *ngIf="m._source.steps.receive!=0" ><i i18n="@@commanderecu" >Commande reçu le </i> <span dir='ltr'>  {{m._source.steps.receive}}</span></li>
-		</ul>	
-	 </wizard-step>
-	 
-	     <wizard-step [title]="'4.5'" [hidden]="m._source.steps.litige==0 || !m._source.steps.stop==0 " [isActive]='m._source.steps.litige!=0' [isValid]= 'm._source.steps.litigesolved!=0'  [showNext]='false' [showPrev]='false' >
-     <ul class="ongoingul" >
-        <li class="ongoingli" *ngIf="m._source.steps.litige!=0" >
-            <i i18n='@@litigeouvert'>  Litige ouvert le :</i><span dir='ltr'> {{m._source.steps.litige}}</span> 
-   		</li>
-      
-        <li class="ongoingli" *ngIf="m._source.steps.solvedlitige==0">
-           
-           <p class="lead" i18n="@@contactermagasin"> Veuillez contacter le magasin pour trouver une solution à votre litige</p>
-          <i i18n="@@waitlitigeresolu"> Le litige est résolu </i> <button [disabled]="m._source.steps.solvedlitigeloading" class="btn btn-info" (click)=" solvedlitigeDone(m._id, i, m._source.storetitle )" > <i class="fa fa-check"></i>
-					                                 <i *ngIf="m._source.steps.solvedlitigeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-					               
-	           						     </button>
-        </li>
-        
+							    <GridLayout col="1" rows="auto,*" >
+							    
+							    	<Label class="fas link0" textWrap='true' (touch)="ontouch($event)" row="0"  text="{{a.title}}"  nsRouterLink="../../../../stores/{{m._source.storetitle}}/articles/{{a.articleid}}"></Label>
+							    	
+							    	
+							    	<GridLayout row="1" rows="*,*,*,*,*,*" columns='*,auto'>
+							    	<Label *ngIf='a.hasOwnProperty("color") && a.color!="" '  row='0' col="0"  text="Couleur: "></Label>
+							    	<Label *ngIf='a.hasOwnProperty("color") && a.color!="" '  row="0" col="1" class="color" [backgroundColor]='a.color'></Label>
+							        <Label *ngIf='a.hasOwnProperty("size") && a.size!="" ' row="1" col="0" text='Taille: '></Label>
+							        <Label *ngIf='a.hasOwnProperty("size") && a.size!="" '  row='1' col="1" class='size' text='{{a.size}}' > </Label>
+							        
+							        <Label row='2' col="0" text="Quantité: "></Label>
+							        <Label row='2' col="1" color="#000" text='{{a.quantity}} UNIT'></Label>
+							        <Label row='3' col="0" text="Prix: "></Label>
+							        <Label row='3' col="1" color="#000"  text='{{a.price}} DA'></Label>
+							        	
+							 	<StackLayout  row="4"  [visibility]=" m._source.articlesrating.hasOwnProperty(a.articleid ) ? 'visible' : 'collapsed'"  >
+ 	             					
+  									 <AbsoluteLayout height="35" width="80"    class=" border " >
+      	          							 <StackLayout left="-80" top="-10" android:cursorVisible="false"  >
+      	           
+                								 <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="m._source.articlesrating[a.articleid]"  ></StarRating>
+               								 </StackLayout>
+                 
+       							    </AbsoluteLayout>
+ 	    						 </StackLayout>
+ 	    					  </GridLayout>
+							 </GridLayout>
+					 </GridLayout>
+					<Label margin='0,10,0,10' [visibility]="(!m._source.articlesrating.hasOwnProperty(a.articleid ) && m._source.steps.stop==0 ) ? 'visible' : 'collapsed'"  text="Noter l'article:" ></Label>
+        							<StackLayout  margin="0,10,0,25">	
+ 			 						 <AbsoluteLayout height="35" width="100"        [visibility]="(!m._source.articlesrating.hasOwnProperty(a.articleid ) && m._source.steps.stop==0 ) ? 'visible' : 'collapsed'" class=" border "  >
+      	          							 <StackLayout left="-70" top="-10" android:cursorVisible="false"  >
+      	           
+                								 <StarRating filledColor="#FFA500"  (valueChange)="setScore($event,i, a.articleid)"   android:scaleX=".4" android:scaleY=".4"  value="0"  ></StarRating>
+               								 </StackLayout>
+                 
+       							    </AbsoluteLayout>
+       							    
+       							             <Label *ngIf="alert[a.articleid]" class="alert" text=" s'il vous plait notez cet article avant d'envoyer"></Label> 
+       							    
+ 			 						</StackLayout>
+							 				<TextView margin='0,10,0,25' [visibility]="(!m._source.articlesrating.hasOwnProperty(a.articleid ) && m._source.steps.stop==0 ) ? 'visible' : 'collapsed'"   fontSize="12"  hint="votre évaluation" class="input" [(ngModel)]="feedback[a.articleid]"    returnKeyType="done" 
+                							 maxLength="300"></TextView>
        
-         <li class="ongoingli" *ngIf="m._source.steps.solvedlitige !=0"> 
-         <i i18n="@@litigeresolu"  >Litige résolu le:</i> <span dir='ltr'>{{m._source.steps.solvedlitige}} </span>
-         </li>
-         </ul>
-        
-	  </wizard-step> 
-     <wizard-step [title]="'4'"   [hidden]="(!m._source.steps.litige==0 && m._source.steps.solvedlitige==0) || !m._source.steps.stop==0"  [isActive]='m._source.steps.receive!=0' [isValid]="m._source.steps.close!=0"  [showNext]='false' [showPrev]='false' >
-  		  <ul class="ongoingul" >
-	    <li class="ongoingli"  *ngIf="m._source.steps.close==0 && m._source.steps.litige==0"> <i  i18n="@@openlitige"> Ouvrir un litige</i> <button [disabled]='m._source.steps.litigeloading'class="btn btn-info" (click)=" litigeDone(m._id, i, m._source.storetitle )" > <i class="fa fa-check"></i>
-																									   <i *ngIf="m._source.steps.litigeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-																															
-		    																								</button>	
-	    </li>
-	    <li class="ongoingli"  *ngIf="(m._source.steps.close==0 &&  m._source.steps.litige ==0) ||(m._source.steps.close==0 &&  m._source.steps.solvedlitige !=0)"> <i  i18n="@@waitclosecommande" > Fermer la commande </i> <button [disabled]="m._source.steps.closeloading" class="btn btn-info" (click)="  modal.show();  closeDone(m._id, i, m._source.storetitle); "> <i class="fa fa-check"></i>
-	    																																										  <i *ngIf="m._source.steps.closeloading"  class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-	    																																											
-	    																																											</button>
-	    </li>
-	    
-	    <li class="ongoingli" *ngIf="m._source.steps.close!=0 "  > <i  i18n="@@cloasecommande" >Commande fermée le </i> <span dir ="ltr" >{{m._source.steps.close}}</span></li>
-		</ul>
+   								  
+							<StackLayout  margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+						</StackLayout>
+						</ng-template>	
+					</RadListView> 
+					<GridLayout row="6" columns='*,auto' rows="*,auto"  [visibility]="(isEmpty(m._source.articlesrating) && m._source.steps.stop==0) ? 'visible' : 'collapsed'" > 
+							    <Label  (touch)='ontouch3($event)' row="0"  class="send" col="1" (tap)='sendRating(i, m._source.storetitle) ' text="Envoyer"></Label>
+								<StackLayout row="1"   margin="5,0,0,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+							
+					</GridLayout>
+					
+					<GridLayout row="7" columns='*,auto'>
+					 <Label col="0" >
+					 		 <FormattedString>
+            					<Span text="Livraison:  "  ></Span>
+         					    <Span text="{{m._source.delivery.title }} " class="fas" color='#00BFFF'   ></Span>
+       						</FormattedString>
+					 </Label>
+					 <Label col="1" text=" {{m._source.delivery.price }} DA" class="fas" color="#000"></Label>
+					</GridLayout>
+					<StackLayout row="8" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+						<Label row="9"   text="Addresse: "></Label>
+					<GridLayout padding="2"  row="10" backgroundColor="#D3D3D3"  rows="*,*,*,*,*,*" columns="*,*" >
+					
+						<Label class='add' row="0" col="0" text="à M.Mme" ></Label> 
+  						<Label class='add'row="0" col="1" text="{{m._source.choosenAddress.to}}"></Label>
+  		     			<Label class='add'row="1" col="0" text="Téléphone" ></Label> 
+  						<Label class='add' row="1" col="1" text="{{m._source.choosenAddress.phone}}"></Label>
+  		     			<Label class='add'row="2" col="0" text="Ville" ></Label> 
+  						<Label class='add'row="2" col="1" text="{{m._source.choosenAddress.city}}"></Label>
+  		   			    <Label class='add'row="3" col="0" text="Commune" ></Label> 
+  						<Label class='add'row="3" col="1" text="{{m._source.choosenAddress.commune}}"></Label>
+  		   			    <Label class='add'row="4" col="0" text="Codepostal" ></Label> 
+  						<Label class='add'row="4" col="1" text="{{m._source.choosenAddress.zipcode}}"></Label>
+  		     			<Label class='add'row="5" col="0" text="Addresse" ></Label> 
+  						<Label class='add'row="5" col="1" text="{{m._source.choosenAddress.address}}"></Label>
+  		     			
+					</GridLayout>
+      		    	<StackLayout row="11" margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+      		    	
+      		    	<GridLayout row="12" rows='auto,*'>
+      		    	   <GridLayout margin='0,0,10,0' row="0" columns="*,auto,auto,auto,auto,auto">
+      		    	
+      		    	    <Image   col="0" src="res://trolley" class='wizardimg' stretch="aspectFill"></Image>
+      		    	    <Label    col='0'  class='wizardActive'></Label>
+      		    	   
+      		    	
+      		  		  	<Image  [visibility]="m._source.steps.stop!=0 ? 'visible' : 'collapsed'"  col="1" src="res://close" class='wizardimg' stretch="aspectFill"></Image>
+      		    	    <Label  [visibility]="m._source.steps.stop!=0 ? 'visible' : 'collapsed'"  col='1'  class='wizardActive'></Label>
+      		    	   
+      		    	
+      		  		  	<Image  [visibility]="m._source.steps.stop==0  ? 'visible' : 'collapsed'"   col="2" src="res://delivery" class='wizardimg' stretch="aspectFill"></Image>
+      		  		  	<Label  [visibility]="m._source.steps.stop==0  && m._source.steps.send==0  ? 'visible' : 'collapsed'"  col='2'  class='wizard'></Label>
+      		    	    <Label  [visibility]="m._source.steps.stop==0  && m._source.steps.send!=0  ? 'visible' : 'collapsed'"  col='2'  class='wizardActive'></Label>
+      		    	   
+      		  		  	
+      		  		  	
+      		    	
+      		 		   	<Image  [visibility]="m._source.steps.stop==0  ? 'visible' : 'collapsed'" col="3" src="res://closebox" class='wizardimg' stretch="aspectFill"></Image>
+        			    <Label  [visibility]="m._source.steps.stop==0  && m._source.steps.receive==0  ? 'visible' : 'collapsed'"  col='3'  class='wizard'></Label>
+      		    	    <Label  [visibility]="m._source.steps.stop==0  && m._source.steps.receive!=0  ? 'visible' : 'collapsed'"  col='3'  class='wizardActive'></Label>
+      		    	   
+      		  		  	
+      		    	
+      		  		  	<Image  [visibility]="m._source.steps.stop==0 &&  m._source.steps.litige !=0 ? 'visible' : 'collapsed'" col="4" src="res://litige" class='wizardimg' stretch="aspectFill"></Image>
+       		 		  	<Label  [visibility]="m._source.steps.stop==0  && m._source.steps.litige !=0 ? 'visible' : 'collapsed'" col='4'  class='wizardActive'></Label>
+       		 		  	
+ 
+      		 	        <Image  [visibility]="m._source.steps.stop==0  ? 'visible' : 'collapsed'" col="5" src="res://checked" class='wizardimg' stretch="aspectFill"></Image>
+       		 	        <Label  [visibility]="m._source.steps.close==0 ? 'visible' : 'collapsed'" col='5'  class='wizard'></Label>
+       		 		  	<Label  [visibility]="m._source.steps.close!=0 ? 'visible' : 'collapsed'" col='5'  class='wizardActive'></Label>
+      		    	
+      		    		</GridLayout>
+      		    		<StackLayout row="1">
+      		    			
+ 	  	 					<Label textWrap='true' class="ongoingli"  *ngIf='m._source.steps.stop==0 && m._source.steps.prepare==0 '  text='En cours de préparation'></Label>
+ 	  	 				    
+ 	  	 				    <StackLayout orientation="horizontal">
+ 	  	 				    <Label textWrap='true' class="ongoingli"    *ngIf='( m._source.steps.prepare==0 && m._source.steps.stop ==0)' text='Annuler la commande '></Label>
+ 	  	  				    <Button  *ngIf='( m._source.steps.prepare==0 && m._source.steps.stop ==0)' (tap)="showModal(m._id, i, m._source.storetitle ); " height="35" backgroundColor='#d9534f' color="#FFF" text="&#xf00d;" class="fas">  </Button>
+ 	  	 					<ActivityIndicator  *ngIf="m._source.steps.stoploading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.stoploading"></ActivityIndicator>
+ 	  	 					
+ 	  	 					</StackLayout>
+ 	  	 					
+ 	  	 					<Label textWrap='true' class="ongoingli"   *ngIf='m._source.steps.prepare!=0' text='Commande préparée le: {{m._source.steps.prepare}}'></Label>
+ 	  	
+ 	  			
+ 	  	 			     	<Label textWrap='true' class="ongoingli"  *ngIf='m._source.steps.stop!=0' text='Commande annulée le: {{m._source.steps.stop}}'></Label>
+ 	  					
+ 	  						<Label  textWrap='true' class="ongoingli"  *ngIf="m._source.steps.send==0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 "  text="Attente de l'envoie" ></Label>
+	   
+	     					<Label  textWrap='true' class="ongoingli"  *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 " text='Commande envoyée le {{m._source.steps.send}}'> </Label>
+					 	    
+					 	     <StackLayout orientation="horizontal">   
+					 	     <Label  textWrap='true' class="ongoingli" *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 && m._source.steps.receive==0" text="Commande reçu"></Label>
+					 	     <Button textWrap='true'  *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0  && m._source.steps.receive==0"  (tap)=" receiveDone(m._id, i,m._source.storetitle)"  height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+						      <ActivityIndicator   *ngIf="m._source.steps.receiveloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.receiveloading"></ActivityIndicator>
+							   
+					 	     </StackLayout>
+					 	    
+					 	    <Label textWrap='true'  class="ongoingli" *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0" text="Commande reçu le {{m._source.steps.receive}}"></Label>
+					 	    <StackLayout orientation='horizontal'>
+					 	    <Label  textWrap='true' class="ongoingli" *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige==0 && m._source.steps.close==0" text="Ouvrir un litige"></Label>
+					 	    <Button  *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige==0 && m._source.steps.close==0" text="" (tap)="litigeDone(m._id, i, m._source.storetitle )"   height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+					 	     <ActivityIndicator  *ngIf="m._source.steps.litigeloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.litigeloading"></ActivityIndicator>
+					 	    
+					 	    </StackLayout>
+					 	    <Label textWrap='true' class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 "  text="Litige ouvert le {{m._source.steps.litige}}"></Label> 
+					 	    
+	 						<Label  textWrap='true' class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige==0 " text="Veuillez contacter le magasin pour trouver une solution à votre litige" ></Label>
+	 						<StackLayout orientation='horizontal'>
+	 						<Label  textWrap='true' class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige==0 " text="Litige résolu" ></Label>
+	 						 <Button *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige==0 "  (tap)=" solvedlitigeDone(m._id, i, m._source.storetitle )"   height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+	 					     <ActivityIndicator  *ngIf="m._source.steps.solvedlitigeloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.solvedlitigeloading"></ActivityIndicator>
+	 					    
+	 					    </StackLayout>
+  
+  						 	<Label textWrap='true'  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0 " text='Litige résolu le {{m._source.steps.solvedlitige}}'></Label>
+  						 
+          					<StackLayout orientation='horizontal'>
+          			  	   <Label textWrap='true'  class="ongoingli"   *ngIf="m._source.steps.close==0 && m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 && ((m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0) ||m._source.steps.litige==0)  " text="Fermer la commande"></Label>
+        					<Button *ngIf="m._source.steps.close==0 && m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 && ((m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0) ||m._source.steps.litige==0) "  (tap)="closeDone(m._id, i, m._source.storetitle); "     height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
+        					 <ActivityIndicator   *ngIf="m._source.steps.closeloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.closeloading"></ActivityIndicator>
+        					
+        					</StackLayout>
      
-     </wizard-step>
- 
-</form-wizard>
-	
-  </li>
- </ul>
- </div> 
+     					    <Label textWrap='true' class="ongoingli" *ngIf="m._source.steps.close!=0 "  text='Commande fermée le {{m._source.steps.close}}'></Label>
+     				</StackLayout>
+      		   		</GridLayout>
+      		    	<StackLayout row="13">
+      		    	<GridLayout  rows="auto,*" margin="5,0,5,0">
+      		    		<StackLayout row="0" orientation='horizontal'>
+      		    	 <Label  text="&#xf075; Messages " class='msgtitle fas ' width="90%"></Label>
+      		    	 <Label text ='&#xf107;' class="msgtitle fas"  (tap)="openMsgs(i,m._id)" (touch)='ontouch3($event)' ></Label>
+      		    	 </StackLayout>
+      		    	
+      		    	
+      		    		<RadListView row="1" id={{m._id}} margin="0,10,0,10" [items]="m._source.messages "  height="200"   [visibility]="isopen['message'+m._id] ? 'visible' : 'collapsed'" >
+						<ng-template let-message="item"  >
+						<StackLayout>
+						
+						<GridLayout columns="auto,*" [visibility]="!message.fromMe? 'visible' : 'collapsed'" >
+						
+						<Image loadMode="async" col="0" src='{{avatarlist[message.from]}}' class="pic2"  stretch="aspectFill"  ></Image>
+					    
+					    <GridLayout col="1" rows='auto,auto'  >
+					   		 <StackLayout  row="0" orientation=horizontal>
+					   		 	<Label textWrap='true' width="75%" text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		 	<Label textWrap='true'  class="fas" fontSize="10" text="&#xf017; {{message.date}}"></Label>
+					   		  </StackLayout>
+					  		 <textView margin="0,25,5,25"row="1" text='{{message.text}}' editable="false" class="msgs1"></textView>
+						 </GridLayout> 
+						</GridLayout>
+						
+						<GridLayout  columns="*,auto" [visibility]="message.fromMe? 'visible' : 'collapsed'" >
+						   <Image col="1" src='{{avatarlist[message.from]}}' loadMode="async"  class="pic2"  stretch="aspectFill"  ></Image>
+					       		 
+					       <GridLayout col="0" rows="auto,auto" >
+					   		 <StackLayout row="0" orientation=horizontal horizontalAlignment="right"  >
+					   		     <Label textWrap='true' width="60%" fontSize="10" class="fas" text="&#xf017; {{message.date}}"></Label>
+					   		  
+					   		 	 <Label textWrap='true' width="40%"   text="{{fullnamelist[message.from]}}" class="fname"></Label>
+					   		  </StackLayout>
+					  		 <TextView margin='0,25,5,25'  row ="1" text=' {{message.text}}' class="msgs2" editable="false"></TextView>
+						 </GridLayout>
+						
+						</GridLayout>
+						</StackLayout>
+						</ng-template>	
+						
+      		       </RadListView>
+      		    	
+      		    	 <!-- StackLayout  row="2" orientation="horizontal">
+      		    	 <TextView  width='80%' class="msg"  returnKeyType="done" ></TextView>
+      		    	 <Label  text='Envoyer' class="send" returnKeyType="done" (tap)=" sendMessage(i, m._id,f, m._source.storetitle)"></Label>
+      		    	 </StackLayout-->
+      		    </GridLayout>
+      		    	 
+      		    	 
+      		    </StackLayout>
+      		 	     <StackLayout row="14"  margin="10,0,10,0"  colSpan="0" backgroundColor="#D0D0D0" height="6"></StackLayout>
+      		    	
+      		    </GridLayout>
+      		   
+     	  </ng-template>
+     	  	
 
-  <div class="card row"  style="margin-top:5px ;" >
-        <div class="card-header" [attr.id]="'accordion_' + i" >
-                    <span class="fa fa-comment"></span><i i18n='@@messages'> Messages </i>
-                    <div i18n-class class="btn-group pull-right">
-                        <a type="button" class="btn btn-default btn-xs" data-toggle="collapse" [attr.data-parent]="'#accordion_' + i" [attr.href]="'#collapseOne_' + i">
-                            <span class="fa fa-chevron-down"></span>
-                        </a>
-                    </div>
-          </div>
-<div  [attr.id]="'collapseOne_' + i"  class="collapse card-body"> 
+</RadListView>  
 
-     
-      <div *ngFor="let message of m._source.messages  "  >
-	
-		 <ul class="chat">
-                     <li *ngIf='message.fromMe' i18n-class class="left clearfix"><span i18n-class class="chat-img pull-left">
-                      	
-                      <span class=" profile-picture "> <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' 
-                      alt="User Avatar" /></span>
-                        </span>
-                            <div class="chat-body clearfix">
-                                <div class="header">
-                                    <strong class="primary-font">{{fullnamelist[message.from]}}</strong> <small i18n-class class="pull-right text-muted">
-                                        <span class="fa fa-clock-o"></span>{{message.date}}</small>
-                                </div>
-                                <p>
-                                   {{message.text}}
-                                </p>
-                            </div>
-                        </li>
-                         <li *ngIf='!message.fromMe' i18n-class class="right clearfix"><span i18n-class class="chat-img pull-right">
-                       <span class=" profile-picture ">  <img class=" resize" alt=" Avatar" id="avatar" [src]='avatarlist[message.from]'
-                            alt="User Avatar"/> </span>
-                        </span>
-                        <div class="chat-body clearfix">
-                                <div class="header">
-                                    <small class=" text-muted"><span class="fa fa-clock-o"></span>{{message.date}}</small>
-                                    <strong i18n-class class="pull-right primary-font">{{fullnamelist[message.from]}} </strong>
-                                </div>
-                                <p>
-                                  {{message.text}}
-                                </p>
-                            </div>
-                        </li>
-          </ul>
-	
-		 <!--  span class=" profile-picture ">
-		 <img class=" resize" alt=" Avatar" id="avatar2" [src]='avatarlist[message.from]' />
-		 </span>
-		
-		 <span class='date'> </span> <br>
-		 <textarea class='form-control' rows="3"  readonly  maxlength=200  >
-		 
-		 </textarea->
-		
-		
-  			
-  		
-	 </div> 
-	 
- 
-   </div>
-     
-  </div>
- 
+<ActivityIndicator row="5" *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
 
+</GridLayout>
+</ScrollView>
 
-</li>
-</ul>
- 
-<div class="has-text-centered" i18n-style style='float:right; '>
-    <div class="spinner" [ngClass]="{ 'hidden': !loading }"></div>
-    <pagination-controls (pageChange)="getPage($event)" id="server"  i18n-previousLabel previousLabel="précédent" i18n-nextLabel nextLabel='suivant'></pagination-controls>
-</div>
-</div>
-</div>
-</div></div>
-
-
--->

@@ -1,333 +1,218 @@
-<StackLayout>
-  <Label text="adress works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
-
-<!--
-Original Web template:
+<GridLayout rows='auto,*'>
 
 
- <div i18n-class class="text-left" *ngIf ="addresses.length != 0 ">
-
- <div   *ngFor="let model of addresses"  >
- <label class="labl"  >
-           
-       	        <input type="radio" name="radiogroup"  
-                [value]="model" (change)="onSelectionChange(model)" id ='radio' />
-                       	
-
- <div class =" card   " [attr.id]="'accordion_'+model._id"  >
-<div  class =" btn card-heading" style='width:100% '>
-<span style ="float:left; "> <b>{{model._source.title}}  </b> </span>
-<span style='float:right; '><a   *ngIf='!editAddress[model._id]' scrollTo scrollableElementSelector="#model._id"    data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span class="fa fa-chevron-down  "></span>  </a>  
-
-<a  style='margin-left:10px ; '   scrollTo scrollableElementSelector="#model._id"   data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span  (click)='editingAddress(model)'  class="fa fa-pencil"> </span></a>
-
-
- <a class="btn btn-link  fa fa-remove" *ngIf='!editAddress[model._id]'  style='display:inline-block; ' (click)='removeAddress(model)'></a>
-</span>
-					
-</div>
-<div  class = " card-body collapse " [attr.id]="'collapse_'+model._id" > 
-
-<div class='row' *ngIf='!editAddress[model._id]'  >
- <table class="table table-responsive table-sm" id='table' >     
+<RadListView row="0" [items]='addresses' >
+   	<ng-template let-m="item" let-i='index' >
+ 
+	<GridLayout rows='auto,*'  >
+    <GridLayout row="0" columns='*,auto,auto,auto' class="btn">
     
-   <tbody>
-	 <tr>
-  		<td i18n='@@mmme'>à M.Mme.</td>
-  		<td>
-  		 
-     		 {{model._source.to}}
-
-     		   
-  		</td>
-  	</tr>
-  	<tr>
-  	    <td i18n='@@telephone'>Téléphone</td>
-  		<td>
-     		 {{model._source.phone}}
-     	
-     		     
-  		</td>
-  		
-  	 </tr>
-  	<tr> 
-  	    <td i18n='@@ville'>Ville </td>
-  		<td>
-
-     		 {{model._source.city }}
+    <Label  textWrap='true'  (touch)='ontouch($event)'  fontSize='12' col="0" text='{{m._source.title}}' (tap)="onSelectionChange(m)"></Label>
+    <Label (touch)='ontouch($event)'  margin="0,8,0,0" fontSize="16" padding="3" col='1' text='&#xf078;' (tap)='showingAddress(m)' *ngIf='!editAddress[m._id]'class='fas'></Label>
+    <Label (touch)='ontouch($event)'  margin="0,8,0,0" fontSize="16" padding="3" col='2' text='&#xf044;' (tap)='editingAddress(m)' class='fas'></Label>
+    <Label  (touch)='ontouch($event)'   fontSize="18" padding="3" col='3' text='&#xf00d;' (tap)='removeAddress(m)' *ngIf='!editAddress[m._id]' class='fas'></Label>
+    
+    </GridLayout>
    
-  		</td> 
-  		
-  	</tr>
-  	<tr> 
-  	    <td i18n="@@commune">Commune </td>
-  		<td>
-     		 {{model._source.commune }}
-     	
-  		</td> 
-  		
-  	</tr> 
-  	<tr> 
-  	   <td i18n='@@codepostal'>Codepostal  </td>
-  		<td>
-  		    
-           
-     		 {{model._source.zipcode}}
-     		 
-  		</td> 
-  	</tr>
-  	<tr> 
-  		<td i18n="@@addresse">Addresse </td>
-  		<td>
+    	<GridLayout padding="5" [visibility]="showAddress[m._id] ? 'visible' : 'collapsed'"   row="1" backgroundColor="#fff"  rows="*,*,*,*,*,*,*" columns="*,*" >
+					
+						<Label textWrap='true'  class='add' row="0" col="0" text="à M.Mme" ></Label> 
+  						<Label textWrap='true'  class='add'row="0" col="1" text="{{m._source.to}}"></Label>
+  		     			<Label textWrap='true'  class='add'row="1" col="0" text="Téléphone" ></Label> 
+  						<Label textWrap='true'  class='add' row="1" col="1" text="{{m._source.phone}}"></Label>
+  		     			<Label textWrap='true'  class='add'row="2" col="0" text="Ville" ></Label> 
+  						<Label textWrap='true'  class='add'row="2" col="1" text="{{m._source.city}}"></Label>
+  		   			    <Label textWrap='true'  class='add'row="3" col="0" text="Commune" ></Label> 
+  						<Label textWrap='true'  class='add'row="3" col="1" text="{{m._source.commune}}"></Label>
+  		   			    <Label textWrap='true'  class='add'row="4" col="0" text="Codepostal" ></Label> 
+  						<Label textWrap='true'  class='add'row="4" col="1" text="{{m._source.zipcode}}"></Label>
+  		     			<Label textWrap='true'  class='add'row="5" col="0" text="Addresse" ></Label> 
+  						<Label textWrap='true'  class='add'row="5" col="1" text="{{m._source.address}}"></Label>
+  		     			<Label textWrap='true'  class="add fas" (touch)='ontouch($event)' row='6' col='1' text='&#xf077;' (tap)="showAddress[m._id]=false" ></Label>
+  		     			
+		</GridLayout>
+    
+    
+    
+    
   
-     		<p> {{model._source.address}}</p>
-     	
-  		</td> 
-    </tr>
-    <tr>
-    <td></td>
-    <td>
-<a  scrollTo scrollableElementSelector="#'collapse_'+model._id"    data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span class="fa fa-chevron-up  "></span></a>
-</td>
-   </tr>
-  </tbody>
+ <GridLayout row="1"  [visibility]="editAddress[m._id] ? 'visible' : 'collapsed'" 
+ 
+ 			backgroundColor="#fff"  rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto' >
+     <Label row="0" text='Titre Addresse' class="label"></Label>
+     <GridLayout row ="1" rows="auto, auto, auto , auto">
+      <TextField margin='-5,0,0,0'  maxLength="50" row="0" hint="" class='input'  [(ngModel)]="m._source.title"></TextField>
+	 <TextView editable="false" row="1" text ="donnez le titre de votre addresse" *ngIf="send && m._source.title.length==0" class="alert"></TextView>            
+   	 <TextView  editable="false" row="3" text ="Ce titre est trop long" *ngIf="send && m._source.title.length>50 " class="alert"></TextView>            
+	</GridLayout>
 
-</table>
-</div>
+	  <Label row="2" text='à Mme. M.' class="label"></Label>
+     <GridLayout row ="3" rows="auto,auto">
+      <TextField margin='-5,0,0,0'  maxLength="50" row="0" hint="" class='input'  [(ngModel)]="m._source.to"></TextField>
+	 <TextView editable="false" row="1" text ="Le nom du destinataire est obligatoire" *ngIf="send && m._source.to.length==0" class="alert"></TextView>                    
+	</GridLayout>
+	
+	 <Label row="4" text='Téléphone' class="label"></Label>
+     <GridLayout row ="5" rows="auto, auto">
+      <MaskedTextField margin='-5,0,0,0'    row='0' 
+                        keyboardType="phone"
+                       [(ngModel)]="m._source.phone"
+                       mask="00 00 00 00 00"></MaskedTextField>
+	 <TextView editable="false" row="1" text ="ajouter le téléphone du destinataire" *ngIf="send && model.phone.includes('_')" class="alert"></TextView>            
+	 </GridLayout>
 
-
-<div class='row' *ngIf='editAddress[model._id]'  >
-<form name="form" (ngSubmit)="f.form.valid  && updateAddress(model) " #f="ngForm" novalidate>
-
- <table class="table  table-sm table-responsive "  >     
- 	<tbody >
-    	
-  	 <tr>
-  		<td i18n="@@titre">Titre</td>
-  		<td>
-  		  
-            <input type="text" class="form-control" name="title" [(ngModel)]="model._source.title" #title="ngModel" required pattern="^([a-zA-Z]{2,}?)" >
-              <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
-              <div i18n="@@titrealert" *ngIf="f.submitted && title.hasError('required')" class="help-block">Le titre est obligatoire</div>
-             </div>
-     		    
-  		</td>
-  	</tr> 
-  	 <tr>
-  		<td i18n="@@mmme">à M.Mme.</td>
-  		<td>
-  		  
-            <input type="text" class="form-control" name="to" [(ngModel)]="model._source.to" #to="ngModel" required pattern="^([a-zA-Z]{2,}\s[a-zA-z]{1,}?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)">
-              <div  *ngIf="to.invalid && (to.dirty || to.touched)" class="alert alert-danger">
-              <div i18n='@@namealert' *ngIf="f.submitted && to.hasError('required')" class="help-block"> Taper le nom du destinataire </div>
-                           <div i18n="@@namealert2" *ngIf=" to.hasError('pattern')" class="help-block"> Nom prénom </div>
-             
-             </div>
-     		    
-  		</td>
-  	</tr>
-  	<tr>
-  	    <td i18n='@@telephone'>Téléphone</td>
-  		<td>
-  		    
-            <input type="text" class="form-control" name="phone" [(ngModel)]="model._source.phone" #phone="ngModel" required [textMask]="{mask: phonemask}"  >
-              <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
-              <div i18n='@@telephonealert2' *ngIf="f.submitted && phone.hasError('required')" class="help-block">ajouter un numero de téléphone</div>
-             </div>
-     		    
-  		</td>
-  		
-  	 </tr>
-  	<tr>
-  	   	
-		 
-  	    <td>Ville </td>
-  		<td>
-           
-            <ngx-select-dropdown (change)="chooseCity($event, model)" [multiple]="false" [(value)]="choosecity" [config]="cityconfig" [options]="cities" required ></ngx-select-dropdown>
-              <div *ngIf="choosecity.invalid && (choosecity.dirty || choosecity.touched)" class="alert alert-danger">
-              <div *ngIf="f.submitted && choosecity.hasError('required')" class="help-block"> required</div>
-             </div>
-     		  
-  		</td> 
-  		
-  	</tr>
-  	
-  		<tr> 
-  	    <td>Commune</td>
-  		<td>
-           
-            <ngx-select-dropdown  (change)="chooseCommune($event, model)" [multiple]="false" [(value)]="choosecom" [config]="comconfig" [options]="communes" required ></ngx-select-dropdown>
-              <div *ngIf="choosecom.invalid && (choosecom.dirty || choosecom.touched)" class="alert alert-danger">
-              <div *ngIf="f.submitted && choosecom.hasError('required')" class="help-block"> required</div>
-             </div>
-     		  
-  		</td> 
-  		
-  	</tr>
-  	<tr> 
-  	   <td>Codepostal  </td>
-  		<td>
-  		     
-            <input type="text" [readonly]="true" class="form-control" name="zipcode" [(ngModel)]="model._source.zipcode" #zipcode="ngModel" required >
-              <div *ngIf="zipcode.invalid && (zipcode.dirty || zipcode.touched)" class="alert alert-danger">
-              <div *ngIf="f.submitted && zipcode.hasError('required')" class="help-block"> required</div>
-             </div>
-     		     
-  		</td> 
-  	</tr>
-  	<tr> 
-  		   <td> Addresse </td>
-  		<td>
-  		    
-            <textarea rows="3" type="text" class="form-control" name="address" [(ngModel)]="model._source.address" #address="ngModel" required >
-             </textarea>
-              <div *ngIf="address.invalid && (address.dirty || address.touched)" class="alert alert-danger">
-              <div *ngIf="f.submitted && address.hasError('required')" class="help-block"> required</div>
-             </div>
-     		   
-  		</td> 
-    </tr>
-    <tr>
-    <th></th>
-    	 <th>      
-  	     		  	 <button class="btn btn-info "  style='display:inline-block ;margin-right:5px; '> save <span *ngIf='loading' class='fa fa-spinner'></span>  </button>
-					<a  scrollTo scrollableElementSelector="#'collapse_'+model._id"    data-toggle="collapse" [attr.data-parent]="'#accordion_'+model._id" [attr.href]="'#collapse_'+model._id"  aria-expanded="false" aria-controls="collapse">  <span class="fa fa-chevron-up  "  (click)='undo(model)'> cancel</span></a>
-					
+    
+	 <Label row="6" text='Ville' class="label" ></Label>
+     <GridLayout margin="0,0,10,0" row='7' rows="auto,auto, auto  ">
+        
+        <DropDown  #dd
+                  [items]="cities"
+                  [(ngModel)]="selectedIndex"
+                  (selectedIndexChanged)="onchanges($event,i )"
+                  colSpan="2"
+                  row='0'>
+        </DropDown>
+		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+		 <TextView editable="false" row="2" text ="ajouter la ville" *ngIf="send && m._source.city.length==0" class="alert"></TextView>            
 			
+	</GridLayout>
+	
+    <Label row="8" text='Commune' class="label" ></Label>
+    <GridLayout margin="0,0,10,0" row='9' rows="auto,auto, auto  ">
+        
+        <DropDown  #dd
+                  [items]="communes"
+                  [(ngModel)]="selectedIndex1"
+                  (selectedIndexChanged)="onchanges1($event,i)"
+                  colSpan="2"
+                  row='0'>
+        </DropDown>
+		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+		  <TextView editable="false" row="2" text ="ajouter la commune" *ngIf="send && m._source.commune.length==0" class="alert"></TextView>            
+			
+	</GridLayout>
+	
+	 <Label row="10" text='Code postal' class="label"></Label>
+     <GridLayout row ="11" rows="auto">
+      <TextField margin='-5,0,0,0' editable="false"  row="0" hint="" class='input'  [(ngModel)]="m._source.zipcode"></TextField>
+	</GridLayout>
+	
+ 	 
+ 	  <Label row='12' text="Addresse" class="label"></Label>
+ 	  <GridLayout row='13'  rows="auto,auto,auto">
+      <TextView margin='-5,0,0,0'  row='0' hint="" class="input" [(ngModel)]="m._source.address"    returnKeyType="done" 
+        returnPress="onReturnPress"
+  
+        maxLength="300"></TextView>
+      <TextView  editable="false" row="1" text ="Ajoutez l'addresse" *ngIf="send && m._source.address.length ==0 " class="alert"></TextView>            
+      
+      </GridLayout>
+    
+      <GridLayout row='14' columns ='*,auto,auto, auto'>
+      
+         <Button [isEnabled]="!loading"  col="1" class="send " text="Envoyer" (tap)="updateAddress(m._source, m._id) "></Button>
+         <ActivityIndicator *ngIf="loading"  col="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+      
+         <Label [isEnabled]="!loading" (touch)='ontouch($event)'  class="undo  " col="3"  text="Annuler" (tap)='undo(m)' ></Label>
+      </GridLayout>
+      
+	</GridLayout>
+   
+	</GridLayout>
+	
+	</ng-template>
+</RadListView>
 
-					
-         </th>
-     </tr>
+
+<StackLayout  row="1"    > 
+  <Label fontSize='14' margin='5,0,10,0' (touch)='ontouch($event)'   text ='+ Nouvelle Addresse' class="fas btn" (tap)='show=!show'  ></Label>
+	
+   <GridLayout  backgroundColor="#fff"  rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto'  [visibility]="show? 'visible' : 'collapsed'" >
      
 
-</tbody>
-</table>
-        </form>
- 
-</div> 
+     <Label row="0" text='Titre Addresse' class="label"></Label>
+     <GridLayout row ="1" rows="auto, auto, auto , auto">
+      <TextField margin='-5,0,0,0' maxLength="50" row="0" hint="" class='input'  [(ngModel)]="model.title"></TextField>
+	 <TextView editable="false" row="1" text ="donnez le titre de votre addresse" *ngIf="send && model.title.length==0" class="alert"></TextView>            
+   	 <TextView  editable="false" row="3" text ="Ce titre est trop long" *ngIf="send && model.title.length>50 " class="alert"></TextView>            
+	</GridLayout>
 
-</div>
-</div>
+	  <Label row="2" text='à Mme. M.' class="label"></Label>
+     <GridLayout row ="3" rows="auto,auto">
+      <TextField margin='-5,0,0,0'  maxLength="50" row="0" hint="" class='input'  [(ngModel)]="model.to"></TextField>
+	 <TextView editable="false" row="1" text ="Le nom du destinataire est obligatoire" *ngIf="send && model.to.length==0" class="alert"></TextView>                    
+	</GridLayout>
+	
+	 <Label row="4" text='Téléphone' class="label"></Label>
+     <GridLayout row ="5" rows="auto, auto">
+      <MaskedTextField margin='-5,0,0,0'   row='0' 
+                        keyboardType="phone"
+                       [(ngModel)]="model.phone"
+                       mask="00 00 00 00 00"></MaskedTextField>
+	 <TextView editable="false" row="1" text ="ajouter le téléphone du destinataire" *ngIf="send && model.phone.includes('_')" class="alert"></TextView>            
+	 </GridLayout>
 
-	</label> 
-</div>
-  </div>
-
-   <div i18n-class class =" card text-left "   >
-<div  class =" btn card-heading" style='width:100%; '>
- <a i18n='@@nouvelleaddresse' (click)='show=!show ; ' scrollTo scrollableElementSelector="#collapse"   class="btn btn-link  fa fa-plus"  href="#collapse"  aria-controls="collapse"	>
-  	Nouvelle addresse   </a>
-</div>
-  	       
- <div  class =" card-body collapse " id="collapse" [ngClass]="{'collapse.show':show,'collapse': !show}" >
-<form name="form" (ngSubmit)="f.form.valid  && addAddress(model._source) " #f="ngForm" novalidate>
- 
- <table class="table table-responsive table-sm" id='table' >     
     
-  	<tbody >
-  	 <tr>
-  		<td i18n='@@titre'> Titre</td>
-  		<td>
-  		  
-            <input type="text" class="form-control" name="title" [(ngModel)]="model._source.title" #title="ngModel" maxlength="100" >
-              <div  *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
-              <div i18n='@@titrealert' *ngIf="f.submitted && title.hasError('required')" class="help-block">Ajoutez un titre a l'addresse</div>
-             </div>
-     		    
-  		</td>
-  	</tr> 
-  	 <tr>
-  		<td i18n='@@mmme'> à M.Mme. </td>
-  		<td>
-  		  
-            <input type="text" class="form-control" name="to" [(ngModel)]="model._source.to" #to="ngModel" required pattern="^([a-zA-Z]{2,}\s[a-zA-z]{1,}?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)">
-              <div *ngIf="to.invalid && (to.dirty || to.touched)" class="alert alert-danger">
-              <div i18n="@@namealert" *ngIf="f.submitted && to.hasError('required')" class="help-block">Ajoutez un Nom</div>
-              <div i18n='@@namealert2'*ngIf=" to.hasError('pattern')" class="help-block">Nom Prénom</div>
-             
-             </div>
-     		    
-  		</td>
-  	</tr>
-  	<tr>
-  	    <td i18n='@@telephone'>Téléphone </td>
-  		<td>
-  		    
-            <input dir='ltr'type="text" class="form-control" name="phone" [(ngModel)]="model._source.phone" #phone="ngModel" required [textMask]="{mask: phonemask}"  >
-              <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
-              <div i18n='@@telephonealert' *ngIf="f.submitted && phone.hasError('required')" class="help-block">Ajouter un téléphone</div>
-             </div>
-     		    
-  		</td>
-  		
-  	 </tr>
-  	<tr>
-  	   	
-		 
-  	    <td i18n='@@ville'> Ville </td>
-  		<td>
-           
-            <ngx-select-dropdown (change)="chooseCity($event, model)" [multiple]="false" [(value)]="choosecity" [config]="cityconfig" [options]="cities" required ></ngx-select-dropdown>
-              <div i18n='@@villealert' *ngIf="f.submitted && choosecity.length==0" class="help-block alert alert-warning">Ajoutez une ville</div>
-              
-     		  
-  		</td> 
-  		
-  	</tr>
-  	
-  		<tr> 
-  	    <td i18n="@@commune"> Commune</td>
-  		<td>
-           
-            <ngx-select-dropdown  (change)="chooseCommune($event, model)" [multiple]="false" [(value)]="choosecom" [config]="comconfig" [options]="communes" required ></ngx-select-dropdown>
-              <div i18n="@@communealert" *ngIf="f.submitted && choosecom.length==0" class="help-block alert alert-warning">Choisissez une commune</div>
-             
-     		  
-  		</td> 
-  		
-  	</tr>
-  	<tr> 
-  	   <td i18n='@@codepostal'>Codepostal  </td>
-  		<td>
-  		     
-            <input type="text" [readonly]="true" class="form-control" name="zipcode" [(ngModel)]="model._source.zipcode" #zipcode="ngModel" required >
-              <div  *ngIf="zipcode.invalid && (zipcode.dirty || zipcode.touched)" class="alert alert-danger">
-              <div i18n='@@codepostalalert' *ngIf="f.submitted && zipcode.hasError('required')" class="help-block">Code postal obligatoire</div>
-             </div>
-     		     
-  		</td> 
-  	</tr>
-  	<tr> 
-  		   <td i18n='@@addresse'> Addresse </td>
-  		<td>
-  		    
-            <textarea rows ='2' maxlength="150" type="text" class="form-control" name="address" [(ngModel)]="model._source.address" #address="ngModel" required >
-             </textarea>
-              <div *ngIf="address.invalid && (address.dirty || address.touched)" class="alert alert-danger">
-              <div i18n="@@addressealert" *ngIf="f.submitted && address.hasError('required')" class="help-block">Ajoutez une addresse</div>
-             </div>
-     		   
-  		</td> 
-    </tr>
-    <tr>
-    <th></th>
-    	 <th>      
-  	     		  	 <button class="btn btn-info "  style='display:inline-block ;margin-right:5px; ' i18n='@@save'>Enregistrer<span *ngIf='loading' class='fa fa-spinner'></span>  </button>
-		
-           <a class="btn fa fa-remove"  style='display:inline-block;'(click)="cancel();"  i18n='@@annuler'>Annuler</a>     	 
-         </th>
-     </tr>
-</tbody>
- 
+	 <Label row="6" text='Ville' class="label" ></Label>
+     <GridLayout margin="0,0,10,0" row='7' rows="auto,auto, auto  ">
+        
+        <DropDown  #dd
+                  [items]="cities"
+                  [(ngModel)]="selectedIndex"
+                  (selectedIndexChanged)="onchange($event)"
+                  colSpan="2"
+                  row='0'>
+        </DropDown>
+		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+		 <TextView editable="false" row="2" text ="ajouter la ville" *ngIf="send && model.city.length==0" class="alert"></TextView>            
+			
+	</GridLayout>
+	
+    <Label row="8" text='Commune' class="label" ></Label>
+    <GridLayout margin="0,0,10,0" row='9' rows="auto,auto, auto  ">
+        
+        <DropDown  #dd
+                  [items]="communes"
+                  
+                  [(ngModel)]="selectedIndex1"
+                  (selectedIndexChanged)="onchange1($event)"
+                  colSpan="2"
+                  row='0'>
+        </DropDown>
+		 <StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout>
+		  <TextView editable="false" row="2" text ="ajouter la commune" *ngIf="send && model.commune.length==0" class="alert"></TextView>            
+			
+	</GridLayout>
+	
+	 <Label row="10" text='Code postal' class="label"></Label>
+     <GridLayout row ="11" rows="auto">
+      <TextField margin='-5,0,0,0'  editable="false"  row="0" hint="" class='input'  [(ngModel)]="model.zipcode"></TextField>
+	</GridLayout>
+	
+ 	 
+ 	  <Label row='12' text="Addresse" class="label"></Label>
+ 	  <GridLayout row='13'  rows="auto,auto,auto">
+      <TextView  margin='-5,0,0,0' row='0' hint="" class="input" [(ngModel)]="model.address"    returnKeyType="done" 
+        returnPress="addAddress()"
   
-</table>
-</form>
-</div> 
-</div>
+        maxLength="300"></TextView>
+      <TextView  editable="false" row="1" text ="Ajoutez l'addresse" *ngIf="send && model.address.length ==0 " class="alert"></TextView>            
+      
+      </GridLayout>
+    
+      <GridLayout row='14' columns ='*,auto,auto, auto'>
+      
+         <Button  [isEnabled]="!loading" col="1" class="send " text="Envoyer" (tap)="  addAddress()"></Button>
+         <ActivityIndicator *ngIf="loading"  col="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+      
+         <Label [isEnabled]="!loading" (touch)='ontouch($event)'  class="undo  " col="3"  text="Annuler" (tap)='cancel()' ></Label>
+      </GridLayout>
+      
+	</GridLayout>
+  
+</StackLayout>
 
+
+
+</GridLayout>
  
--->

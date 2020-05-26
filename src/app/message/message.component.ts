@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {PicService, UserdetailsService, StoreService, MessagesService, FirebaseService  } from '../_services/index';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {PicService, UserdetailsService, StoreService, MessagesService , FirebaseService} from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs';
 import * as  prettyMs from 'pretty-ms';
@@ -14,6 +14,9 @@ import * as  prettyMs from 'pretty-ms';
     
     
 export class MessageComponent implements OnInit {
+ @ViewChild("View", { static: true }) view: ElementRef; 
+//  @ViewChild("top", { static: true }) top: ElementRef; 
+ // @ViewChild("scroll", { static: true }) scroll: ElementRef; 
 
   constructor(
               private usersdetailsService : UserdetailsService,
@@ -21,37 +24,50 @@ export class MessageComponent implements OnInit {
               private messagesService : MessagesService,
               private   router : Router, 
               private route : ActivatedRoute, 
-              private firebaseService : FirebaseService, 
-              private picService : PicService
+              private firebaseService: FirebaseService, 
+              private picService : PicService 
       ) { }
     loading = false ;
+    loading1= false ;
     display1 = false ; 
     display2 = false ; 
-    model:any  = {}
+    model:any  ;
+    
     avatarFromMe = "";
     avatarTo=""; 
+    fullname ="" ; 
     message : any ={} ; 
     messages:any  = []  ;
     countMessages = 0 ; 
     page= 1 ; 
-    size = 5  ;
+    size =3  ;
+    maxpage = 0 ; 
     count = 0 ; 
     me = JSON.parse(localStorage.getItem('currentUser')).userid ;
-    firebaseToken=""; 
-     source :any ; 
-    fullname='' ; 
+     source :any ;
+    firebaseToken ="" ;  
+    msgAlert = false ; 
   ngOnInit() {
     //   this.loading = true ; 
        this.messagesService.currentMessageTo
       .subscribe (
           data  => {
               
-                   this.model = data ; 
+                  
+                   this.model = data ;
+              this.model.message = '' ;  
                    if (Object.keys(data).length !== 0 ) {
-                    
+                    console.log('model') ; 
                        console.log(data ) ; 
                        this.avatarTo = data['avatar'];
-                          /*this.usersdetailsService.getAvatar(this.model.fromMe)
+                        this.avatarFromMe ='' ; 
+                       this.usersdetailsService.getProfilePicName(this.model.fromMe)
+                       .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                                this.avatarFromMe = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ; 
+                       /*  this.usersdetailsService.getAvatar(this.model.fromMe)
                        .subscribe( 
                            data => {
                                  this.avatarFromMe = data['avatar'] ;  
@@ -61,29 +77,35 @@ export class MessageComponent implements OnInit {
                                  console.log (error ) ;    
                            }
                            );*/
-                            
-                            this.usersdetailsService.getProfilePicName(this.model.fromMe)
-                       .subscribe(
-                           data =>{ 
-                           if (data.hasOwnProperty('profilepicname')) 
-                                this.avatarFromMe = this.picService.getProfileLink (data['profilepicname']) 
-                       },error=>{}) ; 
                        
-                       
-                            this.usersdetailsService.getFullname (this.me)
-                              .subscribe(
-                                 data=>{
-                                    //   console.log(data) ; 
-                                     this.fullname = data['fullname']; 
-                                }
+                   this.usersdetailsService.getFullname (this.me)
+              .subscribe(
+                data=>{
+                //   console.log(data) ; 
+                    this.fullname = data['fullname']; 
+                }
                   
-                               ,error=>{})
+                  ,error=>{}) 
+                  
+                       
+                       
+                   this.usersdetailsService.getFirebase(this.model.to)
+                   .subscribe(
+                       data=>{
+                           console.log(data) ; 
+                            this.firebaseToken = data['firebase']; 
+                       },error=>{
+                            console.log(error ) ; 
+                       }) ; 
+                       
                       this.messagesService.getCountPrivateMessages(this.model.fromMe,this.model.to)
                        .subscribe(
                            dataw => {
                                console.log(dataw) ; 
                                 if (dataw['count'] ) {
                                     this.count = dataw['count']  ; 
+                                      this.maxpage = Math.ceil( this.count/this.size)  ; 
+
                                      this.getPage(1) ; 
                                     }
                               
@@ -99,7 +121,8 @@ export class MessageComponent implements OnInit {
                        this.display2 = false ; 
                        
                
-                   let connection = this.messagesService.getPrivateMessage(this.model.fromMe,this.model.to)
+                       
+         this.messagesService.getPrivateMessage(this.model.fromMe,this.model.to)
                   .subscribe(
                    message => 
                    {
@@ -155,7 +178,7 @@ export class MessageComponent implements OnInit {
                             }
                        }
                      // console.log(message.text ) ; 
-                      this.message._source.date =prettyMs( new Date().getTime() - this.message._source.date,  {compact: true}  );
+                   this.message._source.date =prettyMs( new Date().getTime() - this.message._source.date,  {compact: true}  );
 
                        
                       this.messages.unshift( this.message);
@@ -169,14 +192,7 @@ export class MessageComponent implements OnInit {
                        console.log(errors) ; 
                     }
                    )
-                       this.usersdetailsService.getFirebase(this.model.to)
-                   .subscribe(
-                       data=>{
-                           console.log(data) ; 
-                            this.firebaseToken = data['firebase']; 
-                       },error=>{
-                            console.log(error ) ; 
-                       }) ; 
+               
                        
                        
                        } 
@@ -198,7 +214,7 @@ export class MessageComponent implements OnInit {
     getPage (page ) {
               
                     this.loading = true ;  
-                                     window.scrollTo(0, 0); 
+                                     //window.scrollTo(0, 0); 
                      /* this.usersdetailsService.getAvatar(this.model.to)
                        .subscribe( 
                            data => {
@@ -216,7 +232,7 @@ export class MessageComponent implements OnInit {
                         data => {
                         
                             this.source = data ; 
-                            this.messages = this.source.inner_hits.messages.hits.hits;
+                            let tempmessage = this.source.inner_hits.messages.hits.hits
                             console.log(this.source) ; 
                             
                             this.loading = false ; 
@@ -269,17 +285,19 @@ export class MessageComponent implements OnInit {
                                 }
                             }
                             //  console.log(this.messages.length) ; 
-                         for( let j = 0 ;j < this.messages.length; j++ ) {
+                         for( let j = 0 ;j < tempmessage.length; j++ ) {
                      
-                               this.messages[j]._source.date =prettyMs( new Date().getTime() -  this.messages[j]._source.date,  {compact: true}   );
+                               tempmessage[j]._source.date =prettyMs( new Date().getTime() -  tempmessage[j]._source.date,  {compact: true}   );
                                 //console.log(JSON.parse(localStorage.getItem('currentUser')).userid) ; 
-                                if (this.messages[j]._source.from == JSON.parse(localStorage.getItem('currentUser')).userid) 
-                                  this.messages[j]._source.fromMe = true ; 
+                                if (tempmessage[j]._source.from == JSON.parse(localStorage.getItem('currentUser')).userid) 
+                                  tempmessage[j]._source.fromMe = true ; 
                                 else 
-                                 this.messages[j]._source.fromMe = false ; 
-                                  console.log(this.messages[j]) ; 
+                                tempmessage[j]._source.fromMe = false ; 
+                          
                         }
                     
+                            this.messages = this.messages.concat( tempmessage) ;
+
                            //  setTimeout(this.updateScroll(),1000);
                         }
                          
@@ -304,15 +322,28 @@ export class MessageComponent implements OnInit {
                
       
     
-    sendMessage(f){
+    sendMessage(){
+        this.loading1 = true ; 
+        console.log(this.model) ; 
+        if (this.model.message.length ==0 ||  !this.model.message ) {
+           this.msgAlert = true  ;
+           this.loading1= false ; 
+           this.view.nativeElement.dismissSoftInput();
+           this.view.nativeElement.android.clearFocus();   
+        }else {
+            this.msgAlert = false ; 
           this.messagesService.putPrivateMessage(this.model.fromMe, this.model.to, this.model.message )
         .subscribe (
             data =>{
                 this.usersdetailsService.putMessagesNotification (this.model.to )
                 .subscribe(
                     data =>{
-                    console.log(data) ;    
-                            this.firebaseService.messageNotif(this.firebaseToken, this.fullname, this.model.fromMe, this.avatarFromMe ) 
+                             console.log(data) ; 
+                             this.model.message = '' ;  
+                             this.view.nativeElement.dismissSoftInput();
+                             this.view.nativeElement.android.clearFocus();
+                             this.loading1=false ; 
+                             this.firebaseService.messageNotif(this.firebaseToken, this.fullname, this.model.fromMe) 
                              .subscribe(
                                 data=>{
                                 console.log(data) ; 
@@ -320,20 +351,29 @@ export class MessageComponent implements OnInit {
                                     console.log(error) ; 
                                 }
                             )
-                        
-                    },
-                    error =>{
-                    console.log(error ) ;    
-                    }
-                    ),
+                   
+
+            },error =>{
+                    console.log(error ) ;
+                    this.loading1=false ;    
+                    this.view.nativeElement.dismissSoftInput();
+                    this.view.nativeElement.android.clearFocus();
+                            
+             
+            
+            }
+                    );
+             
+                  
+           
                 
-                f.reset();
-                 this.model.message = '' ;  
+        
                 }, 
             error => {
                console.log(error ) ;  
                 }
             ) ; 
+            }
         }
     
     updateScroll () {
@@ -345,4 +385,54 @@ export class MessageComponent implements OnInit {
               this.router.navigate(["../"], { relativeTo: this.route });
 
         }
+    
+    
+   hide () {
+    this.view.nativeElement.dismissSoftInput();
+    this.view.nativeElement.android.clearFocus();
+   }
+    
+    
+    
+ 
+     public onLoadMoreItemsRequested(args )
+    {
+     
+       console.log('ondemand') ; 
+       const listView = args.object;
+       this.page+=1;
+       if (this.page <=  this.maxpage) {
+      
+                this.getPage(this.page)  ;
+                listView.notifyLoadOnDemandFinished();
+          
+        } else {
+            args.returnValue = false;
+            listView.notifyLoadOnDemandFinished(true);
+        }
+  
+   
+  //  if (this.sizemsg *this.page < this.countmsg ) 
+    
+    
+
 }
+
+    
+    
+    public onItemSelected(args) {
+        const listview = args.object;
+        const selectedItems = listview.getSelectedItems();
+        console.log('selected') ; 
+        
+    //   console.log( selectedItems);
+    }
+
+    public onItemSelecting(args) {
+        console.log('selecting') ;
+      // console.log(args) ; 
+    
+    }
+    
+}
+

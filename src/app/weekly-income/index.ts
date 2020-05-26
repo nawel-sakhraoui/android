@@ -1,1 +1,0 @@
-﻿export * from './weekly-income.component';

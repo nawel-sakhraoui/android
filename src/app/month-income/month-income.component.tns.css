@@ -1,1 +1,118 @@
 /* Add mobile styles for the component here.  */
+.head{
+	padding : 5; 
+	margin :10,5,0,0;
+	background-color:#FFA500 ;
+	color:#FFF; 
+	border-radius : 5 ; 
+}
+
+.border{
+	font-size:14 ; 
+	 border-bottom-width: 1 ;
+   	 padding:15; 
+ 	 border-bottom-color:#D0D0D0; 
+  
+}
+.menu{
+     
+    font-size: 16;
+    margin-left: 10;
+    color :  #00BFFF ; 
+    
+    
+}
+
+
+
+.far {
+    font-family: "Font Awesome 5 Free", "fa-regular-400";
+       font-weight: 400; 
+}
+
+.fab {
+    font-family: Font Awesome 5 Brands, fa-brands-400;
+    font-weight: 400; 
+}
+
+.fas {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 900; 
+}
+ 
+.storetitle{
+	font-size:16;
+	color: #00BFFF;  
+	  margin-left:8;
+	 margin-top:13;
+	 margin-bottom:5 ; 
+	 
+}
+
+.main {
+	
+	margin-left : 10; 
+	margin-right:10; 
+	
+}
+.label{
+	 		 font-size: 16 ; 
+	         color: #00BFFF ;
+	         padding-left:10 ; 
+	         margin-top:10;
+	
+}
+.dropdownLabel {
+	   horizontal-alignment: right;
+	   color :#00BFFF ;
+	
+	
+}
+.send{
+	background-color:#00BFFF; 
+	color:#fff ; 
+	 font-size :14 ; 
+
+}
+.undo {
+	
+	margin: 12,0,6,2; 
+    color :#00BFFF; 
+    padding:5 ; 
+   
+    font-size :14 ; 
+     
+} 
+.alert {
+	padding :5 ; 
+	background-color: #FFA1A1; 
+	color :#444444; 
+	 border-width: 1 ;
+	 border-radius :2; 
+   border-color:#F27171;
+   font-size:12;  
+} 
+
+
+
+.back{
+	font-size:20;
+	color: #00BFFF;  
+	  margin-left:0;
+	 margin-top:15; 
+	 
+}   
+
+Label:pressed {
+  
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}  
+
+.reload{
+	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}

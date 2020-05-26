@@ -8,22 +8,18 @@ export class AnAuthGuard implements CanActivate {
  
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         if (localStorage.getItem('currentUser')) {
-            
-          console.log(localStorage.getItem('currentUser'));
-          let  userid = JSON.parse(localStorage.getItem('currentUser')).userid; 
-           
-          if (userid !="annonym"){ 
-                this.router.navigate(['/']);//, { queryParams: { returnUrl: state.url }});
+         //  console.log(localStorage.getItem('currentUser'));
+          let userid = JSON.parse(localStorage.getItem('currentUser'))['userid']; 
+//
+           this.router.navigate(['/home/'+userid]);//, { queryParams: { returnUrl: state.url }});
 
-                // not logged in so return true
-                return false ;
-          }else 
-                return true ; 
+            // not logged in so return true
+            return false ;
         }
         //console.log(localStorage.getItem('currentUser'));
             
         // logged in so redirect to myhome  page with the return url
-          
+        
         return true;
     }
 }

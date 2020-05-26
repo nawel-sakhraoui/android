@@ -1,5 +1,234 @@
-/*
-Add your NativeScript specific styles here.
-To learn more about styling in NativeScript see:
-https://docs.nativescript.org/angular/ui/styling
-*/
+.menu{
+     
+    font-size: 16;
+    margin-left: 10;
+    color :  #00BFFF ; 
+    
+    
+}
+
+
+
+.far {
+    font-family: "Font Awesome 5 Free", "fa-regular-400";
+       font-weight: 400; 
+}
+
+.fab {
+    font-family: Font Awesome 5 Brands, fa-brands-400;
+    font-weight: 400; 
+}
+
+.fas {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 900; 
+}
+.sideStackLayout {
+    background-color: #fff;
+        color: #00BFFF ;
+    
+}
+.sideStackLayoutActive {
+    background-color: #fff;
+        color: #FFA500 ;
+    
+}
+.sideTitleStackLayout {
+	margin:15,0,0,0; 
+    text-align: center;
+    vertical-align: center;
+        color: #00BFFF ;
+}  
+ 
+.storetitle{
+	font-size:16;
+	color: #00BFFF;  
+	  margin-left:8;
+	 margin-top:13;
+	 margin-bottom:5 ; 
+	 
+}
+.back{
+	font-size:20;
+	color: #00BFFF;  
+	  margin-left:0;
+	 margin-top:15; 
+	 
+} 
+.pic {
+    
+    height: 160;
+   background-color:#D0D0D0; 
+   /* border-color: #4db8ff;
+    border-width: 1;*/
+}
+
+.search{
+	border-bottom-width: 1; 
+    border-bottom-color: #D0D0D0;
+	font-size:14; 
+	
+	
+}
+.searchbutton{
+
+	  text-align: center;
+    vertical-align: center;
+    	
+   border-radius:25;  
+   width:40; 
+   height:40;
+}
+.item {
+	border-bottom-width: 1; 
+    border-bottom-color: #00BFFF ;  
+    padding-bottom:10 ; 
+    padding-top:10; 
+    margin :0,10,0,10 ; 
+	
+}
+#globeItemNavigation {
+    z-index: 1;
+}
+
+#notifications {
+    z-index: 0;
+}
+#menu{
+	z-index:2; 
+}
+#main{
+	z-index:3; 
+}
+.bell {
+color:#000;
+font-size:14 ; 
+
+}
+.bars{
+
+	font-size :16; 
+ margin-top:5; 
+ margin-left: 8;	
+ 	color: #d9534f; 
+    background-color: transparent;
+   border-radius:25;  
+   width:40; 
+   height:40;
+}
+.globe {
+    background-color: red;
+    width: 20;
+    height: 20;
+    border-radius:12; 
+    text-align: center;
+    color: #ffffff;
+    font-size: 12;
+    margin-bottom:20;
+    margin-right: 30;
+    padding-top: 2;
+}
+
+Button {
+    background-color: transparent;
+  
+}
+.articlepic{
+	width:auto; 
+	height:auto ; 
+	
+}
+
+.itemStackLayout {
+    text-align: left;
+    vertical-align: center;
+    font-size: 16;
+    color:#404040;
+}
+.title {
+    text-align: center;
+    font-size : 14; 
+    color:#000;	
+    height:auto;
+    width:100%;
+   	background-color:rgba(250, 250, 250, 0.6); 
+    padding-bottom:5; 
+}
+.angle{
+	font-size:20 ; 
+	color: #00BFFF  ; 
+	    text-align:right;
+	
+}
+.price{
+      font-size : 14; 
+      text-align: center;     
+          font-weight: 900; 
+         
+    
+
+      	 
+}
+.panier{
+	background-color: #FFA500;
+     horizontal-align: center;
+    border-radius:4; 
+    text-align: center;
+    color: #fff;
+    font-size: 16;
+  padding: 5 ; 
+  height:auto;
+   width:auto; 
+}
+.titlea{
+	
+	background-color: transparent;
+	border-color: transparent;
+}
+.resize{
+	width: 50;
+    height: 50;
+	
+}
+.border{
+	font-size:14 ; 
+	 border-bottom-width: 1 ;
+   	 padding:10; 
+ 	 border-bottom-color:#D0D0D0; 
+  
+}
+.desc{
+	font-size:12 ; 
+	 border-bottom-width: 1 ;
+   	 
+ 	 border-bottom-color:#D0D0D0; 
+  
+}
+.profilePic {
+    width: 50;
+    height: 50;
+    margin:0,3,0,0;
+    border-radius: 35;
+    border-color: #4db8ff;
+    border-width: 1;
+}
+
+Label:pressed {
+  
+   background-color:#eeeeee;
+    
+}  
+GridLayout:pressed {
+ 
+     border-color: #eeeeee;
+    border-width: 2;
+   background-color:#eeeeee; 
+   /* color:#d9534f ;*/
+}   
+.reload{
+	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}

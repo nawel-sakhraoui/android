@@ -27,7 +27,9 @@ export class MyhomeService {
     
 
       getStores (size, city){
-        
+         
+              
+                city = city.replace(/ /g, "%20");
           return this.http.get (this.host+'/api/myhome/stores/size/'+size+'/city/'+city); 
        }
     
@@ -40,16 +42,20 @@ export class MyhomeService {
     
           
        getArticlesByCat (size, categorie, city ) {
+           
+               categorie =categorie.replace('/ /g', "%20");
+                
+                city = city.replace(/ /g, "%20");
                      return this.http.get (this.host+'/api/myhome/articles/categorie/'+categorie+'/size/'+size+'/city/'+city); 
 
            
            } 
       getArticlesByNewest (size,city) {
+           city = city.replace(/ /g, "%20");
                      return this.http.get (this.host+'/api/myhome/articles/newest/size/'+size+'/city/'+city); 
 
            
            } 
     
-//contact us 
-    
+
 }

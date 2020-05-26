@@ -23,16 +23,16 @@ export class BuynowComponent implements OnInit {
   display1 = false ; 
   display2 = false ;
   fullname = "" ; 
-  firebase=[]; 
     
-  constructor(private buynowService  : BuynowService, 
+  firebase:any = []  ; 
+  constructor(private firebaseService : FirebaseService, 
+              private buynowService  : BuynowService, 
               private ongoingService: OngoingService, 
               private route : ActivatedRoute, 
               private storeService : StoreService,
               private router : Router, 
               private cartService : CartService, 
-              private userdetailsService: UserdetailsService, 
-              private firebaseService : FirebaseService) { }
+              private userdetailsService: UserdetailsService) { }
 
   
     
@@ -41,8 +41,10 @@ export class BuynowComponent implements OnInit {
     this.buynowService.currentArticle
       .subscribe (
          article => {
-                   if (Object.keys(article).length !== 0 ) {
-                      this.model= article; 
+             
+                      this.model= article;
+                   if (this.model ) {
+                     
                        console.log(this.model ) ; 
                        this.display1 = true ; 
                        this.display2 = false ; 
@@ -50,7 +52,7 @@ export class BuynowComponent implements OnInit {
                         x.style.display = "block";
                         var x2 = document.getElementById("nobuynow");
                         x2.style.display = "none"; */
-                        }
+                    }
                     else  {
                        this.display2 = true ; 
                        this.display1= false ; 
@@ -58,11 +60,10 @@ export class BuynowComponent implements OnInit {
                         x.style.display = "none";
                         var x2 = document.getElementById("nobuynow");
                         x2.style.display = "block";  
-                */      
-          }
+                    */      
+                    }
                 }) ;
       
-        
         
           this.userdetailsService.getFullname (this.me)
               .subscribe(
@@ -79,10 +80,8 @@ export class BuynowComponent implements OnInit {
         .subscribe(
             data0=>{
               
-                   let  admins =[ data0['userid'] ] ; 
-                    if (data0.hasOwnProperty("administrators") ) 
-                             
-                    for (let x of data0['administrators']) 
+                        let  admins =[ data0['userid'] ] ; 
+                       for (let x of data0['administrators']) 
                             admins.push (x.userid);  
       
                     for (let admin of admins){
@@ -102,7 +101,8 @@ export class BuynowComponent implements OnInit {
                         }
                 
                   }
-            ,error0=>{  })   
+            ,error0=>{  })  
+               
     
   }
     
@@ -112,7 +112,7 @@ export class BuynowComponent implements OnInit {
         this.loading = true ; 
         console.log(" add article to purchase") ; 
         console.log(this.model ) ; 
-        let articles = [];
+        let articles:any = [];
         for (let a of this.model.articles ){
             
             articles.push ({'articleid':a.articletitle, 
@@ -120,7 +120,7 @@ export class BuynowComponent implements OnInit {
                                             'color': a.color,
                                             'quantity':a.quantity,
                                             'price': a.price,
-                                            'size': a.size, 
+                                            'size': a.size,
                                             'picname':a.picname}) 
         }
         
@@ -134,37 +134,31 @@ export class BuynowComponent implements OnInit {
                                             'totalprice': this.model.totalprice, 
                                             'startdate':"",
                                             'userid':"",
-                                            'steps':{'prepare':0, 'send':0,'stop':0,  'receive':0, 'close':0, 'refund':0,'litige':0},//'litige':0, 'solvedlitige':0},
+                                            'steps':{'prepare':0, 'send':0,'stop':0,  'receive':0, 'close':0, 'litige':0, 'solvedlitige':0},
                                              'articlesrating':{},
                                              'articlesfeedback':{},
                                              "userrating": 0 , 
                                              "userfeedback": "",
                                             })
             
-        // .pipe(map(res => res.json()))
-         .finally(
-                    () =>{
-                                                  this.router.navigate(["../../../../../home/"+this.me+"/ongoing"], { relativeTo: this.route });
-
-                    } )
+        
         .subscribe(
             data =>{ 
-              let time = new Date().getTime() ; 
-                console.log(data) ;  
-                    this.storeService.putNotification( data['_id'], 'command', time, this.model.storetitle  , JSON.parse(localStorage.getItem('currentUser')).userid, this.fullname) 
+                     let time = new Date().getTime() ; 
+                     this.storeService.putNotification( data['_id'], 'command', time, this.model.storetitle  ,this.me, this.fullname) 
                      .subscribe (
                       data2 => { 
-                        console.log(data2)  ; 
-                         }
-                        ,error2=>{
-                          console.log(error2) ; 
-                         }); 
-            
-                  
-                        this.loading = false ;
+                      
                         
-                 for (let firebase of this.firebase)
-                 this.firebaseService.commandNotif( firebase,this.fullname, this.model.storetitle,data['_id'] ) 
+                          },error2=>{
+                          console.log(error2) ; 
+                           this.loading = false ;
+
+                     });                      //get store admin and creator 1, get tokens !  send notif ! 
+   
+                                 
+                  for (let firebase of this.firebase)
+                 this.firebaseService.commandNotif( firebase,this.fullname, this.model.storetitle, data['_id']) 
                                         .subscribe(
                                             d=>{
                                                 console.log(d) ;    
@@ -182,7 +176,17 @@ export class BuynowComponent implements OnInit {
         
                     
                     }
-         
+                    setTimeout(()=>{
+     
+                        this.router.navigate(["../../../../../ongoing"], { relativeTo: this.route });
+                           this.loading = false ; 
+                          
+                         },1200); 
+             
+            
+                  
+
+              
             }
           
             ,error => { 

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 
-import {ArticlePurchase ,Store } from '../_models/index';
 import {ConfigService} from './api-config.service'; 
 
 
@@ -18,12 +17,14 @@ export class OngoingService {
     } 
    
     postArticle(article:any ) {
-        
+                console.log("article") ; 
+                console.log(article) ; 
                 return this.http.post(this.host+'/api/ongoing', article);
 
         };
     
     getArticlesByStoreId(storeid: string,froms :number, size:number ){
+        storeid= storeid.replace(/ /g, "%20");
                   let v = "notclose" ; 
                 return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/"+froms+"/"+size);
 
@@ -31,12 +32,14 @@ export class OngoingService {
     
       
     getArticlesByStoreIdClose(storeid: string,froms :number, size:number ){
+        storeid= storeid.replace(/ /g, "%20");
              let v = "close" ;
                 return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/"+froms+"/"+size);
 
          };
     
         getCountArticlesByStoreId(storeid: string ){
+            storeid= storeid.replace(/ /g, "%20");
             console.log(storeid) ; 
              let v = "notclose" ;
              return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/count/");
@@ -46,7 +49,7 @@ export class OngoingService {
         
         getCountArticlesByStoreIdClose(storeid: string ){
                          console.log(storeid )  ;
-
+                storeid= storeid.replace(/ /g, "%20");
              let v = "close" ;
              return this.http.get(this.host+'/api/ongoing/stores/'+storeid+'/close/'+v+"/count/");
 
@@ -97,8 +100,6 @@ export class OngoingService {
                 return this.http.put(this.host+'/api/ongoing/'+commandid+'/send', {"send":send });
 
         };
-    
-    
 
        putReceive(commandid:string, receive ) {
         
@@ -166,7 +167,9 @@ export class OngoingService {
              }
     
         getOngoingStoreUser(userid : string, storeid : string ) {
-            return this.http.get (this.host+'/api/ongoing/ongoing/store/'+storeid+"/user/"+ userid ) ; 
+            storeid= storeid.replace(/ /g, "%20");
+            
+             return this.http.get (this.host+'/api/ongoing/ongoing/store/'+storeid+"/user/"+ userid ) ; 
             }
      /*  getOngoingSteps(id) { 
           
@@ -183,7 +186,5 @@ export class OngoingService {
         return observable;
     
     } */
-    
-      
 
  }

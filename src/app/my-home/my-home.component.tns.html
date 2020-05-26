@@ -1,33 +1,10 @@
-<StackLayout>
-  <Label text="my-home works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
 
-<!--
-Original Web template:
+<app-menu ></app-menu> 
 
+<GridLayout rows='*,43'>
 
+<router-outlet row='0'>
+</router-outlet>
 
-<div class="main2">
-<app-menu class="sticky-top d-block" ></app-menu>
-</div> 
-
-<div class="main">
-<router-outlet></router-outlet>
-
-
-<footer class="page-footer font-small blue">
-<app-dashbord></app-dashbord>
-
-
-  <!-- Copyright
-  <div class="footer-copyright text-center py-3">© 2018 Copyright:
-    <a href="https://mdbootstrap.com/education/bootstrap/"> MDBootstrap.com</a>
-  </div>
-  <!-- Copyright ->
-
-</footer>
-
-</div>
--->
+ <app-menu-bottom row="1" ></app-menu-bottom>
+</GridLayout>

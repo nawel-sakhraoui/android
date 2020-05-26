@@ -1,174 +1,85 @@
+<ScrollView>
+<GridLayout margin ="10,5,0,5" rows ="auto,*,auto">
+<GridLayout row="0"  columns ='90,*'>
+<Label col="0" text ="Magasin: " ></Label>
+<Label col="1" text ="{{model.storetitle}}" color='#000'> </Label>
+</GridLayout>
+<RadListView margin ="0,10,0,0" row="1" [items]="model.articles" >
+
+<ng-template let-a="item" let-i="index" let-odd="odd" let-even="even">
 <StackLayout>
-  <Label text="buynow works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
-</StackLayout>
-
-<!--
-Original Web template:
-
-
-
-
-<div i18n-class  class =' text-left row list-group-item'>
-
-
-<div  *ngIf='display1'  >
-
-
-
-<table class="table table-sm">
-  <thead>
-      <th scope="col" > <i i18n="@@magasin2" >Magasin:</i> {{model.storetitle}} </th>
-  </thead>
-  <tbody >
-  
-  <tr>
-  
-  <table  class="table table-responsive  table-sm">
-  <tbody *ngFor ='let a of model.articles' >
-  <tr>
-  	<th scope="col">{{ a.title}}</th>
-  </tr>
-  <tr>
-   <td>
-       <img [src]="a.pic" class="img-responsive crop"  alt="Image">
- 	   <i i18n="@@couleur"> Couleur </i>
-       <span style ="width:25px; height:20px; margin-top:1px; display:inline-block;" [style.background]='a.color'> </span>
-   </td>  
-  
-   
-   </tr>
-    
-  	<tr>
-  	
-      <th scope="col"></th>
-       <th scope="col" i18n='@@prix'>Prix</th>
-      <th scope="col"> {{ a.price}}<i i18n="@@da3">DA</i></th>
-
-    </tr>
-  
-    <tr>
-       <th scope="col"></th>
-      <td i18n="@@quantite">Quantité  Article(s)</td>
-      <td>{{ a.quantity}} <i i18n="@@unit">UNIT </i></td>
-      
-    </tr>
-   
-
-   
-  
-
-
-     </tbody>
-     </table>
-   </tr>
-   
-    <tr>
- 	  <th scope="col"></th>
-      <td ><i i18n="@@livraison2">Livraison </i>{{model.delivery.title}} </td>
-      <td>{{model.delivery.price}}<i i18n='@@da3' >DA</i> </td>
-      
-    </tr>
-   <tr>
-   
-    <th scope="col"></th>
-    <td>
-<table class="table table-sm table-responsive   add"  >     
-
-   <tbody>
-   	 <tr >
-  		<td scope="col" i18n='@@mmme'> à M. Mme. </td>
-  		<td>
-  		     
-    
-     		 {{model.choosenAddress.to}}
-     		
-     		   
-  		</td>
-  	</tr>
-  	<tr scope="col" >
-  	    <td i18n="@@telephone"> Téléphone </td>
-  		<td>
-
-     		 {{model.choosenAddress.phone}}
-     	
-     		     
-  		</td>
-  		
-  	 </tr>
-  	<tr > 
-  	    <td scope="col" i18n='@@ville' > ville </td>
-  		<td>
-     		 {{model.choosenAddress.city }}
-     		 
-     		   
-  		</td> 
-  		
-  	</tr>
-  	<tr> 
-  	    <td  scope="col" i18n='@@commune'> Commune </td>
-  		<td>
-  		   
-
-     		 {{model.choosenAddress.commune }}
-     		
-     		   
-  		</td> 
-  		
-  	</tr> 
-  	<tr> 
-  	   <td  scope="col" i18n='@@codepostal'>Codepostal  </td>
-  		<td>
-  		    
+              <GridLayout rows="auto,auto,auto, auto,auto,auto" columns ="*,auto">
+              
+              <textView fontSize="12" col="0" row ="0" editable="false" class='titlea' text="{{a.title}}"></textView>
+              
+              <Image padding ="10" col="0" row="1" src="{{a.pic}}"	class="pic"  stretch="aspectFill" ></Image>
+              
+              <GridLayout col="1" row="2" columns="90,auto"  [visibility]=" a.color ? 'visible' : 'collapsed'"  >
+               <Label col ="0" text="Couleur"></Label>
+               <Label col="1"  margin='0,0,5,0'  [backgroundColor]="a.color"  class="color"  ></Label>
+              </GridLayout>
+              
+                <GridLayout  col="1"  row="3" columns="90,auto"  [visibility]=" a.size ? 'visible' : 'collapsed'" >
+               		<Label col ="0" text="Taille"></Label>
+      		 		<Label col="1"  margin='0,0,5,0' text='{{a.size}}' class="size" ></Label>
+              </GridLayout>
+              <GridLayout  col="1" row="4" columns="90,auto">
+               		<Label col ="0" text="Prix"></Label>
+      		 		<Label color="#000" col="1" text="{{a.price}} DA"  ></Label>
+              </GridLayout>
+               <GridLayout  col="1"  row="5" columns="90,auto">
+               		<Label col ="0" text="Quantité"></Label>
+      		 		<Label color="#000" col="1" text="{{a.quantity }} UNIT" ></Label>
+              </GridLayout>
            
-         
-     		 {{model.choosenAddress.zipcode}}
-     	
-  		</td> 
-  	</tr>
-  	<tr  > 
-  		<td scope="col" i18n='@@addresse'> Addresse </td>
-  		<td>
-  		    
-            
-     		 {{model.choosenAddress.address}}
-     		
-  		</td> 
-    </tr>
-   
-  </tbody>
+              </GridLayout>
+    
+              
+    </StackLayout>
+</ng-template>
+ 	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
 
-</table>
-</td>
-   </tr>
-   
+</RadListView>
+<StackLayout  row="2"  margin ='0,20,0,20'>
+     			<StackLayout  margin="10,0,10,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
+
+ <GridLayout columns="90,*,auto">
+               		<Label col ="0" text="Livraison: "></Label>
+               		<Label color="#000" col="1" text="{{model.delivery.title}}"></Label>
+      		 		<Label color="#000" col="2" text="{{model.delivery.price}} DA" ></Label>
+ </GridLayout>
+              
+ <GridLayout  padding="2"   backgroundColor="#D3D3D3"  rows="*,*,*,*,*,*" columns="*,*" >
+					
+						<Label class='add' row="0" col="0" text="à M.Mme" ></Label> 
+  						<Label class='add'row="0" col="1" text="{{model.choosenAddress.to}}"></Label>
+  		     			<Label class='add'row="1" col="0" text="Téléphone" ></Label> 
+  						<Label class='add' row="1" col="1" text="{{model.choosenAddress.phone}}"></Label>
+  		     			<Label class='add'row="2" col="0" text="Ville" ></Label> 
+  						<Label class='add'row="2" col="1" text="{{model.choosenAddress.city}}"></Label>
+  		   			    <Label class='add'row="3" col="0" text="Commune" ></Label> 
+  						<Label class='add'row="3" col="1" text="{{model.choosenAddress.commune}}"></Label>
+  		   			    <Label class='add'row="4" col="0" text="Codepostal" ></Label> 
+  						<Label class='add'row="4" col="1" text="{{model.choosenAddress.zipcode}}"></Label>
+  		     			<Label class='add'row="5" col="0" text="Addresse" ></Label> 
+  						<Label class='add'row="5" col="1" text="{{model.choosenAddress.address}}"></Label>
+ </GridLayout>
+     					<StackLayout  margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
   
-    <tr>
-   
-     
-      <th scope="col"></th>
-      <th scope="col" i18n="@@montanttotal">Montant total</th>
-      <th scope="col">  {{  model.totalprice}} <i i18n="@@da3"> DA</i> </th>
-
-    </tr>
-     
-      <tr>
-      
-      <th scope="col"> </th>
-      <th scope="col"> </th>
-      <th scope="col"> <a  class='btn btn-link' (click)= 'back();'><span i18n-class class="fa fa-chevron-left"> </span><i i18n="@@retour2"> Retour</i>  </a> </th>
-	  <th scope="col">  <button  class = "btn btn-danger   " (click)="buynow();" > <i i18n="@@valider"> Valider</i>  <span *ngIf="loading" class= "fa fa-refresh fa-spin"></span></button></th>
-		
-    </tr>
+ <GridLayout margin="10,0,0,0" columns='*, 90,auto'>
+ <Label col="1" text='Montant total'></Label>
+<Label color="#000" col="2" text="{{  model.totalprice}} DA"></Label>
  
-</table>
-
-
-</div>
- <div  *ngIf='display2' i18n='@@nobyunow'>
-   Aucun transaction en cours 
- </div>
+ </GridLayout>
+   <StackLayout  margin="5,0,5,0"  colSpan="2" backgroundColor="#D0D0D0" height="1"></StackLayout>
  
-</div>
--->
+  <GridLayout  columns='*,auto,auto, auto'>
+ <Button [enabled]="!loading" 	backgroundColor='#00BFFF' color="#fff"  col="1" text='Valider'  (tap)="buynow();" ></Button>
+  <ActivityIndicator col="2" *ngIf="loading" color='#00BFFF' rowSpan="2" [busy]="loading"></ActivityIndicator>
+ <Label  [enabled]="!loading" margin="12,0,0,5" class="btn2" col="3" text="Annuler" (tap)= 'back();' ></Label>
+ 
+ </GridLayout>
+</StackLayout> 
+</GridLayout>
+
+</ScrollView>

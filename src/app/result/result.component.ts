@@ -1,8 +1,14 @@
-import { Component, OnInit} from '@angular/core';
+
+import {Component,ViewChild, OnInit, AfterViewInit,  ChangeDetectorRef, ElementRef  } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {PicService, CartService, StoreService, SearchService, MyhomeService, AuthenticationService} from '../_services/index'; 
-import {Article } from '../_models/index';
- import { NgxPermissionsService, NgxRolesService  } from 'ngx-permissions';  
+import { RadSideDrawerComponent } from "nativescript-ui-sidedrawer/angular";
+import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
+import { RouterExtensions } from "nativescript-angular/router";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label'; 
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+import * as util from "utils/utils";
 
 @Component({
   selector: 'app-result',
@@ -11,17 +17,19 @@ import {Article } from '../_models/index';
 })
 
 
-export class ResultComponent implements OnInit {
+export class ResultComponent implements OnInit,AfterViewInit {
 
 
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
     maxcart =30 ; 
-  search :boolean = false ;
-  notfound= false ; 
-  notfoundstore = false ;   
-  articles:any  =[] ;  
-  countStore = 0 ;  
+    search :boolean = false ;
+    notfound= false ; 
+    notfoundstore = false ;   
+    articles:any  =[] ;
+    temparticles:any = [];  
+    countStore = 0 ;  
     stores:any  =[]; 
+    tempstores :any  = [] ; 
     store0 :any ={};
     banners  =[];
     mainpics:any = []; 
@@ -35,10 +43,11 @@ export class ResultComponent implements OnInit {
     nothing2 = false ;
     sub :any ; 
     disp:boolean[] =[]
+    storedisp :boolean[] = [] ; 
  
     fullcartwarning:boolean ; 
-    articlesize = 12 ; 
-    storesize =6;
+    articlesize =6; 
+    storesize =3;
     
     countarticle = 0  ; 
     countstore = 0 ;
@@ -47,38 +56,37 @@ export class ResultComponent implements OnInit {
     filter = "Indefinie" ; 
     filterAr="غير محدد"; 
     storepage = 1 ; 
-    articlepage = 1 ; 
+    articlepage = 1 ;
+    maxarticlepage ; 
+    maxstorepage ;
+    reload = false ; 
+    //size= 12;   
     context = ""; //"filter"; //"query"
-   city : string ; 
-      constructor(  private route: ActivatedRoute,
-  private router: Router, 
+    city : string ; 
+  constructor(  private route: ActivatedRoute,
+    private router: Router,
   private myhomeService: MyhomeService, 
   private authService: AuthenticationService,
   private searchService: SearchService, 
   private storeService : StoreService, 
   private cartService: CartService, 
   private picService : PicService, 
-  private rolesService:  NgxRolesService, 
-  private permissionsService : NgxPermissionsService
-  ) {  this.filterAr="غير محدد"; }
+  private _changeDetectionRef: ChangeDetectorRef
+
+  ) {   }
   
  
-    ngOnInit() {
+  ngOnInit() {
+      this.init() ; 
+      
+      
+     }
+    
+    
+    init(){
         
-        /*    this.permissionsService.addPermission('readUserAccount', () => {
-                return true;
-         });
-          
-                         
-         if (this.me  != "annonym") {
-            console.log('annnoooo') ; 
-             this.rolesService.flushRoles();
-             this.rolesService.addRole('USER', [ 'readUserAccount' ]);
-         };            
-          
-          */               
-               
-        
+          this.loading = true ; 
+        this
        this.storeService.getCategories()
        .subscribe (
            d0 => {
@@ -89,55 +97,55 @@ export class ResultComponent implements OnInit {
                console.log(e0 ) ; 
               }
            ) 
-           this.storeService.getCategoriesAr()
-                    .subscribe (
-                         d1 => {
-                             console.log(d1) ; 
-                                 this.categoriesAr = d1['categories']; 
+         
                              
                         
          
     this.searchService.sendcity.subscribe((data00)=>{
-                 this.loading = true ; 
+             //    this.loading = true ; 
 
-        
-         this.city = data00['city'] ; 
-        if (!this.city )
-         this.city ="Toutes les villes" ;  
+        this.city = data00['city'] ; 
         console.log(this.city) ; 
      
              
      this.searchService.sendFilters.subscribe((data1)=> {
-                       window.scroll(0,0);
+                   //    window.scroll(0,0);
 
-                 console.log(data1)  ; 
+          console.log(data1)  ; 
           if (Object.keys(data1).length === 0 ) 
             this.nothing1 = true ; 
              if ( 'filter' in data1 && "orderby" in data1 ) {
                  this.filter = data1['filter']; 
                  this.orderby = data1['orderby']; 
                
-                 this.filterAr = this.categoriesAr[data1['pos']];
-                    console.log(this.filterAr) ;
+                 //this.filterAr = this.categoriesAr[data1['pos']];
+                  //  console.log(this.filterAr) ;
                  this.context = "filter"; 
             
           
                  this.searchService.getCountStores(this.filter, this.city)
                   .subscribe(
                    d3  => {
+                       this.reload = false ; 
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                       console.log(this.countstore) ; 
+                       this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1);  
                        },e3 =>{
+                           this.reload = true ; 
+                           this.loading = false ; 
                        console.log(e3) ; 
                      });
                  
                        this.searchService.getCountArticles (this.filter, this.city)
                          .subscribe(
                            d4  => {
-                               console.log(d4) ; 
-                               this.countarticle = d4['count'];
-                               
+                             //  console.log(d4) ; 
+                              this.countarticle = d4['count'];
+                              this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+
                                this.getArticlePage(1); 
                                 
                              },e4 =>{
@@ -151,13 +159,11 @@ export class ResultComponent implements OnInit {
             }
                });
              
-                              },e1=>{
-                                    console.log(e1) ; 
-                             } );
+                           
        this.searchService.sendSearchs.subscribe((data) =>{
              console.log(data) ; 
          
-              window.scroll(0,0);
+             // window.scroll(0,0);
               if (Object.keys(data).length === 0 ) 
                       this.nothing2 = true ; 
 
@@ -169,11 +175,15 @@ export class ResultComponent implements OnInit {
                  this.searchService.getCountStores2(this.filter, this.query, this.city)
                   .subscribe(
                    d3  => {
+                       this.reload = false ; 
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                     this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1 ) ; 
                   },e3 =>{
-                 
+                       this.reload = true ; 
+                      this.loading = false ; 
                        console.log(e3) ; 
                      });
                   
@@ -182,7 +192,8 @@ export class ResultComponent implements OnInit {
                        d4  => {
                               console.log(d4) ; 
                               this.countarticle = d4['count'];
-                               
+                            this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+
                                this.getArticlePage(1); 
  
                                 
@@ -201,31 +212,34 @@ export class ResultComponent implements OnInit {
              }); 
              if (this.nothing1 && this.nothing2)  
                                this.router.navigate(["../"], { relativeTo: this.route });
- 
-     }
+
+        
+        
+        
+        }
     
      gotoArticle( id:string , storeid : string ) {
      
-         this.router.navigate(["../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
+         this.router.navigate(["./../stores/"+storeid+"/articles/"+id], { relativeTo: this.route });
 
      }
     
     gotoStore(id){
-                 this.router.navigate(["../stores/"+id+"/store"], { relativeTo: this.route });
+        
+         this.router.navigate(["./../stores/"+id+"/store"], { relativeTo: this.route });
 
        }
     
     
     
     addToCart(article){
-         article.loadingcart = 1  ;
-
+          article.loadingcart = 1  ;
           this.cartService.getCountCart ()
           .subscribe( 
                data0 => {
                    console.log(data0) ; 
-               if ( data0['cartcount']> this.maxcart){
-                   
+               if ( data0['cartcount']>this.maxcart){
+                    
                    this.fullcartwarning = true ;  
                      article.loadingcart = 3; 
                }else{
@@ -247,11 +261,12 @@ export class ResultComponent implements OnInit {
         });
         }
     
-      updateArticle( id:string, storeid :string ) {
-      this.router.navigate(["../stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
+  updateArticle( id:string, storeid :string ) {
+      this.router.navigate(["../../stores/"+storeid+"articles/"+id+"/update"], { relativeTo: this.route });
 
   } 
-        mouseEnter(a){
+  
+  mouseEnter(a){
    // console.log(a ); 
       this.disp[a] = true ; 
    }
@@ -279,11 +294,13 @@ export class ResultComponent implements OnInit {
   
     
     selectFilter(e, i ) {
+        this.stores= [] ; 
+        this.articles = [] ; 
           this.filter= e ;
           this.filterAr = this.categoriesAr[i];
           
           
-          window.scroll(0,0);
+         // window.scroll(0,0);
 
           if (this.query =="") {
               //change filter 
@@ -294,6 +311,8 @@ export class ResultComponent implements OnInit {
                    d3  => {
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                        this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1);  
                        },e3 =>{
                        console.log(e3) ; 
@@ -304,7 +323,8 @@ export class ResultComponent implements OnInit {
                            d4  => {
                                console.log(d4) ; 
                                this.countarticle = d4['count'];
-                               
+                       this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+
                                this.getArticlePage(1); 
                                 
                              },e4 =>{
@@ -327,6 +347,8 @@ export class ResultComponent implements OnInit {
                    d3  => {
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                      this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1 ) ; 
                   },e3 =>{
                  
@@ -338,7 +360,8 @@ export class ResultComponent implements OnInit {
                        d4  => {
                               console.log(d4) ; 
                               this.countarticle = d4['count'];
-                               
+                            this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+         
                                this.getArticlePage(1); 
  
                                 
@@ -352,7 +375,7 @@ export class ResultComponent implements OnInit {
     
    getArticlePage (page ){
         
-       
+       this.loading = true ; 
        if (this.context == "filter") {
        if (this.filter !="Indefinie")  {
 
@@ -360,16 +383,19 @@ export class ResultComponent implements OnInit {
            this.searchService.getArticles (this.articlesize, (page-1)*this.articlesize, this.filter, this.orderby, this.city )
         .subscribe(
             data2 => {
-                console.log(data2 ) ; 
-                this.articles = data2['hits']['hits'] ; 
+            //    console.log(data2 ) ; 
+                //this.articles = data2['hits']['hits'] ; 
+                this.temparticles = data2['hits']['hits'];
+
                 this.articleprocess() ; 
-                     
+                                
+
                  this.articlepage = page ; 
                  this.loading = false ;
                   this.search = true ;
             },error2 =>{
                console.log(error2) ; 
-                this.loading = false ; 
+               // this.loading = false ; 
             }) ;   
     
        }}else {
@@ -378,15 +404,16 @@ export class ResultComponent implements OnInit {
          this.searchService.getQueryArticles (this.articlesize, (page-1)*this.articlesize, this.filter, this.orderby, this.query , this.city)
         .subscribe(
             data2 => {
-                console.log(data2 ) ; 
-                this.articles = data2['hits']['hits'] ; 
+                //console.log(data2 ) ; 
+                this.temparticles = data2['hits']['hits'];
+
                 this.articleprocess() ;
                 this.articlepage = page ; 
                 this.loading = false ;
                 this.search  = true  ;  
             },error2 =>{
                console.log(error2) ; 
-                this.loading = false ; 
+                //this.loading = false ; 
             }) ;  
        
                 
@@ -398,22 +425,24 @@ export class ResultComponent implements OnInit {
     
     
     getStorePage (page ) {
-        
+        this.loading= true ; 
         if (this.context =="filter"){
            if (this.filter !="Indefinie")  {
                 this.searchService.getStores ( this.storesize, (page-1)*this.storesize, this.filter, this.orderby, this.city )
         .subscribe(
             data => {
                 console.log(data ) ; 
-                this.stores = data["hits"]["hits"]; 
-                      this.storeprocess()  ; 
+                this.tempstores = data["hits"]["hits"]; 
+             
+
+                this.storeprocess()  ; 
                 this.storepage = page ; 
                 this.loading = false ; 
                  this.search = true ;
                 
             },error =>{
                 console.log(error) ; 
-                this.loading = false ; 
+             //  this.loading = false ; 
             }) ;   
             }
          }else{
@@ -422,7 +451,7 @@ export class ResultComponent implements OnInit {
         .subscribe(
             data => {
                 console.log(data ) ; 
-                this.stores = data["hits"]["hits"]; 
+                this.tempstores = data["hits"]["hits"]; 
                       this.storeprocess()  ; 
                  this.storepage = page ; 
          
@@ -430,7 +459,7 @@ export class ResultComponent implements OnInit {
                 this.search = true ;  
             },error =>{
                 console.log(error) ; 
-                this.loading = false ; 
+             //   this.loading = false ; 
             }) ;  
         
          }
@@ -439,7 +468,7 @@ export class ResultComponent implements OnInit {
 }
   
     storeprocess () {
-                if(this.stores.length == 0 ) {
+                if(this.tempstores.length == 0 ) {
                       
                       this.notfoundstore = true ; 
                      
@@ -447,32 +476,34 @@ export class ResultComponent implements OnInit {
                      
                          
                       this.notfoundstore =  false ; 
-                        for (let i = 0 ; i < this.stores.length; i++){
-                    
-                                  if (this.stores[i]._source.hasOwnProperty("bannername"))
-                           this.stores[i]['banner'] = this.picService.getBannerLink(this.stores[i]._source.bannername); 
+                        for (let i = 0 ; i < this.tempstores.length; i++){
+                         this.storedisp[this.tempstores[i]._id ] = false ; 
+
+                         if (this.tempstores[i]._source.hasOwnProperty("bannername"))
+                           this.tempstores[i]['banner'] = this.picService.getBannerLink(this.tempstores[i]._source.bannername); 
                          else 
-                           this.stores[i]['banner'] = '' ; 
-                        /*this.storeService.getBanner(this.stores[i]._id)
+                           this.tempstores[i]['banner'] = '' ; 
+                       /*this.storeService.getBanner(this.tempstores[i]._id)
                                  .subscribe (
                                         data1=>{
                                             try {
                                                 console.log (data1) ; 
-                                                 this.stores[i]['banner'] = data1['banner'];  
+                                                 this.tempstores[i]['banner'] = data1['banner'];  
                                                 // console.log( this.stores[i]['banner']  )  ; 
                                             }catch(error) {
-                                                 this.stores[i]['banner'] = "";  
+                                                 this.tempstores[i]['banner'] = "";  
 
                                             }   
                                         }
                                         ,error=>{
 
-                                            this.stores[i]['banner'] = "";  
+                                            this.tempstores[i]['banner'] = "";  
                                            console.log(error) ;     
                                         }
                                      ); */
                        }
-                      
+                               this.stores =  this.stores.concat(this.tempstores) ; 
+
                    
        
                       
@@ -480,7 +511,7 @@ export class ResultComponent implements OnInit {
         }
     
     articleprocess () {
-                if(this.articles.length == 0 ) {
+                if(this.temparticles.length == 0 ) {
                           
                       this.notfound = true ; 
                       this.loading = false ; 
@@ -488,12 +519,12 @@ export class ResultComponent implements OnInit {
                   } else {
                           this.loading = false ;
                            this.notfound = false  ;  
-                      for (let s of this.articles){
+                      for (let s of this.temparticles){
                                 this.disp[s._id ] = false ; 
-                          
+                        
                             this.mainpics[s._id ]=  this.picService.getPicLink(s._source.picname) ;
-
-                          /* this.storeService.getPic(s._id)
+                          
+                          /*this.storeService.getPic(s._id)
                            .subscribe (
                                         data0=>{
                                             try {
@@ -511,6 +542,7 @@ export class ResultComponent implements OnInit {
                         }
                       
       
+                     this.articles = this.articles.concat(this.temparticles);
                  
                       
                    } 
@@ -519,6 +551,8 @@ export class ResultComponent implements OnInit {
         }
         
     removeFilter () {
+        this.stores = []  ; 
+        this.articles = []  ; 
         this.filter = 'Indefinie'; 
         this.filterAr ="غير محدد" ; 
         console.log(this.query) ; 
@@ -535,6 +569,8 @@ export class ResultComponent implements OnInit {
                    d3  => {
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                        this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1 ) ; 
                   },e3 =>{
                  
@@ -546,7 +582,8 @@ export class ResultComponent implements OnInit {
                        d4  => {
                               console.log(d4) ; 
                               this.countarticle = d4['count'];
-                               
+                             this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+
                                this.getArticlePage(1); 
  
                                 
@@ -556,6 +593,8 @@ export class ResultComponent implements OnInit {
          }
         }
     removeQuery (){
+        this.stores = []  ; 
+        this.articles = []  ; 
         this.query = ""  ;
          this.searchService.sendSearch({ "query": this.query});
          if (this.filter =="Indefinie" ) {
@@ -571,6 +610,8 @@ export class ResultComponent implements OnInit {
                    d3  => {
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                    this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1);  
                        },e3 =>{
                        console.log(e3) ; 
@@ -581,7 +622,8 @@ export class ResultComponent implements OnInit {
                            d4  => {
                                console.log(d4) ; 
                                this.countarticle = d4['count'];
-                               
+                              this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+
                                this.getArticlePage(1); 
                                 
                              },e4 =>{
@@ -595,7 +637,8 @@ export class ResultComponent implements OnInit {
     
     
       onSelectionChange(i){
-            
+         this.stores = []  ; 
+          this.articles = [] ; 
         this.orderby = i ; 
         console.log(i ) ; 
          // go through differente use case !!!
@@ -606,6 +649,8 @@ export class ResultComponent implements OnInit {
                    d3  => {
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                     this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1 ) ; 
                   },e3 =>{
                  
@@ -617,7 +662,8 @@ export class ResultComponent implements OnInit {
                        d4  => {
                               console.log(d4) ; 
                               this.countarticle = d4['count'];
-                               
+                             this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+
                                this.getArticlePage(1); 
  
                                 
@@ -633,6 +679,8 @@ export class ResultComponent implements OnInit {
                    d3  => {
                        console.log(d3) ; 
                        this.countstore = d3['count'];
+                      this.maxstorepage = Math.ceil( this.countstore/this.storesize)  ; 
+
                        this.getStorePage(1);  
                        },e3 =>{
                        console.log(e3) ; 
@@ -643,7 +691,8 @@ export class ResultComponent implements OnInit {
                            d4  => {
                                console.log(d4) ; 
                                this.countarticle = d4['count'];
-                               
+                               this.maxarticlepage = Math.ceil( this.countarticle/this.articlesize)  ; 
+          
                                this.getArticlePage(1); 
                                 
                              },e4 =>{
@@ -658,5 +707,130 @@ export class ResultComponent implements OnInit {
            }
              
         }
+    
+      
+    @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
+    private drawer: RadSideDrawer;
+
+    ngAfterViewInit() {
+        this.drawer = this.drawerComponent.sideDrawer;
+        this._changeDetectionRef.detectChanges();
+    }
+
+   
+
+   
+    public openDrawer() {
+        this.drawer.showDrawer();
+    }
+
+    public onCloseDrawerTap() {
+        this.drawer.closeDrawer();
+    }
+        display(a) {
+         this.disp[a]= !this.disp[a];
+         }
+     storedisplay(a) {
+         this.storedisp[a]= !this.storedisp[a];
+         }
+       
+    
+   public onLoadMoreItemsRequestedArticles(args )
+    {
+     
+       console.log('ondemand') ; 
+       const listView = args.object;
+       this.articlepage+=1;
+       if (this.articlepage <=  this.maxarticlepage) {
+      
+                this.getArticlePage(this.articlepage)  ;
+                listView.notifyLoadOnDemandFinished();
+          
+        } else {
+            args.returnValue = false;
+            listView.notifyLoadOnDemandFinished(true);
+        }
+  
+   
+  //  if (this.sizemsg *this.page < this.countmsg ) 
+    
+    
+
 }
+    
+    
+    public onItemSelected(args) {
+        const listview = args.object;
+        const selectedItems = listview.getSelectedItems();
+        console.log('selected') ; 
+    //   console.log( selectedItems);
+    }
+
+    public onItemSelecting(args) {
+        console.log('selecting') ;
+      // console.log(args) ; 
+    
+    }
+    
+    
+      public onLoadMoreItemsRequestedStores(args ) {
+     
+       console.log('ondemand') ; 
+       const listView = args.object;
+       this.storepage+=1;
+       if (this.storepage <=  this.maxstorepage) {
+      
+                this.getStorePage(this.storepage)  ;
+                listView.notifyLoadOnDemandFinished();
+          
+        } else {
+            args.returnValue = false;
+            listView.notifyLoadOnDemandFinished(true);
+        }
+  
+   
+        //  if (this.sizemsg *this.page < this.countmsg ) 
+
+       }
+    
+       ontouch(args: TouchGestureEventData) {
+    const label = <Label>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+    }
+       
+         
+        ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
+        hide(){
+          util.ad.dismissSoftInput() ;  
+        }
+      reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }
+    
+}
+
 

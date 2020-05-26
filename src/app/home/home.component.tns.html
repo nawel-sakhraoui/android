@@ -1,138 +1,136 @@
-﻿<!-- FlexboxLayout class="page">
-    <StackLayout class="form">
-        <!-- Image class="logo" src="~/images/logo.png"></Image>  -->
-        <!-- Label class="header" text="SYMSYM"></Label>
+<FlexboxLayout>
+ 
+   
+       
+   
+    <StackLayout  *ngIf="login" class="form">
+        
+	<StackLayout >
+			<Label *ngIf="noConnexion" textWrap=true  text="Connexion Indisponible. "  class="alert0"></Label>
+	</StackLayout>
+        <!-- Image class="logo" src=""></Image> -->
+            <Label class="header" text="CEEN.dz"></Label>
 
+			<StackLayout *ngIf="suspended">
+			  <TextView editable= "false"  class="warning" text ="Utilisateur suspendu contacter le support technique pour plus d'info ">
+			  </TextView>
+			</StackLayout> 
+			
+			<StackLayout *ngIf="justLog">
+			 <TextView editable='false' class="warning" text="Ce téléphone est déjà enregistré, veuiller vous connecter ">
+			 </TextView>
+			</StackLayout>
+			<StackLayout *ngIf="response.length!=0">
+			 <TextView editable='false' class="warning" text="{{response}} "></TextView>
+			</StackLayout>
         <PreviousNextView>
-            <GridLayout rows="auto, auto, auto">
+      
+       <GridLayout rows='auto'>
                 <StackLayout row="0" class="input-field">
-                    <TextField class="input" hint="Email" [isEnabled]="!processing"
-                        keyboardType="email" autocorrect="false"
-                        autocapitalizationType="none" [(ngModel)]="user.email"
-                        returnKeyType="next" (returnPress)="focusPassword()"></TextField>
+                   
+                    <MaskedTextField [isEnabled]="!loading" class="input" hint="Téléphone"[isEnabled]="login"
+                        keyboardType="phone" autocorrect="false"
+                        autocapitalizationType="none" [(ngModel)]="model.phone"
+                        returnKeyType="done"
+                        mask="00 00 00 00 00"
+                        (returnPress)='logins()'></MaskedTextField>
+                        <Label editable ='false' *ngIf='alertLength' class="warning" text="Numero incomplet."> </Label>
+                        <Label editable ='false' *ngIf='alertphone' class="warning" text="Entrer votre numero."> </Label>
+                      
                     <StackLayout class="hr-light"></StackLayout>
                 </StackLayout>
 
-                <StackLayout row="1" class="input-field">
-                    <TextField #password class="input" [isEnabled]="!processing"
-                        hint="Password" secure="true" [(ngModel)]="user.password"
-                        [returnKeyType]="isLoggingIn ? 'done' : 'next'"
-                        (returnPress)="focusConfirmPassword()"></TextField>
-                    <StackLayout class="hr-light"></StackLayout>
-                </StackLayout>
-
-                <StackLayout row="2" *ngIf="!isLoggingIn" class="input-field">
-                    <TextField #confirmPassword class="input" [isEnabled]="!processing"
-                        hint="Confirm password" secure="true" [(ngModel)]="user.confirmPassword"
-                        returnKeyType="done"></TextField>
-                    <StackLayout class="hr-light"></StackLayout>
-                </StackLayout>
-
-                <ActivityIndicator rowSpan="3" [busy]="processing"></ActivityIndicator>
-            </GridLayout>
+   
+                <ActivityIndicator row="0" color='#FFA500' rowSpan="3" [busy]="loading"></ActivityIndicator>
+        </GridLayout>
+        	
+    
+          <Button [isEnabled]="!loading" text="Connexion"
+            (tap)="logins()" class="btn btn-primary m-t-20"  returnKeyType="done" ></Button>
+            
+            
+        
         </PreviousNextView>
+       <Label [isEnabled]="!loading" class="login-label sign-up-label" (tap)="login=!login">
+        <FormattedString>
+            <Span text="Pas de compte? "></Span>
+            <Span color="#FFA500" text="S'enregistrer" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+    	
+    	
+    	
+    </StackLayout>
+    
+    <StackLayout *ngIf='!login ' class="form">
+    
+    
+        <!-- Image class="logo" src=""></Image> -->
+        <Label class="header" text="SIM SIM"></Label>
 
-        <Button [text]="isLoggingIn ? 'Log In' : 'Sign Up'" [isEnabled]="!processing"
-            (tap)="submit()" class="btn btn-primary m-t-20"></Button>
-        <Label *ngIf="isLoggingIn" text="Forgot your password?" class="login-label"
-            (tap)="forgotPassword()"></Label>
+ 
+			<StackLayout *ngIf="pleaseRegister">
+			 <TextView editable="false" class="warning" text=" Ce téléphone n'est pas enregister, enregistrer le "></TextView>
+			 </StackLayout>
+			<StackLayout *ngIf="response.length!=0">
+			 <TextView editable='false' class="warning" text="{{response}} "></TextView>
+			</StackLayout>
+        <PreviousNextView>
+           
+           
+            <GridLayout rows="auto, auto ">
+                
+                <StackLayout  row="0" class="input-field">
+        
+                  <TextField [isEnabled]="!loading2"   class="input" hint="Nom complet"
+                         autocorrect="false" autocapitalizationType="none" [(ngModel)]="model.fullname"
+                      ></TextField>
+                       
+                    <Label editable ='false' *ngIf='alertnamelength' class="warning" text="Entrer Nom Prénom."> </Label>
+                    <Label editable ='false' *ngIf='alertname' class="warning" text="Entrer votre nom."> </Label>
+                              
+                    <StackLayout class="hr-light"></StackLayout>
+                </StackLayout>
+               
+                
+                <StackLayout row="1" class="input-field">
+                          
+               		
+                
+                    <MaskedTextField [isEnabled]="!loading2"   class="input" hint="Téléphone" 
+                        keyboardType="phone" autocorrect="false"
+                        autocapitalizationType="none" [(ngModel)]="model.phone"
+                        returnKeyType="done"
+                        mask="00 00 00 00 00"
+                        (returnPress)= 'register()'></MaskedTextField>
+                     
+                          <Label editable ='false' *ngIf='alertLength' class="warning" text="Numero incomplet."> </Label>
+                        <Label editable ='false' *ngIf='alertphone' class="warning" text="Entrer votre numero."> </Label>
+                         
+                        
+                    <StackLayout class="hr-light"></StackLayout>
+               
+                </StackLayout>
+
+           
+
+                <ActivityIndicator  rowSpan="3" [busy]="loading2"></ActivityIndicator>
+            </GridLayout>
+       
+			<Button [isEnabled]="!loading2"  text="S'enregister"
+            (tap)="register()" class="btn btn-primary m-t-20"   returnKeyType="done"></Button>
+     
+         </PreviousNextView>   
+            	
+        
+        <Label [isEnabled]="!loading2"  class="login-label sign-up-label" (tap)="login=!login">
+        <FormattedString>
+            <Span text="Déjà enregistré? "></Span>
+            <Span text="Connexion"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+    	</Label>
+            
     </StackLayout>
 
-    <Label class="login-label sign-up-label" (tap)="toggleForm()">
-        <FormattedString>
-            <Span [text]="isLoggingIn ? 'Don’t have an account? ' : 'Back to Login'"></Span>
-            <Span [text]="isLoggingIn ? 'Sign up' : ''" class="bold"></Span>
-        </FormattedString>
-    </Label>
-</FlexboxLayout-->
-
-<!--
-Original Web template:
-
-﻿
- 
- <div class="jumbotron text-center" >
-  <h1>  Welcome to SMSM </h1>
-  <p>Echange en ligne, vente,  achat, services </p>
-</div>
-
-<div class="container">
-  <div class="row">
-   
-  </div>
-  <div class="row">
-    <div class="col-sm-6 col-xs-6" >
-      <h4 allign="center">SMSM </h4>
-    </div>
     
-    <div class="col-sm-6 col-xs-6" >
-      
-      	<div *ngIf='login'>
-	    <h2>Connexion</h2>
-	    <br>
-	    <div class ="alert alert-danger " *ngIf="justLog"> Le téléphone est déjà enregistré, connecter vous seulement </div>
-	    <div class ="alert alert-danger" *ngIf="suspended"> Utilisateur suspendu contacter le support technique pour plus d'info</div>
-	    
-		<form name="form" (ngSubmit)="f.form.valid  && logins()  && UserPhone" #f="ngForm" novalidate>
-		 	<div class="form-group" >
-            <label for="useremail">Téléphone</label>
-            <input  class="form-control" [textMask]="{mask: phonemask}"  type="tel"  name="phone" [(ngModel)]="model.phone"  required #phone="ngModel" />    
-            <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
-        	
-        	 <div *ngIf="f.submitted && fullname.hasError('required')" class="help-block">Taper votre numéro de téléphone</div>
-            </div>							
-            </div>
-            <div class="form-group"> 
-            <span  style="float:right; ">
-               <button [disabled]="loading" class="btn btn-warning">Se connecter</button>
-               <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-			   <a (click)="login=!login" class="btn btn-outline-warning">S'enregistrer</a>
-			    <a  class="btn btn-link" (click)= cancel()>Annuler</a> 
-            </span>
-            </div>
-        
-        </form>
-        </div>
-        
-        
-        <div *ngIf="!login">      
-        <h2>Enregistrement</h2>
-    	<br>
-    	<div class ="alert alert-danger" *ngIf="pleaseRegister">Ce téléphone n'est pas enregister, enregistrer le  </div>
-    	<form name="form" (ngSubmit)="f.form.valid  && register() && !UserPhone" #f="ngForm" novalidate>
-        
-       	<div class="form-group" >
-            <label for="username">Nom Complet </label>
-            <input type="text" class="form-control" name="fullname" [(ngModel)]="model.fullname" #fullname="ngModel" required    pattern="^([a-zA-Z]{2,}\s[a-zA-z]{1,}?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)"/>
-            <div *ngIf="fullname.invalid && (fullname.dirty || fullname.touched)" class="alert alert-danger">
-            <div *ngIf="f.submitted && fullname.hasError('required')" class="help-block">taper votre nom</div>
-         
-       	    <div *ngIf="  fullname.hasError('pattern')" class="help-block"> Nom Prénom </div>
-      	    </div> 
-        </div>  
-		<div class="form-group" >
-            <label for="useremail">Téléphone</label>
-            <input  class="form-control" [textMask]="{mask: phonemask}"  type="tel"  name="phone" [(ngModel)]="model.phone"  required #phone="ngModel" />    
-            <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="alert alert-danger">
-        	
-        	 <div *ngIf="f.submitted && fullname.hasError('required')" class="help-block"> taper votre nom</div>
-            </div>							
-        </div>
-        <div class="form-group"> 
-          <span  style="float:right; ">
-              <button [disabled]="loading2" class="btn btn-warning">S'enregistrer</button>
-              <img *ngIf="loading2" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-			  <a (click)="login=!login" class="btn btn-outline-warning">Se connecter</a>
-			  <a  class="btn btn-link" (click)= cancel()>Annuler</a>
-			          
-          </span>
-         </div>
-         
-         </form> 
-        </div>
-            
-    </div>
-   
-  </div>
-</div> 
--->
+</FlexboxLayout>

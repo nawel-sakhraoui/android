@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import {UserdetailsService, MessagesService, PicService } from '../_services/index';
+import {PicService, UserdetailsService, MessagesService } from '../_services/index';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import {Subscription} from 'rxjs';
-import * as prettyMs from 'pretty-ms';
 
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { Label } from 'tns-core-modules/ui/label';
+import { GridLayout} from "tns-core-modules/ui/layouts/grid-layout";
+import * as util from "utils/utils";
+
+
+import * as frameModule from "ui/frame" ;
 
 
 @Component({
@@ -13,50 +19,58 @@ import * as prettyMs from 'pretty-ms';
 })
 export class ListMessagesComponent implements OnInit {
 
-    listmessage =false ;
+    listmessage ;
     me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
     to ="";
     unread:any ; 
-    model :any ;
+    model :any=[] ;
     loading = false ; 
     countmsg = 0 ; 
     sizemsg = 2; 
     page =1 ; 
+    reload :boolean = false ; 
     constructor(
               private messagesService: MessagesService,
               private userdetailsService: UserdetailsService,
               private route :ActivatedRoute, 
-              private  router : Router, 
-              private picService :PicService
+              private picService : PicService,
+              private  router : Router
               ) { }
 
     avatars = {};  
     
   ngOnInit() {
-       this.loading = true ; 
+      this.init() ; 
+
+  
+  }
+      init(){
+          
+           this.loading = true ; 
        this.messagesService.getCountUserMessages ( )
        .subscribe (
            data=>{
                 this.countmsg = data['count'] ; 
-                this.getPage (1) ; 
+                    this.reload = false ; 
+                this.getPage(1) ; 
                
                }, error =>{
                    console.log(error) ;  
+                  this.loading=false ;
+                   this.reload = true ; 
                }) ;
            
-
-  
-  }
-      
+          
+          }
  
   
   getPage (page) {
-          
+          this.loading = true  ; 
               this.messagesService.getUserMessages((page-1)*this.sizemsg , this.sizemsg )
         .subscribe (
             data => {
                  console.log(data) ; 
-               this.model = data ; 
+               this.model = this.model.concat(data)  ; 
                 this.page = page ; 
                 this.loading = false ;
                 if (this.model.length ==0 ) 
@@ -66,7 +80,7 @@ export class ListMessagesComponent implements OnInit {
                 
                 for (let i = 0 ; i < this.model.length; i++){
                 
-                this.model[i]._source.last.date =  prettyMs( new Date().getTime()-this.model[i]._source.last.date, {compact: true} );
+              //  this.model[i]._source.last.date =  prettyMs( new Date().getTime()-this.model[i]._source.last.date, {compact: true} );
                 
                 this.model[i]._source.unread = 0 ;     
                 if (this.model[i]._source.users[0] == this.me ) {
@@ -80,13 +94,13 @@ export class ListMessagesComponent implements OnInit {
               
                 }
                     
-                this.messagesService.getUnreadMessages(this.to, this.me )
+              /* this.messagesService.getUnreadMessages(this.to, this.me )
                     .subscribe(
                         data4=>{
                                console.log(data4 ) ; 
                            this.unread = data4;
                             this.unread = JSON.parse(this.unread ) ; 
-                           this.model[i]._source.last.date =  prettyMs( new Date().getTime() -   this.unread['last']['date'],  {compact: true}   );
+                           // this.model[i]._source.last.date =  prettyMs( new Date().getTime() -   this.unread['last']['date'],  {compact: true}   );
                             this.model[i]._source.last.text= this.unread['last']['text']; 
                             this.model[i]._source.unread +=1 ; 
                         
@@ -96,11 +110,11 @@ export class ListMessagesComponent implements OnInit {
                         ,error =>{
                             
                         }
-                        )
+                        )*/
                     
                     
                  if (this.model[i]._source.last.to!= this.me)
-                                  this.model[i]._source.last.userid = this.model[i]._source.last.to;
+                   this.model[i]._source.last.userid = this.model[i]._source.last.to;
                 
                // if (this.model[i]._source.last.from!= this.me)
                 else 
@@ -127,13 +141,23 @@ export class ListMessagesComponent implements OnInit {
 
                             
                         }else  */
-                         this.model[i]._source.last.lastfrom=  this.model[i]._source.last.userfullname;
+                        this.model[i]._source.last.lastfrom=  this.model[i]._source.last.userfullname;
                     }
                     ,error3=>{
                      console.log(error3) ;     
                     }
                     ); 
-                /*  this.userdetailsService.getAvatar(this.model[i].to)
+                    
+                    
+                     this.model[i]._source.last.avatar =""
+                     this.userdetailsService.getProfilePicName(this.model[i].to)
+                     .subscribe(
+                           data =>{ 
+                           if (data.hasOwnProperty('profilepicname')) 
+                                this.model[i]._source.last.avatar = this.picService.getProfileLink (data['profilepicname']) 
+                       },error=>{}) ; 
+                    
+                 /* this.userdetailsService.getAvatar(this.model[i].to)
                 .subscribe (
                   data=>{
                    try {
@@ -146,17 +170,9 @@ export class ListMessagesComponent implements OnInit {
                    }
                    ,error=>{
                           console.log(error) ;     
-                   } ); */
-  
+                   } ); 
+                    */
              
-                      this.model[i]._source.last.avatar =""
-                     this.userdetailsService.getProfilePicName(this.model[i].to)
-                     .subscribe(
-                           data =>{ 
-                           if (data.hasOwnProperty('profilepicname')) 
-                                this.model[i]._source.last.avatar = this.picService.getProfileLink (data['profilepicname']) 
-                       },error=>{}) ; 
-                    
                  this.userdetailsService.getFullname(this.model[i].to) 
                 .subscribe(
                     data3=>{
@@ -211,4 +227,67 @@ goToMessage(me, userid, fullname, avatar, unread){
 
 }
 
+   public onLoadMoreItemsRequested(args )
+    {
+     
+       console.log('ondemand') ; 
+       const listView = args.object;
+       this.page+=1;
+       if (this.sizemsg *this.page <= this.countmsg) {
+      
+                this.getPage(this.page)  ;
+                listView.notifyLoadOnDemandFinished();
+          
+        } else {
+            args.returnValue = false;
+            listView.notifyLoadOnDemandFinished(true);
+        }
+  
+   
+  //  if (this.sizemsg *this.page < this.countmsg ) 
+    
+    
+
+}
+    
+    
+    public onItemSelected(args) {
+        const listview = args.object;
+        const selectedItems = listview.getSelectedItems();
+        console.log('selected') ; 
+        
+    //   console.log( selectedItems);
+    }
+
+    public onItemSelecting(args) {
+        console.log('selecting') ;
+      // console.log(args) ; 
+    
+    }
+
+        
+    ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    } 
+   
+}
+ hide(){
+          util.ad.dismissSoftInput() ;  
+        }
+   reloading(){
+        
+        console.log('reloading') ; 
+      this.init() ; 
+        
+        
+        
+        }  
+             
 }

@@ -1,1 +1,48 @@
-<Button text="month-income works!" class="btn btn-primary"></Button>
+
+   <GridLayout rows="auto,auto,auto,auto" >
+
+   	<GridLayout row='0' columns=auto,auto >
+        <Label (touch)="ontouch($event)" text="&#xf053;" class="fas back" col="0" [nsRouterLink]="['../store']"> ></Label>
+  		<Label (touch)="ontouch($event)" col="1" class=" storetitle"  text="{{storetitle}}" [nsRouterLink]="['../store']"></Label>
+    
+    </GridLayout>
+     <StackLayout  row="1"  colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
+   	 
+   <StackLayout row="2" orientation ='vertical' >
+      	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading0" ></ActivityIndicator>
+   </StackLayout>   
+   
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading0 && reload' class="reload">
+        <FormattedString>
+            <Span text="Problème de connexion... "></Span>
+            <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
+        </FormattedString>
+  </Label>
+    
+   
+   
+<RadListView  row='2' class="list-group" [items]="data"  >
+    <ng-template let-income="item"  >
+     <GridLayout columns="*,*" rows ="*,*,*,*">
+     
+    <Label class="head" col="0" row="0"  textWrap="true"  text=" {{income.month+1}}/{{income.year}} "></Label>
+     <Label class="border" col="0" row="1"  textWrap="true"  text=" Total Vente "></Label>
+    <Label color="#000" class="border" col="1" row="1"  textWrap="true"  text=" {{income.total}} "></Label>
+	<Label class="border" col="0" row="2"  textWrap="true"  text=" Recettes "></Label>
+    <Label color="#000"  class="border"  col="1" row="2"  textWrap="true"  text=" {{income.price}} D.A "></Label>
+    <Label class="border" col="0" row="3"  textWrap="true"  text=" 3% Recettes "></Label>
+    <Label  color="#000"  class="border" col="1" row="4 "  textWrap="true"  text=" {{income.price*0.03}} D.A "></Label>
+  
+  </GridLayout> 
+    
+    
+    </ng-template>
+ 	
+ 
+</RadListView>
+  
+   <StackLayout  row="2" *ngIf="!loading0 && data.length==0 && !reload ">
+    <Label class="alert" textWrap="true"  text=" Aucune vente complétée. "></Label>
+  </StackLayout>  
+
+   </GridLayout>   

@@ -1,5 +1,72 @@
-/*
-Add your NativeScript specific styles here.
-To learn more about styling in NativeScript see:
-https://docs.nativescript.org/angular/ui/styling
-*/
+.new {
+	
+	color :  #000 ; 
+	font-size:18 ; 
+	margin-bottom: 10 ; 
+}
+
+.label {
+	font-size:14 ; 
+	color: #00BFFF ;
+	margin-top:10 ; 
+}
+.input{
+	
+	font-size:14 ;
+	
+	
+}
+.list {
+	
+	font-size:12 ; 
+}
+
+.fas {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 900; 
+}
+.dropdownLabel {
+	   horizontal-alignment: right;
+	   color :#00BFFF ;
+	
+	
+}
+.send{
+	background-color:#00BFFF; 
+	color:#fff ; 
+	 font-size :14 ; 
+
+}
+.undo {
+	
+	margin: 12,0,0,2; 
+    color :#00BFFF; 
+    padding:5 ; 
+    margin :10, 0,0,2 ;
+    	 font-size :14 ; 
+     
+}
+.alert {
+	padding :5 ; 
+	background-color: #FFA1A1; 
+	color :#444444; 
+	 border-width: 1 ;
+	 border-radius :2; 
+   border-color:#F27171;
+   font-size:12;  
+}
+:disabled {
+  opacity: 0.5;
+}
+
+ .border{
+	font-size:14 ; 
+	 border-bottom-width: 1 ;
+   	 padding:10; 
+ 	 border-bottom-color:#D0D0D0; 
+  
+}
+Label:pressed {
+  
+    background-color:#eeeeee; 
+}

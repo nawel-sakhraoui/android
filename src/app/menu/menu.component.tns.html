@@ -1,153 +1,84 @@
-<StackLayout>
-  <Label text="menu works" textWrap="true"></Label>
-  <Label text="This is a migrated component" textWrap="true"></Label>
-  <Label text="Update it to provide the UI elements required in your mobile app" textWrap="true"></Label>
+
+<ActionBar margin='-5,0,0,0' title="SIMSIM" >
+
+    <GridLayout  rows="auto,*" >
+
+<StackLayout row="0">
+<Label *ngIf="noConnexion" textWrap=true  text="Connexion Indisponible. "  class="alert"></Label>
 </StackLayout>
 
-<!--
-Original Web template:
-
- 
-
- <nav    class="navbar navbar-expand-md  navbar-light  "  role="navigation" id="navbar"  > 
-  <!-- Brand ->
-   <!-- Toggler/collapsibe Button ->
-   <div class="form-inline">
-   <div class='navbar-brand'>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"  aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-  </button>
-  
-  <a  style ="font-size:large;" i18n='@@brand' class='text-light   '   routerLink="/home" routerLinkActive="active" > <i>SiMSiM</i></a>
-  <span class="dropdown" style="vertical-align:super; display:inline-block;  font-size:small;" >
-  
-      <a style='font-size:small;'class=" text-dark  btn-link  btn dropdown-toggle " href="#" id="navbardrop" data-toggle="dropdown"  aria-expanded="false" aria-labelledby="navbarDropdown">  {{langue}}
-      </a>
-        <ul i18n-class class=" dropdown-menu-left dropdown-menu  scroll " aria-labelledby="navbarDropdown">
-        <li  data-toggle="collapse" data-target=".navbar-collapse.show" >
-         <a class=" dropdown-item " (click)=" changeLang(langue2)"  >
-            {{langue2}}
-            </a>
-        </li>
-      </ul>
-  </span>
-  </div>
-<div class="dropdown nav-item" >
-      <a i18n='@@city123' class="btn btn-link text-dark  dropdown-toggle " href="#" id="navbardrop" data-toggle="dropdown"  aria-expanded="false" aria-labelledby="navbarDropdown">
-       {{city}} 
-      </a>
-      <ul  i18n-class class=" dropdown-menu dropdown-menu-right scroll"  aria-labelledby="navbarDropdown">
-        <li  data-toggle="collapse" data-target=".navbar-collapse.show" *ngFor='let c of cities'>
-         <a i18n='@@cities123' class="btn btn-outline-warning  dropdown-item " (click)="selectCity(c.name,  c.nameAr)"  >
-            {{c.name}}
-            </a>
-        </li>
-      </ul> 
-
-</div>
-</div>
-
- <app-search></app-search> 
-
-
-
-
- 
-  <!-- Navbar links ->
-    <div class=" collapse  navbar-collapse  " id="collapsibleNavbar">
-        <ul i18n-class class="navbar-nav ml-auto ">
-   
- 
-     <li class="nav-item dropdown">
-      <a  class="nav-link dropdown-toggle  " href="#" id="navbardrop" data-toggle="dropdown"  aria-expanded="false" aria-labelledby="navbarDropdown">
-        {{name}}
-      </a>
-      <div i18n-class class=" dropdown-menu dropdown-menu-right scroll" aria-labelledby="navbarDropdown">
-        <li   data-toggle="collapse" data-target=".navbar-collapse.show" ><a class="fa fa-user bigger-120 dropdown-item  "  routerLink="/home/{{myhome}}/profile/{{myhome}}" routerLinkActive="active"  i18n='@@profil' >
-        Profil</a>
-        </li>
-        <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    class="fa fa-envelope  dropdown-item" routerLinkActive="active"   routerLink="/home/{{myhome}}/messages" routerLinkActive="active"  i18n='@@msg' >Messsages
-        	<span class="badge">{{messagesnotif}}</span>
-        </a>
-        </li>
-      <div class="dropdown-divider"></div>
-        <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    class="fa fa-sign-out  dropdown-item  btn  " (click)= logout()  i18n='@@deco' >Déconnecter</a>
-      </li>
-   	                  <div class="dropdown-divider"></div>
-   	
-      <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    class="fa fa-sign-out  dropdown-item  btn btn-outline-danger  " (click)= logoutAll()  i18n='@@decoall' >Déconnecter tous les appareils</a>
-      </li>
-
-      </div>
-    </li>  
+    <GridLayout  row="1" columns="90,*" >
+    <GridLayout rows='auto,auto' col='0'>
+         <!-- Ripple row="0"   rippleColor="#000" backgroundColor="#fff"  borderRadius="15"  >	</Ripple-->
+        <Label (touch)="ontouch($event)" row="0" margin="10,0,-12,0"  text="SIMSIM"  [nsRouterLink]="['/home',myhome]" 
+            class="icon-menu fas btn btn-active"></Label>
+	
+		
+       <GridLayout columns='auto' row="1">
+        <!-- Label margin="0,2,0,5" text='&#xf13a;' col="0" class="fas"></Label-->
+       <DropDown margin='-5,-5,0,0' #dd   col="0"  
+         		textAlignment="left"
+                  [items]="cities "
+                  class="item-drop-down"
+                  [(ngModel)]="selectedIndex"
+                  (selectedIndexChanged)="onchange($event)"
+					colSpan="-5"
+					itemsPadding="5"
+         >
+        </DropDown> 
+		</GridLayout>
+  	  
+  	     <!-- Label row="0" text='&#xf078;'  class="fas dropdownLabel" ></Label-->
+    	 <!-- StackLayout row="1"  colSpan="2" backgroundColor="#444444" height="1"></StackLayout-->
+	</GridLayout>
     
+    <SearchBar id="searchbarid"  col="1" hint="Rechercher"  (submit)="getQuery($event)" (loaded)="sBLoaded($event)"  
+            color="#444444" (clear)="onClear($event)"  textFieldBackgroundColor="transparent" textFieldHintColor="#d9534f"></SearchBar>
+
+       
+       <!-- Button col="2" class="fas search " text='&#xf002;'></Button-->
+    </GridLayout>
+     </GridLayout>
+</ActionBar>
+<!-- GridLayout rows='*,43'>
+
+<router-outlet row="0">
+
+</router-outlet>
+
+
+	<GridLayout   rows="43" columns="*,*,*,*,*,*" row="1"  class="footer bottom">
+
+			
+        <Button id="profile" row="0" col="0" text="&#xf007;" nsRouterLinkActive="icon-footer-active" 
+           [nsRouterLink]="['/home',myhome,'profile',myhome]" class="fass icon-footer Btn "    ></Button>
+        
+         <Button id="list-messages" row="0" col="1" text="&#xf0e0;" nsRouterLinkActive="icon-footer-active"
+            [nsRouterLink]="['/home',myhome,'messages']"  class="fass icon-footer Btn "></Button>   
+        <Label id="globeItemNavigation1" row="0" col="1" text="{{messagesnotif}}" class="globe1">
+        </Label> 
+        
+       
+        <Button id="transaction" row="0" col="2" text="&#xf362;" nsRouterLinkActive="icon-footer-active" 
+          [nsRouterLink]="['/home',myhome,'ongoing']" class="fass icon-footer Btn "></Button>
+		
+		
+        <Button id="stores" row="0" col="3" text="&#xf54f;" nsRouterLinkActive="icon-footer-active" 
+           [nsRouterLink]="['/home',myhome,'stores']" class="fass icon-footer Btn "></Button>
+
+
+        <Button id="cart" row="0" col="4" text="&#xf07a;" nsRouterLinkActive="icon-footer-active" 
+            [nsRouterLink]="['/home',myhome,'cart']"   class="fass icon-footer Btn"></Button>
+    
+    	     
+       <Button id="notifications" row="0"  col="5" text="&#xf0f3;&#xf0de;"  nsRouterLinkActive="bellActive"   [nsRouterLink]="['/home',myhome,'not']"
+            class="bell fas Btn"></Button> 
+        <Label id="globeItemNavigation" row="0" col="5" text="{{notificationsCount}}" class="globe">
+        </Label> 
+ 
      
-    
-      <li class="nav-item dropdown ">
-     	 <a class=" bg-light text-info nav-link dropdown-toggle " href="#" id="navbardrop" data-toggle="dropdown" aria-expanded="false"  >
-     	   <span class=" fa fa-bell badge" >{{notifications.notificationcount}}</span>
-     	 </a>
-     	 <div  i18n-class class="dropdown-menu-right dropdown-menu scroll" aria-labelledby="navbarDropdown">
-     	     <li  data-toggle="collapse" data-target=".navbar-collapse.show" *ngFor="let n of notifications.notification ; let i = index  " [attr.data-index]="i" >
-         
-       		 <a    *ngIf="n.value=='message'"  routerLink="/home/{{myhome}}/purchase/{{n.commandid}}" fragment="message"  i18n='@@menu0message'   class="fa fa-envelope dropdown-item"  >{{n.storetitle}}: Message  <i class='fa fa-clock-o'>{{n.time}}</i>
-       		 </a>
-       		 <a   *ngIf="n.value=='send' " routerLink="/home/{{myhome}}/purchase/{{n.commandid}}"  i18n='@@send'   class="dropdown-item    	fa fa-truck  "  >{{n.storetitle}}: Commande envoyée   <i class='fa fa-clock-o'>{{n.time}}</i>
-       		
-        	 </a>
-        	 <a     *ngIf="n.value=='prepare' " routerLink="/home/{{myhome}}/purchase/{{n.commandid}}"   i18n='@@prepare'  class="dropdown-item  fa fa-check-square-o"  >{{n.storetitle}}: Commande preparée <i class='fa fa-clock-o'>{{n.time}}</i>
-       		
-        	 </a>
-        	  <a   *ngIf="n.value=='rating'"  routerLink="/home/{{myhome}}/purchase/{{n.commandid}}"  i18n='@@rating' fragment="rating"      class="fa fa-star dropdown-item"  >{{n.storetitle}}: Evaluer vos achats  <i class='fa fa-clock-o'>{{n.time}}</i> 
-       		 </a>
-    		</li>
-      	</div>
-  	   </li>
-  	 
-      
-      
-       <li   class="nav-item dropdown">
-     	 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-     	  <span class="fa fa-exchange"></span>
-     	 </a>
-     	 <div i18n-class class="dropdown-menu-right dropdown-menu scroll" aria-labelledby="navbarDropdown">
-      		<li data-toggle="collapse" data-target=".navbar-collapse.show" ><a   routerLink="/home/{{myhome}}/ongoing" routerLinkActive="active"  class="dropdown-item" i18n='@@ongoing' ><i class='fa fa- fa-circle-o-notch'></i> Commandes en cours</a>
-      		 </li>
-      		 <li data-toggle="collapse" data-target=".navbar-collapse.show" > <a    routerLink="/home/{{myhome}}/done" routerLinkActive="active" class="dropdown-item"  i18n='@@historic' ><i class="fa fa-history"></i> Historique des commandes</a>      
-     	 	</li>
-     	 </div>
-  	   </li>
-      
-      
-    <li class="nav-item dropdown">
-      <a  class=" nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-        <span class="fa fa-archive"></span>
-      </a>
-      
-      <div i18n-class class="dropdown-menu-right dropdown-menu scroll" aria-labelledby="navbarDropdown">
-
-	 <li  data-toggle="collapse" data-target=".navbar-collapse.show" >
-      <a [hidden]='checkStores'  *ngFor = 'let store of  stores'   class=" dropdown-item"  routerLink="/stores/{{store}}"  routerLinkActive="active" >{{store}}
-       		<span class=""></span>
-       </a>
-       </li>
-        <div class="dropdown-divider"></div> 
-       <li  data-toggle="collapse" data-target=".navbar-collapse.show"  >
-       <a   class=" dropdown-item"  routerLinkActive="active" activated  routerLink='/home/{{myhome}}/createstore' i18n='@@create' >Créer un magasin</a> 
-  		</li>
-       </div>
-    </li>
-    
-    <li data-toggle="collapse" data-target=".navbar-collapse.show"  class="nav-item">
-        <a   routerLink="/home/{{myhome}}/cart" routerLinkActive="active"  class="nav-link" > <span class="fa fa-shopping-cart"></span></a>
-      </li>
-      
-    
-     
-   </ul>
-  </div>
-
-
-
-</nav>
--->
+    </GridLayout>
+ 
+    </GridLayout>
+    <!-- ListPicker [items]="listPickerCountries" [(ngModel)]="selectedListPickerIndex"></ListPicker>
+     -->

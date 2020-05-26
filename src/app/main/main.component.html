@@ -3,8 +3,8 @@
 
 
 <ngx-loading  [show]="loading" [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
-
 <div *ngIf='main'>
+
 	<nav class=" navbar navnav    navbar-default mr-auto sticky-top" id="navbar2" >
 		<div class=" form-inline   text-info ">
 			<a placement="bottom" tooltip="Afficher les catégories"  class="nav-link btn btn-link " (click)='_toggleSidebar(); '
@@ -40,7 +40,7 @@
 
 
 	<ng-sidebar-container showBackdrop="true" sidebarClass="container"
-		style=" z-index:2 ;  height: 87.5vh;      background-color: #F5F5F7"> <!-- A sidebar --> 
+		style=" z-index:2 ;  height: 82vh;      background-color: #F5F5F7 "> <!-- A sidebar --> 
 		
 	<ng-sidebar
 	
@@ -80,7 +80,7 @@
 						<div class='card__one card btn ' style="width: 100%"
 							(click)="gotoStore(store._id)">
 							<div class='crop card-img-top '>
-								<img class=" img " alt="" [src]="store.banner">
+								<img class=" img " [src]="store.banner">
 							</div>
 							<div i18n-align  align=left data-toggle="tooltip" data-placement="bottom"
 								>
@@ -107,7 +107,7 @@
 						<div class='btn card' style="width: 100%"
 							(click) ='gotoStore(s._id)'>
 							<div class="crop ">
-								<img class=" img " alt="" [src]="s.banner">
+								<img class=" img " [src]="s.banner">
 							</div>
 							<div  i18n-align  align=left data-toggle="tooltip" data-placement="bottom"
 								>
@@ -150,14 +150,14 @@
 				<div class="row">
 
 					<div style="position: relative;"
-						class="btn col-sm-6 col-6 col-md-4 col-xl-3"
+						class="btn col-sm-6 col-6 col-md-3 "
 						*ngFor="let a  of  articlescats[c]  ">
 
 						<div   class="card " (mouseenter) ="mouseEnter(a._id) "
 							(mouseleave) ="mouseLeave(a._id)">
-							<img (click)="gotoArticle(a._id, a._source.storetitle )" src="{{mainpics[a._id]}}" class='resize  card-img-top'
+							<img (click)="gotoArticle(a._id, a._source.storetitle )" [src]="mainpics[a._id]" class='resize img-responsive card-img-top'
 								style="width: 100%;"
-								 >
+								 alt="Image">
 							<div class="card-block ">
 								<div (click)="gotoArticle(a._id, a._source.storetitle )" class="card-title ">{{a._source.title}}</div>
 								<div [hidden]="!disp[a._id]">
@@ -179,14 +179,12 @@
 											{{a._source.storetitle}}</button>
 									</div>
 									<div>
-									
-									<button *ngIf='me!="annonym"'  i18n='@@panier' class=" btn text-light  btn-warning" (click)="addToCart(a)">
-										<span class="fa fa-shopping-cart "></span> Panier<span
+									<button  i18n='@@panier' class=" btn   btn-warning" (click)="addToCart(a)">
+										<span class="fa fa-shopping-cart"></span> Panier<span
 											*ngIf=" a.loadingcart==1" class="fa fa-refresh fa-spin "></span>
 										<span *ngIf=" a.loadingcart==2" class="fa fa-check"></span>
 										<span *ngIf=" a.loadingcart==3" class="fa fa-ban"></span>
 									</button>
-				
 									</div>
 								</div>
 
@@ -218,14 +216,14 @@
 				<div class="row">
 
 					<div style="position: relative;"
-						class="btn col-sm-6 col-6 col-md-4 col-xl-3 "
+						class="btn col-sm-6 col-6 col-md-3 "
 						*ngFor="let a  of  articles  ">
 
 						<div   class="card bg-light" (mouseenter) ="mouseEnter(a._id) "
 							(mouseleave) ="mouseLeave(a._id)">
-							<img (click)="gotoArticle(a._id, a._source.storetitle )" src="{{mainpics[a._id]}}" class="resize card-img-top"
+							<img (click)="gotoArticle(a._id, a._source.storetitle )" [src]="mainpics[a._id]" class="resize card-img-top"
 								style="width: 100%;"
-						    >
+								 alt="Image">
 							<div class="card-block ">
 								<div class="card-title ">{{a._source.title}}</div>
 								<div [hidden]="!disp[a._id]">
@@ -244,21 +242,17 @@
 										<button class="btn btn-link "
 											style='font-size: small; color: #C0C0C0'
 											(click)='gotoStore(a._source.storetitle)'>
-											{{a._source.storetitle}}
-										</button>
+											{{a._source.storetitle}}</button>
 									</div>
 									
-							
-					
-									<button  *ngIf="me!='annonym'" i18n='@@cart2' class=" btn   btn-warning text-light" (click)="addToCart(a)">
+									<button i18n='@@cart2' class=" btn   btn-warning" (click)="addToCart(a)">
 										<span class="fa fa-shopping-cart"></span> Panier <span
 											*ngIf=" a.loadingcart==1" class="fa fa-refresh fa-spin "></span>
 										<span *ngIf=" a.loadingcart==2" class="fa fa-check"></span>
 										<span *ngIf=" a.loadingcart==3" class="fa fa-ban"></span>
 										
 									</button>
-						
-								
+									
 								</div>
 
 							</div>
@@ -273,4 +267,4 @@
 	</div>
 	</ng-sidebar-container>
 
-	</div>
+</div>

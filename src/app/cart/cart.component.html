@@ -1,6 +1,6 @@
 <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '3px' }" ></ngx-loading>
 
-<div  i18n-class class ='text-left'>
+<div  i18n-class class ='scroll2 text-left'>
 
 <div class='container'>
 <div [hidden]="loading " >
@@ -19,10 +19,10 @@
 
 <div class="row">
 
-<div class="col-sm-12 col-12 col-md-4">
+<div class="col-sm-4 col-12 col-md-4">
 
  <div class='row'>
-    <div class='col-sm-6 col-6' ><img src="{{m.pic}}" class="img-responsive crop"  alt=""></div>
+    <div class='col-sm-6 col-6' ><img [src]="m.pic" class="img-responsive crop"  alt="Image"></div>
    <div class='col-sm-6 col-6 '><b>{{ m._source.title}}</b>  
           <br> <i>{{  m._source.price}} <i i18n="@@da3">DA</i></i> </div>
  </div>
@@ -34,10 +34,10 @@
            <div class="card-body">
            
             <div class = 'row' *ngIf="m._source.color.length!=0">
-      	    <div i18n="@@couleurs" class="col-md-8 col-sm-8  col-8"> 
+      	    <div i18n="@@couleurs" class="col-md-6 col-sm-6  col-6"> 
       		   Couleurs
       	    </div>
-      	    <div class="col-sm-4 col-4"> 
+      	    <div class="col-sm-6 col-6"> 
       		     <li  *ngFor= 'let c of m._source.color; let  i=index ' style="list-style: none; display:inline-block;"> 
     
        		       <label  class='labl' >
@@ -53,10 +53,10 @@
          	</div>	
             </div>
             <div class = 'row' *ngIf="m.boolsize">
-      	    <div  class="col-md-8 col-sm-8  col-8"> 
+      	    <div  class="col-md-6 col-sm-6  col-6"> 
       		  <i i18n="@@tailles">Tailles</i> 
       	    </div>
-      	    <div class="col-sm-4 col-4"> 
+      	    <div class="col-sm-6 col-6"> 
       	    
       	         <li  *ngFor= 'let s of m.size ; let  i=index '  style="list-style: none; display:inline-block;"> 
     
@@ -80,10 +80,10 @@
             
     	     
        		<div class = 'row' >
-      		<div i18n="@@quantite" class="col-md-8 col-sm-8 col-8"> 
+      		<div i18n="@@quantite" class="col-md-6 col-sm-6 col-6"> 
       			 Quantité
       		</div>
-     	 	<div class=" col-md-4 col-sm-4 col-4"> 
+     	 	<div class=" col-md-6 col-sm-6 col-6"> 
 				 <input type='number'  [(ngModel)]="m.choosequantity" name="choosequantity"   min="1" max="m._source.numbers" style="width: 50px"  (change)="getQuantity($event, k.key, m)" require />
 			
 	   	   </div>
@@ -99,7 +99,7 @@
 
  
 </div>
-<div  class="col-md-4 col-sm-12 col-12 "   >
+<div  class="col-md-4 col-sm-4 col-12 "   >
 <div  class='row list-group-item  ' [attr.id]="'address_'+m._id" >
       		
 				<div i18n="@@addresse" style='font-size:small; ' >Votre Addresse:</div>
@@ -115,24 +115,23 @@
 <ngx-select-dropdown (change)="getDeliveryMethod($event,k.key, m)" [multiple]="false" [(value)]="m.choosedelivery" [config]="deliveryconfig" [options]="m._source.delivery"></ngx-select-dropdown></div>
 
 </div>
-
-<div class ="col-md-3 col-sm-12 col-12" style="float:right ;   margin-top:40px;"> 
-
- 
-   <a  class = "btn btn-info fa fa-close" (click)="deleteArticle(k.key, m)" style="display:inline-block ; "> </a>
-   <button button [disabled]="!m._source.available"  class = "btn btn-danger" style="display:inline-block ; " ><i i18n="@@acheter">Acheter</i></button>
-   <a  class = "btn btn-warning fa fa-mail-forward "(click)="gotoArticle(m._id, k.key )" style="display:inline-block ; "> </a>
-
+	
+ <div class ="col-sm-3 col-12" style="float:right;  margin-top:40px;">
+   <a  class = "btn btn-info fa fa-close" (click)="deleteArticle(k.key, m)" > </a>
+   <button button [disabled]="!m._source.available"  class = "btn btn-danger" ><i i18n="@@acheter">Acheter</i></button>
+   <a  class = "btn btn-warning fa fa-mail-forward "(click)="gotoArticle(m._id, k.key )"> </a>
   <div i18n="@@addressealert2" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='m.selectedAddress.warning  && m._source.delivery.length!=0'>
 Sélectionnez votre addresse de livraison d'abord ! 
  </div>  
  <div  i18n="@@livraisonalert2" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='m.choosedelivery.length==0 && m._source.delivery.length!=0'>
 Aucune livraison n'est sélectionnée 
  </div>
+
  <div  i18n="@@nolivraison" i18n-style style="float:right; " class="alert alert-danger" *ngIf ='!m.selectedAddress.warning && m._source.delivery.length==0'>
 aucune livraison n'est disponible pour votre région ! 
  </div>
 </div>
+ 
 </div>
 
   <!-- button class = "btn btn-info  "style="float: right; margin-top:40px; "> go to article</button--><br>
