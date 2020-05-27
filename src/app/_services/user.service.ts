@@ -136,6 +136,36 @@ export class UserService {
       }
      */
     
+    
+    updateOwnerstore (userid : string , owner:boolean ) {
+        return  this.http.put(this.host+'/api/users/'+userid+'/ownerstore', {'ownerstore': owner});
+
+    }
+       getOwnerstore (userid: string ){
+
+        return this.http.get(this.host+'/api/users/'+userid+'/ownerstore' ) ; 
+
+     }
+
+        updateOwnerdelivery (userid : string , owner:boolean ) {
+        return  this.http.put(this.host+'/api/users/'+userid+'/ownerdelivery', {'ownerdelivery': owner});
+
+    }
+       getOwnerdelivery (userid: string ){
+
+        return this.http.get(this.host+'/api/users/'+userid+'/ownerdelivery' ) ; 
+
+     }
+        updateDelivery (userid : string , delivery ) {
+        return  this.http.put(this.host+'/api/users/'+userid+'/delivery', {'delivery': delivery});
+
+    }
+        getDelivery(userid){
+
+              return this.http.get(this.host+'/api/users/'+userid+'/delivery' ) ; 
+    }
+
+    
 }
 
 /*

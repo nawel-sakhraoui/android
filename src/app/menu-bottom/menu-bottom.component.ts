@@ -24,7 +24,7 @@ export class MenuBottomComponent implements OnInit {
     name :string ="";
     isopen = false ;  
     data3 :any={} ; 
-    
+         ownerstore:boolean ; 
   myhome = JSON.parse(localStorage.getItem('currentUser')).userid ; 
  
     
@@ -50,6 +50,20 @@ export class MenuBottomComponent implements OnInit {
                                 console.log( error) ; 
                 
                      }); */
+            this.userService.getOwnerstore(this.myhome)
+            .subscribe( 
+             data => {
+              //  console.log(data._source.store ) ; 
+
+                  this.ownerstore = data['ownerstore']; 
+
+
+
+              }, error => {
+                 console.log( error) ; 
+
+
+               });   
           
           this.userdetailsService.getNotifications (this.myhome)
           .subscribe(

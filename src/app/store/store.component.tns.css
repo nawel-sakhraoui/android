@@ -3,15 +3,11 @@
     font-size: 16;
     margin-left: 10;
     color :  #00BFFF ; 
-    
-    
 }
-
-
 
 .far {
     font-family: "Font Awesome 5 Free", "fa-regular-400";
-       font-weight: 400; 
+    font-weight: 400; 
 }
 
 .fab {
@@ -48,7 +44,7 @@
 }
 .pic {
     
-    height: 190;;
+    height: 190;
     width:100%;
    background-color:#D0D0D0; 
    /* border-color: #4db8ff;

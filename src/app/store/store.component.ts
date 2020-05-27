@@ -23,7 +23,7 @@ import * as BitmapFactory from "nativescript-bitmap-factory";
   templateUrl: './store.component.html',
   styleUrls: ['./store.component.css']
 })
-export class StoreComponent implements OnInit , OnDestroy,  AfterViewInit{
+export class StoreComponent implements OnInit ,  AfterViewInit{
 
   maxcart =30 ;
   subarticles :any =[]  ; 
