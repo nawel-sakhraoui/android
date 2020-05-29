@@ -104,7 +104,10 @@
     margin-right: 30;
     padding-top: 2;
 }
-
+.icon{
+	 width: 40;
+    height:40;
+}
 
 .globe1 {
     background-color:  #FFA500;
@@ -237,4 +240,10 @@ Label:pressed {
    font-size:14; 
    text-alignment: center ;  
  
+}
+
+StackLayout:pressedStack {
+   border-width:1;
+   border-color:#eeeeee ;  
+       /* color:#00BFFF  ;*/ 
 }

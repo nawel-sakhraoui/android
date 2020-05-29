@@ -28,7 +28,7 @@
         </FormattedString>
   </Label> 
   
-<RadListView  (tap)="hide()" row="4" [items]="model"  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
+<RadListView  (tap)="hide()" row="4" [items]="model"  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
           <ng-template let-m="item" let-i="index"  >
             <StackLayout orientation='vertical'>
 				 <GridLayout (tap)="hide()"  margin="0,15,0,15" rows="auto,auto,auto,auto,*,*,auto,*,auto,*,auto,*,*">

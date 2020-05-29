@@ -41,7 +41,7 @@ export class OngoingComponent implements OnInit{
   isopen = {}; 
   fragment :string='' ;
   totalcommand= 0 ; 
-  size = 3; 
+  size = 2; 
   page = 1;
   maxpage =1;  
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
@@ -733,15 +733,24 @@ export class OngoingComponent implements OnInit{
      
        console.log('ondemand') ; 
        const listView = args.object;
+            let s = this.totalcommand -(this.page*this.size) ; 
+                    if (s <0 ) 
+                          s= 0 ; 
+                    listView.loadOnDemandBufferSize=s   ;
        this.page+=1;
        if (this.page <=  this.maxpage) {
       
                 this.getPage(this.page)  ;
                 listView.notifyLoadOnDemandFinished();
+               
           
         } else {
             args.returnValue = false;
             listView.notifyLoadOnDemandFinished(true);
+                 let s = this.totalcommand -(this.page*this.size) ; 
+                    if (s <0 ) 
+                          s= 0 ; 
+                    listView.loadOnDemandBufferSize=s   ; 
         }
   
    

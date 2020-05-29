@@ -19,6 +19,7 @@ import { Accuracy } from "tns-core-modules/ui/enums";
 import * as firebase from 'nativescript-plugin-firebase';
 import { getConnectionType } from "tns-core-modules/connectivity"; 
 import * as Connectivity from "tns-core-modules/connectivity"; 
+import { StackLayout} from "tns-core-modules/ui/layouts/stack-layout";
 
 
 
@@ -531,5 +532,17 @@ export class MenuComponent implements OnInit {
    
    }
   
+    ontouchStack(args: TouchGestureEventData) {
+    const stack = <StackLayout>args.object
+    switch (args.action) {
+        case 'up':
+            stack.deletePseudoClass("pressedStack");
+            break;
+        case 'down':
+            stack.addPseudoClass("pressedStack");
+            break;
+    }
+   
+}
 
 }

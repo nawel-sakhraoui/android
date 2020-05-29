@@ -8,8 +8,8 @@
 	<StackLayout >
 			<Label *ngIf="noConnexion" textWrap=true  text="Connexion Indisponible. "  class="alert0"></Label>
 	</StackLayout>
-        <!-- Image class="logo" src=""></Image> -->
-            <Label class="header" text="CEEN.dz"></Label>
+        		<Image class="logo" src="res://siin"></Image> 
+            <Label class="header" text="Ceen.dz"></Label>
 
 			<StackLayout *ngIf="suspended">
 			  <TextView editable= "false"  class="warning" text ="Utilisateur suspendu contacter le support technique pour plus d'info ">
@@ -32,7 +32,7 @@
                         keyboardType="phone" autocorrect="false"
                         autocapitalizationType="none" [(ngModel)]="model.phone"
                         returnKeyType="done"
-                        mask="00 00 00 00 00"
+                         mask="00 00 00 00 00"
                         (returnPress)='logins()'></MaskedTextField>
                         <Label editable ='false' *ngIf='alertLength' class="warning" text="Numero incomplet."> </Label>
                         <Label editable ='false' *ngIf='alertphone' class="warning" text="Entrer votre numero."> </Label>
@@ -65,8 +65,8 @@
     <StackLayout *ngIf='!login ' class="form">
     
     
-        <!-- Image class="logo" src=""></Image> -->
-        <Label class="header" text="SIM SIM"></Label>
+        <Image class="logo" src="res://siin"></Image> 
+        <Label class="header" text="Samarkand"></Label>
 
  
 			<StackLayout *ngIf="pleaseRegister">

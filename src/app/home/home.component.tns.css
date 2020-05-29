@@ -10,15 +10,15 @@
 }
 
 .logo {
-  margin-bottom: 12;
-  height: 90;
+  margin-bottom: 10;
+  height: 120;
   font-weight: bold;
 }
 .header {
   horizontal-align: center;
-  font-size: 28;
-  font-weight: 600;
-  margin-bottom: 70;
+  font-size: 24;
+  font-weight: 400;
+  margin-bottom: 15;
   text-alignment: center;
   color:  #d9534f;
 }

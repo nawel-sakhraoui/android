@@ -220,10 +220,35 @@ border-color: transparent;
 	font-size:12; 
 	size:12;
      text-align: center;
+  	 vertical-align: center;
+	background-color: #FFA500 ;
+    border-radius:5; 
+	color:#fff; 
+	
+	
+}
+/*
+.send{
+	padding :5 ; 
+	font-size:12; 
+	size:12;
+     text-align: center;
 	 vertical-align: center;
 	background-color:#FFA500 ;
 	    border-radius:5; 
 	    color:#fff;
+	
+	
+}*/
+.send{
+	padding :5 ; 
+	font-size:12; 
+	size:12;
+     text-align: center;
+  	 vertical-align: center;
+	background-color: #FFA500 ;
+    border-radius:5; 
+	color:#fff; 
 	
 	
 }
@@ -365,6 +390,8 @@ padding : 5 ;
 
 	}
 .link0{
+		margin-top:3 ; 
+	
 	color:#FFA500 ; 
 }
 

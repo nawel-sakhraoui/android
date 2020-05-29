@@ -11,8 +11,8 @@
 
 <Label class="alert" *ngIf='!listmessage && !loading && !reload' text="Pas de messages privés"> </Label>
 
-<RadListView row="1"  class="list-group" [items]="model" 
-				loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
+<RadListView  *ngIf='listmessage && !loading ' row="1"  class="list-group" [items]="model" 
+				loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
 				
 				>
     <ng-template let-m="item"  >

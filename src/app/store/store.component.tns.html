@@ -99,11 +99,11 @@
      <ng-template ngxPermissionsOnly="ADMINStore"> 
         
        <Button [visibility]="!boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;&#xf0d7;" 
-            class="bell fas " (tap)="boolNotif=!boolNotif"></Button> 
+            class="bell fas " (tap)="boolNotif=true"></Button> 
         <Label [visibility]="!boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="2" text="{{notifCount}}" class="globe"
-                   ></Label> 
-                    <Button color='#FFA500'  [visibility]="boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;&#xf0d7;" 
-            class="bell fas" (tap)="boolNotif=!boolNotif"></Button> 
+                 ></Label> 
+       <Button   [visibility]="boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;" 
+            class="bell2 fas" (tap)="boolNotif=true"></Button> 
         <Label [visibility]="boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="2" text="{{notifCount}}" class="globe"
                    ></Label>
     
@@ -127,8 +127,7 @@
 
       
 
-        <RadListView   [visibility]=" !loading2 && !boolNotif? 'visible':'collapse'"    row="5" [items]="selectArticles"  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
-         >
+        <RadListView   *ngIf=" !loading2 && !boolNotif"    row="5" [items]="selectArticles"  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
 
       		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
       		 <GridLayout (touch)='ontouch2($event)' >
@@ -175,18 +174,19 @@
  
       			<!-- StarRating style="margin: 0px 0.35em 0.25em -1.6em; vertical-align: middle;" emptyColor="black"  isindicator='true'filledColor="red" value="3" max="5"></StarRating-->
       		  </GridLayout>
-      		  
+      		 
      		 </ng-template>	
-     
-     		
+      		
+            
      		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
       	
+      
       	</RadListView>
       	
  	
          <ng-template ngxPermissionsOnly="ADMINStore"> 
   
-    <StackLayout row="5" [visibility]="boolNotif && !loading2?'visible':'collapse'" >
+    <StackLayout row="5" *ngIf="boolNotif && !loading2" >
      <app-store-menu [storetitle]="storetitle"     (notifCount)="OnNotifCount($event)" ></app-store-menu>
    	</StackLayout>
    	

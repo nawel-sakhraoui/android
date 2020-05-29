@@ -50,7 +50,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
    store :any={}; 
    notif:any=[] ; 
    isopen = {}; 
-  size= 3 ;
+  size= 2 ;
    maxpage = 1 ; 
    page = 1 ; 
    fragment :string ; 

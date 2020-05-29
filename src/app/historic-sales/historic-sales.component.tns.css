@@ -222,14 +222,16 @@ border-color: transparent;
    color:#000;
     font-size:10;
 }
+
 .send{
 	padding :5 ; 
 	font-size:12; 
 	size:12;
      text-align: center;
-	 vertical-align: center;
-	background-color: #00BFFF ; 
-	    border-radius:5; 
+  	 vertical-align: center;
+	background-color: #FFA500 ;
+    border-radius:5; 
+	color:#fff; 
 	
 	
 }
@@ -364,6 +366,8 @@ padding : 5 ;
 }
 
 .link0{
+	margin-top:3 ; 
+	
 	color:#FFA500 ; 
 }
 

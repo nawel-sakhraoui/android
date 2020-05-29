@@ -119,7 +119,7 @@
        							    	<TextView [isEnabled]="!loadingR[m._id]" [visibility]="m._source.userrating==0 && m._source.steps.stop==0? 'visible' : 'collapsed'"   fontSize="12"  hint="laisser un commentaire" class="input" [(ngModel)]="m._source.userfeedback"    returnKeyType="done" 
                 							  maxLength="300"></TextView>
        								
-							 			 <GridLayout columns='*,auto'>  <Label  class="send" row="1" (touch)="ontouch3($event)" (tap)='sendRating(m,i)  ' text="Envoyer"></Label>
+							 			 <GridLayout columns='*,auto'>  <Label  class="send" col="1" (touch)="ontouch3($event)" (tap)='sendRating(m,i)  ' text="Envoyer"></Label>
 										</GridLayout>
  			 						</StackLayout>
  			 						

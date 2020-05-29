@@ -100,7 +100,7 @@ export class MonthIncomeComponent implements OnInit {
                                  data=>{
                                           console.log(data) ; 
                                             if (data['income'] ) 
-                                           this.data= data['income'] ;
+                                           this.data= data['income'].reverse();
                                             else 
                                             this.data = [] ;  
                                           /* console.log(this.income) ;   

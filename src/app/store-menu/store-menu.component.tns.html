@@ -8,15 +8,12 @@
  
  <StackLayout row="1"    [visibility]="notif.notificationcount==0 && !loading? 'visible':'collapse'" >
 <Label class="alert"  text="Pas de nouvelles notifications"> </Label>
- 
  </StackLayout>
+ 
  
 <RadListView row="2"  [items]="notif.notification"   [visibility]="!loading? 'visible':'collapse'" >
     <ng-template let-n="item" >
-
-       	   <GridLayout rows="auto,auto">
-       	   
-       	   
+       	   <GridLayout rows="auto,auto">      	   
        	   <GridLayout row="0" (touch)="ontouch2($event)"  nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"     [visibility]="n.value=='receive' ?'visible':'collapse'" rows="auto,auto">
        	   <GridLayout row="0" columns='*,auto'   >
        		<Label   col="0" >
@@ -33,7 +30,7 @@
        		</Label>
        		</GridLayout>  
        		
-       		<textView editable="false" margin="-10,0,-5,0" class="Label" row="1"  text="Commande reçu">  
+       		<textView editable="false" margin="-10,0,-5,0" class="label" row="1"  text="Commande reçu">  
        		</textView>
        		</GridLayout>
        		
@@ -73,7 +70,7 @@
        		</Label>
        		</GridLayout>
        		
-       		 <textView editable="false" margin="-10,0,-5,0" row="1" class=" Label"    text='Nouvelle commande'>  
+       		 <textView editable="false" margin="-10,0,-5,0" row="1" class=" label"    text='Nouvelle commande'>  
        		 </textView>
        		</GridLayout>
        		
@@ -94,7 +91,7 @@
        		</Label>
        		</GridLayout>
        		
-       		 <textView editable="false" margin="-10,0,-5,0" row="1"   class=" Label"    text="ouverture d'un litige ">  
+       		 <textView editable="false" margin="-10,0,-5,0" row="1"   class=" label"    text="ouverture d'un litige ">  
        		 </textView>
        		</GridLayout>
        	
@@ -115,7 +112,7 @@
        		</Label>
        		</GridLayout>
        		
-       		 <textView editable="false" margin="-10,0,-5,0" row="1"  class=" Label"    text='Commande fermée'>  
+       		 <textView editable="false" margin="-10,0,-5,0" row="1"  class=" label"    text='Commande fermée'>  
        		 </textView>
        		</GridLayout>
     
@@ -134,13 +131,13 @@
        		<Label class="fass" col="1"  text="&#xf017; {{n.time}}">
        		</Label>
        		</GridLayout>
-       		  <textView editable="false" margin="-10,0,-5,0"  row="1"   class="Label"   text='commande annulée '>  
+       		  <textView editable="false" margin="-10,0,-5,0"  row="1"   class="label"   text='commande annulée '>  
        		 </textView>
        		</GridLayout>
     
        	   
        		<GridLayout row="0"  nsRouterLink="/home/{{me}}/stores/{{storetitle}}/commands/{{n.commandid}}"   fragment="message"    [visibility]="n.value=='message' ?'visible':'collapse'"  (touch)="ontouch2($event)"   padding="5"  rows='auto,auto'>
-       		   <GridLayout row="0" columns='*,auto'  >
+       		<GridLayout row="0" columns='*,auto'  >
        		<Label   col="0" >
        		<FormattedString>
        		  	<Span text='&#xf0e0; ' class='fass icon' ></Span>
@@ -148,22 +145,15 @@
        		    <Span text="{{n.fullname}}:" class="store"></Span>
        		</FormattedString>
        		</Label>
-       		
-       		
+       		    		
        		<Label class="fass" col="1"    text="&#xf017; {{n.time}}">
        		</Label>
        		</GridLayout>  
        		
-       		<textView editable="false" margin="-10,0,-5,0" editable="false" row="1"   class=" Label"   text=' Vous avez un nouveau message '>  
+       		<textView editable="false" margin="-10,0,-5,0" editable="false" row="1"   class=" label"   text=' Vous avez un nouveau message '>  
        		</textView>
        		</GridLayout>
-       	
-       		
-       	
   
-       		
-       	
-       	
        		 <StackLayout  row="1" backgroundColor="#FFA500" height="2"></StackLayout>
        		 
        		 

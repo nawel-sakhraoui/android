@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit {
     UserPhone =false ; 
     pleaseRegister = false ;
     justLog = false ; 
-    model : any= {}//'phone':''} ; 
+    model : any= {};//'phone':''} ; 
     suspended = false ; 
     returnUrl =""; 
     langue:string ;
@@ -131,7 +131,7 @@ export class HomeComponent implements OnInit {
            this.response = "" ;  
        
         let that = this ; 
-    if (this.loading == false ) {
+    //if (this.loading == false ) {
     if ( !('phone' in this.model)) {
         this.alertphone = true ; 
     }else {
@@ -142,15 +142,20 @@ export class HomeComponent implements OnInit {
         //check if userphone is already register 
      //   let f = this.model.phone.replace(/\s/g, "_");
        // console.log(f) ; 
-       // console.log(f.length) ; 
-        if ( this.model.phone.includes('_') ) {
+       // console.log(f.length) ;
+        console.log(this.model.phone); 
+        console.log(this.model.phone) ; 
+        let f = this.model.phone.replace(/\s/g, "").replace(/_/g,'');
+        console.log(f) ; 
+        if ( f.length!=10 ) {
             this.alertLength = true ; 
             this.loading = false ; 
         }else{
         
         this.alertLength = false ; 
-        this.model.phone = this.model.phone.replace(/\s/g, "") ; 
-        this.userService.checkUserPhone (this.model.phone)
+       // this.model.phone = this.model.phone.replace(/\s/g, "") ;
+            this.model.phone = f ;  
+        this.userService.checkUserPhone (f)
         .subscribe (
             data =>{
                 console.log(data );  
@@ -200,47 +205,53 @@ export class HomeComponent implements OnInit {
             
    
        } }
-   }}
+   //}
+}
     
     register(){
           this.countcode = 0 ; 
         this.pleaseRegister = false ;
         this.response = "" ; 
-    if (this.loading == false ) {
+  
       
-       if (!('fullname' in this.model )) 
+       if (!('fullname' in this.model )) {
               this.alertname = true ; 
-      else  {
+               this.loading = false ;
+      }else  {
            
            this.alertname = false;  
-        if (this.model.fullname.length < 5 ) 
+             
+        if (this.model.fullname.length < 5 ) {
              this.alertnamelength =true
-        else 
+                this.loading = false ;
+        }else 
             this.alertnamelength= false ;  
-     }   
+       }   
         
-      if ( !('phone' in this.model)) 
-              this.alertphone = true ; 
-        else {
-           this.alertphone=false ; 
-           if ( this.model.phone.includes('_') ) {
-               this.alertLength = true ; 
-          } else {
-                this.alertLength = false ; 
-          
-          if (this.model.fullname.length < 5 ) 
-             this.alertnamelength =true
-          else 
-            this.alertnamelength= false ;   
-               
+            if ( !('phone' in this.model)) {
+        this.alertphone = true ; 
+    }else {
+            this.alertphone= false ;
+        console.log(this.model.phone) ; 
+        let f = this.model.phone.replace(/\s/g, "").replace(/_/g,'');
+        console.log(f) ; 
+        if ( f.length!=10 ) {
+            this.alertLength = true ; 
+            this.loading = false ; 
+        }else{
+          this.model.phone = f ; 
+           this.alertLength = false ; 
+        
+        }}  
                
        if ( !this.alertLength  && !this.alertphone && !this.alertnamelength && !this.alertname)
        { 
         this.loading2 = true ;
          this.loading =false ; 
         //check if userphone is already register 
-        this.model.phone = this.model.phone.replace(/\s/g, "") ; 
-        this.userService.checkUserPhone (this.model.phone)
+       // this.model.phone = this.model.phone.replace(/\s/g, "") ;
+       
+        this.userService.checkUserPhone (this.model.phone )
         .subscribe (
             data =>{
                 console.log(data ) ;  
@@ -278,10 +289,8 @@ export class HomeComponent implements OnInit {
             }); 
         
         }}
-            }
-       }
-        
-        }
+            
+      
 /*    private loadAllUsers() {
         this.userService.getAll().subscribe(users => { this.users = users; });
     }*/

@@ -74,7 +74,14 @@
     <GridLayout row="1" columns="40,auto"  >
         <Button col='0' class="fas bars btn btn-active" text='&#xf0c9;' (tap)="openDrawer()"></Button>
   		
-  		<Label (touch)="ontouch($event)" textWrap='true'  col="1" class=" storetitle"  text="{{storetitle}}"  [nsRouterLink]="['../store']" ></Label>
+  		<Label  margin='10,0,0,0' (touch)="ontouch($event)" textWrap='true'  col="1"  [nsRouterLink]="['../store']">
+       		<FormattedString>
+       		  	<Span text='{{storetitle}} '  class=" storetitle"   ></Span>
+       		  	
+       		    <Span text="(articles épuisés)"  ></Span>
+       		</FormattedString>
+       	</Label>
+  		
         <!-- AbsoluteLayout col="2" backgroundColor="rgba(0,0,0,0.4)">
       	           <StackLayout left="-80" top="0" android:cursorVisible="false"  >
       	           
@@ -107,7 +114,7 @@
     
 		
 
-        <RadListView  row="6" [items]="selectArticles" selectionBehavior="LongPress" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
+        <RadListView  row="6" [items]="selectArticles" selectionBehavior="LongPress" loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
          (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)">
 
       		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >

@@ -50,7 +50,7 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
     store:any ={};
     page:number ; 
     loading = false ; 
-    size = 4; 
+    size = 2; 
     maxpage =1 ;
     
     open:boolean; 

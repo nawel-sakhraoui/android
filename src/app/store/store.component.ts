@@ -52,7 +52,7 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
     display1 = false ; 
     display2 = false ; 
     page= 1; 
-    size = 6; 
+    size = 18; 
     totalArticles =0;
     nosearch :boolean ;
     nothing : boolean ; 
@@ -244,6 +244,18 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
                         });
       
                
+              this.storeService.getNotifications(this.storetitle)
+              .subscribe(
+              data => {
+
+                  this.notifCount= data['notificationcount'];
+
+                  // 
+              }
+              , error => {
+                  console.log(error);
+                  //    this.loading = false    
+              }); 
 
            
                }
@@ -636,17 +648,25 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
      
        console.log('ondemand') ; 
        const listView = args.object;
-       this.page+=1;
+         this.page+=1;
+
+ 
+     
        if (this.page <=  this.maxpage) {
       
                 this.getPage(this.page)  ;
                 listView.notifyLoadOnDemandFinished();
+                  
           
         } else {
             args.returnValue = false;
             listView.notifyLoadOnDemandFinished(true);
         }
   
+         let s = this.totalArticles -(this.page*this.size) ; 
+                    if (s <0 ) 
+                          s= 0 ; 
+                    listView.loadOnDemandBufferSize=s   ;  
    
   //  if (this.sizemsg *this.page < this.countmsg ) 
     
@@ -826,6 +846,8 @@ ontouch(args: TouchGestureEventData) {
         
         
         }    
+
+ 
 } 
 
 

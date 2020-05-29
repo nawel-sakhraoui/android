@@ -34,7 +34,7 @@ export class CartComponent implements OnInit {
   
   page =1; 
   maxpage =1; 
-  size =1; 
+  size =3; 
     
   loading = false ; 
   model :any ; 

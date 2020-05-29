@@ -17,7 +17,7 @@
    	 
 <RadListView row ="1" class="list-group" [items]="displaystores"  
 				 [visibility]="!loading? 'visible' : 'collapsed'"
-				  loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
+				  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
     <ng-template let-k="item"  >
     
         <GridLayout class="list-group-item" rows="*, *,auto"  >
@@ -33,9 +33,9 @@
           			 </GridLayout>
    			         <GridLayout  row="0" col="1" rows="25,auto,*,auto,*" >
    			         	
-   			         	<GridLayout  row="0"  columns="40, 58,20,20">
-   			 	         	 <Button col="3" text="&#xf064;" class=" fass button2  btn-active  " (tap)="gotoArticle(m._id, k )"></Button>
-   			 	      		 <Button margin="0,20,0,0" col="2" text="&#xf00d;" class="fass  button3   btn-active"(tap)="deleteArticle(k, m)" ></Button>
+   			         	<GridLayout  row="0"  columns="*,20,20">
+   			 	         	 <Label (touch)='ontouch($event)' col="2" text="&#xf054;" class=" fass button2   " (tap)="gotoArticle(m._id, k )"></Label>
+   			 	      		 <Label (touch)='ontouch($event)' margin="0,15,0,0" col="1" text="&#xf00d;" class="fass  button3   " (tap)="deleteArticle(k, m)" ></Label>
    			 	       </GridLayout>  
    			 	     
    			         

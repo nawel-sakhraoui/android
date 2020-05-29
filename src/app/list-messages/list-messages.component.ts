@@ -26,7 +26,7 @@ export class ListMessagesComponent implements OnInit {
     model :any=[] ;
     loading = false ; 
     countmsg = 0 ; 
-    sizemsg = 2; 
+    sizemsg = 10; 
     page =1 ; 
     reload :boolean = false ; 
     constructor(

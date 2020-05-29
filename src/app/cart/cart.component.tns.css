@@ -39,6 +39,8 @@
 
 .button2{
 	color: #00BFFF ; 
+	border-width:0.5;
+	border-color: #00BFFF ;  
     border-radius: 5;
    /* font-family: FontAwesome;*/
     font-size: 12;
@@ -50,7 +52,10 @@
 
 } 
 .button3{
- 	color:#FFA500; 
+ 	color: #FFA500; 
+ 	
+	border-width:0.5;
+	border-color: #FFA500;  
     border-radius: 5;
    /* font-family: FontAwesome;*/
     font-size: 12;
