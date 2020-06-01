@@ -194,7 +194,7 @@
       		    			<Label  class="ongoingli"  *ngIf='m._source.steps.stop!=0' text='Commande annulée le: {{m._source.steps.stop}}'></Label>
       		    			
       		    			    <StackLayout orientation="horizontal">
-      		    			   		 <Label class="ongoingli"  *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0" text='Commande prête'></Label>
+      		    			   		 <Label class="ongoingli"  *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0" text='Commande prête '></Label>
       		    			   		  <Button  [isEnabled]="!m._source.steps.prepareloading"  *ngIf="m._source.steps.prepare==0  && m._source.steps.stop==0"  height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas"  (tap)= 'prepareDone(m._id, i, m._source.userid); '>
    									 </Button>
    									  <ActivityIndicator   *ngIf="m._source.steps.prepareloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.prepareloading"></ActivityIndicator>
@@ -204,7 +204,7 @@
  	  	 				   
  	  	 				   
  	  					   <StackLayout orientation="horizontal">
- 	  	 				    <Label class="ongoingli"    *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' text='Commande envoyée'></Label>
+ 	  	 				    <Label class="ongoingli"    *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' text='Commande envoyée '></Label>
  	  	  				    <Button  [isEnabled]="!m._source.steps.sendloading" *ngIf='( m._source.steps.prepare!=0 && m._source.steps.send==0 && m._source.steps.stop ==0)' (tap)="sendDone(m._id, i, m._source.userid);" height="35" backgroundColor='#FFA500' color="#FFF" text="&#xf00c;" class="fas">  </Button>
  	  	 					<ActivityIndicator   *ngIf="m._source.steps.sendloading" color='#00BFFF' rowSpan="2" [busy]="m._source.steps.sendloading"></ActivityIndicator>
  	  	 					
@@ -219,15 +219,15 @@
 					 	    
 					
 					 	    
-					 	    <Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 "  text="Litige ouvert le: {{m._source.steps.litige}}"></Label> 
+					 	    <Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 "  text="Retour le: {{m._source.steps.litige}}"></Label> 
 					 	    
-	 						<Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige==0 " text="Veuillez contacter le client pour trouver une solution à votre litige" ></Label>
+	 						<!--Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige==0 " text="Veuillez contacter le client pour trouver une solution à votre litige" ></Label>
 	 			
   
-  						 	<Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0 " text='Litige résolu le: {{m._source.steps.solvedlitige}}'></Label>
+  						 	<Label  class="ongoingli"   *ngIf="m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 &&m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0 " text='Retour le: {{m._source.steps.solvedlitige}}'></Label-->
   						 
-  						    <Label  class="ongoingli"   *ngIf="m._source.steps.close==0 && m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 && ((m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0) ||m._source.steps.litige==0)  " text="Attente de la fermeture de la commande"></Label>
-  						    <Label  class="ongoingli" *ngIf="m._source.steps.close!=0 "  text='Commande fermée le {{m._source.steps.close}}'></Label>
+  						    <Label  class="ongoingli"   *ngIf="m._source.steps.close==0 && m._source.steps.send!=0 && m._source.steps.prepare!=0 && m._source.steps.stop==0 &&  m._source.steps.receive!=0 && ((m._source.steps.litige!=0 && m._source.steps.solvedlitige!=0) ||m._source.steps.litige==0)  " text="Attente de la fermeture "></Label>
+  						    <Label  class="ongoingli" *ngIf="m._source.steps.close!=0 "  text='Commande fermée le: {{m._source.steps.close}}'></Label>
      				
        
       		    

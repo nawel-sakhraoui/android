@@ -129,7 +129,7 @@ Button {
 }
 .articlepic{
 	width:auto; 
-	height:240 ; 
+	height:290 ; 
 	background-color:#eeeeee; 
 	border-color: #ffffff  ; 
     border-width:1;
@@ -232,6 +232,11 @@ Label:pressed3 {
 
 .reload{
 	margin-top:20 ; 
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+}
+.rates{
 	vertical-align:center  ; 
     text-alignment:center ; 
 	horizontal-allignment:center ; 

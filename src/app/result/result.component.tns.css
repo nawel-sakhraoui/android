@@ -166,7 +166,7 @@ button {
 }
 .articlepic{
 	width:auto; 
-	height:240 ;
+	height:290 ;
 	background-color:#eeeeee; 
 	border-color: #ffffff  ; 
     border-width:1;
@@ -180,6 +180,7 @@ button {
 .titleLabel {
     font-size:12;
     vertical-align: center;
+    horizontal-alignment :center ;
     padding:5;
     
     
@@ -311,3 +312,9 @@ GridLayout:pressed {
 	horizontal-allignment:center ; 
 	
 } 
+.rates{
+	vertical-align:center  ; 
+    text-alignment:center ; 
+	horizontal-allignment:center ; 
+	
+}

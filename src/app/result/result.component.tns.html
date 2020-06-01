@@ -100,14 +100,17 @@
         
   					  </FormattedString>
                </TextView>
-                <AbsoluteLayout row="1">
-      	           <StackLayout left="-40" top="-20" android:cursorVisible="false"  >
+               
+			  <StackLayout   row="1"  width="85" horizontalAlignment="center">
+      	         <StackLayout      margin='-20,-75,0,-75' android:cursorVisible="false"  >
       	           
                  <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="a._source.ratingsum/a._source.ratingcount" ></StarRating>
                 </StackLayout>
-                                	<Label fontSize="10" left ="60" top="10" text="({{a._source.ratingcount}} votes)"></Label>
+                 <Label  horizontalAlignment="center" fontSize="10" margin='-20,0,0,0' text="({{a._source.ratingcount}} votes)"></Label>
                 
-                </AbsoluteLayout>
+                </StackLayout>
+      		
+                
                <Label textWrap="true" (touch)='ontouch($event); gotoStore(a._source.storetitle);' class='storetitle' row="2" text='Magasin: {{a._source.storetitle}}'></Label>
       			<Label class='price' row="3"   text=' {{a._source.price}} D.A'  ></Label>
 			   </GridLayout>

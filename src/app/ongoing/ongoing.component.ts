@@ -528,7 +528,8 @@ export class OngoingComponent implements OnInit{
                         this.model[index]._source.closeloading = false ; 
                     // add to the store income
                     let price = this.model[index]._source.totalprice - this.model[index]._source.delivery.price ; 
-                    if(this.model[index]._source.steps.litige==0 )   
+                    
+                    if (this.model[index]._source.steps.litige==0 )  
                     this.storeService.putIncome(storetitle, {'price':price,'total':1,'month': new Date().getMonth(), 'year': new Date().getFullYear()})
                     .subscribe(
                         data3 =>{

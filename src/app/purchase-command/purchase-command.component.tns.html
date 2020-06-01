@@ -186,38 +186,38 @@
  	  	 					<Label textWrap='true' class="ongoingli"  *ngIf='model.steps.stop==0 && model.steps.prepare==0 '  text='En cours de préparation'></Label>
  	  	 				    
  	  	 				    <StackLayout orientation="horizontal">
- 	  	 				    <Label textWrap='true' class="ongoingli"    *ngIf='( model.steps.prepare==0 && model.steps.stop ==0)' text='Annuler la commande'></Label>
+ 	  	 				    <Label textWrap='true' class="ongoingli"    *ngIf='( model.steps.prepare==0 && model.steps.stop ==0)' text='Annuler la commande '></Label>
  	  	  				    <Button [isEnabled]="!model.steps.stoploading"  *ngIf='( model.steps.prepare==0 && model.steps.stop ==0)' (tap)="showModal(commandid, model.storetitle ); " height="35" backgroundColor='#d9534f' color="#FFF" text="&#xf00d;" class="fas">  </Button>
  	  	 					 <ActivityIndicator   *ngIf="model.steps.stoploading" color='#00BFFF' rowSpan="2" [busy]="model.steps.stoploading"></ActivityIndicator>
  	  	 					
  	  	 					</StackLayout>
  	  	 					
- 	  	 					<Label textWrap='true' class="ongoingli"   *ngIf='model.steps.prepare!=0' text='Commande préparée le {{model.steps.prepare}}'></Label>
+ 	  	 					<Label textWrap='true' class="ongoingli"   *ngIf='model.steps.prepare!=0' text='Commande préparée le: {{model.steps.prepare}}'></Label>
  	  	
  	  			
- 	  	 			     	<Label  textWrap='true' class="ongoingli"  *ngIf='model.steps.stop!=0' text='Commande annulée le {{model.steps.stop}}'></Label>
+ 	  	 			     	<Label  textWrap='true' class="ongoingli"  *ngIf='model.steps.stop!=0' text='Commande annulée le: {{model.steps.stop}}'></Label>
  	  					
  	  						<Label  textWrap='true' class="ongoingli"  *ngIf="model.steps.send==0 && model.steps.prepare!=0 && model.steps.stop==0 "  text="Attente de l'envoie" ></Label>
 	   
-	     					<Label  textWrap='true' class="ongoingli"  *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 " text='Commande envoyée le {{model.steps.send}}'> </Label>
+	     					<Label  textWrap='true' class="ongoingli"  *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 " text='Commande envoyée le: {{model.steps.send}}'> </Label>
 					 	    
 					 	     <StackLayout orientation="horizontal">   
-					 	     <Label textWrap='true'  class="ongoingli" *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 && model.steps.receive==0" text="Commande reçu"></Label>
+					 	     <Label textWrap='true'  class="ongoingli" *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 && model.steps.receive==0" text="Commande reçu "></Label>
 					 	     <Button  [isEnabled]="!model.steps.receiveloading"  *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0  && model.steps.receive==0"  (tap)=" receiveDone(commandid, i,model.storetitle)"  height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
 					 	     <ActivityIndicator   *ngIf="model.steps.receiveloading" color='#00BFFF' rowSpan="2" [busy]="model.steps.receiveloading"></ActivityIndicator>
 					 	     
 					 	     </StackLayout>
 					 	    
-					 	    <Label textWrap='true'  class="ongoingli" *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0" text="Commande reçu le {{model.steps.receive}}"></Label>
+					 	    <Label textWrap='true'  class="ongoingli" *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0" text="Commande reçu le: {{model.steps.receive}}"></Label>
 					 	    <StackLayout orientation='horizontal'>
-					 	    <Label textWrap='true' class="ongoingli" *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige==0 && model.steps.close==0" text="Ouvrir un litige"></Label>
+					 	    <Label textWrap='true' class="ongoingli" *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige==0 && model.steps.close==0" text="Retourner la commande "></Label>
 					 	    <Button  [isEnabled]="!model.steps.litigeloading"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige==0 && model.steps.close==0" text="" (tap)="litigeDone(commandid, i, model.storetitle )"   height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
 					 	     <ActivityIndicator   *ngIf="model.steps.litigeloading" color='#00BFFF' rowSpan="2" [busy]="model.steps.litigeloading"></ActivityIndicator>
 					 	    
 					 	    </StackLayout>
-					 	    <Label textWrap='true'  class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 "  text="Litige ouvert le: {{model.steps.litige}}"></Label> 
+					 	    <Label textWrap='true'  class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 "  text="Retour le: {{model.steps.litige}}"></Label> 
 					 	    
-	 						<Label textWrap='true'  class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige==0 " text="Veuillez contacter le magasin pour trouver une solution à votre litige" ></Label>
+	 						<!-- Label textWrap='true'  class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige==0 " text="Veuillez contacter le magasin pour trouver une solution à votre litige" ></Label>
 	 						<StackLayout orientation='horizontal'>
 	 						<Label textWrap='true' class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige==0 " text="Litige résolu" ></Label>
 	 						 <Button  [isEnabled]="!model.steps.solvedlitigeloading"  *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige==0 "  (tap)=" solvedlitigeDone(commandid, i, model.storetitle )"   height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
@@ -225,16 +225,16 @@
 	 					    
 	 					    </StackLayout>
   
-  						 	<Label textWrap='true' class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige!=0 " text='Litige résolu le {{model.steps.solvedlitige}}'></Label>
+  						 	<Label textWrap='true' class="ongoingli"   *ngIf="model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 &&model.steps.litige!=0 && model.steps.solvedlitige!=0 " text='Litige résolu le {{model.steps.solvedlitige}}'></Label-->
   						 
           					<StackLayout orientation='horizontal'>
-          			  	   <Label textWrap='true'  class="ongoingli"   *ngIf="model.steps.close==0 && model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 && ((model.steps.litige!=0 && model.steps.solvedlitige!=0) ||model.steps.litige==0)  " text="Fermer la commande"></Label>
+          			  	   <Label textWrap='true'  class="ongoingli"   *ngIf="model.steps.close==0 && model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 && ((model.steps.litige!=0 && model.steps.solvedlitige!=0) ||model.steps.litige==0)  " text="Fermer la commande "></Label>
         					<Button  [isEnabled]="!model.steps.closeloading"  *ngIf="model.steps.close==0 && model.steps.send!=0 && model.steps.prepare!=0 && model.steps.stop==0 &&  model.steps.receive!=0 && ((model.steps.litige!=0 && model.steps.solvedlitige!=0) ||model.steps.litige==0) "  (tap)="closeDone(commandid, i, model.storetitle); "     height="35" backgroundColor='#00BFFF' color="#FFF" text="&#xf00c;" class="fas"></Button>
         					 <ActivityIndicator   *ngIf="model.steps.closeloading" color='#00BFFF' rowSpan="2" [busy]="model.steps.closeloading"></ActivityIndicator>
         					
         					</StackLayout>
      
-     					    <Label textWrap='true'  class="ongoingli" *ngIf="model.steps.close!=0 "  text='Commande fermée le {{model.steps.close}}'></Label>
+     					    <Label textWrap='true'  class="ongoingli" *ngIf="model.steps.close!=0 "  text='Commande fermée le: {{model.steps.close}}'></Label>
      				
        
       		    

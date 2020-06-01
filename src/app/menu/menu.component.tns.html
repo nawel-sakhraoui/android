@@ -1,5 +1,5 @@
 
-<ActionBar margin='-5,0,0,-35' title="Ceen.dz" >
+<ActionBar margin='-5,-10,0,-35' title="Ceen.dz" >
 
     <GridLayout  rows="auto,*" >
 
@@ -7,7 +7,7 @@
 <Label *ngIf="noConnexion" textWrap=true  text="Connexion Indisponible. "  class="alert"></Label>
 </StackLayout>
 
-    <GridLayout  row="1" columns="100,*" >
+    <GridLayout  row="1" columns="115,*" >
     <GridLayout rows='auto,auto' col='0'>
          <!-- Ripple row="0"   rippleColor="#000" backgroundColor="#fff"  borderRadius="15"  >	</Ripple-->
         <!-- Label (touch)="ontouch($event)" row="0" margin="10,0,-12,0"  text="SIMSIM"  [nsRouterLink]="['/home',myhome]" 
@@ -18,7 +18,7 @@
 		</stackLayout>
        <GridLayout columns='auto' row="1">
         <!-- Label margin="0,2,0,5" text='&#xf13a;' col="0" class="fas"></Label-->
-       <DropDown margin='-4,0,0,30' #dd   col="0"  
+       <DropDown  margin='-4,0,0,30' #dd   col="0"  
          		textAlignment="left"
                   [items]="cities "
                   class="item-drop-down"

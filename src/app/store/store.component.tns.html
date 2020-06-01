@@ -88,7 +88,8 @@
   		<StackLayout  col="1"  >
   		<Label  (touch)='ontouch($event)' textWrap='true'   class=" storetitle"  text="{{storetitle}}" (tap)="boolNotif=false"   ></Label>
          <StackLayout margin="0,0,2,8" orientation="horizontal">
-      	        <AbsoluteLayout  height="22" width="85"  android:cursorVisible="false"  >   
+      	        <AbsoluteLayout  height="22"$
+      	         android:cursorVisible="false"  >   
                  <StarRating left="-80" top="-18"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".3" android:scaleY=".3"   [value]="store.ratingsum/store.ratingcount"  ></StarRating>
                 </AbsoluteLayout>
                  <Label margin="3,0,0,5" fontSize="10"   text="({{store.ratingcount}} votes)"></Label>
@@ -156,14 +157,14 @@
               <TextView  row='0'   editable="false" class='titlea' text="{{a._source.title}}">
         			
                </TextView>
-                <AbsoluteLayout row="1">
-      	           <StackLayout left="-40" top="-20" android:cursorVisible="false"  >
+                <StackLayout   row="1"  width="85" horizontalAlignmnt="center">
+      	           <StackLayout      margin='-20,-75,0,-75' android:cursorVisible="false"  >
       	           
                  <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="a._source.ratingsum/a._source.ratingcount" ></StarRating>
                 </StackLayout>
-                 <Label fontSize="10" left ="55" top="10" text="({{a._source.ratingcount}} votes)"></Label>
+                 <Label fontSize="10" margin='-20,0,0,0' text="({{a._source.ratingcount}} votes)"></Label>
                 
-                </AbsoluteLayout>
+                </StackLayout>
       		
                
       			<Label class='price' row="2"   text=' {{a._source.price}} D.A'  ></Label>

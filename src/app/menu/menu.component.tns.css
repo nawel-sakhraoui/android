@@ -247,3 +247,11 @@ StackLayout:pressedStack {
    border-color:#eeeeee ;  
        /* color:#00BFFF  ;*/ 
 }
+
+.searchb{
+	margin:5,0,0,0;
+	border-width :1; 
+	border-radius:5 ; 
+	border-color:#D0D0D0;
+	
+}
