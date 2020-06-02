@@ -26,8 +26,9 @@ export class ListMessagesComponent implements OnInit {
     model :any=[] ;
     loading = false ; 
     countmsg = 0 ; 
-    sizemsg = 10; 
+    sizemsg = 1; 
     page =1 ; 
+    loadmorebool = false ; 
     reload :boolean = false ; 
     constructor(
               private messagesService: MessagesService,
@@ -53,11 +54,16 @@ export class ListMessagesComponent implements OnInit {
                 this.countmsg = data['count'] ; 
                     this.reload = false ; 
                 this.getPage(1) ; 
+                      if (this.page==this.countmsg)
+                                      this.loadmorebool = false ; 
+                                else 
+                                     this.loadmorebool = true ; 
                
                }, error =>{
                    console.log(error) ;  
                   this.loading=false ;
-                   this.reload = true ; 
+                   this.reload = true 
+                   this.loadmorebool= false; 
                }) ;
            
           
@@ -277,17 +283,25 @@ goToMessage(me, userid, fullname, avatar, unread){
             break;
     } 
    
-}
- hide(){
+  }
+  hide(){
           util.ad.dismissSoftInput() ;  
         }
    reloading(){
         
         console.log('reloading') ; 
       this.init() ; 
+   }  
+    
+   loadmore(){
+        this.loading=true ; 
         
-        
-        
-        }  
-             
+       this.page +=1 ; 
+        if (this.page <= this.countmsg) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.countmsg)
+                this.loadmorebool = false ; 
+          
+      }          
 }

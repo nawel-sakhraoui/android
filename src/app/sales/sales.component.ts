@@ -22,6 +22,7 @@ import { Label } from 'tns-core-modules/ui/label';
 import { SearchBar } from "tns-core-modules/ui/search-bar"; 
 
 import * as  clipboard from "nativescript-clipboard" ;
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
 
 @Component({
   selector: 'app-sales',
@@ -51,6 +52,7 @@ export class SalesComponent implements OnInit, AfterViewInit {
    notif:any=[] ; 
    isopen = {}; 
   size= 2 ;
+    loadmorebool = false ; 
    maxpage = 1 ; 
    page = 1 ; 
    fragment :string ; 
@@ -127,6 +129,10 @@ export class SalesComponent implements OnInit, AfterViewInit {
          if( this.totalcommand != 0 ) {
                   this.getPage(1)   ;               
                  this.sales=true  ;
+                if (this.page==this.maxpage)
+                         this.loadmorebool = false ; 
+                     else 
+                         this.loadmorebool = true ;
           }  else 
 
                    this.sales = false ; 
@@ -748,5 +754,26 @@ hide(){
         
         }
 
+          
+    loadmore(){
+       this.page +=1 ; 
+        if (this.page <= this.maxpage) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.maxpage)
+                this.loadmorebool = false ; 
+          
+      }
+      ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   }
 
 }

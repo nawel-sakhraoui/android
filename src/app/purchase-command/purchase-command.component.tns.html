@@ -48,7 +48,7 @@
 			<StackLayout orientation='horizontal' row='8'   >
 						
             					<Label text="Magasin:  "  ></Label>
-         					    <Label textWrap="true" (touch)="ontouch($event)"    text="{{model.storetitle }}" class="fas link0"  nsRouterLink="../../../../stores/{{model.storetitle}}/store" ></Label>
+         					    <Label textWrap="true" (touch)="ontouch($event)"    text="{{model.storetitle }}" class="fas link0"  nsRouterLink="../../stores/{{model.storetitle}}/store" ></Label>
        						
 			</StackLayout>
 					  
@@ -59,7 +59,7 @@
 							    <Image col="0" src="{{a.pic}}"	class="pic"  stretch="aspectFill" ></Image>
 
 							    <GridLayout col="1" rows="auto,*" >
-							      	<Label row='0' class="fas link0"  textWrap='true' (touch)="ontouch($event)" row="0"  text="{{a.title}}"  nsRouterLink="../../../../stores/{{model.storetitle}}/articles/{{a.articleid}}"></Label>
+							      	<Label row='0' class="fas link0"  textWrap='true' (touch)="ontouch($event)" row="0"  text="{{a.title}}"  nsRouterLink="../../stores/{{model.storetitle}}/articles/{{a.articleid}}"></Label>
 							      
 							    <GridLayout row="1" rows="*,*,*,*,*" columns='*,auto'>
 							    	<Label   *ngIf="a.hasOwnProperty('color') && a.color!=''" row='0' col="0"  text="Couleur: "></Label>

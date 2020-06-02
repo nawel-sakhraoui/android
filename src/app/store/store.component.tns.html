@@ -58,7 +58,7 @@
     </GridLayout>
    
  <ScrollView tkMainContent  >
-    <GridLayout  rows='auto,auto , auto,auto,auto,auto,auto '>
+    <GridLayout  rows='auto,auto,auto,auto,auto,*'>
   <Image loadMode="async"   backgroundColor='rgba(0,0,0, 0.4)'  (touch) = 'displaybanner = true' row ="0"  src="{{banner}}"  class="pic"  stretch="aspectFill"></Image>
  
  	<StackLayout height="160" row="0" >
@@ -88,8 +88,7 @@
   		<StackLayout  col="1"  >
   		<Label  (touch)='ontouch($event)' textWrap='true'   class=" storetitle"  text="{{storetitle}}" (tap)="boolNotif=false"   ></Label>
          <StackLayout margin="0,0,2,8" orientation="horizontal">
-      	        <AbsoluteLayout  height="22"$
-      	         android:cursorVisible="false"  >   
+      	        <AbsoluteLayout  height="22" width="85"  android:cursorVisible="false"  >   
                  <StarRating left="-80" top="-18"    horizontalAlignment="center" verticalAlignment="center" isindicator="true"  android:scaleX=".3" android:scaleY=".3"   [value]="store.ratingsum/store.ratingcount"  ></StarRating>
                 </AbsoluteLayout>
                  <Label margin="3,0,0,5" fontSize="10"   text="({{store.ratingcount}} votes)"></Label>
@@ -102,9 +101,9 @@
        <Button [visibility]="!boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;&#xf0d7;" 
             class="bell fas " (tap)="boolNotif=true"></Button> 
         <Label [visibility]="!boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="2" text="{{notifCount}}" class="globe"
-                 ></Label> 
-       <Button   [visibility]="boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;" 
-            class="bell2 fas" (tap)="boolNotif=true"></Button> 
+                   ></Label> 
+          <Button fontSize='16' color='#FFA500'  [visibility]="boolNotif ?'visible':'collapse'"    id="notifications"  col="2" text="&#xf0f3;" 
+            class="bell fas" ></Button> 
         <Label [visibility]="boolNotif ?'visible':'collapse'"    id="globeItemNavigation"  col="2" text="{{notifCount}}" class="globe"
                    ></Label>
     
@@ -128,7 +127,7 @@
 
       
 
-        <RadListView   *ngIf=" !loading2 && !boolNotif"    row="5" [items]="selectArticles"  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
+        <RadListView   [visibility]=" !boolNotif? 'visible':'collapse'"    row="4" [items]="selectArticles"  loadOnDemandMode="None" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"       >
 
       		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
       		 <GridLayout (touch)='ontouch2($event)' >
@@ -157,7 +156,7 @@
               <TextView  row='0'   editable="false" class='titlea' text="{{a._source.title}}">
         			
                </TextView>
-                <StackLayout   row="1"  width="85" horizontalAlignmnt="center">
+                  <StackLayout   row="1"  width="85" horizontalAlignment="center">
       	           <StackLayout      margin='-20,-75,0,-75' android:cursorVisible="false"  >
       	           
                  <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="a._source.ratingsum/a._source.ratingcount" ></StarRating>
@@ -180,22 +179,33 @@
       		
             
      		<ListViewGridLayout tkListViewLayout scrollDirection="Vertical" spanCount="2"></ListViewGridLayout>
-      	
-      
+ 
+           
       	</RadListView>
-      	
+      	<GridLayout margin='5,0,5,0' rows='auto,auto,auto' *ngIf=' !boolNotif && loadmorebool && !loading2' row='5'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      	     <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   
+      	   <Label  row="1" class="fas loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      	   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+      	 </GridLayout>
  	
-         <ng-template ngxPermissionsOnly="ADMINStore"> 
+
   
-    <StackLayout row="5" *ngIf="boolNotif && !loading2" >
+     	
+ 	 <StackLayout row="5"  >
+   		 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading2" ></ActivityIndicator>
+   	</StackLayout> 
+   	
+    <ng-template ngxPermissionsOnly="ADMINStore"> 
+   	
+   	 <StackLayout row="4" [visibility]="boolNotif && !loading2?'visible':'collapse'" >
      <app-store-menu [storetitle]="storetitle"     (notifCount)="OnNotifCount($event)" ></app-store-menu>
    	</StackLayout>
    	
    	
-  </ng-template>    	
-  <StackLayout row="5"  *ngIf='loading2'  >
-   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading2" ></ActivityIndicator>
-   	</StackLayout> 
+  </ng-template>  
    </GridLayout>
  </ScrollView> 
 </RadSideDrawer>

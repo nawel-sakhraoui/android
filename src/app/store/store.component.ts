@@ -52,7 +52,7 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
     display1 = false ; 
     display2 = false ; 
     page= 1; 
-    size = 18; 
+    size = 2; 
     totalArticles =0;
     nosearch :boolean ;
     nothing : boolean ; 
@@ -65,6 +65,7 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
     bannerExt="";
     tempbannername ="" ;
     imgbanner :ImageSource ;  
+     loadmorebool = false  ; 
     private notif:any= {} ;
     private opened: boolean = true ;
     reload = false ; 
@@ -123,10 +124,7 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
                             return true;
                            }) 
                     
-                    
-                     if (this.open ) {
-                          this.rolesService.addRole('GUESTStore', ['readStore' ]);
-                     }
+               
                       
                      console.log(this.storetitle) ; 
                          
@@ -179,6 +177,21 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
                                   
                                     this.rolesService.addRole('ADMINStore', ['readStore','writeStore' ]);
                                  
+                                       
+                              this.storeService.getNotifications(this.storetitle)
+                             .subscribe(
+                            data => {
+
+                                this.notifCount= data['notificationcount'];
+
+                  // 
+                             }
+                            , error => {
+                                console.log(error);
+                  //    this.loading = false    
+                              }); 
+
+                             
                              }else
                                 this.permissionsService.removePermission('writeStore');
 
@@ -221,9 +234,14 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
                           if( this.totalArticles == 0) {
                                 this.nothing = true ; 
                               this.loading2 = false ;
+                             this.loadmorebool = false ; 
                           }else {
                                this.nothing =false ; 
                                 this.getPage(1);
+                                  if (this.page==this.maxpage)
+                                      this.loadmorebool = false ; 
+                                  else
+                                      this.loadmorebool= true ; 
                               }
                             }
                         ,error1 =>{
@@ -243,20 +261,7 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
                             this.loading2 = false ; 
                         });
       
-               
-              this.storeService.getNotifications(this.storetitle)
-              .subscribe(
-              data => {
-
-                  this.notifCount= data['notificationcount'];
-
-                  // 
-              }
-              , error => {
-                  console.log(error);
-                  //    this.loading = false    
-              }); 
-
+            
            
                }
                 
@@ -641,32 +646,44 @@ export class StoreComponent implements OnInit ,  AfterViewInit{
    }
 
     
+   
+    loadmore(){
+        this.loading2 = true ; 
+       this.page +=1 ; 
+         
+        if (this.page <= this.maxpage) {
+             
+            this.getPage(this.page) ;
+             
+         }
+        if (this.page==this.maxpage){
+                this.loadmorebool = false ;
+            
+          
+      }
+    }
     
-    
-   public onLoadMoreItemsRequested(args )
-    {
+   public onLoadMoreItemsRequested(args ){
      
        console.log('ondemand') ; 
        const listView = args.object;
-         this.page+=1;
+       this.page+=1;
 
  
      
        if (this.page <=  this.maxpage) {
-      
-                this.getPage(this.page)  ;
+                    let   that = this ; 
+         // setTimeout(function () {
+                that.getPage(that.page)  ;
                 listView.notifyLoadOnDemandFinished();
-                  
-          
+         //    }, 1500);
+            args.returnValue = true;
         } else {
             args.returnValue = false;
             listView.notifyLoadOnDemandFinished(true);
         }
   
-         let s = this.totalArticles -(this.page*this.size) ; 
-                    if (s <0 ) 
-                          s= 0 ; 
-                    listView.loadOnDemandBufferSize=s   ;  
+        
    
   //  if (this.sizemsg *this.page < this.countmsg ) 
     

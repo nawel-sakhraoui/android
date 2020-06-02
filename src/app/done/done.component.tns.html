@@ -31,7 +31,7 @@
   </Label>
 
  
-<RadListView  row="4" [items]="model" loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
+<RadListView  row="4" [items]="model" ><!-- loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"-->
           <ng-template let-m="item" let-i="index"  >
             
 				 <GridLayout  margin="0,15,0,15" rows="auto,auto,auto,auto,*,*,auto,auto,*,auto,*,auto,*,*,auto">
@@ -69,7 +69,7 @@
 					  <StackLayout row='4'  orientation='horizontal' >
 							 
             						<Label text="Magasin: "  ></Label>
-         					    <Label textWrap='true' (touch)="ontouch($event)"  text="{{m._source.storetitle }}" class="fas link0 "  nsRouterLink="../../../../stores/{{m._source.storetitle}}/store"  ></Label>
+         					    <Label textWrap='true' (touch)="ontouch($event)"  text="{{m._source.storetitle }}" class="fas link0 "  nsRouterLink="../../stores/{{m._source.storetitle}}/store"  ></Label>
        					
 					  </StackLayout>
 					  <RadListView  row="5" [items]="m._source.articles" >
@@ -80,7 +80,7 @@
 
 							    <GridLayout col="1" rows="auto,*" >
 							    
-							    	<Label class="fas link0" textWrap='true' (touch)="ontouch($event)" row="0"  text="{{a.title}}"  nsRouterLink="../../../../stores/{{m._source.storetitle}}/articles/{{a.articleid}}"></Label>
+							    	<Label class="fas link0" textWrap='true' (touch)="ontouch($event)" row="0"  text="{{a.title}}"  nsRouterLink="../../stores/{{m._source.storetitle}}/articles/{{a.articleid}}"></Label>
 							    	
 							    	
 							    	<GridLayout row="1" rows="*,*,*,*,*,*" columns='*,auto'>
@@ -311,9 +311,17 @@
      	  	
 
 </RadListView>  
-
-<ActivityIndicator row="5" *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
-
+<StackLayout row="5" >
+<ActivityIndicator  *ngIf="loading" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+</StackLayout>
+<GridLayout  margin='5,0,5,0' rows='auto,auto,auto'  *ngIf="loadmorebool && !loading "   row='5'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      	     <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   
+      	   <Label  row="1" class="fas loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      	   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+ </GridLayout>
 </GridLayout>
 </ScrollView>
 

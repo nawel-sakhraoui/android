@@ -23,7 +23,7 @@
  <StackLayout tkMainContent>
   
         
-    <GridLayout  rows='auto,auto,auto,* '>
+    <GridLayout  rows='auto,auto,*,auto '>
 
 
  
@@ -37,7 +37,7 @@
     </GridLayout>
     <StackLayout row="1"   colSpan="2" backgroundColor="darkgray" height="1.5"></StackLayout>
 
-   <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf='!loading0 && reload' class="reload">
+   <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='2'  *ngIf=' reload' class="reload">
         <FormattedString>
             <Span text="Problème de connexion... "></Span>
             <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
@@ -45,7 +45,7 @@
     	</Label>
     	
   
-<GridLayout *ngIf="!loading0 && !reload"  row="3" rows='auto,auto,auto,auto'>
+<GridLayout *ngIf="!reload"  row="2" rows='auto,auto,auto,auto'>
 <GridLayout row="0" columns='*'>
 <Label col="0" margin='10,0,0,5'  >
         <FormattedString>
@@ -61,7 +61,7 @@
 <StackLayout row="1"  margin="5,0,0,0"  colSpan="2" backgroundColor="#D3D3D3" height="3"></StackLayout>
 
 
-<RadListView  row="2" [items]="model"  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)">
+<RadListView  row="2" [items]="model"><!--   loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"-->
 
           <ng-template let-m="item" let-i="index"  >
            
@@ -321,9 +321,17 @@
   
 </GridLayout>
 
-	<StackLayout row="2">
-   	 <ActivityIndicator color='#FFA500' rowSpan="3"*ngIf='loading0' [busy]="loading0" ></ActivityIndicator>
+	<StackLayout row="3">
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading" ></ActivityIndicator>
    	</StackLayout>
+   	<GridLayout  margin='5,0,5,0' rows='auto,auto,auto'  *ngIf="loadmorebool && !loading "   row='3'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      	     <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   
+      	   <Label  row="1" class="fas loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      	   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+ </GridLayout>
 </GridLayout>
 
 </StackLayout>

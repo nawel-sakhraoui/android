@@ -2,22 +2,18 @@
 <GridLayout rows="auto,auto,auto" (tap)='hide()'>		
  
  
- <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf=' reload' class="reload">
         <FormattedString>
             <Span text="Problème de connexion... "></Span>
             <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
         </FormattedString>
   </Label>
   
-   <Label  row="0" *ngIf="empty && !loading && !reload" class="alert"  text="Aucun article sélectionné"></Label>
+   <Label  row="0" *ngIf="empty &&  !reload" class="alert"  text="Aucun article sélectionné"></Label>
  
-   <StackLayout row="2">
-   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading" ></ActivityIndicator>
-   	</StackLayout>  
-   	 
-<RadListView row ="1" class="list-group" [items]="displaystores"  
-				 [visibility]="!loading? 'visible' : 'collapsed'"
-				  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
+
+<RadListView *ngIf="!empty &&  !reload"  row ="1" class="list-group" [items]="displaystores" >
+				<!--   loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" -->
     <ng-template let-k="item"  >
     
         <GridLayout class="list-group-item" rows="*, *,auto"  >
@@ -27,14 +23,14 @@
           <RadListView row ="1" class="list-group" [items]="model[k]" ><!-- [itemTemplateSelector]="templateSelector" (itemTap)="onItemTap($event)" -->
     		<ng-template let-m="item" let-i='index'><!--  tkListItemTemplate  -->
     		<GridLayout rows="*,auto,auto,auto,auto,auto">
-  		      <GridLayout row="0"  rows="auto,auto, auto" columns="*,*">
+  		      <GridLayout row="0"  rows="auto,auto,auto" columns="*,*">
           			 <GridLayout row="0" col="0">
           			 	 <Image src="{{m.pic}}"	loadMode="async" class="pic"  stretch="aspectFill" ></Image>
           			 </GridLayout>
    			         <GridLayout  row="0" col="1" rows="25,auto,*,auto,*" >
    			         	
    			         	<GridLayout  row="0"  columns="*,20,20">
-   			 	         	 <Label (touch)='ontouch($event)' col="2" text="&#xf054;" class=" fass button2   " (tap)="gotoArticle(m._id, k )"></Label>
+   			 	         	 <Label (touch)='ontouch($event)' col="2" text="&#xf054;" class=" fass button2   " (tap)="gotoArticle(m._id, m, i )"></Label>
    			 	      		 <Label (touch)='ontouch($event)' margin="0,15,0,0" col="1" text="&#xf00d;" class="fass  button3   " (tap)="deleteArticle(k, m)" ></Label>
    			 	       </GridLayout>  
    			 	     
@@ -242,7 +238,20 @@
  	      		<ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
  
 </RadListView>
-
+ 
+   	 
+<GridLayout  margin='5,0,5,0' rows='auto,auto,auto'  *ngIf="loadmorebool && !loading "   row='2'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      	     <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   
+      	   <Label  row="1" class="fas loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      	   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+ </GridLayout>
+  
+ <StackLayout row="2"  >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading" ></ActivityIndicator>
+  </StackLayout>  
 
 </GridLayout>      
 </ScrollView>

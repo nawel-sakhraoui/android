@@ -1,20 +1,20 @@
 <ScrollLayout >		
-<GridLayout rows='auto,auto,auto' (tap)="hide()">   
+<GridLayout rows='auto,*,auto' (tap)="hide()">   
 
 
- <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='!loading && reload' class="reload">
+ <Label  (tap)="reloading()"  (touch)="ontouch($event)"  row='0'  *ngIf='reload' class="reload">
         <FormattedString>
             <Span text="Problème de connexion... "></Span>
             <Span text="réessayer"  color="#FFA500" class="bold" ></Span>
         </FormattedString>
   </Label>
 
-<Label class="alert" *ngIf='!listmessage && !loading && !reload' text="Pas de messages privés"> </Label>
+<Label class="alert" *ngIf='!listmessage && !loading  && !reload' text="Pas de messages privés"> </Label>
 
-<RadListView  *ngIf='listmessage && !loading ' row="1"  class="list-group" [items]="model" 
+<RadListView  *ngIf='listmessage' row="1"  class="list-group" [items]="model" ><!-- 
 				loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
 				
-				>
+				-->
     <ng-template let-m="item"  >
       
     	<GridLayout (touch)="ontouch2($event)" columns="auto,*" rows="*, auto"   (tap)= "goToMessage(me,  m.to, m.tofullname, m._source.last.avatar, m._source.unread)" > 
@@ -39,7 +39,17 @@
      <ListViewLinearLayout tkListViewLayout scrollDirection="Vertical" spanCount="1"></ListViewLinearLayout>
      
 </RadListView>
-      <ActivityIndicator row="2" color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+	 	 
+<GridLayout   rows='auto,auto,auto'  *ngIf="loadmorebool && !loading "   row='2'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      	   <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   		<Label margin='5,0,5,0'   row="1" class="fass loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      	   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+ </GridLayout>
+ <StackLayout row="2">
+      <ActivityIndicator  color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+</StackLayout>
 
 </GridLayout>
 </ScrollLayout>      

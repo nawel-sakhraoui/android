@@ -19,7 +19,8 @@ import { SearchBar } from "tns-core-modules/ui/search-bar";
 import * as  clipboard from "nativescript-clipboard" ;
 import { Frame, topmost } from "tns-core-modules/ui/frame"; 
 import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview";
- 
+ import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+
  
 @Component({
     selector: 'app-historic-sales',
@@ -48,9 +49,9 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
     totalcommand:number; 
     sales :boolean ; 
     store:any ={};
-    page:number ; 
+    page:number=1 ; 
     loading = false ; 
-    size = 2; 
+    size = 1; 
     maxpage =1 ;
     
     open:boolean; 
@@ -61,7 +62,7 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
     isopen = {} ; 
     loadingR :any = {};
     reload = false ; 
-    
+    loadmorebool = false ; 
     @ViewChild(RadSideDrawerComponent, { static: false }) public drawerComponent: RadSideDrawerComponent;
     private drawer: RadSideDrawer;
     
@@ -90,7 +91,7 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
     
     
     init(){
-              this.loading0 = true ; 
+              this.loading = true ; 
        console.log('store') ; 
         let sub = this.route.params.subscribe(params => {
         console.log (params) ;
@@ -116,12 +117,16 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
                 console.log(data6['count']); 
                 this.totalcommand= data6['count'] ; 
            
-          
+               this.maxpage = Math.ceil( this.totalcommand/this.size)  ;
                  
       if( this.totalcommand != 0 ) {
                 this.ongoing = true ; 
                
-                 this.getPage(1)   ;               
+                 this.getPage(1)   ;  
+                if (this.page==this.maxpage)
+                         this.loadmorebool = false ; 
+                 else 
+                         this.loadmorebool = true ;             
           
        }  else 
 
@@ -317,7 +322,8 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
    
     
    getPage(page: number) {
-           
+           console.log(page); 
+       
         this.loading = true;
        this.ongoingService.getArticlesByStoreIdClose (this.storetitle,  (page-1)*this.size, this.size )
       .subscribe (
@@ -325,8 +331,7 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
           data =>{
                 console.log(data ) ; 
                 this.tempmodel = data ; 
-                this.loading=false ; 
-                this.loading0 = false ; 
+            ; 
                 this.historic = true ;
                 this.page = page ; 
                 this.sales = true ;
@@ -505,15 +510,16 @@ export class  HistoricSalesComponent implements OnInit, AfterViewInit{
                   */
               }
               }
+              console.log('arrivee la') ; 
+                
               this.model = this.model.concat(this.tempmodel) ; 
+           this.loading = false ; 
+          console.log(this.model.length) ; 
          }
           ,error => {
               console.log(error ) ; 
-              this.loading0 = false ; 
-              if (error.status==401){
-                  
-                  
-              }
+              this.loading = false ; 
+              
               this.ongoing = false ; 
               }
           
@@ -696,4 +702,27 @@ selectText(args) {
         this.init() ; 
   
      } 
+
+ loadmore(){
+       
+       this.page +=1 ; 
+        if (this.page <= this.maxpage) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.maxpage){
+                this.loadmorebool = false ; 
+          }
+  }
+  ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
 }

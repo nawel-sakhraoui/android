@@ -19,7 +19,9 @@ import * as  clipboard from "nativescript-clipboard" ;
 import { Page } from "ui/page"; 
 import { Frame, topmost } from "tns-core-modules/ui/frame"; 
 import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview";
- 
+
+import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+
 
 @Component({
   selector: 'app-ongoing',
@@ -49,6 +51,7 @@ export class OngoingComponent implements OnInit{
   fullname ="" ; 
   alertM = {} ; 
   loadingM= {};
+    loadmorebool = false ; 
   reload :boolean = false ; 
  
   constructor(private messagesService: MessagesService,
@@ -121,14 +124,20 @@ export class OngoingComponent implements OnInit{
                 this.totalcommand= data['count'] ;
                  this.maxpage = Math.ceil( this.totalcommand/this.size)  ; 
 
+                
                 console.log(this.maxpage );
                  if(this.totalcommand ==  0 ) {
                     this.ongoing = false    ; 
                      this.loading = false ;
+                       this.loadmorebool = false ; 
                  }else{
                     
                       this.ongoing = true  ; 
-                      this.getPage(1)   ;           
+                      this.getPage(1)   ;
+                     if (this.page==this.maxpage)
+                         this.loadmorebool = false ; 
+                     else 
+                         this.loadmorebool = true ;           
                 
                 }}
             ,error =>{
@@ -819,9 +828,9 @@ getLocalDateTime(date) {
     }
    
 }
-         ontouch3(args: TouchGestureEventData) {
-    const label = <Label>args.object
-    switch (args.action) {
+      ontouch3(args: TouchGestureEventData) {
+         const label = <Label>args.object
+        switch (args.action) {
         case 'up':
             label.deletePseudoClass("pressed3");
             break;
@@ -874,9 +883,29 @@ getLocalDateTime(date) {
       reloading(){
         
         console.log('reloading') ; 
-      this.init() ; 
-        
-        
-        
+           this.init() ; 
+       
         }  
+          
+    loadmore(){
+       this.page +=1 ; 
+        if (this.page <= this.maxpage) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.maxpage)
+                this.loadmorebool = false ; 
+          
+      }
+      ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
 }

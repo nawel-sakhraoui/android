@@ -12,7 +12,8 @@ import { SearchBar } from "tns-core-modules/ui/search-bar";
 import * as  clipboard from "nativescript-clipboard" ;
 import { Frame, topmost } from "tns-core-modules/ui/frame"; 
 import { RadListView, ListViewItemSnapMode } from "nativescript-ui-listview";
- 
+ import { GridLayout, ItemSpec } from "tns-core-modules/ui/layouts/grid-layout";
+
  
 
 @Component({
@@ -43,7 +44,8 @@ export class DoneComponent implements OnInit {
   maxpage = 1 ; 
   page = 1; 
   open = false;
-   reload = false ; 
+   reload = false ;
+    loadmorebool = false ;  
   constructor(private messagesService: MessagesService,
               private ongoingService :OngoingService, 
               private storeService: StoreService, 
@@ -83,6 +85,10 @@ export class DoneComponent implements OnInit {
                       this.ongoing = true  ; 
                       this.getPage(1)   ;           
                       this.loading = false ;  
+                        if (this.page==this.maxpage)
+                         this.loadmorebool = false ; 
+                     else 
+                         this.loadmorebool = true ;
                 }}
             ,error =>{
                 this.reload = true ; 
@@ -581,4 +587,26 @@ export class DoneComponent implements OnInit {
         this.init() ; 
   
      } 
+    
+    loadmore(){
+       this.page +=1 ; 
+        if (this.page <= this.maxpage) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.maxpage)
+                this.loadmorebool = false ; 
+          
+      }
+      ontouch2(args: TouchGestureEventData) {
+    const label = <GridLayout>args.object
+    switch (args.action) {
+        case 'up':
+            label.deletePseudoClass("pressed");
+            break;
+        case 'down':
+            label.addPseudoClass("pressed");
+            break;
+    }
+   
+}
 }

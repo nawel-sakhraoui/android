@@ -55,9 +55,9 @@
         </GridLayout>       
     
   
-    <GridLayout  tkMainContent rows='auto,auto ,auto, auto,auto,auto ,auto,auto'>
+    <GridLayout  tkMainContent rows='auto,auto,auto,auto,auto,auto,auto,auto,auto,auto'>
 	<StackLayout row="0" backgroundColor='rgba(0,0,0, 0.4)' >
-   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
+   	 <ActivityIndicator color='#FFA500' rowSpan="3" [busy]="loading" ></ActivityIndicator>
    	</StackLayout>  
    
   <Image *ngIf='!loading' backgroundColor='rgba(0,0,0, 0.4)' (touch) = 'displaybanner = true' row ="0" [src]="banner"  class="pic"  stretch="aspectFill"></Image>
@@ -114,8 +114,8 @@
     
 		
 
-        <RadListView  row="6" [items]="selectArticles" selectionBehavior="LongPress" loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"
-         (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)">
+        <RadListView  row="6" [items]="selectArticles"><!--  selectionBehavior="LongPress" loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" 
+         (itemSelected)="onItemSelected($event)" (itemSelecting)="onItemSelecting($event)"-->
 
       		 <ng-template tkListItemTemplate  let-a="item" class="itemStackLayout" >
       		 <GridLayout (touch)="ontouch2($event)" >
@@ -142,7 +142,7 @@
         			
                </TextView>
           
-      	          <StackLayout   row="1"  width="85" horizontalAlignmnt="center">
+      	          <StackLayout   row="1"  width="85" horizontalAlignment="center">
       	           <StackLayout      margin='-20,-75,0,-75' android:cursorVisible="false"  >
       	           
                  <StarRating filledColor="#FFA500" isindicator="true"  android:scaleX=".3" android:scaleY=".3"  [value]="a._source.ratingsum/a._source.ratingcount" ></StarRating>
@@ -166,8 +166,18 @@
 			
       	
       	</RadListView>
-      	<StackLayout row="7">
-   	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading2' [busy]="loading2" ></ActivityIndicator>
+      	
+           <GridLayout margin='5,0,5,0' rows='auto,auto,auto' *ngIf='loadmorebool && !loading2' row='7'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      	     <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   
+      	   <Label  row="1" class="fas loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      	   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+      	 </GridLayout>
+      	 
+      	<StackLayout row="7"  >
+   	 <ActivityIndicator color='#FFA500' rowSpan="3"  [busy]="loading2" ></ActivityIndicator>
    	</StackLayout>
    
 </GridLayout>

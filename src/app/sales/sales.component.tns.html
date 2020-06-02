@@ -65,7 +65,7 @@
 <StackLayout row="1"  margin="5,0,0,0"  colSpan="2" backgroundColor="#D3D3D3" height="3"></StackLayout>
 
 
-<RadListView  row="2" [items]="model"  loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" >
+<RadListView  row="2" [items]="model"><!--   loadOnDemandMode="Manual" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)" -->
           <ng-template let-m="item" let-i="index"  >
             <StackLayout orientation='vertical'>
 				 <GridLayout  margin="0,15,0,15" rows="auto,auto,auto,auto,auto,*,*,auto,*,auto,*,auto,*,*">
@@ -303,6 +303,14 @@
    	<StackLayout row="3">
    	 <ActivityIndicator color='#FFA500' rowSpan="3" *ngIf='loading' [busy]="loading" ></ActivityIndicator>
    	</StackLayout>
+   	<GridLayout  margin='5,0,5,0' rows='auto,auto,auto'  *ngIf="loadmorebool && !loading "   row='3'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      	     <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   
+      	   <Label  row="1" class="fas loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      	   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+ </GridLayout> 
 
 </GridLayout>
 </GridLayout>

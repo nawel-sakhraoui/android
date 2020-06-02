@@ -34,7 +34,7 @@ export class CartComponent implements OnInit {
   
   page =1; 
   maxpage =1; 
-  size =3; 
+  size =1; 
     
   loading = false ; 
   model :any ; 
@@ -46,6 +46,7 @@ export class CartComponent implements OnInit {
   titlestoreDel = [] ;
    storeshow = []; 
     stores = [] ; 
+     loadmorebool = false ; 
    deliveryconfig = {
         "search":false, //true/false for the search functionlity defaults to false,
        "height": "auto",  //height of the list so that if there are more no of items it can show a scroll defaults to auto. With auto height scroll will never appear
@@ -83,7 +84,7 @@ export class CartComponent implements OnInit {
                  
                 data => {
                      console.log(data ) ;  
-                    this.cart =  data['articlecart'].reverse();
+                    this.cart =  data['articlecart']
               
                     this.reload = false ; 
                     
@@ -123,8 +124,12 @@ export class CartComponent implements OnInit {
                             if (this.stores.length !==0) {
                                  this.cart = true ; this.empty = false ; 
                                  this.getPage(1);
+                                 if (this.page==this.maxpage)
+                                      this.loadmorebool = false ; 
+                                else 
+                                     this.loadmorebool = true ; 
                             }else { 
-                                 this.cart =false ; this.empty = true ; 
+                                 this.cart =false ; this.empty = true ;     this.loadmorebool = false ; 
                             }
                          
                             
@@ -300,26 +305,43 @@ export class CartComponent implements OnInit {
        this.router.navigate(["../stores/"+storeid+"/articles/"+articleid], { relativeTo: this.route });
 
         }
-    deleteArticle (  storeid, article) {
+    deleteArticle (  storeid, article, i ) {
        
 
-  // 
-       var index = this.model[storeid].indexOf(article, 0);
-           this.totalprices[storeid] = this.totalprices[storeid]-this.model[storeid][index]['_source']['price'] ; 
-        if (this.choosestoredelivery[storeid].length !=0 )
-          this.totaldelivery[storeid] = this.totalprices[storeid]+ this.choosestoredelivery[storeid][0].price ; 
-        else 
-             this.totaldelivery[storeid] = this.totalprices[storeid] ; 
+        console.log("deletiiiiiiiiiiiiiiiing") ; 
+        console.log(storeid) ;
+        console.log(article) ;  
         
-        if (index > -1) {
-           this.model[storeid].splice(index, 1);
+  // 
+        let index = i;
+          
+        this.totalprices[storeid] = this.totalprices[storeid]-article['_source']['price'] ; 
+       // if (this.choosestoredelivery[storeid].length !=0 )
+        //    this.totaldelivery[storeid] = this.totalprices[storeid]+ this.choosestoredelivery[storeid][0].price ; 
+        //else 
+            this.totaldelivery[storeid] = this.totalprices[storeid] ; 
+        
+        
+    
 
-       }
-      // console.log(this.model) ; 
-        if (  this.model[storeid].length == 0) {
+       console.log("critiques ") ; 
+       console.log(this.model[storeid].length) ; 
+       
+        if (  this.model[storeid].length == 1) {
           //console.log( this.model[storeid]);
             delete this.model[storeid] ; 
-        }
+            let ii = this.displaystores.indexOf(storeid);
+            this.displaystores.splice(ii,1) ;
+            if (this.displaystores.length==0 && this.loadmorebool==true )
+            {
+                this.loadmore()   
+             }else {
+                this.empty= true ;     
+            }
+        }else 
+                this.model[storeid].splice(index, 1); 
+        
+        
         
         this.cartService.deleteCart( article._id)
         .subscribe(
@@ -327,14 +349,14 @@ export class CartComponent implements OnInit {
             error => {console.log(error) ; }    
             );
      
-           for (let a of this.model[storeid]) {
+           /*for (let a of this.model[storeid]) {
                 let flag = true 
              if (! a._source.available ) 
                     flag = false ; 
              if (flag) 
                 this.buyall[storeid ] = true ; 
                
-           }
+           }*/
         }
       
     
@@ -698,4 +720,17 @@ ontouch(args: TouchGestureEventData) {
         this.init() ; 
   
      }
+      
+    loadmore(){
+       this.page +=1 ; 
+        if (this.page <= this.maxpage) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.maxpage)
+                this.loadmorebool = false ; 
+          
+      }
+
+   
 }
+

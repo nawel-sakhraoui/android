@@ -29,7 +29,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
   me= JSON.parse(localStorage.getItem('currentUser')).userid ; 
 
   display = false ;   
-    display1 = false ;     
+  display1 = false ;     
   busy: Subscription;
   busy2: Subscription;
   busy3: Subscription;
@@ -45,6 +45,7 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
   read :any ='' ; 
   banner = ""; 
   query = ""; 
+    loadmorebool = false  
     display2=false ; 
     page= 1; 
     size = 20; 
@@ -62,7 +63,8 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
     disp = [] ;
     alertimg = false ; 
     displaybanner = false ; 
-    reload = false ; 
+    reload = false ;
+  
   private notif:any= {} ;
   
   constructor(
@@ -200,11 +202,16 @@ export class SoldoutComponent implements OnInit, AfterViewInit , OnDestroy{
                             this.totalArticles = data1['count'] ; 
                             this.maxpage = Math.ceil( this.totalArticles/this.size)  ; 
 
-                           if( this.totalArticles == 0 ) 
+                           if( this.totalArticles == 0 ) {
                                 this.nothing =true ; 
-                            else {
+                                this.loadmorebool = false ; 
+                            }else {
                                this.nothing = false; 
                                this.getPage(1);
+                               if (this.page==this.maxpage)
+                                            this.loadmorebool = false ; 
+                               else
+                                      this.loadmorebool= true ; 
                             }
                             }
                         ,error1 =>{
@@ -627,7 +634,17 @@ ontouch(args: TouchGestureEventData) {
         
         }
     
-    
+      
+    loadmore(){
+        this.loading2= true ; 
+       this.page +=1 ; 
+        if (this.page <= this.maxpage) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.maxpage)
+                this.loadmorebool = false ; 
+          
+      }
 } 
 
 

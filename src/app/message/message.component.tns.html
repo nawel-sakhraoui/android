@@ -6,8 +6,8 @@
                  	
       		    	 </StackLayout>
       		    	 
-      		    	<RadListView  #top row="2" [items]="messages "  
-				loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"    >
+      		    	<RadListView  #top row="2" [items]="messages "  >
+				<!-- loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMoreItemsRequested($event)"    -->
 						<ng-template let-message="item"  >
 						<StackLayout>
 						
@@ -52,7 +52,19 @@
       		    	 </GridLayout>
       		    	 <Label row="1" class="alert" *ngIf='msgAlert' text='taper votre message ! ' textWrap='true'></Label>
       		    	 </GridLayout>
-      		    	          <ActivityIndicator row="3"  color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
-      		    	     
+      		    	 
+      		    	 
+      		    	        <StackLayout row="3">  <ActivityIndicator   color='#FFA500' rowSpan="2" [busy]="loading"></ActivityIndicator>
+      		    	     	</StackLayout>
+      		    	   	 
+				<GridLayout  margin='5,0,5,0' rows='auto,auto,auto'  *ngIf="loadmorebool && !loading "   row='3'  (touch)='ontouch2($event)' (tap)='loadmore()' >
+      	   
+      			     <StackLayout  row="0" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	   
+     		 	   <Label  row="1" class="fas loadmore" text="&#xf078;" horizontalAlignment="center" verticalAlignment="center" ></Label>
+      			   <StackLayout  row="2" colSpan="2" backgroundColor="#eeeeee" height="2"></StackLayout>
+      	 
+ 			</GridLayout>
       		    	</GridLayout>
+      		    	
       </ScrollView>		    	 

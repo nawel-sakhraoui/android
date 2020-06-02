@@ -216,4 +216,17 @@ Label:pressed3 {
 	horizontal-allignment:center ; 
 	
 }
+
+.loadmore{
+	font-size:38; 
+	color : #D0D0D0; 
+} 
+GridLayout:pressed {
+   
+   background-color:#eeeeee;  
+   /* color:#d9534f ;*/
+   border-width:2; 
+   border-color:#ffffff;   
+}    
+
   

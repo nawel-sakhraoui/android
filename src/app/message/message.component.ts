@@ -43,6 +43,7 @@ export class MessageComponent implements OnInit {
     size =3  ;
     maxpage = 0 ; 
     count = 0 ; 
+    loadmorebool = false ; 
     me = JSON.parse(localStorage.getItem('currentUser')).userid ;
      source :any ;
     firebaseToken ="" ;  
@@ -106,6 +107,10 @@ export class MessageComponent implements OnInit {
                                     this.count = dataw['count']  ; 
                                       this.maxpage = Math.ceil( this.count/this.size)  ; 
 
+                                     if (this.page==this.maxpage)
+                                      this.loadmorebool = false ; 
+                                     else 
+                                     this.loadmorebool = true ;
                                      this.getPage(1) ; 
                                     }
                               
@@ -434,5 +439,17 @@ export class MessageComponent implements OnInit {
     
     }
     
+    
+      
+    loadmore(){
+       this.page +=1 ; 
+        if (this.page <= this.maxpage) {
+            this.getPage(this.page) ;
+         }
+        if (this.page==this.maxpage)
+                this.loadmorebool = false ; 
+          
+      }
+ 
 }
 
